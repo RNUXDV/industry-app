@@ -260,8 +260,10 @@ if (addTipButton) {
 }
 
 function updateHomeProfileView(profileData) {
-  const nickname = profileData.name ? profileData.name : "Maya";
-  homeWelcomeMessage.textContent = `Welcome back, ${nickname}`;
+  const nickname = profileData.name ? profileData.name : "";
+  homeWelcomeMessage.textContent = nickname
+    ? `Welcome back, ${nickname}`
+    : "Welcome back";
 
   const hasProfileDetails =
     profileData.role || profileData.neighborhood || profileData.goal;
