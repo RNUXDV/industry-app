@@ -150,12 +150,18 @@ h1 {
   cursor: pointer;
 }
 
+.jobs-card {
+  cursor: pointer;
+}
+
 .work-card:focus-visible,
+.jobs-card:focus-visible,
 .action-button:focus-visible,
 .nav-item:focus-visible,
 .back-button:focus-visible,
 .note-input:focus-visible,
-.tip-input:focus-visible {
+.tip-input:focus-visible,
+.filter-button:focus-visible {
   outline: 2px solid rgba(182, 84, 46, 0.45);
   outline-offset: 3px;
 }
@@ -330,6 +336,44 @@ h1 {
   margin-top: 16px;
 }
 
+.jobs-toolbar,
+.jobs-list {
+  margin-top: 16px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.filter-button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255, 252, 247, 0.9);
+  color: var(--muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.filter-button.active {
+  border-color: rgba(182, 84, 46, 0.3);
+  background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+  color: white;
+}
+
+.filter-button:active {
+  transform: scale(0.98);
+}
+
 .tool-button-group {
   display: grid;
   gap: 10px;
@@ -361,6 +405,23 @@ h1 {
 .note-input {
   min-height: 120px;
   resize: vertical;
+}
+
+.job-card.is-hidden {
+  display: none;
+}
+
+.job-action-row {
+  display: grid;
+  gap: 10px;
+}
+
+.interest-button {
+  background: linear-gradient(135deg, var(--highlight), #1f5b55);
+}
+
+.interest-button.sent {
+  background: #58766f;
 }
 
 .sr-only {
@@ -462,5 +523,9 @@ h1 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
+  }
+
+  .jobs-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

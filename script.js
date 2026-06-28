@@ -3,7 +3,9 @@ const appSections = document.querySelectorAll(".app-section");
 const saveButtons = document.querySelectorAll(".save-button");
 const communityButtons = document.querySelectorAll(".community-button");
 const workCard = document.querySelector(".work-card");
+const jobsCard = document.querySelector(".jobs-card");
 const backHomeButton = document.querySelector("#back-home-button");
+const backHomeFromJobsButton = document.querySelector("#back-home-from-jobs");
 const workStatus = document.querySelector("#work-status");
 const workActionButtons = document.querySelectorAll(".work-action-button");
 const saveNoteButton = document.querySelector("#save-note-button");
@@ -12,6 +14,10 @@ const noteStatus = document.querySelector("#note-status");
 const tipInput = document.querySelector("#tip-amount");
 const addTipButton = document.querySelector("#add-tip-button");
 const tipTotalValue = document.querySelector("#tip-total-value");
+const filterButtons = document.querySelectorAll(".filter-button");
+const jobCards = document.querySelectorAll(".job-card");
+const jobsStatus = document.querySelector("#jobs-status");
+const interestButtons = document.querySelectorAll(".interest-button");
 let tipTotal = 0;
 
 // Show one section at a time and keep the matching nav button highlighted.
@@ -39,6 +45,10 @@ function openWorkSection() {
   setActiveSection("work");
 }
 
+function openJobsSection() {
+  setActiveSection("jobs");
+}
+
 if (workCard) {
   workCard.addEventListener("click", openWorkSection);
 
@@ -56,11 +66,37 @@ if (backHomeButton) {
   });
 }
 
+if (jobsCard) {
+  jobsCard.addEventListener("click", openJobsSection);
+
+  jobsCard.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openJobsSection();
+    }
+  });
+}
+
+if (backHomeFromJobsButton) {
+  backHomeFromJobsButton.addEventListener("click", () => {
+    setActiveSection("home");
+  });
+}
+
 // Toggle save state so testers can tell their tap worked.
 saveButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const isSaved = button.classList.toggle("saved");
     button.textContent = isSaved ? "Saved" : "Save";
+
+    if (button.closest(".job-card")) {
+      const restaurantName = button
+        .closest(".job-card")
+        .querySelector("h3").textContent;
+      jobsStatus.textContent = isSaved
+        ? `${restaurantName} saved.`
+        : `${restaurantName} removed from saved jobs.`;
+    }
   });
 });
 
@@ -76,6 +112,41 @@ communityButtons.forEach((button) => {
       button.classList.remove("is-tapped");
       button.textContent = defaultLabel;
     }, 1200);
+  });
+});
+
+// Filter the jobs board by common service role types.
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const selectedFilter = button.dataset.filter;
+
+    filterButtons.forEach((filterButton) => {
+      const isActive = filterButton === button;
+      filterButton.classList.toggle("active", isActive);
+    });
+
+    jobCards.forEach((card) => {
+      const categories = card.dataset.category.split(" ");
+      const showCard =
+        selectedFilter === "all" || categories.includes(selectedFilter);
+      card.classList.toggle("is-hidden", !showCard);
+    });
+
+    jobsStatus.textContent =
+      selectedFilter === "all"
+        ? "Showing all Portland jobs."
+        : `Showing ${selectedFilter} jobs.`;
+  });
+});
+
+// Let a worker mark interest without leaving the prototype.
+interestButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    button.classList.add("sent");
+    button.textContent = "Interest sent";
+
+    const restaurantName = button.closest(".job-card").querySelector("h3").textContent;
+    jobsStatus.textContent = `Interest sent to ${restaurantName}.`;
   });
 });
 

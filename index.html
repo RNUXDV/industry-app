@@ -47,7 +47,7 @@
               </p>
             </article>
 
-            <article class="feature-card">
+            <article class="feature-card jobs-card" data-open-jobs="true" tabindex="0">
               <div class="card-icon" aria-hidden="true">J</div>
               <h3>Jobs</h3>
               <p>
@@ -196,59 +196,150 @@
         </section>
 
         <section class="app-section" id="jobs-section" data-section="jobs">
-          <div class="section-heading">
+          <div class="section-heading work-heading">
+            <button class="back-button" id="back-home-from-jobs" type="button">
+              Back to Home
+            </button>
             <p class="section-label">Jobs</p>
-            <h2>Portland openings</h2>
+            <h2>Find better shifts, better rooms, and better fits.</h2>
             <p>
-              Realistic sample roles for restaurant and hospitality workers who
-              want stronger pay, steadier hours, or a new neighborhood.
+              A calm browse for Portland hospitality roles, with quick filters
+              and simple actions that feel closer to a trusted referral board.
             </p>
           </div>
 
-          <section class="stack-list" aria-label="Job listings">
-            <article class="stack-card">
+          <section class="today-panel jobs-toolbar" aria-label="Job filters and updates">
+            <p class="status-text" id="jobs-status" aria-live="polite">
+              Showing all Portland jobs.
+            </p>
+
+            <div class="filter-row" role="group" aria-label="Job filters">
+              <!-- These filter buttons hide and show matching jobs. -->
+              <button class="filter-button active" type="button" data-filter="all">
+                All
+              </button>
+              <button class="filter-button" type="button" data-filter="serving">
+                Serving
+              </button>
+              <button class="filter-button" type="button" data-filter="bartending">
+                Bartending
+              </button>
+              <button class="filter-button" type="button" data-filter="support">
+                Support
+              </button>
+              <button class="filter-button" type="button" data-filter="brunch">
+                Brunch
+              </button>
+            </div>
+          </section>
+
+          <section class="stack-list jobs-list" aria-label="Job listings">
+            <article
+              class="stack-card job-card"
+              data-category="serving"
+              data-tags="Dinner Fine Dining"
+            >
               <div class="stack-copy">
                 <p class="stack-kicker">Restaurant</p>
-                <h3>Marigold Cafe</h3>
-                <p>Lead Server</p>
+                <h3>Ava Gene&apos;s</h3>
+                <p>Server</p>
                 <ul class="meta-list">
-                  <li>$22 to $28/hr with tips</li>
-                  <li>Alberta Arts</li>
+                  <li>$18/hr + tips</li>
+                  <li>Division</li>
+                  <li>Dinner</li>
+                  <li>Fine Dining</li>
                 </ul>
               </div>
-              <button class="action-button save-button" type="button">
-                Save
-              </button>
+
+              <div class="job-action-row">
+                <button class="action-button save-button" type="button">
+                  Save
+                </button>
+                <button class="action-button interest-button" type="button">
+                  I&apos;m interested
+                </button>
+              </div>
             </article>
 
-            <article class="stack-card">
+            <article
+              class="stack-card job-card"
+              data-category="support"
+              data-tags="Dinner High Volume"
+            >
               <div class="stack-copy">
                 <p class="stack-kicker">Restaurant</p>
-                <h3>Riverstone Grill</h3>
-                <p>Line Cook</p>
+                <h3>Kann</h3>
+                <p>Host / Support</p>
                 <ul class="meta-list">
-                  <li>$20 to $24/hr</li>
-                  <li>Sellwood</li>
+                  <li>$20/hr + tips</li>
+                  <li>Central Eastside</li>
+                  <li>Dinner</li>
+                  <li>High Volume</li>
                 </ul>
               </div>
-              <button class="action-button save-button" type="button">
-                Save
-              </button>
+
+              <div class="job-action-row">
+                <button class="action-button save-button" type="button">
+                  Save
+                </button>
+                <button class="action-button interest-button" type="button">
+                  I&apos;m interested
+                </button>
+              </div>
             </article>
 
-            <article class="stack-card">
+            <article
+              class="stack-card job-card"
+              data-category="brunch serving"
+              data-tags="Brunch High Volume"
+            >
               <div class="stack-copy">
-                <p class="stack-kicker">Hospitality</p>
-                <h3>North Loop Hotel</h3>
-                <p>Barback</p>
+                <p class="stack-kicker">Restaurant</p>
+                <h3>Screen Door</h3>
+                <p>Brunch Server</p>
                 <ul class="meta-list">
-                  <li>$19 to $23/hr plus event tips</li>
-                  <li>Pearl District</li>
+                  <li>$16/hr + tips</li>
+                  <li>Burnside</li>
+                  <li>Brunch</li>
+                  <li>High Volume</li>
                 </ul>
               </div>
-              <button class="action-button save-button" type="button">
-                Save
-              </button>
+
+              <div class="job-action-row">
+                <button class="action-button save-button" type="button">
+                  Save
+                </button>
+                <button class="action-button interest-button" type="button">
+                  I&apos;m interested
+                </button>
+              </div>
+            </article>
+
+            <article
+              class="stack-card job-card"
+              data-category="bartending"
+              data-tags="Bar Dinner"
+            >
+              <div class="stack-copy">
+                <p class="stack-kicker">Restaurant</p>
+                <h3>Hey Love</h3>
+                <p>Bartender</p>
+                <ul class="meta-list">
+                  <li>$17/hr + tips</li>
+                  <li>Eastside</li>
+                  <li>Bar</li>
+                  <li>Dinner</li>
+                </ul>
+              </div>
+
+              <div class="job-action-row">
+                <button class="action-button save-button" type="button">
+                  Save
+                </button>
+                <button class="action-button interest-button" type="button">
+                  I&apos;m interested
+                </button>
+              </div>
             </article>
           </section>
         </section>
