@@ -37,7 +37,8 @@
           </div>
 
           <section class="card-list" aria-label="Main features">
-            <article class="feature-card">
+            <!-- The Work card opens a deeper workflow screen inside the app. -->
+            <article class="feature-card work-card" data-open-work="true" tabindex="0">
               <div class="card-icon" aria-hidden="true">W</div>
               <h3>Work</h3>
               <p>
@@ -90,6 +91,107 @@
                 <p>Bring a notebook for the spring cocktail rundown before family meal.</p>
               </article>
             </div>
+          </section>
+        </section>
+
+        <section class="app-section" id="work-section" data-section="work">
+          <div class="section-heading work-heading">
+            <button class="back-button" id="back-home-button" type="button">
+              Back to Home
+            </button>
+            <p class="section-label">Work</p>
+            <h2>Manage your shift before service starts.</h2>
+          </div>
+
+          <section class="today-panel" aria-label="Upcoming shift details">
+            <div class="panel-heading">
+              <p class="section-label">Upcoming shift</p>
+              <h3>Today, 4:30 PM - 11:00 PM</h3>
+            </div>
+
+            <div class="today-grid work-grid">
+              <article class="detail-card">
+                <p class="detail-label">Role</p>
+                <h4>Server</h4>
+              </article>
+
+              <article class="detail-card">
+                <p class="detail-label">Station</p>
+                <h4>Patio / Section B</h4>
+              </article>
+            </div>
+          </section>
+
+          <section class="stack-list work-tools" aria-label="Shift tools">
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Shift tools</p>
+                <h3>Quick actions</h3>
+                <p>Handle coverage requests and crew communication before lineup.</p>
+              </div>
+
+              <div class="tool-button-group">
+                <button class="action-button work-action-button" type="button" data-status-message="Shift marked for release.">
+                  Release Shift
+                </button>
+                <button class="action-button work-action-button" type="button" data-status-message="Swap request posted.">
+                  Request Swap
+                </button>
+                <button class="action-button work-action-button" type="button" data-status-message="Team message started.">
+                  Message Team
+                </button>
+              </div>
+
+              <p class="status-text" id="work-status" aria-live="polite">
+                Choose an action for this shift.
+              </p>
+            </article>
+          </section>
+
+          <section class="work-detail-grid" aria-label="Shift notes and tip tracker">
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Shift notes</p>
+                <h3>Pre-service notes</h3>
+                <p>Keep a quick reminder for yourself before the floor gets busy.</p>
+              </div>
+
+              <!-- A basic note field keeps the prototype easy to test. -->
+              <label class="sr-only" for="shift-note">Shift note</label>
+              <textarea
+                class="note-input"
+                id="shift-note"
+                placeholder="Add a note before service..."
+              ></textarea>
+              <button class="action-button" id="save-note-button" type="button">
+                Save Note
+              </button>
+              <p class="status-text" id="note-status" aria-live="polite"></p>
+            </article>
+
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Tip tracker</p>
+                <h3>Tonight&apos;s tips</h3>
+                <p>Add quick cash or card totals and keep a simple running number.</p>
+              </div>
+
+              <label class="sr-only" for="tip-amount">Tip amount</label>
+              <input
+                class="tip-input"
+                id="tip-amount"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Enter tip amount"
+              />
+              <button class="action-button" id="add-tip-button" type="button">
+                Add Tip
+              </button>
+              <p class="tip-total">
+                Running total: <span id="tip-total-value">$0.00</span>
+              </p>
+            </article>
           </section>
         </section>
 
