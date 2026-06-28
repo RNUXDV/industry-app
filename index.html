@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Industry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <p class="eyebrow">Mobile-first crew network</p>
+        <h1>Industry</h1>
+        <p class="tagline">The network behind the service.</p>
+        <p class="intro">
+          A simple home base for restaurant workers to track shifts, find new
+          opportunities, and stay connected with their crew.
+        </p>
+      </header>
+
+      <main>
+        <section class="card-list" aria-label="Main sections">
+          <!-- Each card represents a main path a coworker can test quickly. -->
+          <article class="feature-card active" data-card="work">
+            <div class="card-icon" aria-hidden="true">W</div>
+            <h2>Work</h2>
+            <p>
+              Check today&apos;s shift details, team notes, and what needs to get
+              done before service starts.
+            </p>
+          </article>
+
+          <article class="feature-card" data-card="jobs">
+            <div class="card-icon" aria-hidden="true">J</div>
+            <h2>Jobs</h2>
+            <p>
+              Explore nearby openings built for service workers who want extra
+              hours or a better fit.
+            </p>
+          </article>
+
+          <article class="feature-card" data-card="connect">
+            <div class="card-icon" aria-hidden="true">C</div>
+            <h2>Connect</h2>
+            <p>
+              Keep in touch with trusted coworkers, swap referrals, and share
+              updates across your network.
+            </p>
+          </article>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Bottom navigation">
+        <!-- Buttons make it easy to add interactions later. -->
+        <button class="nav-item active" type="button" data-target="work">
+          Home
+        </button>
+        <button class="nav-item" type="button" data-target="jobs">Jobs</button>
+        <button class="nav-item" type="button" data-target="connect">
+          Network
+        </button>
+      </nav>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
