@@ -110,6 +110,12 @@ h1 {
   gap: 12px;
 }
 
+.home-action-row {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+
 .section-label {
   margin: 0 0 8px;
   font-size: 0.78rem;
@@ -366,6 +372,10 @@ h1 {
   margin-top: 16px;
 }
 
+.testing-list {
+  margin-top: 16px;
+}
+
 .network-card {
   grid-template-rows: 1fr auto;
 }
@@ -487,6 +497,25 @@ h1 {
   width: 100%;
 }
 
+.testing-task-card.is-complete {
+  border-color: rgba(45, 106, 99, 0.28);
+  background: rgba(238, 248, 245, 0.95);
+}
+
+.testing-task-card.is-complete .stack-kicker {
+  color: var(--highlight);
+}
+
+.mark-task-button.is-complete {
+  background: var(--highlight);
+}
+
+.testing-answer-button.active {
+  border-color: rgba(45, 106, 99, 0.3);
+  background: linear-gradient(135deg, var(--highlight), #1f5b55);
+  color: white;
+}
+
 .job-card.is-hidden {
   display: none;
 }
@@ -582,6 +611,11 @@ h1 {
     align-items: center;
   }
 
+  .home-action-row {
+    width: auto;
+    grid-template-columns: repeat(2, auto);
+  }
+
   .card-list {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -617,6 +651,10 @@ h1 {
   }
 
   .network-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .testing-list {
     grid-template-columns: repeat(2, 1fr);
   }
 

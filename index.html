@@ -31,9 +31,14 @@
             <p class="section-label">Home</p>
             <div class="home-heading-row">
               <h2 id="home-welcome-message">Welcome back, Maya</h2>
-              <button class="back-button setup-button" id="open-profile-button" type="button">
-                Set up profile
-              </button>
+              <div class="home-action-row">
+                <button class="back-button setup-button" id="open-profile-button" type="button">
+                  Set up profile
+                </button>
+                <button class="back-button setup-button" id="open-testing-button" type="button">
+                  Test this prototype
+                </button>
+              </div>
             </div>
             <p id="home-welcome-note">
               Your shift week is lining up. Check today&apos;s priorities, browse
@@ -677,6 +682,176 @@
             </div>
 
             <p class="status-text" id="feedback-status" aria-live="polite"></p>
+          </section>
+        </section>
+
+        <section class="app-section" id="testing-section" data-section="testing">
+          <div class="section-heading work-heading">
+            <button class="back-button" id="back-home-from-testing" type="button">
+              Back to Home
+            </button>
+            <p class="section-label">Testing</p>
+            <h2>Test Industry</h2>
+            <p>Help shape a better tool for service workers.</p>
+          </div>
+
+          <section class="today-panel" aria-label="Testing intro">
+            <div class="panel-heading">
+              <p class="section-label">Try this flow</p>
+              <h3>Try the tasks below, then leave quick feedback.</h3>
+              <p>
+                This is an early prototype, not a finished app.
+              </p>
+            </div>
+          </section>
+
+          <section class="stack-list testing-list" aria-label="Testing tasks">
+            <article class="stack-card testing-task-card" data-task-id="profile">
+              <div class="stack-copy">
+                <p class="stack-kicker">Task 1</p>
+                <h3>Set up your profile</h3>
+                <p>Add a name, role, neighborhood, and goal in the setup section.</p>
+              </div>
+              <div class="job-action-row">
+                <button class="action-button start-task-button" type="button" data-target-section="profile">
+                  Start task
+                </button>
+                <button class="action-button mark-task-button" type="button">
+                  Mark complete
+                </button>
+              </div>
+            </article>
+
+            <article class="stack-card testing-task-card" data-task-id="shift">
+              <div class="stack-copy">
+                <p class="stack-kicker">Task 2</p>
+                <h3>Check your upcoming shift</h3>
+                <p>Open the Work view and review the shift details before service.</p>
+              </div>
+              <div class="job-action-row">
+                <button class="action-button start-task-button" type="button" data-target-section="work">
+                  Start task
+                </button>
+                <button class="action-button mark-task-button" type="button">
+                  Mark complete
+                </button>
+              </div>
+            </article>
+
+            <article class="stack-card testing-task-card" data-task-id="job-save">
+              <div class="stack-copy">
+                <p class="stack-kicker">Task 3</p>
+                <h3>Save a job you might want</h3>
+                <p>Open Jobs and save one role that feels like a possible fit.</p>
+              </div>
+              <div class="job-action-row">
+                <button class="action-button start-task-button" type="button" data-target-section="jobs">
+                  Start task
+                </button>
+                <button class="action-button mark-task-button" type="button">
+                  Mark complete
+                </button>
+              </div>
+            </article>
+
+            <article class="stack-card testing-task-card" data-task-id="checkin">
+              <div class="stack-copy">
+                <p class="stack-kicker">Task 4</p>
+                <h3>Open the Network check-in</h3>
+                <p>Go to Network and open the crew check-in mood panel.</p>
+              </div>
+              <div class="job-action-row">
+                <button
+                  class="action-button start-task-button"
+                  type="button"
+                  data-target-section="network"
+                  data-network-panel="checkin"
+                >
+                  Start task
+                </button>
+                <button class="action-button mark-task-button" type="button">
+                  Mark complete
+                </button>
+              </div>
+            </article>
+
+            <article class="stack-card testing-task-card" data-task-id="swaps">
+              <div class="stack-copy">
+                <p class="stack-kicker">Task 5</p>
+                <h3>Try the shift swap board</h3>
+                <p>Open Network and view the shift swap list from trusted coworkers.</p>
+              </div>
+              <div class="job-action-row">
+                <button
+                  class="action-button start-task-button"
+                  type="button"
+                  data-target-section="network"
+                  data-network-panel="swaps"
+                >
+                  Start task
+                </button>
+                <button class="action-button mark-task-button" type="button">
+                  Mark complete
+                </button>
+              </div>
+            </article>
+          </section>
+
+          <section class="today-panel" aria-label="Quick testing feedback">
+            <div class="panel-heading">
+              <p class="section-label">Quick feedback</p>
+              <h3>Would Industry help your work life?</h3>
+            </div>
+
+            <div class="mood-row" role="group" aria-label="Testing feedback answer">
+              <button class="filter-button testing-answer-button" type="button" data-answer="Yes">
+                Yes
+              </button>
+              <button class="filter-button testing-answer-button" type="button" data-answer="Maybe">
+                Maybe
+              </button>
+              <button class="filter-button testing-answer-button" type="button" data-answer="Not yet">
+                Not yet
+              </button>
+            </div>
+
+            <label class="sr-only" for="testing-note">Testing note</label>
+            <textarea
+              class="note-input"
+              id="testing-note"
+              placeholder="What would make this more useful?"
+            ></textarea>
+            <button class="action-button" id="save-testing-feedback-button" type="button">
+              Save Feedback
+            </button>
+            <p class="status-text" id="testing-feedback-status" aria-live="polite"></p>
+          </section>
+
+          <section
+            class="today-panel hidden-panel"
+            id="testing-summary-panel"
+            aria-label="Saved testing summary"
+          >
+            <div class="panel-heading">
+              <p class="section-label">Saved feedback</p>
+              <h3>Testing summary</h3>
+            </div>
+
+            <div class="today-grid work-grid">
+              <article class="detail-card">
+                <p class="detail-label">Answer</p>
+                <h4 id="testing-answer-summary">Maybe</h4>
+              </article>
+
+              <article class="detail-card">
+                <p class="detail-label">Note</p>
+                <h4 id="testing-note-summary">No note yet.</h4>
+              </article>
+            </div>
+
+            <button class="action-button" id="clear-testing-data-button" type="button">
+              Clear testing data
+            </button>
           </section>
         </section>
       </main>

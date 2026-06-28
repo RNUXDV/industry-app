@@ -4,9 +4,11 @@ const saveButtons = document.querySelectorAll(".save-button");
 const workCard = document.querySelector(".work-card");
 const jobsCard = document.querySelector(".jobs-card");
 const openProfileButton = document.querySelector("#open-profile-button");
+const openTestingButton = document.querySelector("#open-testing-button");
 const backHomeButton = document.querySelector("#back-home-button");
 const backHomeFromJobsButton = document.querySelector("#back-home-from-jobs");
 const backHomeFromProfileButton = document.querySelector("#back-home-from-profile");
+const backHomeFromTestingButton = document.querySelector("#back-home-from-testing");
 const workStatus = document.querySelector("#work-status");
 const workActionButtons = document.querySelectorAll(".work-action-button");
 const saveNoteButton = document.querySelector("#save-note-button");
@@ -37,8 +39,20 @@ const profileNeighborhoodSummary = document.querySelector("#profile-neighborhood
 const profileGoalSummary = document.querySelector("#profile-goal-summary");
 const feedbackButtons = document.querySelectorAll(".feedback-button");
 const feedbackStatus = document.querySelector("#feedback-status");
+const startTaskButtons = document.querySelectorAll(".start-task-button");
+const markTaskButtons = document.querySelectorAll(".mark-task-button");
+const testingAnswerButtons = document.querySelectorAll(".testing-answer-button");
+const testingNote = document.querySelector("#testing-note");
+const saveTestingFeedbackButton = document.querySelector("#save-testing-feedback-button");
+const testingFeedbackStatus = document.querySelector("#testing-feedback-status");
+const testingSummaryPanel = document.querySelector("#testing-summary-panel");
+const testingAnswerSummary = document.querySelector("#testing-answer-summary");
+const testingNoteSummary = document.querySelector("#testing-note-summary");
+const clearTestingDataButton = document.querySelector("#clear-testing-data-button");
 let tipTotal = 0;
 const profileStorageKey = "industry-profile";
+const testingTasksStorageKey = "industry-testing-tasks";
+const testingFeedbackStorageKey = "industry-testing-feedback";
 
 // Show one section at a time and keep the matching nav button highlighted.
 function setActiveSection(sectionName) {
@@ -71,6 +85,10 @@ function openJobsSection() {
 
 function openProfileSection() {
   setActiveSection("profile");
+}
+
+function openTestingSection() {
+  setActiveSection("testing");
 }
 
 if (workCard) {
@@ -111,8 +129,18 @@ if (openProfileButton) {
   openProfileButton.addEventListener("click", openProfileSection);
 }
 
+if (openTestingButton) {
+  openTestingButton.addEventListener("click", openTestingSection);
+}
+
 if (backHomeFromProfileButton) {
   backHomeFromProfileButton.addEventListener("click", () => {
+    setActiveSection("home");
+  });
+}
+
+if (backHomeFromTestingButton) {
+  backHomeFromTestingButton.addEventListener("click", () => {
     setActiveSection("home");
   });
 }
@@ -161,15 +189,7 @@ filterButtons.forEach((button) => {
 // Show one network detail panel at a time.
 networkButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const panelName = button.dataset.panel;
-
-    networkPanels.forEach((panel) => {
-      const isActive = panel.dataset.panelContent === panelName;
-      panel.classList.toggle("active", isActive);
-    });
-
-    const buttonLabel = button.textContent.trim();
-    networkStatus.textContent = `${buttonLabel} opened.`;
+    openNetworkPanel(button.dataset.panel, button.textContent.trim());
   });
 });
 
@@ -278,6 +298,126 @@ feedbackButtons.forEach((button) => {
   });
 });
 
+function openNetworkPanel(panelName, label) {
+  networkPanels.forEach((panel) => {
+    const isActive = panel.dataset.panelContent === panelName;
+    panel.classList.toggle("active", isActive);
+  });
+
+  if (label) {
+    networkStatus.textContent = `${label} opened.`;
+  }
+}
+
+function setTaskCompleteState(taskCard, isComplete) {
+  taskCard.classList.toggle("is-complete", isComplete);
+
+  const markButton = taskCard.querySelector(".mark-task-button");
+  markButton.classList.toggle("is-complete", isComplete);
+  markButton.textContent = isComplete ? "Completed" : "Mark complete";
+}
+
+function readCompletedTasks() {
+  const savedTasks = localStorage.getItem(testingTasksStorageKey);
+
+  if (!savedTasks) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(savedTasks);
+  } catch (error) {
+    localStorage.removeItem(testingTasksStorageKey);
+    return {};
+  }
+}
+
+function saveCompletedTasks(tasks) {
+  localStorage.setItem(testingTasksStorageKey, JSON.stringify(tasks));
+}
+
+startTaskButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const sectionName = button.dataset.targetSection;
+    const panelName = button.dataset.networkPanel;
+
+    setActiveSection(sectionName);
+
+    if (sectionName === "network" && panelName) {
+      openNetworkPanel(panelName, "Testing task");
+    }
+  });
+});
+
+markTaskButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const taskCard = button.closest(".testing-task-card");
+    const taskId = taskCard.dataset.taskId;
+    const completedTasks = readCompletedTasks();
+    const nextState = !completedTasks[taskId];
+
+    completedTasks[taskId] = nextState;
+    saveCompletedTasks(completedTasks);
+    setTaskCompleteState(taskCard, nextState);
+  });
+});
+
+function updateTestingSummary(feedbackData) {
+  const hasFeedback = feedbackData.answer || feedbackData.note;
+  testingSummaryPanel.classList.toggle("visible", Boolean(hasFeedback));
+
+  if (hasFeedback) {
+    testingAnswerSummary.textContent = feedbackData.answer || "No answer yet";
+    testingNoteSummary.textContent = feedbackData.note || "No note yet.";
+  }
+}
+
+let selectedTestingAnswer = "";
+
+testingAnswerButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedTestingAnswer = button.dataset.answer;
+
+    testingAnswerButtons.forEach((answerButton) => {
+      const isActive = answerButton === button;
+      answerButton.classList.toggle("active", isActive);
+    });
+  });
+});
+
+if (saveTestingFeedbackButton) {
+  saveTestingFeedbackButton.addEventListener("click", () => {
+    const feedbackData = {
+      answer: selectedTestingAnswer,
+      note: testingNote.value.trim(),
+    };
+
+    localStorage.setItem(testingFeedbackStorageKey, JSON.stringify(feedbackData));
+    updateTestingSummary(feedbackData);
+    testingFeedbackStatus.textContent = "Feedback saved for this prototype.";
+  });
+}
+
+if (clearTestingDataButton) {
+  clearTestingDataButton.addEventListener("click", () => {
+    localStorage.removeItem(testingTasksStorageKey);
+    localStorage.removeItem(testingFeedbackStorageKey);
+
+    document.querySelectorAll(".testing-task-card").forEach((taskCard) => {
+      setTaskCompleteState(taskCard, false);
+    });
+
+    testingAnswerButtons.forEach((button) => {
+      button.classList.remove("active");
+    });
+
+    selectedTestingAnswer = "";
+    testingNote.value = "";
+    testingFeedbackStatus.textContent = "";
+    updateTestingSummary({ answer: "", note: "" });
+  });
+}
+
 // When the page loads, read any saved profile back out of localStorage.
 // If nothing has been saved yet, we just keep the default sample home view.
 const savedProfile = localStorage.getItem(profileStorageKey);
@@ -289,5 +429,30 @@ if (savedProfile) {
     updateHomeProfileView(profileData);
   } catch (error) {
     localStorage.removeItem(profileStorageKey);
+  }
+}
+
+const completedTasks = readCompletedTasks();
+
+document.querySelectorAll(".testing-task-card").forEach((taskCard) => {
+  const taskId = taskCard.dataset.taskId;
+  setTaskCompleteState(taskCard, Boolean(completedTasks[taskId]));
+});
+
+const savedTestingFeedback = localStorage.getItem(testingFeedbackStorageKey);
+
+if (savedTestingFeedback) {
+  try {
+    const feedbackData = JSON.parse(savedTestingFeedback);
+    selectedTestingAnswer = feedbackData.answer || "";
+    testingNote.value = feedbackData.note || "";
+    updateTestingSummary(feedbackData);
+
+    testingAnswerButtons.forEach((button) => {
+      const isActive = button.dataset.answer === selectedTestingAnswer;
+      button.classList.toggle("active", isActive);
+    });
+  } catch (error) {
+    localStorage.removeItem(testingFeedbackStorageKey);
   }
 }
