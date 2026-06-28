@@ -48,6 +48,9 @@ const testingFeedbackStatus = document.querySelector("#testing-feedback-status")
 const testingSummaryPanel = document.querySelector("#testing-summary-panel");
 const testingAnswerSummary = document.querySelector("#testing-answer-summary");
 const testingNoteSummary = document.querySelector("#testing-note-summary");
+const copySummaryPreview = document.querySelector("#copy-summary-preview");
+const copyFeedbackSummaryButton = document.querySelector("#copy-feedback-summary-button");
+const copyFeedbackStatus = document.querySelector("#copy-feedback-status");
 const clearTestingDataButton = document.querySelector("#clear-testing-data-button");
 let tipTotal = 0;
 const profileStorageKey = "industry-profile";
@@ -288,6 +291,7 @@ if (saveProfileButton) {
     localStorage.setItem(profileStorageKey, JSON.stringify(profileData));
 
     updateHomeProfileView(profileData);
+    updateFeedbackSummaryPreview();
     profileStatus.textContent = "Profile saved for this prototype.";
   });
 }
@@ -336,6 +340,56 @@ function saveCompletedTasks(tasks) {
   localStorage.setItem(testingTasksStorageKey, JSON.stringify(tasks));
 }
 
+function getCompletedTaskTitles() {
+  const completedTasks = readCompletedTasks();
+
+  return Array.from(document.querySelectorAll(".testing-task-card"))
+    .filter((taskCard) => completedTasks[taskCard.dataset.taskId])
+    .map((taskCard) => taskCard.querySelector("h3").textContent);
+}
+
+function buildFeedbackSummary() {
+  const savedProfile = localStorage.getItem(profileStorageKey);
+  const savedTestingFeedback = localStorage.getItem(testingFeedbackStorageKey);
+  let profileData = {};
+  let feedbackData = {};
+
+  if (savedProfile) {
+    try {
+      profileData = JSON.parse(savedProfile);
+    } catch (error) {
+      profileData = {};
+    }
+  }
+
+  if (savedTestingFeedback) {
+    try {
+      feedbackData = JSON.parse(savedTestingFeedback);
+    } catch (error) {
+      feedbackData = {};
+    }
+  }
+
+  const completedTaskTitles = getCompletedTaskTitles();
+
+  return [
+    "Industry Feedback Summary",
+    `Nickname: ${profileData.name || "Not provided"}`,
+    `Role: ${profileData.role || "Not provided"}`,
+    `Neighborhood: ${profileData.neighborhood || "Not provided"}`,
+    `Main goal: ${profileData.goal || "Not provided"}`,
+    `Completed testing tasks: ${
+      completedTaskTitles.length > 0 ? completedTaskTitles.join(", ") : "None yet"
+    }`,
+    `Feedback answer: ${feedbackData.answer || "Not provided"}`,
+    `Feedback note: ${feedbackData.note || "No note yet."}`,
+  ].join("\n");
+}
+
+function updateFeedbackSummaryPreview() {
+  copySummaryPreview.textContent = buildFeedbackSummary();
+}
+
 startTaskButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const sectionName = button.dataset.targetSection;
@@ -359,6 +413,7 @@ markTaskButtons.forEach((button) => {
     completedTasks[taskId] = nextState;
     saveCompletedTasks(completedTasks);
     setTaskCompleteState(taskCard, nextState);
+    updateFeedbackSummaryPreview();
   });
 });
 
@@ -369,6 +424,7 @@ function updateTestingSummary(feedbackData) {
   if (hasFeedback) {
     testingAnswerSummary.textContent = feedbackData.answer || "No answer yet";
     testingNoteSummary.textContent = feedbackData.note || "No note yet.";
+    updateFeedbackSummaryPreview();
   }
 }
 
@@ -398,6 +454,20 @@ if (saveTestingFeedbackButton) {
   });
 }
 
+if (copyFeedbackSummaryButton) {
+  copyFeedbackSummaryButton.addEventListener("click", async () => {
+    const summaryText = buildFeedbackSummary();
+    updateFeedbackSummaryPreview();
+
+    try {
+      await navigator.clipboard.writeText(summaryText);
+      copyFeedbackStatus.textContent = "Feedback summary copied. Send it to Robert.";
+    } catch (error) {
+      copyFeedbackStatus.textContent = "Copy failed. Select the summary text and copy it manually.";
+    }
+  });
+}
+
 if (clearTestingDataButton) {
   clearTestingDataButton.addEventListener("click", () => {
     localStorage.removeItem(testingTasksStorageKey);
@@ -414,6 +484,8 @@ if (clearTestingDataButton) {
     selectedTestingAnswer = "";
     testingNote.value = "";
     testingFeedbackStatus.textContent = "";
+    copyFeedbackStatus.textContent = "";
+    copySummaryPreview.textContent = "Feedback summary preview will appear here.";
     updateTestingSummary({ answer: "", note: "" });
   });
 }
@@ -438,6 +510,8 @@ document.querySelectorAll(".testing-task-card").forEach((taskCard) => {
   const taskId = taskCard.dataset.taskId;
   setTaskCompleteState(taskCard, Boolean(completedTasks[taskId]));
 });
+
+updateFeedbackSummaryPreview();
 
 const savedTestingFeedback = localStorage.getItem(testingFeedbackStorageKey);
 

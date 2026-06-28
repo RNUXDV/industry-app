@@ -516,6 +516,16 @@ h1 {
   color: white;
 }
 
+.summary-preview-box {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 252, 247, 0.95);
+  color: var(--muted);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
 .job-card.is-hidden {
   display: none;
 }
