@@ -60,8 +60,8 @@ const profileStorageKey = "industry-profile";
 const testingTasksStorageKey = "industry-testing-tasks";
 const testingFeedbackStorageKey = "industry-testing-feedback";
 const themeStorageKey = "industry-theme";
-// Replace this with the real Google Form link when research handoff is ready.
-const feedbackFormUrl = "https://forms.gle/REPLACE_WITH_REAL_FORM_LINK";
+const feedbackFormUrl =
+  "https://docs.google.com/forms/d/e/1FAIpQLScLUIuiBZ_a771qFUt_wRreHaN9pugo0OcDQ1zHVO3Y4q4wwQ/viewform?usp=publish-editor";
 
 // Show one section at a time and keep the matching nav button highlighted.
 function setActiveSection(sectionName) {
@@ -517,8 +517,7 @@ if (themeToggleButton) {
 }
 
 if (openFeedbackFormButton) {
-  // This is where the placeholder research link is attached for group chat testing.
-  // Later, replace `feedbackFormUrl` above with the real Google Form URL.
+  // This attaches the live research form link used for group chat testing.
   openFeedbackFormButton.href = feedbackFormUrl;
 }
 
