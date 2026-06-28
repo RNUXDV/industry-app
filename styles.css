@@ -341,6 +341,45 @@ h1 {
   margin-top: 16px;
 }
 
+.network-list,
+.network-detail-panel {
+  margin-top: 16px;
+}
+
+.network-card {
+  grid-template-rows: 1fr auto;
+}
+
+.network-pulse-grid {
+  grid-template-columns: 1fr;
+}
+
+.network-panel {
+  display: none;
+}
+
+.network-panel.active {
+  display: block;
+}
+
+.network-item-list,
+.network-contact-list {
+  display: grid;
+  gap: 12px;
+}
+
+.mood-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mood-button.active {
+  border-color: rgba(45, 106, 99, 0.3);
+  background: linear-gradient(135deg, var(--highlight), #1f5b55);
+  color: white;
+}
+
 .filter-row {
   display: flex;
   flex-wrap: wrap;
@@ -526,6 +565,18 @@ h1 {
   }
 
   .jobs-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .network-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .network-pulse-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .network-contact-list {
     grid-template-columns: repeat(2, 1fr);
   }
 }

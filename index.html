@@ -347,46 +347,208 @@
         <section class="app-section" id="network-section" data-section="network">
           <div class="section-heading">
             <p class="section-label">Network</p>
-            <h2>Community support</h2>
+            <h2>Stay connected with the people who understand the shift.</h2>
             <p>
-              Small tools for staying connected to coworkers, trade help, and
-              keep the week manageable.
+              A quieter community layer for trusted coworkers, local industry
+              support, and after-shift connection without the noise of a feed.
             </p>
           </div>
 
-          <section class="stack-list" aria-label="Community tools">
-            <article class="stack-card">
+          <section class="today-panel" aria-label="Tonight's pulse">
+            <div class="panel-heading">
+              <p class="section-label">Tonight&apos;s pulse</p>
+              <h3>Service community snapshot</h3>
+            </div>
+
+            <div class="today-grid network-pulse-grid">
+              <article class="detail-card">
+                <p class="detail-label">Check-ins</p>
+                <h4>3 coworkers checked in</h4>
+              </article>
+
+              <article class="detail-card">
+                <p class="detail-label">Shift swaps</p>
+                <h4>2 open shift swaps</h4>
+              </article>
+
+              <article class="detail-card">
+                <p class="detail-label">Meetups</p>
+                <h4>1 meetup nearby</h4>
+                <p>Mood: steady</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="stack-list network-list" aria-label="Community tools">
+            <article class="stack-card network-card">
               <div class="stack-copy">
                 <p class="stack-kicker">Crew board</p>
                 <h3>Shift swap board</h3>
-                <p>See who needs coverage this weekend and offer a pickup shift.</p>
+                <p>Post or pick up available shifts from trusted coworkers.</p>
               </div>
-              <button class="action-button community-button" type="button">
+
+              <button
+                class="action-button network-button"
+                type="button"
+                data-panel="swaps"
+              >
                 View swaps
               </button>
             </article>
 
-            <article class="stack-card">
+            <article class="stack-card network-card">
               <div class="stack-copy">
                 <p class="stack-kicker">Check-in</p>
-                <h3>Mental health check-in</h3>
-                <p>Take a quiet pulse check and find local support resources.</p>
+                <h3>Crew check-in</h3>
+                <p>A quick mental health pulse before or after service.</p>
               </div>
-              <button class="action-button community-button" type="button">
+
+              <button
+                class="action-button network-button"
+                type="button"
+                data-panel="checkin"
+              >
                 Check in
               </button>
             </article>
 
-            <article class="stack-card">
+            <article class="stack-card network-card">
               <div class="stack-copy">
                 <p class="stack-kicker">Community</p>
-                <h3>Industry meetup</h3>
-                <p>Find the next low-key meetup for servers, bartenders, and cooks.</p>
+                <h3>Industry meetups</h3>
+                <p>Find low-pressure hangs, pop-ups, and after-shift gatherings.</p>
               </div>
-              <button class="action-button community-button" type="button">
-                RSVP
+
+              <button
+                class="action-button network-button"
+                type="button"
+                data-panel="meetups"
+              >
+                See meetups
               </button>
             </article>
+
+            <article class="stack-card network-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Trusted circle</p>
+                <h3>Trusted circle</h3>
+                <p>Keep close contacts, references, and work friends in one place.</p>
+              </div>
+
+              <button
+                class="action-button network-button"
+                type="button"
+                data-panel="circle"
+              >
+                Open circle
+              </button>
+            </article>
+          </section>
+
+          <section class="today-panel network-detail-panel" aria-label="Network details">
+            <p class="status-text" id="network-status" aria-live="polite">
+              Open a network tool to see more.
+            </p>
+
+            <div class="network-panel active" id="network-panel-swaps" data-panel-content="swaps">
+              <div class="panel-heading">
+                <p class="section-label">Shift swaps</p>
+                <h3>Open swap posts</h3>
+              </div>
+
+              <div class="network-item-list">
+                <article class="detail-card">
+                  <p class="detail-label">Tonight</p>
+                  <h4>Leah needs dinner coverage at Gado Gado</h4>
+                  <p>5:00 PM to close, server shift, inner SE.</p>
+                </article>
+                <article class="detail-card">
+                  <p class="detail-label">Tomorrow</p>
+                  <h4>Marco can pick up a brunch host shift</h4>
+                  <p>Available until 2:00 PM, east side only.</p>
+                </article>
+                <article class="detail-card">
+                  <p class="detail-label">Weekend</p>
+                  <h4>Tori posted a Sunday barback swap</h4>
+                  <p>Hotel lounge, 6:00 PM to midnight.</p>
+                </article>
+              </div>
+            </div>
+
+            <div class="network-panel" id="network-panel-checkin" data-panel-content="checkin">
+              <div class="panel-heading">
+                <p class="section-label">Crew check-in</p>
+                <h3>How does the shift feel?</h3>
+              </div>
+
+              <div class="mood-row" role="group" aria-label="Mood check-in">
+                <button class="filter-button mood-button" type="button">Good</button>
+                <button class="filter-button mood-button" type="button">Tired</button>
+                <button class="filter-button mood-button" type="button">Overwhelmed</button>
+              </div>
+
+              <p class="status-text" id="checkin-status" aria-live="polite"></p>
+            </div>
+
+            <div class="network-panel" id="network-panel-meetups" data-panel-content="meetups">
+              <div class="panel-heading">
+                <p class="section-label">Meetups</p>
+                <h3>Nearby Portland gatherings</h3>
+              </div>
+
+              <div class="network-item-list">
+                <article class="detail-card">
+                  <p class="detail-label">Monday</p>
+                  <h4>Late staff meal hang at Psychic Bar</h4>
+                  <p>Small group after 9:30 PM, open to FOH and BOH.</p>
+                </article>
+                <article class="detail-card">
+                  <p class="detail-label">Wednesday</p>
+                  <h4>Pop-up tasting chat in Central Eastside</h4>
+                  <p>Casual tasting and job talk with local servers and bartenders.</p>
+                </article>
+                <article class="detail-card">
+                  <p class="detail-label">Friday</p>
+                  <h4>After-shift coffee meetup on Burnside</h4>
+                  <p>Low-key reset for workers coming off brunch and dinner.</p>
+                </article>
+              </div>
+            </div>
+
+            <div class="network-panel" id="network-panel-circle" data-panel-content="circle">
+              <div class="panel-heading">
+                <p class="section-label">Trusted circle</p>
+                <h3>Close contacts</h3>
+              </div>
+
+              <div class="network-contact-list">
+                <article class="detail-card">
+                  <p class="detail-label">Reference</p>
+                  <h4>Jess</h4>
+                  <p>Former floor lead, Ava Gene&apos;s</p>
+                </article>
+                <article class="detail-card">
+                  <p class="detail-label">Coworker</p>
+                  <h4>Andre</h4>
+                  <p>Reliable swap partner, Kann</p>
+                </article>
+                <article class="detail-card">
+                  <p class="detail-label">Friend</p>
+                  <h4>Monica</h4>
+                  <p>Brunch server, Screen Door</p>
+                </article>
+                <article class="detail-card">
+                  <p class="detail-label">Reference</p>
+                  <h4>Cal</h4>
+                  <p>Bar manager, Hey Love</p>
+                </article>
+                <article class="detail-card">
+                  <p class="detail-label">Support</p>
+                  <h4>Nia</h4>
+                  <p>Neighbor and post-shift check-in friend</p>
+                </article>
+              </div>
+            </div>
           </section>
         </section>
       </main>

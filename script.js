@@ -1,7 +1,6 @@
 const navButtons = document.querySelectorAll(".nav-item");
 const appSections = document.querySelectorAll(".app-section");
 const saveButtons = document.querySelectorAll(".save-button");
-const communityButtons = document.querySelectorAll(".community-button");
 const workCard = document.querySelector(".work-card");
 const jobsCard = document.querySelector(".jobs-card");
 const backHomeButton = document.querySelector("#back-home-button");
@@ -14,10 +13,15 @@ const noteStatus = document.querySelector("#note-status");
 const tipInput = document.querySelector("#tip-amount");
 const addTipButton = document.querySelector("#add-tip-button");
 const tipTotalValue = document.querySelector("#tip-total-value");
-const filterButtons = document.querySelectorAll(".filter-button");
+const filterButtons = document.querySelectorAll(".jobs-toolbar .filter-button");
 const jobCards = document.querySelectorAll(".job-card");
 const jobsStatus = document.querySelector("#jobs-status");
 const interestButtons = document.querySelectorAll(".interest-button");
+const networkButtons = document.querySelectorAll(".network-button");
+const networkPanels = document.querySelectorAll(".network-panel");
+const networkStatus = document.querySelector("#network-status");
+const moodButtons = document.querySelectorAll(".mood-button");
+const checkinStatus = document.querySelector("#checkin-status");
 let tipTotal = 0;
 
 // Show one section at a time and keep the matching nav button highlighted.
@@ -100,21 +104,6 @@ saveButtons.forEach((button) => {
   });
 });
 
-// Give community actions a quick confirmation without leaving the page.
-communityButtons.forEach((button) => {
-  const defaultLabel = button.textContent;
-
-  button.addEventListener("click", () => {
-    button.classList.add("is-tapped");
-    button.textContent = "Opened";
-
-    window.setTimeout(() => {
-      button.classList.remove("is-tapped");
-      button.textContent = defaultLabel;
-    }, 1200);
-  });
-});
-
 // Filter the jobs board by common service role types.
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -136,6 +125,34 @@ filterButtons.forEach((button) => {
       selectedFilter === "all"
         ? "Showing all Portland jobs."
         : `Showing ${selectedFilter} jobs.`;
+  });
+});
+
+// Show one network detail panel at a time.
+networkButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const panelName = button.dataset.panel;
+
+    networkPanels.forEach((panel) => {
+      const isActive = panel.dataset.panelContent === panelName;
+      panel.classList.toggle("active", isActive);
+    });
+
+    const buttonLabel = button.textContent.trim();
+    networkStatus.textContent = `${buttonLabel} opened.`;
+  });
+});
+
+// Save a simple check-in mood for the prototype.
+moodButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    moodButtons.forEach((moodButton) => {
+      const isActive = moodButton === button;
+      moodButton.classList.toggle("active", isActive);
+    });
+
+    checkinStatus.textContent = "Check-in saved.";
+    networkStatus.textContent = `${button.textContent} check-in saved.`;
   });
 });
 
