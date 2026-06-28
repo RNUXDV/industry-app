@@ -25,44 +25,186 @@
       </header>
 
       <main>
-        <section class="card-list" aria-label="Main sections">
-          <!-- Each card represents a main path a coworker can test quickly. -->
-          <article class="feature-card active" data-card="work">
-            <div class="card-icon" aria-hidden="true">W</div>
-            <h2>Work</h2>
+        <!-- Each app section is toggled by the bottom navigation. -->
+        <section class="app-section active" id="home-section" data-section="home">
+          <div class="section-heading">
+            <p class="section-label">Home</p>
+            <h2>Welcome back, Maya</h2>
             <p>
-              Check today&apos;s shift details, team notes, and what needs to get
-              done before service starts.
+              Your shift week is lining up. Check today&apos;s priorities, browse
+              opportunities, and stay close to your people.
             </p>
-          </article>
+          </div>
 
-          <article class="feature-card" data-card="jobs">
-            <div class="card-icon" aria-hidden="true">J</div>
-            <h2>Jobs</h2>
-            <p>
-              Explore nearby openings built for service workers who want extra
-              hours or a better fit.
-            </p>
-          </article>
+          <section class="card-list" aria-label="Main features">
+            <article class="feature-card">
+              <div class="card-icon" aria-hidden="true">W</div>
+              <h3>Work</h3>
+              <p>
+                Check today&apos;s shift details, team notes, and what needs to get
+                done before service starts.
+              </p>
+            </article>
 
-          <article class="feature-card" data-card="connect">
-            <div class="card-icon" aria-hidden="true">C</div>
-            <h2>Connect</h2>
+            <article class="feature-card">
+              <div class="card-icon" aria-hidden="true">J</div>
+              <h3>Jobs</h3>
+              <p>
+                Explore nearby openings built for service workers who want extra
+                hours or a better fit.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <div class="card-icon" aria-hidden="true">C</div>
+              <h3>Connect</h3>
+              <p>
+                Keep in touch with trusted coworkers, swap referrals, and share
+                updates across your network.
+              </p>
+            </article>
+          </section>
+
+          <section class="today-panel" aria-label="Today in service">
+            <div class="panel-heading">
+              <p class="section-label">Today in service</p>
+              <h3>Service snapshot</h3>
+            </div>
+
+            <div class="today-grid">
+              <article class="detail-card">
+                <p class="detail-label">Upcoming shift</p>
+                <h4>5:00 PM at Cedar House</h4>
+                <p>Pre-shift lineup starts at 4:35 PM. Patio section is yours.</p>
+              </article>
+
+              <article class="detail-card">
+                <p class="detail-label">Tip note</p>
+                <h4>Brunch pool landed strong</h4>
+                <p>Yesterday&apos;s split averaged $148. Keep upsells focused on NA pairings.</p>
+              </article>
+
+              <article class="detail-card">
+                <p class="detail-label">Team reminder</p>
+                <h4>Menu tasting tomorrow</h4>
+                <p>Bring a notebook for the spring cocktail rundown before family meal.</p>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <section class="app-section" id="jobs-section" data-section="jobs">
+          <div class="section-heading">
+            <p class="section-label">Jobs</p>
+            <h2>Portland openings</h2>
             <p>
-              Keep in touch with trusted coworkers, swap referrals, and share
-              updates across your network.
+              Realistic sample roles for restaurant and hospitality workers who
+              want stronger pay, steadier hours, or a new neighborhood.
             </p>
-          </article>
+          </div>
+
+          <section class="stack-list" aria-label="Job listings">
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Restaurant</p>
+                <h3>Marigold Cafe</h3>
+                <p>Lead Server</p>
+                <ul class="meta-list">
+                  <li>$22 to $28/hr with tips</li>
+                  <li>Alberta Arts</li>
+                </ul>
+              </div>
+              <button class="action-button save-button" type="button">
+                Save
+              </button>
+            </article>
+
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Restaurant</p>
+                <h3>Riverstone Grill</h3>
+                <p>Line Cook</p>
+                <ul class="meta-list">
+                  <li>$20 to $24/hr</li>
+                  <li>Sellwood</li>
+                </ul>
+              </div>
+              <button class="action-button save-button" type="button">
+                Save
+              </button>
+            </article>
+
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Hospitality</p>
+                <h3>North Loop Hotel</h3>
+                <p>Barback</p>
+                <ul class="meta-list">
+                  <li>$19 to $23/hr plus event tips</li>
+                  <li>Pearl District</li>
+                </ul>
+              </div>
+              <button class="action-button save-button" type="button">
+                Save
+              </button>
+            </article>
+          </section>
+        </section>
+
+        <section class="app-section" id="network-section" data-section="network">
+          <div class="section-heading">
+            <p class="section-label">Network</p>
+            <h2>Community support</h2>
+            <p>
+              Small tools for staying connected to coworkers, trade help, and
+              keep the week manageable.
+            </p>
+          </div>
+
+          <section class="stack-list" aria-label="Community tools">
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Crew board</p>
+                <h3>Shift swap board</h3>
+                <p>See who needs coverage this weekend and offer a pickup shift.</p>
+              </div>
+              <button class="action-button community-button" type="button">
+                View swaps
+              </button>
+            </article>
+
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Check-in</p>
+                <h3>Mental health check-in</h3>
+                <p>Take a quiet pulse check and find local support resources.</p>
+              </div>
+              <button class="action-button community-button" type="button">
+                Check in
+              </button>
+            </article>
+
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Community</p>
+                <h3>Industry meetup</h3>
+                <p>Find the next low-key meetup for servers, bartenders, and cooks.</p>
+              </div>
+              <button class="action-button community-button" type="button">
+                RSVP
+              </button>
+            </article>
+          </section>
         </section>
       </main>
 
       <nav class="bottom-nav" aria-label="Bottom navigation">
-        <!-- Buttons make it easy to add interactions later. -->
-        <button class="nav-item active" type="button" data-target="work">
+        <!-- Buttons switch app sections in the prototype. -->
+        <button class="nav-item active" type="button" data-target="home">
           Home
         </button>
         <button class="nav-item" type="button" data-target="jobs">Jobs</button>
-        <button class="nav-item" type="button" data-target="connect">
+        <button class="nav-item" type="button" data-target="network">
           Network
         </button>
       </nav>
