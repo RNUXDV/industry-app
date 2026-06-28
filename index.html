@@ -12,10 +12,15 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-theme="dark">
     <div class="app-shell">
       <header class="hero">
-        <p class="eyebrow">Mobile-first crew network</p>
+        <div class="hero-top">
+          <p class="eyebrow">Mobile-first crew network</p>
+          <button class="theme-toggle" id="theme-toggle-button" type="button">
+            Light / Dark: Dark
+          </button>
+        </div>
         <h1>Industry</h1>
         <p class="tagline">The network behind the service.</p>
         <p class="intro">
@@ -129,6 +134,20 @@
                 <p>Bring a notebook for the spring cocktail rundown before family meal.</p>
               </article>
             </div>
+          </section>
+
+          <section class="today-panel" aria-label="Group chat testing note">
+            <div class="panel-heading">
+              <p class="section-label">Testing Industry?</p>
+              <h3>Take your time exploring.</h3>
+              <p>
+                Try Work, Jobs, Network, and Profile before leaving feedback.
+              </p>
+            </div>
+
+            <button class="action-button" id="go-to-testing-tasks-button" type="button">
+              Go to testing tasks
+            </button>
           </section>
         </section>
 
@@ -828,7 +847,7 @@
           </section>
 
           <section
-            class="today-panel hidden-panel"
+            class="today-panel"
             id="testing-summary-panel"
             aria-label="Saved testing summary"
           >
@@ -861,6 +880,27 @@
             <button class="action-button" id="clear-testing-data-button" type="button">
               Clear testing data
             </button>
+          </section>
+
+          <section class="today-panel" aria-label="Research feedback handoff">
+            <div class="panel-heading">
+              <p class="section-label">Ready to share feedback?</p>
+              <h3>Ready to share feedback?</h3>
+              <p>
+                Explore the prototype first. When you&apos;re done, send feedback
+                using the form below or copy your prototype summary.
+              </p>
+            </div>
+
+            <a
+              class="action-button action-link-button"
+              id="open-feedback-form-button"
+              href="#"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open feedback form
+            </a>
           </section>
         </section>
       </main>

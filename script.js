@@ -5,6 +5,7 @@ const workCard = document.querySelector(".work-card");
 const jobsCard = document.querySelector(".jobs-card");
 const openProfileButton = document.querySelector("#open-profile-button");
 const openTestingButton = document.querySelector("#open-testing-button");
+const goToTestingTasksButton = document.querySelector("#go-to-testing-tasks-button");
 const backHomeButton = document.querySelector("#back-home-button");
 const backHomeFromJobsButton = document.querySelector("#back-home-from-jobs");
 const backHomeFromProfileButton = document.querySelector("#back-home-from-profile");
@@ -52,10 +53,15 @@ const copySummaryPreview = document.querySelector("#copy-summary-preview");
 const copyFeedbackSummaryButton = document.querySelector("#copy-feedback-summary-button");
 const copyFeedbackStatus = document.querySelector("#copy-feedback-status");
 const clearTestingDataButton = document.querySelector("#clear-testing-data-button");
+const themeToggleButton = document.querySelector("#theme-toggle-button");
+const openFeedbackFormButton = document.querySelector("#open-feedback-form-button");
 let tipTotal = 0;
 const profileStorageKey = "industry-profile";
 const testingTasksStorageKey = "industry-testing-tasks";
 const testingFeedbackStorageKey = "industry-testing-feedback";
+const themeStorageKey = "industry-theme";
+// Replace this with the real Google Form link when research handoff is ready.
+const feedbackFormUrl = "https://forms.gle/REPLACE_WITH_REAL_FORM_LINK";
 
 // Show one section at a time and keep the matching nav button highlighted.
 function setActiveSection(sectionName) {
@@ -134,6 +140,10 @@ if (openProfileButton) {
 
 if (openTestingButton) {
   openTestingButton.addEventListener("click", openTestingSection);
+}
+
+if (goToTestingTasksButton) {
+  goToTestingTasksButton.addEventListener("click", openTestingSection);
 }
 
 if (backHomeFromProfileButton) {
@@ -383,9 +393,11 @@ function buildFeedbackSummary() {
     }`,
     `Feedback answer: ${feedbackData.answer || "Not provided"}`,
     `Feedback note: ${feedbackData.note || "No note yet."}`,
+    `Theme preference: ${document.body.dataset.theme || "dark"}`,
   ].join("\n");
 }
 
+// Build a readable summary in the UI so testers can review what will be copied.
 function updateFeedbackSummaryPreview() {
   copySummaryPreview.textContent = buildFeedbackSummary();
 }
@@ -418,14 +430,9 @@ markTaskButtons.forEach((button) => {
 });
 
 function updateTestingSummary(feedbackData) {
-  const hasFeedback = feedbackData.answer || feedbackData.note;
-  testingSummaryPanel.classList.toggle("visible", Boolean(hasFeedback));
-
-  if (hasFeedback) {
-    testingAnswerSummary.textContent = feedbackData.answer || "No answer yet";
-    testingNoteSummary.textContent = feedbackData.note || "No note yet.";
-    updateFeedbackSummaryPreview();
-  }
+  testingAnswerSummary.textContent = feedbackData.answer || "No answer yet";
+  testingNoteSummary.textContent = feedbackData.note || "No note yet.";
+  updateFeedbackSummaryPreview();
 }
 
 let selectedTestingAnswer = "";
@@ -456,6 +463,7 @@ if (saveTestingFeedbackButton) {
 
 if (copyFeedbackSummaryButton) {
   copyFeedbackSummaryButton.addEventListener("click", async () => {
+    // This copies the saved research notes into one message for group chat handoff.
     const summaryText = buildFeedbackSummary();
     updateFeedbackSummaryPreview();
 
@@ -485,13 +493,40 @@ if (clearTestingDataButton) {
     testingNote.value = "";
     testingFeedbackStatus.textContent = "";
     copyFeedbackStatus.textContent = "";
-    copySummaryPreview.textContent = "Feedback summary preview will appear here.";
     updateTestingSummary({ answer: "", note: "" });
   });
 }
 
+// Theme switching works by changing a data attribute on the page.
+// CSS reads that value and swaps the shared color variables for light or dark mode.
+function applyTheme(themeName) {
+  document.body.dataset.theme = themeName;
+  themeToggleButton.textContent =
+    themeName === "dark" ? "Light / Dark: Dark" : "Light / Dark: Light";
+  updateFeedbackSummaryPreview();
+}
+
+if (themeToggleButton) {
+  themeToggleButton.addEventListener("click", () => {
+    // Save the chosen theme in localStorage so the same look comes back after refresh.
+    const nextTheme =
+      document.body.dataset.theme === "dark" ? "light" : "dark";
+    localStorage.setItem(themeStorageKey, nextTheme);
+    applyTheme(nextTheme);
+  });
+}
+
+if (openFeedbackFormButton) {
+  // This is where the placeholder research link is attached for group chat testing.
+  // Later, replace `feedbackFormUrl` above with the real Google Form URL.
+  openFeedbackFormButton.href = feedbackFormUrl;
+}
+
 // When the page loads, read any saved profile back out of localStorage.
 // If nothing has been saved yet, we just keep the default sample home view.
+const savedTheme = localStorage.getItem(themeStorageKey) || "dark";
+applyTheme(savedTheme);
+
 const savedProfile = localStorage.getItem(profileStorageKey);
 
 if (savedProfile) {
