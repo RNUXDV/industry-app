@@ -103,6 +103,13 @@ h1 {
   margin-bottom: 18px;
 }
 
+.home-heading-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
 .section-label {
   margin: 0 0 8px;
   font-size: 0.78rem;
@@ -161,6 +168,7 @@ h1 {
 .back-button:focus-visible,
 .note-input:focus-visible,
 .tip-input:focus-visible,
+.field-group select:focus-visible,
 .filter-button:focus-visible {
   outline: 2px solid rgba(182, 84, 46, 0.45);
   outline-offset: 3px;
@@ -336,6 +344,18 @@ h1 {
   margin-top: 16px;
 }
 
+.profile-summary-card {
+  margin-top: 16px;
+}
+
+.hidden-panel {
+  display: none;
+}
+
+.hidden-panel.visible {
+  display: block;
+}
+
 .jobs-toolbar,
 .jobs-list {
   margin-top: 16px;
@@ -446,6 +466,27 @@ h1 {
   resize: vertical;
 }
 
+.form-grid {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.field-group {
+  display: grid;
+  gap: 8px;
+}
+
+.field-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.setup-button,
+.feedback-button {
+  width: 100%;
+}
+
 .job-card.is-hidden {
   display: none;
 }
@@ -481,9 +522,9 @@ h1 {
   bottom: 14px;
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  width: min(calc(100% - 24px), 406px);
+  width: min(calc(100% - 20px), 430px);
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 22px;
@@ -499,6 +540,7 @@ h1 {
   background: transparent;
   color: var(--muted);
   font: inherit;
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
   transition:
@@ -532,6 +574,12 @@ h1 {
   .app-shell {
     max-width: 960px;
     padding: 36px 28px 120px;
+  }
+
+  .home-heading-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .card-list {
@@ -577,6 +625,14 @@ h1 {
   }
 
   .network-contact-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .setup-button {
+    width: auto;
+  }
+
+  .form-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }

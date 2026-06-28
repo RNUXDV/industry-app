@@ -3,8 +3,10 @@ const appSections = document.querySelectorAll(".app-section");
 const saveButtons = document.querySelectorAll(".save-button");
 const workCard = document.querySelector(".work-card");
 const jobsCard = document.querySelector(".jobs-card");
+const openProfileButton = document.querySelector("#open-profile-button");
 const backHomeButton = document.querySelector("#back-home-button");
 const backHomeFromJobsButton = document.querySelector("#back-home-from-jobs");
+const backHomeFromProfileButton = document.querySelector("#back-home-from-profile");
 const workStatus = document.querySelector("#work-status");
 const workActionButtons = document.querySelectorAll(".work-action-button");
 const saveNoteButton = document.querySelector("#save-note-button");
@@ -22,7 +24,21 @@ const networkPanels = document.querySelectorAll(".network-panel");
 const networkStatus = document.querySelector("#network-status");
 const moodButtons = document.querySelectorAll(".mood-button");
 const checkinStatus = document.querySelector("#checkin-status");
+const profileNameInput = document.querySelector("#profile-name");
+const profileRoleSelect = document.querySelector("#profile-role");
+const profileNeighborhoodSelect = document.querySelector("#profile-neighborhood");
+const profileGoalSelect = document.querySelector("#profile-goal");
+const saveProfileButton = document.querySelector("#save-profile-button");
+const profileStatus = document.querySelector("#profile-status");
+const homeWelcomeMessage = document.querySelector("#home-welcome-message");
+const profileSummaryCard = document.querySelector("#profile-summary-card");
+const profileRoleSummary = document.querySelector("#profile-role-summary");
+const profileNeighborhoodSummary = document.querySelector("#profile-neighborhood-summary");
+const profileGoalSummary = document.querySelector("#profile-goal-summary");
+const feedbackButtons = document.querySelectorAll(".feedback-button");
+const feedbackStatus = document.querySelector("#feedback-status");
 let tipTotal = 0;
+const profileStorageKey = "industry-profile";
 
 // Show one section at a time and keep the matching nav button highlighted.
 function setActiveSection(sectionName) {
@@ -51,6 +67,10 @@ function openWorkSection() {
 
 function openJobsSection() {
   setActiveSection("jobs");
+}
+
+function openProfileSection() {
+  setActiveSection("profile");
 }
 
 if (workCard) {
@@ -83,6 +103,16 @@ if (jobsCard) {
 
 if (backHomeFromJobsButton) {
   backHomeFromJobsButton.addEventListener("click", () => {
+    setActiveSection("home");
+  });
+}
+
+if (openProfileButton) {
+  openProfileButton.addEventListener("click", openProfileSection);
+}
+
+if (backHomeFromProfileButton) {
+  backHomeFromProfileButton.addEventListener("click", () => {
     setActiveSection("home");
   });
 }
@@ -194,4 +224,70 @@ if (addTipButton) {
     tipTotalValue.textContent = `$${tipTotal.toFixed(2)}`;
     tipInput.value = "";
   });
+}
+
+function updateHomeProfileView(profileData) {
+  const nickname = profileData.name ? profileData.name : "Maya";
+  homeWelcomeMessage.textContent = `Welcome back, ${nickname}`;
+
+  const hasProfileDetails =
+    profileData.role || profileData.neighborhood || profileData.goal;
+
+  profileSummaryCard.classList.toggle("visible", Boolean(hasProfileDetails));
+
+  if (hasProfileDetails) {
+    profileRoleSummary.textContent = profileData.role || "Not set yet";
+    profileNeighborhoodSummary.textContent =
+      profileData.neighborhood || "Not set yet";
+    profileGoalSummary.textContent = profileData.goal || "Not set yet";
+  }
+}
+
+function getProfileFormData() {
+  return {
+    name: profileNameInput.value.trim(),
+    role: profileRoleSelect.value,
+    neighborhood: profileNeighborhoodSelect.value,
+    goal: profileGoalSelect.value,
+  };
+}
+
+function fillProfileForm(profileData) {
+  profileNameInput.value = profileData.name || "";
+  profileRoleSelect.value = profileData.role || "";
+  profileNeighborhoodSelect.value = profileData.neighborhood || "";
+  profileGoalSelect.value = profileData.goal || "";
+}
+
+if (saveProfileButton) {
+  saveProfileButton.addEventListener("click", () => {
+    const profileData = getProfileFormData();
+
+    // localStorage lets this prototype remember small bits of data in the browser.
+    // That means a coworker can refresh the page and still see the saved setup.
+    localStorage.setItem(profileStorageKey, JSON.stringify(profileData));
+
+    updateHomeProfileView(profileData);
+    profileStatus.textContent = "Profile saved for this prototype.";
+  });
+}
+
+feedbackButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    feedbackStatus.textContent = "Feedback noted for this prototype.";
+  });
+});
+
+// When the page loads, read any saved profile back out of localStorage.
+// If nothing has been saved yet, we just keep the default sample home view.
+const savedProfile = localStorage.getItem(profileStorageKey);
+
+if (savedProfile) {
+  try {
+    const profileData = JSON.parse(savedProfile);
+    fillProfileForm(profileData);
+    updateHomeProfileView(profileData);
+  } catch (error) {
+    localStorage.removeItem(profileStorageKey);
+  }
 }

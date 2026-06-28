@@ -29,12 +29,45 @@
         <section class="app-section active" id="home-section" data-section="home">
           <div class="section-heading">
             <p class="section-label">Home</p>
-            <h2>Welcome back, Maya</h2>
-            <p>
+            <div class="home-heading-row">
+              <h2 id="home-welcome-message">Welcome back, Maya</h2>
+              <button class="back-button setup-button" id="open-profile-button" type="button">
+                Set up profile
+              </button>
+            </div>
+            <p id="home-welcome-note">
               Your shift week is lining up. Check today&apos;s priorities, browse
               opportunities, and stay close to your people.
             </p>
           </div>
+
+          <section
+            class="today-panel profile-summary-card hidden-panel"
+            id="profile-summary-card"
+            aria-label="Saved profile summary"
+          >
+            <div class="panel-heading">
+              <p class="section-label">Your setup</p>
+              <h3>Profile snapshot</h3>
+            </div>
+
+            <div class="today-grid work-grid">
+              <article class="detail-card">
+                <p class="detail-label">Role</p>
+                <h4 id="profile-role-summary">Server</h4>
+              </article>
+
+              <article class="detail-card">
+                <p class="detail-label">Neighborhood</p>
+                <h4 id="profile-neighborhood-summary">Eastside</h4>
+              </article>
+
+              <article class="detail-card">
+                <p class="detail-label">Main goal</p>
+                <h4 id="profile-goal-summary">Manage my shifts</h4>
+              </article>
+            </div>
+          </section>
 
           <section class="card-list" aria-label="Main features">
             <!-- The Work card opens a deeper workflow screen inside the app. -->
@@ -551,6 +584,101 @@
             </div>
           </section>
         </section>
+
+        <section class="app-section" id="profile-section" data-section="profile">
+          <div class="section-heading work-heading">
+            <button class="back-button" id="back-home-from-profile" type="button">
+              Back to Home
+            </button>
+            <p class="section-label">Profile</p>
+            <h2>Set up your Industry profile</h2>
+            <p>Help Industry understand your work life.</p>
+          </div>
+
+          <section class="today-panel" aria-label="Profile setup form">
+            <div class="form-grid">
+              <label class="field-group" for="profile-name">
+                <span class="field-label">Name / nickname</span>
+                <input
+                  class="tip-input"
+                  id="profile-name"
+                  type="text"
+                  placeholder="What should we call you?"
+                />
+              </label>
+
+              <label class="field-group" for="profile-role">
+                <span class="field-label">Primary role</span>
+                <select class="tip-input" id="profile-role">
+                  <option value="">Choose a role</option>
+                  <option>Server</option>
+                  <option>Bartender</option>
+                  <option>Host</option>
+                  <option>Line Cook</option>
+                  <option>Barista</option>
+                  <option>Manager</option>
+                  <option>Support</option>
+                </select>
+              </label>
+
+              <label class="field-group" for="profile-neighborhood">
+                <span class="field-label">Neighborhood</span>
+                <select class="tip-input" id="profile-neighborhood">
+                  <option value="">Choose a neighborhood</option>
+                  <option>Downtown</option>
+                  <option>Pearl</option>
+                  <option>Eastside</option>
+                  <option>Division</option>
+                  <option>Alberta</option>
+                  <option>Sellwood</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label class="field-group" for="profile-goal">
+                <span class="field-label">Main reason for using Industry</span>
+                <select class="tip-input" id="profile-goal">
+                  <option value="">Choose a goal</option>
+                  <option>Manage my shifts</option>
+                  <option>Find better jobs</option>
+                  <option>Pick up extra shifts</option>
+                  <option>Stay connected with coworkers</option>
+                  <option>Protect my mental health</option>
+                </select>
+              </label>
+            </div>
+
+            <button class="action-button" id="save-profile-button" type="button">
+              Save profile
+            </button>
+            <p class="status-text" id="profile-status" aria-live="polite"></p>
+          </section>
+
+          <section class="today-panel" aria-label="Prototype testing note">
+            <div class="panel-heading">
+              <p class="section-label">Testing this prototype?</p>
+              <h3>Testing this prototype?</h3>
+              <p>
+                After exploring, ask yourself: Would this help before, during,
+                or after a shift?
+              </p>
+            </div>
+
+            <div class="tool-button-group">
+              <button class="action-button feedback-button" type="button">
+                Useful before shift
+              </button>
+              <button class="action-button feedback-button" type="button">
+                Useful after shift
+              </button>
+              <button class="action-button feedback-button" type="button">
+                Not useful yet
+              </button>
+            </div>
+
+            <p class="status-text" id="feedback-status" aria-live="polite"></p>
+          </section>
+        </section>
       </main>
 
       <nav class="bottom-nav" aria-label="Bottom navigation">
@@ -561,6 +689,9 @@
         <button class="nav-item" type="button" data-target="jobs">Jobs</button>
         <button class="nav-item" type="button" data-target="network">
           Network
+        </button>
+        <button class="nav-item" type="button" data-target="profile">
+          Profile
         </button>
       </nav>
     </div>
