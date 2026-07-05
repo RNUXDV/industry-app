@@ -3,10 +3,9 @@ const appSections = document.querySelectorAll(".app-section");
 const navCards = document.querySelectorAll(".nav-card");
 const scheduleViewCards = document.querySelectorAll(".schedule-view-card");
 const scheduleSubviews = document.querySelectorAll(".schedule-subview");
-const peopleViewCards = document.querySelectorAll(".people-view-card");
-const peopleSubviews = document.querySelectorAll(".people-subview");
-const peopleJumpCards = document.querySelectorAll(".people-jump-card");
-const peopleBackTopButtons = document.querySelectorAll(".people-back-top-button");
+const peopleHubCards = document.querySelectorAll(".people-hub-card");
+const peopleDetailViews = document.querySelectorAll(".people-detail-view");
+const peopleBackButtons = document.querySelectorAll(".people-back-button");
 const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
 const goToFeedbackButton = document.querySelector("#go-to-feedback-button");
@@ -231,6 +230,7 @@ let selectedFeedbackAnswer = "";
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let activeCrewShiftId = "";
+let activePeopleView = "hub";
 
 function setActiveScheduleView(viewName) {
   scheduleViewCards.forEach((card) => {
@@ -243,21 +243,16 @@ function setActiveScheduleView(viewName) {
 }
 
 function setActivePeopleView(viewName) {
-  peopleViewCards.forEach((card) => {
-    card.classList.toggle("active", card.dataset.peopleView === viewName);
+  activePeopleView = viewName;
+
+  peopleHubCards.forEach((card) => {
+    card.classList.toggle("active", card.dataset.peopleHubTarget === viewName);
   });
 
-  peopleSubviews.forEach((subview) => {
-    subview.classList.toggle("active", subview.dataset.peopleSubview === viewName);
+  peopleDetailViews.forEach((view) => {
+    const isActive = viewName !== "hub" && view.id === `people-${viewName}-view`;
+    view.classList.toggle("active", isActive);
   });
-}
-
-function scrollToElementById(elementId) {
-  const target = document.querySelector(`#${elementId}`);
-
-  if (target) {
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
 }
 
 function toggleCardVisibility(cards, activeValue, dataKey) {
@@ -287,6 +282,11 @@ function setActiveSection(sectionName) {
 navButtons.forEach((button) => {
   button.addEventListener("click", () => {
     setActiveSection(button.dataset.target);
+
+    if (button.dataset.target === "people") {
+      setActivePeopleView("hub");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   });
 });
 
@@ -313,7 +313,7 @@ navCards.forEach((card) => {
 if (goToFeedbackButton) {
   goToFeedbackButton.addEventListener("click", () => {
     setActiveSection("people");
-    setActivePeopleView("resources");
+    setActivePeopleView("hub");
     feedbackPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
@@ -321,7 +321,7 @@ if (goToFeedbackButton) {
 if (startHereButton) {
   startHereButton.addEventListener("click", () => {
     setActiveSection("people");
-    setActivePeopleView("network");
+    setActivePeopleView("hub");
     profilePanel?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
@@ -340,9 +340,11 @@ scheduleViewCards.forEach((card) => {
   });
 });
 
-peopleViewCards.forEach((card) => {
+peopleHubCards.forEach((card) => {
   const openPeopleView = () => {
-    setActivePeopleView(card.dataset.peopleView);
+    setActiveSection("people");
+    setActivePeopleView(card.dataset.peopleHubTarget);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   card.addEventListener("click", openPeopleView);
@@ -354,24 +356,10 @@ peopleViewCards.forEach((card) => {
   });
 });
 
-peopleJumpCards.forEach((card) => {
-  const openPeopleSection = () => {
-    setActiveSection("people");
-    scrollToElementById(card.dataset.scrollTarget);
-  };
-
-  card.addEventListener("click", openPeopleSection);
-  card.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      openPeopleSection();
-    }
-  });
-});
-
-peopleBackTopButtons.forEach((button) => {
+peopleBackButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    scrollToElementById(button.dataset.scrollTarget);
+    setActivePeopleView("hub");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 });
 
@@ -1079,7 +1067,7 @@ feedbackAnswerButtons.forEach((button) => {
 
 renderShiftBoard();
 setActiveScheduleView("my-shifts");
-setActivePeopleView("network");
+setActivePeopleView("hub");
 openCrewShift({
   id: "crew-default",
   workplace: "Departure Lounge",

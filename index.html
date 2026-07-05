@@ -412,14 +412,14 @@
           <div class="section-heading">
             <p class="section-label">People</p>
             <h2>People</h2>
-            <p>Connect with workers, crews, events, nearby meetups, and support resources across the industry.</p>
+            <p>Connect with workers, events, nearby meetups, and support resources across the industry.</p>
           </div>
 
           <section class="today-panel" aria-label="People framing">
             <div class="panel-heading">
               <p class="section-label">Why People exists</p>
               <h3>Grounded industry connection</h3>
-              <p>People keeps Industry connected to real life - coworkers, nearby crews, events, referrals, and support.</p>
+              <p>People keeps Industry connected to real life.</p>
             </div>
           </section>
 
@@ -427,34 +427,31 @@
             <p class="status-text">People is for real-world connection, not follower counts or popularity scoring.</p>
           </section>
 
-          <section class="today-panel" aria-label="People system connection">
-            <p class="status-text">People connects to Schedule when workers coordinate shifts, and to Jobs when referrals or opportunities open up.</p>
-          </section>
-
-          <section class="card-list people-card-list" aria-label="People tools">
-            <article class="feature-card people-jump-card" data-scroll-target="people-network" tabindex="0">
-              <div class="card-icon" aria-hidden="true">N</div>
+          <section class="card-list people-hub-card-list" aria-label="People tools">
+            <article class="feature-card people-hub-card" data-people-hub-target="network" tabindex="0">
+              <div class="people-hub-badge people-badge-network" aria-hidden="true">N</div>
               <h3>Network</h3>
               <p>Find workers across restaurants, bars, lounges, events, neighborhoods, and roles.</p>
             </article>
-            <article class="feature-card people-jump-card" data-scroll-target="people-events" tabindex="0">
-              <div class="card-icon" aria-hidden="true">E</div>
+            <article class="feature-card people-hub-card" data-people-hub-target="events" tabindex="0">
+              <div class="people-hub-badge people-badge-events" aria-hidden="true">E</div>
               <h3>Events</h3>
-              <p>Find industry nights, sober meetups, pop-ups, workshops, and community events.</p>
+              <p>Discover industry nights, meetups, pop-ups, and workshops.</p>
             </article>
-            <article class="feature-card people-jump-card" data-scroll-target="people-nearby" tabindex="0">
-              <div class="card-icon" aria-hidden="true">Y</div>
+            <article class="feature-card people-hub-card" data-people-hub-target="nearby" tabindex="0">
+              <div class="people-hub-badge people-badge-nearby" aria-hidden="true">◎</div>
               <h3>Nearby</h3>
               <p>Opt in to see nearby workers, crews, open shifts, and meetups.</p>
             </article>
-            <article class="feature-card people-jump-card" data-scroll-target="people-resources" tabindex="0">
-              <div class="card-icon" aria-hidden="true">R</div>
+            <article class="feature-card people-hub-card" data-people-hub-target="resources" tabindex="0">
+              <div class="people-hub-badge people-badge-resources" aria-hidden="true">+</div>
               <h3>Resources</h3>
-              <p>Support for the real-life pressure of service work.</p>
+              <p>Support for burnout, safety, recovery, and real industry pressure.</p>
             </article>
           </section>
 
-          <section class="people-subview" data-people-subview="network" id="people-network">
+          <section class="people-detail-view" id="people-network-view">
+            <button class="back-button people-back-button" type="button" data-people-back="hub">Back to People</button>
             <div class="panel-heading">
               <p class="section-label">Network</p>
               <h3>Network</h3>
@@ -558,12 +555,10 @@
               </div>
             </section>
 
-            <button class="back-button people-back-top-button" type="button" data-scroll-target="people-top">
-              Back to People top
-            </button>
           </section>
 
-          <section class="people-subview" data-people-subview="events" id="people-events">
+          <section class="people-detail-view" id="people-events-view">
+            <button class="back-button people-back-button" type="button" data-people-back="hub">Back to People</button>
             <div class="panel-heading">
               <p class="section-label">Events</p>
               <h3>Events</h3>
@@ -646,12 +641,10 @@
               <p class="status-text" id="events-status-message">Save interest on an event to keep track of it later.</p>
             </section>
 
-            <button class="back-button people-back-top-button" type="button" data-scroll-target="people-top">
-              Back to People top
-            </button>
           </section>
 
-          <section class="people-subview" data-people-subview="nearby" id="people-nearby">
+          <section class="people-detail-view" id="people-nearby-view">
+            <button class="back-button people-back-button" type="button" data-people-back="hub">Back to People</button>
             <div class="panel-heading">
               <p class="section-label">Nearby</p>
               <h3>Nearby</h3>
@@ -719,15 +712,12 @@
                   </div>
                 </article>
               </section>
-              <p class="status-text">Nearby should always be opt-in, time-limited, and approximate. Future versions should let users control when and how they appear.</p>
+              <p class="status-text">Nearby should always be opt-in, time-limited, and approximate.</p>
             </section>
-
-            <button class="back-button people-back-top-button" type="button" data-scroll-target="people-top">
-              Back to People top
-            </button>
           </section>
 
-          <section class="people-subview" data-people-subview="resources" id="people-resources">
+          <section class="people-detail-view" id="people-resources-view">
+            <button class="back-button people-back-button" type="button" data-people-back="hub">Back to People</button>
             <div class="panel-heading">
               <p class="section-label">Resources</p>
               <h3>Resources</h3>
@@ -800,9 +790,6 @@
               <p class="status-text" id="resource-status-message">Resource preview coming soon.</p>
             </section>
 
-            <button class="back-button people-back-top-button" type="button" data-scroll-target="people-top">
-              Back to People top
-            </button>
           </section>
 
           <section class="today-panel" id="profile-panel" aria-label="Profile setup">
