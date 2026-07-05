@@ -3,15 +3,10 @@ const appSections = document.querySelectorAll(".app-section");
 const navCards = document.querySelectorAll(".nav-card");
 const scheduleViewCards = document.querySelectorAll(".schedule-view-card");
 const scheduleSubviews = document.querySelectorAll(".schedule-subview");
-const peopleHubCards = document.querySelectorAll(".people-hub-card");
-const peopleDetailViews = document.querySelectorAll(".people-detail-view");
-const peopleBackButtons = document.querySelectorAll(".people-back-button");
 const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
 const goToFeedbackButton = document.querySelector("#go-to-feedback-button");
 const startHereButton = document.querySelector("#start-here-button");
-const profilePanel = document.querySelector("#profile-panel");
-const feedbackPanel = document.querySelector("#feedback-panel");
 const saveShiftButton = document.querySelector("#save-shift-button");
 const shiftBoardList = document.querySelector("#shift-board-list");
 const shiftBoardStatus = document.querySelector("#shift-board-status");
@@ -36,52 +31,16 @@ const backOfHouseList = document.querySelector("#back-of-house-list");
 const managerList = document.querySelector("#manager-list");
 const crewActionStatus = document.querySelector("#crew-action-status");
 const shiftMessageStatus = document.querySelector("#shift-message-status");
-const saveProfileButton = document.querySelector("#save-profile-button");
-const profileStatus = document.querySelector("#profile-status");
 const profileSummaryCard = document.querySelector("#profile-summary-card");
 const profileRoleSummary = document.querySelector("#profile-role-summary");
 const profileNeighborhoodSummary = document.querySelector("#profile-neighborhood-summary");
 const profileGoalSummary = document.querySelector("#profile-goal-summary");
-const profileNameInput = document.querySelector("#profile-name");
-const profileRoleSelect = document.querySelector("#profile-role");
-const profileNeighborhoodSelect = document.querySelector("#profile-neighborhood");
-const profileGoalSelect = document.querySelector("#profile-goal");
-const feedbackAnswerButtons = document.querySelectorAll(".feedback-answer-button");
-const feedbackNote = document.querySelector("#feedback-note");
-const saveFeedbackButton = document.querySelector("#save-feedback-button");
-const feedbackStatus = document.querySelector("#feedback-status");
-const openFeedbackFormButton = document.querySelector("#open-feedback-form-button");
 const mockPreviewButtons = document.querySelectorAll(".mock-preview-button");
-const peopleFilterButtons = document.querySelectorAll(".people-filter-button");
-const networkWorkerCards = document.querySelectorAll(".network-worker-card");
-const workerPreviewButtons = document.querySelectorAll(".worker-preview-button");
-const networkStatusMessage = document.querySelector("#network-status-message");
-const networkPreviewName = document.querySelector("#network-preview-name");
-const networkPreviewRole = document.querySelector("#network-preview-role");
-const networkPreviewWorkplace = document.querySelector("#network-preview-workplace");
-const networkPreviewOpen = document.querySelector("#network-preview-open");
-const networkPreviewVerification = document.querySelector("#network-preview-verification");
-const networkShiftMessageButton = document.querySelector("#network-shift-message-button");
-const networkSaveConnectionButton = document.querySelector("#network-save-connection-button");
-const peopleEventCards = document.querySelectorAll(".people-event-card");
-const eventInterestButtons = document.querySelectorAll(".event-interest-button");
-const eventsStatusMessage = document.querySelector("#events-status-message");
-const mockNearbyButton = document.querySelector("#mock-nearby-button");
-const nearbyStatusMessage = document.querySelector("#nearby-status-message");
-const nearbyResultsPanel = document.querySelector("#nearby-results-panel");
-const nearbyVisibilityButtons = document.querySelectorAll(".nearby-visibility-button");
-const nearbyVisibilityStatus = document.querySelector("#nearby-visibility-status");
-const peopleResourceCards = document.querySelectorAll(".people-resource-card");
-const resourcePreviewButtons = document.querySelectorAll(".resource-preview-button");
-const resourceStatusMessage = document.querySelector("#resource-status-message");
 
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
 const shiftResponseStorageKey = "industry-v2-shift-responses";
 const profileStorageKey = "industry-v2-profile";
-const feedbackStorageKey = "industry-v2-feedback";
-const nearbyStorageKey = "industry-v2-nearby";
-const nearbyVisibilityStorageKey = "industry-v2-nearby-visibility";
 const feedbackFormUrl =
   "https://docs.google.com/forms/d/e/1FAIpQLScLUIuiBZ_a771qFUt_wRreHaN9pugo0OcDQ1zHVO3Y4q4wwQ/viewform?usp=publish-editor";
 
@@ -226,11 +185,9 @@ const swapPreferences = [
   "Open to offers",
 ];
 
-let selectedFeedbackAnswer = "";
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let activeCrewShiftId = "";
-let activePeopleView = "hub";
 
 function setActiveScheduleView(viewName) {
   scheduleViewCards.forEach((card) => {
@@ -239,27 +196,6 @@ function setActiveScheduleView(viewName) {
 
   scheduleSubviews.forEach((subview) => {
     subview.classList.toggle("active", subview.dataset.scheduleSubview === viewName);
-  });
-}
-
-function setActivePeopleView(viewName) {
-  activePeopleView = viewName;
-
-  peopleHubCards.forEach((card) => {
-    card.classList.toggle("active", card.dataset.peopleHubTarget === viewName);
-  });
-
-  peopleDetailViews.forEach((view) => {
-    const isActive = viewName !== "hub" && view.id === `people-${viewName}-view`;
-    view.classList.toggle("active", isActive);
-  });
-}
-
-function toggleCardVisibility(cards, activeValue, dataKey) {
-  cards.forEach((card) => {
-    const matches =
-      activeValue === "all" || card.dataset[dataKey].includes(activeValue);
-    card.classList.toggle("hidden-panel", !matches);
   });
 }
 
@@ -290,21 +226,12 @@ function applyHashSection() {
 
   if (allowedSections.includes(sectionName)) {
     setActiveSection(sectionName);
-
-    if (sectionName === "people") {
-      setActivePeopleView("hub");
-    }
   }
 }
 
 navButtons.forEach((button) => {
   button.addEventListener("click", () => {
     setActiveSection(button.dataset.target);
-
-    if (button.dataset.target === "people") {
-      setActivePeopleView("hub");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
   });
 });
 
@@ -330,17 +257,13 @@ navCards.forEach((card) => {
 
 if (goToFeedbackButton) {
   goToFeedbackButton.addEventListener("click", () => {
-    setActiveSection("people");
-    setActivePeopleView("hub");
-    feedbackPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.open(feedbackFormUrl, "_blank", "noopener,noreferrer");
   });
 }
 
 if (startHereButton) {
   startHereButton.addEventListener("click", () => {
-    setActiveSection("people");
-    setActivePeopleView("hub");
-    profilePanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActiveSection("schedule");
   });
 }
 
@@ -354,53 +277,6 @@ scheduleViewCards.forEach((card) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       openScheduleView();
-    }
-  });
-});
-
-peopleHubCards.forEach((card) => {
-  const openPeopleView = () => {
-    setActiveSection("people");
-    setActivePeopleView(card.dataset.peopleHubTarget);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  card.addEventListener("click", openPeopleView);
-  card.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      openPeopleView();
-    }
-  });
-});
-
-peopleBackButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    setActivePeopleView("hub");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-});
-
-peopleFilterButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const { filterGroup, filterValue } = button.dataset;
-
-    document
-      .querySelectorAll(`.people-filter-button[data-filter-group="${filterGroup}"]`)
-      .forEach((filterButton) => {
-        filterButton.classList.toggle("active", filterButton === button);
-      });
-
-    if (filterGroup === "network") {
-      toggleCardVisibility(networkWorkerCards, filterValue, "networkTags");
-    }
-
-    if (filterGroup === "events") {
-      toggleCardVisibility(peopleEventCards, filterValue, "eventTags");
-    }
-
-    if (filterGroup === "resources") {
-      toggleCardVisibility(peopleResourceCards, filterValue, "resourceTags");
     }
   });
 });
@@ -931,16 +807,11 @@ connectionButtons.forEach((button) => {
   });
 });
 
-function getProfileFormData() {
-  return {
-    name: profileNameInput ? profileNameInput.value.trim() : "",
-    role: profileRoleSelect ? profileRoleSelect.value : "",
-    neighborhood: profileNeighborhoodSelect ? profileNeighborhoodSelect.value : "",
-    goal: profileGoalSelect ? profileGoalSelect.value : "",
-  };
-}
-
 function updateProfileSummary(profileData) {
+  if (!profileSummaryCard || !profileRoleSummary || !profileNeighborhoodSummary || !profileGoalSummary) {
+    return;
+  }
+
   const hasSummary =
     profileData.role || profileData.neighborhood || profileData.goal;
   profileSummaryCard.classList.toggle("visible", Boolean(hasSummary));
@@ -951,53 +822,6 @@ function updateProfileSummary(profileData) {
       profileData.neighborhood || "Not set yet";
     profileGoalSummary.textContent = profileData.goal || "Not set yet";
   }
-}
-
-function fillProfileForm(profileData) {
-  if (!profileNameInput || !profileRoleSelect || !profileNeighborhoodSelect || !profileGoalSelect) {
-    return;
-  }
-
-  profileNameInput.value = profileData.name || "";
-  profileRoleSelect.value = profileData.role || "";
-  profileNeighborhoodSelect.value = profileData.neighborhood || "";
-  profileGoalSelect.value = profileData.goal || "";
-}
-
-if (saveProfileButton) {
-  saveProfileButton.addEventListener("click", () => {
-    const profileData = getProfileFormData();
-    saveLocalJson(profileStorageKey, profileData);
-    updateProfileSummary(profileData);
-    profileStatus.textContent = "Profile saved for this prototype.";
-  });
-}
-
-feedbackAnswerButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    selectedFeedbackAnswer = button.dataset.answer;
-
-    feedbackAnswerButtons.forEach((answerButton) => {
-      const isActive = answerButton === button;
-      answerButton.classList.toggle("active", isActive);
-    });
-  });
-});
-
-if (saveFeedbackButton) {
-  saveFeedbackButton.addEventListener("click", () => {
-    const feedbackData = {
-      answer: selectedFeedbackAnswer,
-      note: feedbackNote.value.trim(),
-    };
-
-    saveLocalJson(feedbackStorageKey, feedbackData);
-    feedbackStatus.textContent = "Feedback saved for this prototype.";
-  });
-}
-
-if (openFeedbackFormButton) {
-  openFeedbackFormButton.href = feedbackFormUrl;
 }
 
 mockPreviewButtons.forEach((button) => {
@@ -1011,87 +835,14 @@ mockPreviewButtons.forEach((button) => {
   });
 });
 
-workerPreviewButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    networkStatusMessage.textContent = "Profile preview coming soon.";
-    networkPreviewName.textContent = button.dataset.workerName;
-    networkPreviewRole.textContent = `Role: ${button.dataset.workerRole}`;
-    networkPreviewWorkplace.textContent = `Workplace: ${button.dataset.workerWorkplace}`;
-    networkPreviewOpen.textContent = `Open to: ${button.dataset.workerOpen}`;
-    networkPreviewVerification.textContent = `Verification: ${button.dataset.workerVerification}`;
-  });
-});
-
-if (networkShiftMessageButton) {
-  networkShiftMessageButton.addEventListener("click", () => {
-    networkStatusMessage.textContent = "Shift message preview coming soon.";
-  });
-}
-
-if (networkSaveConnectionButton) {
-  networkSaveConnectionButton.addEventListener("click", () => {
-    networkStatusMessage.textContent = "Connection saved.";
-  });
-}
-
-eventInterestButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    eventsStatusMessage.textContent = "Interest saved.";
-  });
-});
-
-if (mockNearbyButton) {
-  mockNearbyButton.addEventListener("click", () => {
-    localStorage.setItem(nearbyStorageKey, "on");
-    nearbyStatusMessage.textContent = "Mock nearby enabled";
-    nearbyResultsPanel.classList.remove("hidden-panel");
-    nearbyVisibilityStatus.textContent = `Visibility: ${localStorage.getItem(nearbyVisibilityStorageKey) || "Hidden"}`;
-  });
-}
-
-nearbyVisibilityButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const visibility = button.dataset.visibility;
-    localStorage.setItem(nearbyVisibilityStorageKey, visibility);
-
-    nearbyVisibilityButtons.forEach((visibilityButton) => {
-      visibilityButton.classList.toggle("active", visibilityButton === button);
-    });
-
-    nearbyVisibilityStatus.textContent = `Visibility: ${visibility}`;
-  });
-});
-
-resourcePreviewButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    resourceStatusMessage.textContent = "Resource preview coming soon.";
-  });
-});
-
 const savedTheme = localStorage.getItem(themeStorageKey) || "dark";
 applyTheme(savedTheme);
 
 const savedProfile = readLocalJson(profileStorageKey, {});
-fillProfileForm(savedProfile);
 updateProfileSummary(savedProfile);
-
-const savedFeedback = readLocalJson(feedbackStorageKey, {});
-selectedFeedbackAnswer = savedFeedback.answer || "";
-if (feedbackNote) {
-  feedbackNote.value = savedFeedback.note || "";
-}
-const savedNearbyState = localStorage.getItem(nearbyStorageKey) || "off";
-const savedNearbyVisibility =
-  localStorage.getItem(nearbyVisibilityStorageKey) || "Hidden";
-
-feedbackAnswerButtons.forEach((button) => {
-  const isActive = button.dataset.answer === selectedFeedbackAnswer;
-  button.classList.toggle("active", isActive);
-});
 
 renderShiftBoard();
 setActiveScheduleView("my-shifts");
-setActivePeopleView("hub");
 openCrewShift({
   id: "crew-default",
   workplace: "Departure Lounge",
@@ -1102,22 +853,6 @@ openCrewShift({
   status: "Open",
 }, false);
 crewActionStatus.textContent = "Select a shift to review the active Shift Crew.";
-
-if (savedNearbyState === "on") {
-  nearbyStatusMessage.textContent = "Mock nearby enabled";
-  nearbyResultsPanel.classList.remove("hidden-panel");
-}
-
-nearbyVisibilityButtons.forEach((button) => {
-  button.classList.toggle(
-    "active",
-    button.dataset.visibility === savedNearbyVisibility
-  );
-});
-
-if (nearbyVisibilityStatus) {
-  nearbyVisibilityStatus.textContent = `Visibility: ${savedNearbyVisibility}`;
-}
 
 applyHashSection();
 window.addEventListener("hashchange", applyHashSection);
