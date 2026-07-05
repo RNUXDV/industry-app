@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Industry - Events</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-theme="dark">
+    <div class="app-shell">
+      <header class="hero">
+        <div class="hero-top">
+          <p class="eyebrow">People lane</p>
+          <button class="theme-toggle" id="theme-toggle-button" type="button">Light / Dark: Dark</button>
+        </div>
+        <h1>Industry</h1>
+        <p class="tagline">The network behind the service.</p>
+        <p class="intro">A grounded connection layer for service workers across shifts, crews, neighborhoods, and opportunities.</p>
+      </header>
+
+      <main>
+        <section class="app-section active">
+          <button class="back-button" type="button" onclick="window.location.href='index.html#people'">Back to People</button>
+          <div class="section-heading">
+            <p class="section-label">People</p>
+            <h2>Events</h2>
+            <p>Find industry nights, sober meetups, pop-ups, workshops, and community events.</p>
+          </div>
+
+          <div class="mood-row" role="group" aria-label="Event filters">
+            <button class="filter-button page-filter-button active" type="button" data-filter-group="events" data-filter-value="all">All</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="industry-night">Industry night</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="sober">Sober</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="pop-up">Pop-up</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="workshop">Workshop</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="hiring-mixer">Hiring mixer</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="support">Support</button>
+          </div>
+
+          <section class="stack-list shift-list" aria-label="Industry events">
+            <article class="stack-card people-event-card" data-event-tags="industry-night">
+              <div class="stack-copy">
+                <p class="stack-kicker">Event</p>
+                <h3>Industry Night Meetup</h3>
+                <p>Monday, 8 PM - SE Portland - Social meetup</p>
+              </div>
+              <button class="action-button event-interest-button" type="button">I'm interested</button>
+            </article>
+
+            <article class="stack-card people-event-card" data-event-tags="sober support">
+              <div class="stack-copy">
+                <p class="stack-kicker">Event</p>
+                <h3>Sober Industry Coffee</h3>
+                <p>Sunday, 10 AM - Pearl District - Supportive meetup</p>
+              </div>
+              <button class="action-button event-interest-button" type="button">I'm interested</button>
+            </article>
+
+            <article class="stack-card people-event-card" data-event-tags="pop-up hiring-mixer">
+              <div class="stack-copy">
+                <p class="stack-kicker">Event</p>
+                <h3>Pop-up Shift Mixer</h3>
+                <p>Thursday, 6 PM - Portland Metro - Work + networking</p>
+              </div>
+              <button class="action-button event-interest-button" type="button">I'm interested</button>
+            </article>
+
+            <article class="stack-card people-event-card" data-event-tags="workshop support">
+              <div class="stack-copy">
+                <p class="stack-kicker">Event</p>
+                <h3>Conflict at Work Workshop</h3>
+                <p>Tuesday, 4 PM - Online / Portland - Educational support</p>
+              </div>
+              <button class="action-button event-interest-button" type="button">I'm interested</button>
+            </article>
+          </section>
+
+          <section class="today-panel" aria-label="Events status">
+            <p class="status-text" id="events-status-message">Choose an event to save your interest.</p>
+          </section>
+        </section>
+      </main>
+
+      <a class="home-logo-button home-logo-link" href="index.html" aria-label="Go to Industry home">i</a>
+
+      <nav class="bottom-nav" aria-label="Bottom navigation">
+        <a class="nav-item nav-link-item" href="index.html#schedule">Schedule</a>
+        <a class="nav-item nav-link-item" href="index.html#jobs">Jobs</a>
+        <a class="nav-item nav-link-item active" href="index.html#people">People</a>
+      </nav>
+    </div>
+
+    <script src="people-pages.js"></script>
+  </body>
+</html>

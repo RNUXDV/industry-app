@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Industry - Resources</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-theme="dark">
+    <div class="app-shell">
+      <header class="hero">
+        <div class="hero-top">
+          <p class="eyebrow">People lane</p>
+          <button class="theme-toggle" id="theme-toggle-button" type="button">Light / Dark: Dark</button>
+        </div>
+        <h1>Industry</h1>
+        <p class="tagline">The network behind the service.</p>
+        <p class="intro">A grounded connection layer for service workers across shifts, crews, neighborhoods, and opportunities.</p>
+      </header>
+
+      <main>
+        <section class="app-section active">
+          <button class="back-button" type="button" onclick="window.location.href='index.html#people'">Back to People</button>
+          <div class="section-heading">
+            <p class="section-label">People</p>
+            <h2>Resources</h2>
+            <p>Support for the real-life pressure of service work.</p>
+          </div>
+
+          <div class="mood-row" role="group" aria-label="Resource filters">
+            <button class="filter-button page-filter-button active" type="button" data-filter-group="resources" data-filter-value="all">All</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="mental-health">Mental health</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="burnout">Burnout</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="workplace-abuse">Workplace abuse</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="addiction-recovery">Addiction / recovery</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="safety">Safety</button>
+            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="wage-issues">Wage issues</button>
+          </div>
+
+          <section class="stack-list shift-list" aria-label="Support resources">
+            <article class="stack-card people-resource-card" data-resource-tags="mental-health">
+              <div class="stack-copy">
+                <p class="stack-kicker">Support</p>
+                <h3>Mental health support</h3>
+                <p>Find support for burnout, stress, anxiety, and emotional overload.</p>
+              </div>
+              <button class="action-button resource-preview-button" type="button">View resources</button>
+            </article>
+
+            <article class="stack-card people-resource-card" data-resource-tags="burnout">
+              <div class="stack-copy">
+                <p class="stack-kicker">Recovery</p>
+                <h3>Burnout reset</h3>
+                <p>Tools and spaces for workers who feel depleted, overextended, or emotionally exhausted.</p>
+              </div>
+              <button class="action-button resource-preview-button" type="button">View resources</button>
+            </article>
+
+            <article class="stack-card people-resource-card" data-resource-tags="workplace-abuse safety wage-issues">
+              <div class="stack-copy">
+                <p class="stack-kicker">Safety</p>
+                <h3>Workplace abuse support</h3>
+                <p>Guidance for harassment, unsafe workplaces, retaliation, wage issues, and reporting concerns.</p>
+              </div>
+              <button class="action-button resource-preview-button" type="button">View resources</button>
+            </article>
+
+            <article class="stack-card people-resource-card" data-resource-tags="addiction-recovery">
+              <div class="stack-copy">
+                <p class="stack-kicker">Recovery</p>
+                <h3>Addiction and recovery support</h3>
+                <p>Sober meetups, recovery support, and nonjudgmental help for industry workers.</p>
+              </div>
+              <button class="action-button resource-preview-button" type="button">View resources</button>
+            </article>
+
+            <article class="stack-card people-resource-card" data-resource-tags="safety">
+              <div class="stack-copy">
+                <p class="stack-kicker">Safety</p>
+                <h3>Emergency safety</h3>
+                <p>For urgent danger, contact local emergency services or trusted local crisis support.</p>
+              </div>
+              <button class="action-button resource-preview-button" type="button">View safety options</button>
+            </article>
+          </section>
+
+          <section class="today-panel" aria-label="Resource status">
+            <p class="status-text" id="resource-status-message">Choose a resource area to preview what could live here later.</p>
+          </section>
+        </section>
+      </main>
+
+      <a class="home-logo-button home-logo-link" href="index.html" aria-label="Go to Industry home">i</a>
+
+      <nav class="bottom-nav" aria-label="Bottom navigation">
+        <a class="nav-item nav-link-item" href="index.html#schedule">Schedule</a>
+        <a class="nav-item nav-link-item" href="index.html#jobs">Jobs</a>
+        <a class="nav-item nav-link-item active" href="index.html#people">People</a>
+      </nav>
+    </div>
+
+    <script src="people-pages.js"></script>
+  </body>
+</html>

@@ -279,6 +279,24 @@ function setActiveSection(sectionName) {
   });
 }
 
+function applyHashSection() {
+  const sectionName = window.location.hash.replace("#", "");
+
+  if (!sectionName) {
+    return;
+  }
+
+  const allowedSections = ["home", "schedule", "jobs", "people"];
+
+  if (allowedSections.includes(sectionName)) {
+    setActiveSection(sectionName);
+
+    if (sectionName === "people") {
+      setActivePeopleView("hub");
+    }
+  }
+}
+
 navButtons.forEach((button) => {
   button.addEventListener("click", () => {
     setActiveSection(button.dataset.target);
@@ -915,10 +933,10 @@ connectionButtons.forEach((button) => {
 
 function getProfileFormData() {
   return {
-    name: profileNameInput.value.trim(),
-    role: profileRoleSelect.value,
-    neighborhood: profileNeighborhoodSelect.value,
-    goal: profileGoalSelect.value,
+    name: profileNameInput ? profileNameInput.value.trim() : "",
+    role: profileRoleSelect ? profileRoleSelect.value : "",
+    neighborhood: profileNeighborhoodSelect ? profileNeighborhoodSelect.value : "",
+    goal: profileGoalSelect ? profileGoalSelect.value : "",
   };
 }
 
@@ -936,6 +954,10 @@ function updateProfileSummary(profileData) {
 }
 
 function fillProfileForm(profileData) {
+  if (!profileNameInput || !profileRoleSelect || !profileNeighborhoodSelect || !profileGoalSelect) {
+    return;
+  }
+
   profileNameInput.value = profileData.name || "";
   profileRoleSelect.value = profileData.role || "";
   profileNeighborhoodSelect.value = profileData.neighborhood || "";
@@ -1055,7 +1077,9 @@ updateProfileSummary(savedProfile);
 
 const savedFeedback = readLocalJson(feedbackStorageKey, {});
 selectedFeedbackAnswer = savedFeedback.answer || "";
-feedbackNote.value = savedFeedback.note || "";
+if (feedbackNote) {
+  feedbackNote.value = savedFeedback.note || "";
+}
 const savedNearbyState = localStorage.getItem(nearbyStorageKey) || "off";
 const savedNearbyVisibility =
   localStorage.getItem(nearbyVisibilityStorageKey) || "Hidden";
@@ -1094,3 +1118,6 @@ nearbyVisibilityButtons.forEach((button) => {
 if (nearbyVisibilityStatus) {
   nearbyVisibilityStatus.textContent = `Visibility: ${savedNearbyVisibility}`;
 }
+
+applyHashSection();
+window.addEventListener("hashchange", applyHashSection);

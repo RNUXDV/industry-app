@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Industry - Nearby</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-theme="dark">
+    <div class="app-shell">
+      <header class="hero">
+        <div class="hero-top">
+          <p class="eyebrow">People lane</p>
+          <button class="theme-toggle" id="theme-toggle-button" type="button">Light / Dark: Dark</button>
+        </div>
+        <h1>Industry</h1>
+        <p class="tagline">The network behind the service.</p>
+        <p class="intro">A grounded connection layer for service workers across shifts, crews, neighborhoods, and opportunities.</p>
+      </header>
+
+      <main>
+        <section class="app-section active">
+          <button class="back-button" type="button" onclick="window.location.href='index.html#people'">Back to People</button>
+          <div class="section-heading">
+            <p class="section-label">People</p>
+            <h2>Nearby</h2>
+            <p>Opt in to see nearby workers, crews, open shifts, and meetups.</p>
+          </div>
+
+          <section class="today-panel" aria-label="Nearby privacy state">
+            <div class="panel-heading">
+              <p class="section-label">Privacy</p>
+              <h3>Location sharing is off</h3>
+              <p>This is a mock nearby layer only. No real maps or location tracking are active in this prototype.</p>
+            </div>
+
+            <div class="mood-row" role="group" aria-label="Nearby visibility">
+              <button class="filter-button nearby-visibility-button active" type="button" data-visibility="Hidden">Hidden</button>
+              <button class="filter-button nearby-visibility-button" type="button" data-visibility="Visible to my crews">Visible to my crews</button>
+              <button class="filter-button nearby-visibility-button" type="button" data-visibility="Visible to nearby industry workers">Visible to nearby industry workers</button>
+            </div>
+
+            <button class="action-button" id="mock-nearby-button" type="button">Turn on mock nearby</button>
+            <p class="status-text" id="nearby-status-message">Nearby is off until you opt in.</p>
+          </section>
+
+          <section class="today-panel hidden-panel" id="nearby-results-panel" aria-label="Nearby results">
+            <div class="panel-heading">
+              <p class="section-label">Mock nearby enabled</p>
+              <h3>Nearby preview</h3>
+            </div>
+
+            <ul class="shift-meta">
+              <li>3 workers nearby</li>
+              <li>2 meetups nearby</li>
+              <li>1 open shift nearby</li>
+              <li>1 crew nearby</li>
+            </ul>
+            <p class="status-text" id="nearby-visibility-status">Visibility: Hidden</p>
+
+            <section class="stack-list shift-list" aria-label="Nearby items">
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Nearby worker</p>
+                  <h3>Jordan</h3>
+                  <p>Bartender - 0.7 mi - Open to meetup</p>
+                </div>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Nearby meetup</p>
+                  <h3>Sober Industry Coffee</h3>
+                  <p>Sunday - Pearl District</p>
+                </div>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Nearby open shift</p>
+                  <h3>Server release request</h3>
+                  <p>Tonight - Cafe Luna</p>
+                </div>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Nearby crew</p>
+                  <h3>Departure Lounge Crew</h3>
+                  <p>Pearl District</p>
+                </div>
+              </article>
+            </section>
+
+            <p class="status-text">Nearby should always be opt-in, time-limited, and approximate.</p>
+          </section>
+        </section>
+      </main>
+
+      <a class="home-logo-button home-logo-link" href="index.html" aria-label="Go to Industry home">i</a>
+
+      <nav class="bottom-nav" aria-label="Bottom navigation">
+        <a class="nav-item nav-link-item" href="index.html#schedule">Schedule</a>
+        <a class="nav-item nav-link-item" href="index.html#jobs">Jobs</a>
+        <a class="nav-item nav-link-item active" href="index.html#people">People</a>
+      </nav>
+    </div>
+
+    <script src="people-pages.js"></script>
+  </body>
+</html>
