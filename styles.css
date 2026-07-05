@@ -390,6 +390,29 @@ h1 {
   gap: 10px;
 }
 
+.schedule-action-panel,
+.response-panel {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.message-preview {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg);
+  color: var(--muted);
+}
+
+.message-preview p {
+  margin: 0;
+}
+
 .interest-button {
   background: linear-gradient(135deg, var(--highlight), #1f5b55);
   color: white;
@@ -402,6 +425,17 @@ h1 {
 
 .feedback-answer-button.active {
   border-color: rgba(45, 106, 99, 0.3);
+  background: linear-gradient(135deg, var(--highlight), #1f5b55);
+  color: white;
+}
+
+.secondary-action {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.accept-button {
   background: linear-gradient(135deg, var(--highlight), #1f5b55);
   color: white;
 }

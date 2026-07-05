@@ -31,7 +31,7 @@ const openFeedbackFormButton = document.querySelector("#open-feedback-form-butto
 
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
-const interestedStorageKey = "industry-v2-interest";
+const shiftResponseStorageKey = "industry-v2-shift-responses";
 const profileStorageKey = "industry-v2-profile";
 const feedbackStorageKey = "industry-v2-feedback";
 const feedbackFormUrl =
@@ -46,24 +46,34 @@ const sampleShifts = [
     time: "4:30 PM - 10:30 PM",
     neighborhood: "Division",
     note: "Dinner service. Strong wine knowledge helps.",
+    postType: "Release",
+    postedTo: "Workplace crew",
+    status: "Open",
   },
   {
     id: "sample-2",
     restaurant: "Hey Love",
     role: "Bartender",
     day: "Saturday",
-    time: "6:00 PM - close",
+    time: "6:00 PM - Close",
     neighborhood: "Eastside",
     note: "Busy cocktail shift with patio traffic.",
+    postType: "Release",
+    postedTo: "Workplace crew",
+    status: "Open",
   },
   {
     id: "sample-3",
     restaurant: "Screen Door",
-    role: "Brunch Server",
+    role: "Brunch",
     day: "Sunday",
-    time: "8:00 AM - 3:00 PM",
+    time: "9:00 AM - 3:00 PM",
     neighborhood: "Burnside",
     note: "High-volume brunch shift. Fast feet matter.",
+    postType: "Swap",
+    lookingFor: "Open to offers",
+    postedTo: "Workplace crew",
+    status: "Open",
   },
 ];
 
@@ -91,7 +101,16 @@ const importedScheduleShifts = [
   },
 ];
 
+const swapPreferences = [
+  "Earlier shift",
+  "Later shift",
+  "Different day",
+  "Open to offers",
+];
+
 let selectedFeedbackAnswer = "";
+let selectedScheduleSource = "";
+let activeScheduleAction = null;
 
 function setActiveSection(sectionName) {
   navButtons.forEach((button) => {
@@ -117,7 +136,6 @@ navCards.forEach((card) => {
   };
 
   card.addEventListener("click", openCardSection);
-
   card.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -133,8 +151,8 @@ if (goToFeedbackButton) {
 }
 
 function applyTheme(themeName) {
-  // Theme switching works by saving a simple word in localStorage.
-  // On refresh, we read that word back and re-apply the same theme.
+  // Theme switching works by saving a short label in localStorage.
+  // On refresh, we read that label back and restore the same look.
   document.body.dataset.theme = themeName;
   themeToggleButton.textContent =
     themeName === "dark" ? "Light / Dark: Dark" : "Light / Dark: Light";
@@ -168,81 +186,207 @@ function saveLocalJson(storageKey, value) {
   localStorage.setItem(storageKey, JSON.stringify(value));
 }
 
+function getShiftResponses() {
+  return readLocalJson(shiftResponseStorageKey, {});
+}
+
 function getAllShifts() {
   const savedShifts = readLocalJson(shiftsStorageKey, []);
   return [...savedShifts, ...sampleShifts];
 }
 
-function renderShiftBoard() {
-  const interestedShiftIds = readLocalJson(interestedStorageKey, []);
-  const shifts = getAllShifts();
-
-  shiftBoardList.innerHTML = "";
-
-  shifts.forEach((shift) => {
-    const isInterested = interestedShiftIds.includes(shift.id);
-    const shiftCard = document.createElement("article");
-    shiftCard.className = "stack-card shift-card";
-    shiftCard.innerHTML = `
-      <div class="stack-copy">
-        <p class="stack-kicker">Open shift</p>
-        <h3>${shift.restaurant}</h3>
-        <p>${shift.role}</p>
-        <ul class="shift-meta">
-          <li>${shift.day}</li>
-          <li>${shift.time}</li>
-          <li>${shift.neighborhood}</li>
-        </ul>
-        <p>${shift.note}</p>
-      </div>
-      <button class="action-button interest-button${isInterested ? " sent" : ""}" type="button" data-shift-id="${shift.id}">
-        ${isInterested ? "Interest sent" : "I'm interested"}
-      </button>
-    `;
-
-    shiftBoardList.appendChild(shiftCard);
-  });
-
-  document.querySelectorAll(".interest-button").forEach((button) => {
-    button.addEventListener("click", () => {
-      const shiftId = button.dataset.shiftId;
-      const interestedShiftIds = readLocalJson(interestedStorageKey, []);
-
-      if (!interestedShiftIds.includes(shiftId)) {
-        interestedShiftIds.push(shiftId);
-        saveLocalJson(interestedStorageKey, interestedShiftIds);
-      }
-
-      button.classList.add("sent");
-      button.textContent = "Interest sent";
-      shiftBoardStatus.textContent = "Interest sent. The shift owner would see this in a full product.";
-    });
-  });
+function getBoardButtonLabel(shift) {
+  return shift.postType === "Swap" ? "Offer swap" : "I can take this";
 }
 
-function createBoardPostFromImportedShift(shift, postType) {
+function getDisplayedShiftStatus(shift, responses) {
+  if (responses[shift.id]?.status) {
+    return responses[shift.id].status;
+  }
+
+  return shift.status || "Open";
+}
+
+function createBoardPost(postData) {
   const savedShifts = readLocalJson(shiftsStorageKey, []);
-  const restaurantName = `${postType} from connected schedule`;
   const newShift = {
     id: `shift-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
-    restaurant: restaurantName,
-    role: shift.role,
-    day: shift.day,
-    time: shift.time,
-    neighborhood: shift.neighborhood,
-    note: `${postType} created from ${shift.source}. Imported schedule mock.`,
+    restaurant: "Workplace crew",
+    status: "Open",
+    ...postData,
   };
 
   savedShifts.unshift(newShift);
   saveLocalJson(shiftsStorageKey, savedShifts);
   renderShiftBoard();
   shiftBoardStatus.textContent = "Added to Shift Board.";
+  setActiveSection("shift-board");
 }
 
-function renderImportedShifts(sourceName) {
+function renderShiftBoard() {
+  const shifts = getAllShifts();
+  const responses = getShiftResponses();
+
+  shiftBoardList.innerHTML = "";
+
+  shifts.forEach((shift) => {
+    const displayedStatus = getDisplayedShiftStatus(shift, responses);
+    const hasInterest = Boolean(responses[shift.id]?.interested);
+    const responsePanel = hasInterest
+      ? `
+        <div class="response-panel">
+          <p class="status-text">Jordan is interested.</p>
+          <div class="message-preview">
+            <p>I can take this if manager approves.</p>
+            <p>Perfect. I'll mark it as pending.</p>
+          </div>
+          <div class="shift-action-row">
+            <button class="action-button secondary-action shift-message-button" type="button">
+              Shift message
+            </button>
+            <button class="action-button accept-button" type="button" data-shift-id="${shift.id}">
+              Accept
+            </button>
+            <button class="action-button secondary-action decline-button" type="button" data-shift-id="${shift.id}">
+              Decline
+            </button>
+          </div>
+        </div>
+      `
+      : "";
+
+    const shiftCard = document.createElement("article");
+    shiftCard.className = "stack-card shift-card";
+    shiftCard.innerHTML = `
+      <div class="stack-copy">
+        <p class="stack-kicker">Shift Board</p>
+        <h3>${shift.role}</h3>
+        <ul class="shift-meta">
+          <li>${shift.day}</li>
+          <li>${shift.time}</li>
+          <li>${shift.neighborhood}</li>
+        </ul>
+        <p>Post type: ${shift.postType}</p>
+        ${
+          shift.lookingFor
+            ? `<p>Looking for: ${shift.lookingFor}</p>`
+            : ""
+        }
+        <p>Posted to: ${shift.postedTo || "Workplace crew"}</p>
+        <p>Status: ${displayedStatus}</p>
+      </div>
+      <div class="shift-action-row">
+        <button class="action-button board-action-button" type="button" data-shift-id="${shift.id}">
+          ${getBoardButtonLabel(shift)}
+        </button>
+      </div>
+      ${responsePanel}
+    `;
+
+    shiftBoardList.appendChild(shiftCard);
+  });
+
+  document.querySelectorAll(".board-action-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const responses = getShiftResponses();
+      const shiftId = button.dataset.shiftId;
+
+      responses[shiftId] = {
+        ...(responses[shiftId] || {}),
+        interested: true,
+        status: "Open",
+      };
+
+      saveLocalJson(shiftResponseStorageKey, responses);
+      renderShiftBoard();
+    });
+  });
+
+  document.querySelectorAll(".shift-message-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      shiftBoardStatus.textContent = "Shift message preview opened below the card.";
+    });
+  });
+
+  document.querySelectorAll(".accept-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const responses = getShiftResponses();
+      const shiftId = button.dataset.shiftId;
+
+      responses[shiftId] = {
+        ...(responses[shiftId] || {}),
+        interested: true,
+        status: "Pending confirmation",
+      };
+
+      saveLocalJson(shiftResponseStorageKey, responses);
+      renderShiftBoard();
+    });
+  });
+
+  document.querySelectorAll(".decline-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const responses = getShiftResponses();
+      const shiftId = button.dataset.shiftId;
+
+      responses[shiftId] = {
+        ...(responses[shiftId] || {}),
+        interested: false,
+        status: "Open",
+      };
+
+      saveLocalJson(shiftResponseStorageKey, responses);
+      renderShiftBoard();
+    });
+  });
+}
+
+function renderImportedShifts() {
   importedShiftList.innerHTML = "";
 
   importedScheduleShifts.forEach((shift) => {
+    const isReleaseActive =
+      activeScheduleAction?.shiftId === shift.id &&
+      activeScheduleAction.type === "release";
+    const isSwapActive =
+      activeScheduleAction?.shiftId === shift.id &&
+      activeScheduleAction.type === "swap";
+
+    const releasePrompt = isReleaseActive
+      ? `
+        <div class="schedule-action-panel">
+          <p class="status-text">Post this shift to your workplace crew?</p>
+          <button class="action-button post-to-crew-button" type="button" data-shift-id="${shift.id}">
+            Post to crew
+          </button>
+        </div>
+      `
+      : "";
+
+    const swapPrompt = isSwapActive
+      ? `
+        <div class="schedule-action-panel">
+          <p class="status-text">Choose a swap preference.</p>
+          <div class="shift-action-row">
+            ${swapPreferences
+              .map(
+                (preference) => `
+                  <button
+                    class="filter-button swap-preference-button"
+                    type="button"
+                    data-shift-id="${shift.id}"
+                    data-preference="${preference}"
+                  >
+                    ${preference}
+                  </button>
+                `
+              )
+              .join("")}
+          </div>
+        </div>
+      `
+      : "";
+
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
     shiftCard.innerHTML = `
@@ -253,26 +397,34 @@ function renderImportedShifts(sourceName) {
         <ul class="shift-meta">
           <li>${shift.time}</li>
           <li>${shift.neighborhood}</li>
-          <li>${sourceName}</li>
         </ul>
       </div>
       <div class="shift-action-row">
-      <button class="action-button imported-shift-button" type="button" data-shift-id="${shift.id}" data-post-type="Release shift">
+        <button class="action-button imported-action-button" type="button" data-shift-id="${shift.id}" data-action="release">
           Release shift
         </button>
-        <button class="action-button imported-shift-button" type="button" data-shift-id="${shift.id}" data-post-type="Request swap">
+        <button class="action-button secondary-action imported-action-button" type="button" data-shift-id="${shift.id}" data-action="swap">
           Request swap
         </button>
-        <button class="action-button imported-shift-button" type="button" data-shift-id="${shift.id}" data-post-type="Offer pickup">
-          Offer pickup
-        </button>
       </div>
+      ${releasePrompt}
+      ${swapPrompt}
     `;
 
     importedShiftList.appendChild(shiftCard);
   });
 
-  document.querySelectorAll(".imported-shift-button").forEach((button) => {
+  document.querySelectorAll(".imported-action-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeScheduleAction = {
+        shiftId: button.dataset.shiftId,
+        type: button.dataset.action,
+      };
+      renderImportedShifts();
+    });
+  });
+
+  document.querySelectorAll(".post-to-crew-button").forEach((button) => {
     button.addEventListener("click", () => {
       const shift = importedScheduleShifts.find(
         (item) => item.id === button.dataset.shiftId
@@ -282,8 +434,42 @@ function renderImportedShifts(sourceName) {
         return;
       }
 
-      createBoardPostFromImportedShift({ ...shift, source: sourceName }, button.dataset.postType);
-      button.textContent = "Added to board";
+      createBoardPost({
+        role: shift.role,
+        day: shift.day,
+        time: shift.time,
+        neighborhood: shift.neighborhood,
+        note: `Released from ${selectedScheduleSource || "imported schedule"}.`,
+        postType: "Release",
+        postedTo: "Workplace crew",
+      });
+      activeScheduleAction = null;
+      renderImportedShifts();
+    });
+  });
+
+  document.querySelectorAll(".swap-preference-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const shift = importedScheduleShifts.find(
+        (item) => item.id === button.dataset.shiftId
+      );
+
+      if (!shift) {
+        return;
+      }
+
+      createBoardPost({
+        role: shift.role,
+        day: shift.day,
+        time: shift.time,
+        neighborhood: shift.neighborhood,
+        note: `Swap request from ${selectedScheduleSource || "imported schedule"}.`,
+        postType: "Swap",
+        lookingFor: button.dataset.preference,
+        postedTo: "Workplace crew",
+      });
+      activeScheduleAction = null;
+      renderImportedShifts();
     });
   });
 }
@@ -295,7 +481,9 @@ function getPostShiftFormData() {
     day: document.querySelector("#shift-day").value.trim(),
     time: document.querySelector("#shift-time").value.trim(),
     neighborhood: document.querySelector("#shift-neighborhood").value,
-    note: document.querySelector("#shift-note").value.trim() || "No extra note shared.",
+    note:
+      document.querySelector("#shift-note").value.trim() ||
+      "No extra note shared.",
   };
 }
 
@@ -327,6 +515,9 @@ if (saveShiftButton) {
     const newShift = {
       id: `shift-${Date.now()}`,
       ...formData,
+      postType: "Release",
+      postedTo: "Workplace crew",
+      status: "Open",
     };
 
     // localStorage keeps the posted shifts in this browser only.
@@ -343,7 +534,8 @@ if (saveShiftButton) {
 
 connectionButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const sourceName = button.dataset.source;
+    selectedScheduleSource = button.dataset.source;
+    activeScheduleAction = null;
 
     connectionButtons.forEach((connectionButton) => {
       const isActive = connectionButton === button;
@@ -353,8 +545,8 @@ connectionButtons.forEach((button) => {
     connectionStatusPanel.classList.remove("hidden-panel");
     importedShiftsPanel.classList.remove("hidden-panel");
     connectionStatusMessage.textContent = "Schedule imported";
-    connectionStatusDetail.textContent = `3 upcoming shifts found from ${sourceName}`;
-    renderImportedShifts(sourceName);
+    connectionStatusDetail.textContent = "3 upcoming shifts found";
+    renderImportedShifts();
   });
 });
 
@@ -368,7 +560,8 @@ function getProfileFormData() {
 }
 
 function updateProfileSummary(profileData) {
-  const hasSummary = profileData.role || profileData.neighborhood || profileData.goal;
+  const hasSummary =
+    profileData.role || profileData.neighborhood || profileData.goal;
   profileSummaryCard.classList.toggle("visible", Boolean(hasSummary));
 
   if (hasSummary) {
