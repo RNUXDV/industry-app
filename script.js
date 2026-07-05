@@ -9,6 +9,8 @@ const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
 const goToFeedbackButton = document.querySelector("#go-to-feedback-button");
 const startHereButton = document.querySelector("#start-here-button");
+const profilePanel = document.querySelector("#profile-panel");
+const feedbackPanel = document.querySelector("#feedback-panel");
 const saveShiftButton = document.querySelector("#save-shift-button");
 const shiftBoardList = document.querySelector("#shift-board-list");
 const shiftBoardStatus = document.querySelector("#shift-board-status");
@@ -49,14 +51,22 @@ const saveFeedbackButton = document.querySelector("#save-feedback-button");
 const feedbackStatus = document.querySelector("#feedback-status");
 const openFeedbackFormButton = document.querySelector("#open-feedback-form-button");
 const mockPreviewButtons = document.querySelectorAll(".mock-preview-button");
-const coworkerPreviewButtons = document.querySelectorAll(".coworker-preview-button");
-const coworkerStatusMessage = document.querySelector("#coworker-status-message");
+const workerPreviewButtons = document.querySelectorAll(".worker-preview-button");
+const networkStatusMessage = document.querySelector("#network-status-message");
+const eventInterestButtons = document.querySelectorAll(".event-interest-button");
+const eventsStatusMessage = document.querySelector("#events-status-message");
+const mockNearbyButton = document.querySelector("#mock-nearby-button");
+const nearbyStatusMessage = document.querySelector("#nearby-status-message");
+const nearbyResultsPanel = document.querySelector("#nearby-results-panel");
+const resourcePreviewButtons = document.querySelectorAll(".resource-preview-button");
+const resourceStatusMessage = document.querySelector("#resource-status-message");
 
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
 const shiftResponseStorageKey = "industry-v2-shift-responses";
 const profileStorageKey = "industry-v2-profile";
 const feedbackStorageKey = "industry-v2-feedback";
+const nearbyStorageKey = "industry-v2-nearby";
 const feedbackFormUrl =
   "https://docs.google.com/forms/d/e/1FAIpQLScLUIuiBZ_a771qFUt_wRreHaN9pugo0OcDQ1zHVO3Y4q4wwQ/viewform?usp=publish-editor";
 
@@ -271,14 +281,16 @@ navCards.forEach((card) => {
 if (goToFeedbackButton) {
   goToFeedbackButton.addEventListener("click", () => {
     setActiveSection("people");
-    setActivePeopleView("feedback");
+    setActivePeopleView("resources");
+    feedbackPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
 
 if (startHereButton) {
   startHereButton.addEventListener("click", () => {
     setActiveSection("people");
-    setActivePeopleView("profile");
+    setActivePeopleView("network");
+    profilePanel?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
 
@@ -912,9 +924,29 @@ mockPreviewButtons.forEach((button) => {
   });
 });
 
-coworkerPreviewButtons.forEach((button) => {
+workerPreviewButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    coworkerStatusMessage.textContent = button.dataset.message;
+    networkStatusMessage.textContent = "Profile preview coming soon.";
+  });
+});
+
+eventInterestButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    eventsStatusMessage.textContent = "Interest saved.";
+  });
+});
+
+if (mockNearbyButton) {
+  mockNearbyButton.addEventListener("click", () => {
+    localStorage.setItem(nearbyStorageKey, "on");
+    nearbyStatusMessage.textContent = "Mock nearby enabled";
+    nearbyResultsPanel.classList.remove("hidden-panel");
+  });
+}
+
+resourcePreviewButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    resourceStatusMessage.textContent = "Resource preview coming soon.";
   });
 });
 
@@ -928,6 +960,7 @@ updateProfileSummary(savedProfile);
 const savedFeedback = readLocalJson(feedbackStorageKey, {});
 selectedFeedbackAnswer = savedFeedback.answer || "";
 feedbackNote.value = savedFeedback.note || "";
+const savedNearbyState = localStorage.getItem(nearbyStorageKey) || "off";
 
 feedbackAnswerButtons.forEach((button) => {
   const isActive = button.dataset.answer === selectedFeedbackAnswer;
@@ -936,7 +969,7 @@ feedbackAnswerButtons.forEach((button) => {
 
 renderShiftBoard();
 setActiveScheduleView("my-shifts");
-setActivePeopleView("profile");
+setActivePeopleView("network");
 openCrewShift({
   id: "crew-default",
   workplace: "Departure Lounge",
@@ -947,3 +980,8 @@ openCrewShift({
   status: "Open",
 }, false);
 crewActionStatus.textContent = "Select a shift to review the active Shift Crew.";
+
+if (savedNearbyState === "on") {
+  nearbyStatusMessage.textContent = "Mock nearby enabled";
+  nearbyResultsPanel.classList.remove("hidden-panel");
+}

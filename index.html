@@ -412,186 +412,351 @@
           <div class="section-heading">
             <p class="section-label">People</p>
             <h2>People</h2>
-            <p>Manage your profile, workplaces, coworkers, referrals, and broader Industry connections.</p>
+            <p>Connect with industry workers, crews, events, meetups, and support resources beyond your own workplace.</p>
           </div>
 
+          <section class="today-panel" aria-label="People framing">
+            <div class="panel-heading">
+              <p class="section-label">Why People exists</p>
+              <h3>Grounded industry connection</h3>
+              <p>People keeps Industry connected to real life - coworkers, nearby crews, events, referrals, and support.</p>
+            </div>
+          </section>
+
+          <section class="today-panel" aria-label="People guidance">
+            <p class="status-text">People is for real-world connection, not follower counts or popularity scoring.</p>
+          </section>
+
           <section class="card-list people-card-list" aria-label="People tools">
-            <article class="feature-card people-view-card active" data-people-view="profile" tabindex="0">
-              <div class="card-icon" aria-hidden="true">P</div>
-              <h3>Profile</h3>
-              <p>Manage your roles, workplaces, and crew visibility.</p>
+            <article class="feature-card people-view-card active" data-people-view="network" tabindex="0">
+              <div class="card-icon" aria-hidden="true">N</div>
+              <h3>Network</h3>
+              <p>Find workers across restaurants, bars, lounges, events, and neighborhoods.</p>
             </article>
-            <article class="feature-card people-view-card" data-people-view="workplaces" tabindex="0">
-              <div class="card-icon" aria-hidden="true">W</div>
-              <h3>Workplaces</h3>
-              <p>See the restaurants, bars, lounges, and events connected to your profile.</p>
+            <article class="feature-card people-view-card" data-people-view="events" tabindex="0">
+              <div class="card-icon" aria-hidden="true">E</div>
+              <h3>Events</h3>
+              <p>Find industry nights, meetups, workshops, pop-ups, and community events.</p>
             </article>
-            <article class="feature-card people-view-card" data-people-view="coworkers" tabindex="0">
-              <div class="card-icon" aria-hidden="true">C</div>
-              <h3>Coworkers</h3>
-              <p>View verified coworkers and workplace connections.</p>
+            <article class="feature-card people-view-card" data-people-view="nearby" tabindex="0">
+              <div class="card-icon" aria-hidden="true">Y</div>
+              <h3>Nearby</h3>
+              <p>Explore nearby workers, crews, meetups, and open shifts through a future map concept.</p>
             </article>
-            <article class="feature-card people-view-card" data-people-view="feedback" tabindex="0">
-              <div class="card-icon" aria-hidden="true">F</div>
-              <h3>Feedback</h3>
-              <p>Help shape the Industry prototype.</p>
+            <article class="feature-card people-view-card" data-people-view="resources" tabindex="0">
+              <div class="card-icon" aria-hidden="true">R</div>
+              <h3>Resources</h3>
+              <p>Find support for burnout, safety, abuse, recovery, and the real pressure of service work.</p>
             </article>
           </section>
 
-          <section class="people-subview active" data-people-subview="profile">
+          <section class="people-subview active" data-people-subview="network">
             <div class="panel-heading">
-              <p class="section-label">Profile</p>
-              <h3>Save your work setup</h3>
-              <p>Your profile connects you to your workplaces. Shift posts use this information so the right crew sees the right coverage requests.</p>
+              <p class="section-label">Network</p>
+              <h3>Network</h3>
+              <p>Find workers across restaurants, bars, lounges, events, and neighborhoods.</p>
             </div>
 
-            <section class="today-panel" aria-label="Profile form">
-              <div class="form-grid">
-                <label class="field-group" for="profile-name">
-                  <span class="field-label">Name / nickname</span>
-                  <input class="tip-input" id="profile-name" type="text" placeholder="What should we call you?" />
-                </label>
+            <section class="stack-list shift-list" aria-label="Network workers">
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Worker</p>
+                  <h3>Jordan</h3>
+                  <p>Bartender</p>
+                  <p>Workplace: Departure Lounge</p>
+                  <p>Neighborhood: Pearl District</p>
+                  <p>Signal: Open to shift swaps and industry meetups</p>
+                </div>
+                <button class="action-button worker-preview-button" type="button">
+                  View profile
+                </button>
+              </article>
 
-                <label class="field-group" for="profile-role">
-                  <span class="field-label">Primary role</span>
-                  <select class="tip-input" id="profile-role">
-                    <option value="">Choose a role</option>
-                    <option>Server</option>
-                    <option>Bartender</option>
-                    <option>Host</option>
-                    <option>Line Cook</option>
-                    <option>Barista</option>
-                    <option>Manager</option>
-                    <option>Support</option>
-                  </select>
-                </label>
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Worker</p>
+                  <h3>Maya</h3>
+                  <p>Server</p>
+                  <p>Workplace: Cafe Luna</p>
+                  <p>Neighborhood: SE Portland</p>
+                  <p>Signal: Open to referrals and brunch shifts</p>
+                </div>
+                <button class="action-button worker-preview-button" type="button">
+                  View profile
+                </button>
+              </article>
 
-                <label class="field-group" for="profile-neighborhood">
-                  <span class="field-label">Neighborhood</span>
-                  <select class="tip-input" id="profile-neighborhood">
-                    <option value="">Choose a neighborhood</option>
-                    <option>Downtown</option>
-                    <option>Pearl</option>
-                    <option>Eastside</option>
-                    <option>Division</option>
-                    <option>Alberta</option>
-                    <option>Sellwood</option>
-                    <option>Other</option>
-                  </select>
-                </label>
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Worker</p>
+                  <h3>Luis</h3>
+                  <p>Line Cook</p>
+                  <p>Workplace: Northside Kitchen</p>
+                  <p>Neighborhood: NE Portland</p>
+                  <p>Signal: Looking for pop-ups and extra hours</p>
+                </div>
+                <button class="action-button worker-preview-button" type="button">
+                  View profile
+                </button>
+              </article>
 
-                <label class="field-group" for="profile-goal">
-                  <span class="field-label">Main goal</span>
-                  <select class="tip-input" id="profile-goal">
-                    <option value="">Choose a goal</option>
-                    <option>Manage my shifts</option>
-                    <option>Find better jobs</option>
-                    <option>Pick up extra shifts</option>
-                    <option>Stay connected with coworkers</option>
-                    <option>Protect my mental health</option>
-                  </select>
-                </label>
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Worker</p>
+                  <h3>Dana</h3>
+                  <p>Floor Manager</p>
+                  <p>Workplace: Event Pool</p>
+                  <p>Neighborhood: Portland Metro</p>
+                  <p>Signal: Can refer reliable workers</p>
+                </div>
+                <button class="action-button worker-preview-button" type="button">
+                  View profile
+                </button>
+              </article>
+            </section>
+
+            <section class="today-panel" aria-label="Network status">
+              <p class="status-text" id="network-status-message">Tap a worker to preview how cross-establishment profiles could work.</p>
+            </section>
+          </section>
+
+          <section class="people-subview" data-people-subview="events">
+            <div class="panel-heading">
+              <p class="section-label">Events</p>
+              <h3>Events</h3>
+              <p>Find industry nights, meetups, workshops, pop-ups, and community events.</p>
+            </div>
+
+            <section class="stack-list shift-list" aria-label="Industry events">
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Event</p>
+                  <h3>Industry Night Meetup</h3>
+                  <p>Monday, 8 PM</p>
+                  <p>Area: SE Portland</p>
+                  <p>Type: Social meetup</p>
+                </div>
+                <button class="action-button event-interest-button" type="button">
+                  I'm interested
+                </button>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Event</p>
+                  <h3>Sober Industry Coffee</h3>
+                  <p>Sunday, 10 AM</p>
+                  <p>Area: Pearl District</p>
+                  <p>Type: Supportive meetup</p>
+                </div>
+                <button class="action-button event-interest-button" type="button">
+                  I'm interested
+                </button>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Event</p>
+                  <h3>Pop-up Shift Mixer</h3>
+                  <p>Thursday, 6 PM</p>
+                  <p>Area: Portland Metro</p>
+                  <p>Type: Work + networking</p>
+                </div>
+                <button class="action-button event-interest-button" type="button">
+                  I'm interested
+                </button>
+              </article>
+            </section>
+
+            <section class="today-panel" aria-label="Events status">
+              <p class="status-text" id="events-status-message">Save interest on an event to keep track of it later.</p>
+            </section>
+          </section>
+
+          <section class="people-subview" data-people-subview="nearby">
+            <div class="panel-heading">
+              <p class="section-label">Nearby</p>
+              <h3>Nearby</h3>
+              <p>Opt in to see nearby industry workers, crews, and meetups.</p>
+            </div>
+
+            <section class="today-panel" aria-label="Nearby map concept">
+              <div class="panel-heading">
+                <p class="section-label">Map concept</p>
+                <h3>Location sharing is off</h3>
+                <p>This is a mock nearby layer only. No real maps or location tracking are active in this prototype.</p>
               </div>
 
-              <button class="action-button" id="save-profile-button" type="button">Save profile</button>
-              <p class="status-text" id="profile-status" aria-live="polite"></p>
+              <button class="action-button" id="mock-nearby-button" type="button">Turn on mock nearby</button>
+              <p class="status-text" id="nearby-status-message">Nearby is off until you opt in.</p>
+            </section>
+
+            <section class="today-panel hidden-panel" id="nearby-results-panel" aria-label="Nearby results">
+              <div class="panel-heading">
+                <p class="section-label">Mock nearby enabled</p>
+                <h3>Nearby preview</h3>
+              </div>
+              <ul class="shift-meta">
+                <li>3 workers nearby</li>
+                <li>2 meetups nearby</li>
+                <li>1 open shift nearby</li>
+              </ul>
+              <p class="status-text">Nearby should always be opt-in. Future versions should let users choose when and how they appear.</p>
             </section>
           </section>
 
-          <section class="people-subview" data-people-subview="workplaces">
+          <section class="people-subview" data-people-subview="resources">
+            <div class="panel-heading">
+              <p class="section-label">Resources</p>
+              <h3>Resources</h3>
+              <p>Support for the real-life pressure of service work.</p>
+            </div>
+
+            <section class="stack-list shift-list" aria-label="Support resources">
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Support</p>
+                  <h3>Mental health support</h3>
+                  <p>Find support for burnout, stress, anxiety, and emotional overload.</p>
+                </div>
+                <button class="action-button resource-preview-button" type="button">View resources</button>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Support</p>
+                  <h3>Workplace abuse support</h3>
+                  <p>Find guidance for harassment, unsafe workplaces, wage issues, and reporting concerns.</p>
+                </div>
+                <button class="action-button resource-preview-button" type="button">View resources</button>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Support</p>
+                  <h3>Addiction and recovery support</h3>
+                  <p>Find sober meetups, recovery support, and nonjudgmental help.</p>
+                </div>
+                <button class="action-button resource-preview-button" type="button">View resources</button>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Safety</p>
+                  <h3>Emergency safety</h3>
+                  <p>For urgent danger, contact local emergency services or trusted local crisis support.</p>
+                </div>
+                <button class="action-button resource-preview-button" type="button">View safety options</button>
+              </article>
+            </section>
+
+            <section class="today-panel" aria-label="Resource status">
+              <p class="status-text" id="resource-status-message">Resource preview coming soon.</p>
+            </section>
+          </section>
+
+          <section class="today-panel" id="profile-panel" aria-label="Profile setup">
+            <div class="panel-heading">
+              <p class="section-label">Profile</p>
+              <h3>Manage your roles, workplaces, and visibility</h3>
+              <p>Your profile still shapes how Industry understands your work life and workplace connections.</p>
+            </div>
+
+            <div class="form-grid">
+              <label class="field-group" for="profile-name">
+                <span class="field-label">Name / nickname</span>
+                <input class="tip-input" id="profile-name" type="text" placeholder="What should we call you?" />
+              </label>
+
+              <label class="field-group" for="profile-role">
+                <span class="field-label">Primary role</span>
+                <select class="tip-input" id="profile-role">
+                  <option value="">Choose a role</option>
+                  <option>Server</option>
+                  <option>Bartender</option>
+                  <option>Host</option>
+                  <option>Line Cook</option>
+                  <option>Barista</option>
+                  <option>Manager</option>
+                  <option>Support</option>
+                </select>
+              </label>
+
+              <label class="field-group" for="profile-neighborhood">
+                <span class="field-label">Neighborhood</span>
+                <select class="tip-input" id="profile-neighborhood">
+                  <option value="">Choose a neighborhood</option>
+                  <option>Downtown</option>
+                  <option>Pearl</option>
+                  <option>Eastside</option>
+                  <option>Division</option>
+                  <option>Alberta</option>
+                  <option>Sellwood</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label class="field-group" for="profile-goal">
+                <span class="field-label">Main goal</span>
+                <select class="tip-input" id="profile-goal">
+                  <option value="">Choose a goal</option>
+                  <option>Manage my shifts</option>
+                  <option>Find better jobs</option>
+                  <option>Pick up extra shifts</option>
+                  <option>Stay connected with coworkers</option>
+                  <option>Protect my mental health</option>
+                </select>
+              </label>
+            </div>
+
+            <button class="action-button" id="save-profile-button" type="button">Save profile</button>
+            <p class="status-text" id="profile-status" aria-live="polite"></p>
+          </section>
+
+          <section class="today-panel" aria-label="My workplaces">
             <div class="panel-heading">
               <p class="section-label">Workplaces</p>
-              <h3>My Workplaces</h3>
-              <p>Your shift posts are tied to a workplace so the right crew sees the right coverage requests.</p>
+              <h3>Restaurants, bars, lounges, and events tied to your profile</h3>
             </div>
 
-            <section class="today-panel" aria-label="My workplaces">
-              <section class="stack-list workplace-list">
-                <article class="stack-card">
-                  <div class="stack-copy">
-                    <p class="stack-kicker">Current</p>
-                    <h3>Departure Lounge</h3>
-                    <p>Role: Bartender</p>
-                    <p>Neighborhood: Pearl District</p>
-                    <p>Status: Current</p>
-                  </div>
-                </article>
-
-                <article class="stack-card">
-                  <div class="stack-copy">
-                    <p class="stack-kicker">Current</p>
-                    <h3>Cafe Luna</h3>
-                    <p>Role: Server</p>
-                    <p>Neighborhood: SE Portland</p>
-                    <p>Status: Current</p>
-                  </div>
-                </article>
-
-                <article class="stack-card">
-                  <div class="stack-copy">
-                    <p class="stack-kicker">Occasional</p>
-                    <h3>Event Pool</h3>
-                    <p>Role: Catering / Banquet</p>
-                    <p>Neighborhood: Portland Metro</p>
-                    <p>Status: Occasional</p>
-                  </div>
-                </article>
-              </section>
-            </section>
-          </section>
-
-          <section class="people-subview" data-people-subview="coworkers">
-            <div class="panel-heading">
-              <p class="section-label">Coworkers</p>
-              <h3>Verified workplace connections</h3>
-              <p>Workplace Crew is everyone connected to a workplace. Shift Crew stays tied to one scheduled shift.</p>
-            </div>
-
-            <section class="stack-list shift-list" aria-label="Coworker groups">
+            <section class="stack-list workplace-list">
               <article class="stack-card">
                 <div class="stack-copy">
-                  <p class="stack-kicker">Verified workplace crew</p>
-                  <h3>Departure Lounge Crew</h3>
-                  <p>Crew type: Verified workplace crew</p>
+                  <p class="stack-kicker">Current</p>
+                  <h3>Departure Lounge</h3>
+                  <p>Role: Bartender</p>
+                  <p>Neighborhood: Pearl District</p>
+                  <p>Status: Current</p>
                 </div>
-                <button class="action-button coworker-preview-button" type="button" data-message="Coworker view coming soon.">
-                  View coworkers
-                </button>
               </article>
 
               <article class="stack-card">
                 <div class="stack-copy">
-                  <p class="stack-kicker">Verified workplace crew</p>
-                  <h3>Cafe Luna Crew</h3>
-                  <p>Crew type: Verified workplace crew</p>
+                  <p class="stack-kicker">Current</p>
+                  <h3>Cafe Luna</h3>
+                  <p>Role: Server</p>
+                  <p>Neighborhood: SE Portland</p>
+                  <p>Status: Current</p>
                 </div>
-                <button class="action-button coworker-preview-button" type="button" data-message="Coworker view coming soon.">
-                  View coworkers
-                </button>
               </article>
 
               <article class="stack-card">
                 <div class="stack-copy">
-                  <p class="stack-kicker">Verified workplace crew</p>
+                  <p class="stack-kicker">Occasional</p>
                   <h3>Event Pool</h3>
-                  <p>Crew type: Verified workplace crew</p>
+                  <p>Role: Catering / Banquet</p>
+                  <p>Neighborhood: Portland Metro</p>
+                  <p>Status: Occasional</p>
                 </div>
-                <button class="action-button coworker-preview-button" type="button" data-message="Coworker view coming soon.">
-                  View coworkers
-                </button>
               </article>
-            </section>
-
-            <section class="today-panel" aria-label="Coworker placeholder status">
-              <p class="status-text" id="coworker-status-message">Verified coworker connections will expand inside People.</p>
             </section>
           </section>
 
-          <section class="people-subview" data-people-subview="feedback">
+          <section class="today-panel" id="feedback-panel" aria-label="Feedback">
             <div class="panel-heading">
               <p class="section-label">Feedback</p>
-              <h3>Share what feels useful</h3>
-              <p>Keep feedback simple. Use the live form link or save a quick note in this local prototype.</p>
+              <h3>Help shape the Industry prototype</h3>
+              <p>Use the live form link or save a quick note in this local prototype.</p>
             </div>
 
             <section class="today-panel" aria-label="Research handoff">
@@ -619,7 +784,7 @@
               </div>
 
               <label class="sr-only" for="feedback-note">Feedback note</label>
-              <textarea class="note-input" id="feedback-note" placeholder="What would make the shift board more useful?"></textarea>
+              <textarea class="note-input" id="feedback-note" placeholder="What would make the people lane more useful?"></textarea>
               <button class="action-button" id="save-feedback-button" type="button">Save feedback</button>
               <p class="status-text" id="feedback-status" aria-live="polite"></p>
             </section>

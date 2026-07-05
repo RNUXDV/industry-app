@@ -296,6 +296,10 @@ h1 {
   display: none;
 }
 
+.hidden-panel {
+  display: none;
+}
+
 .profile-summary-card.visible {
   display: block;
 }
