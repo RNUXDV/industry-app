@@ -311,12 +311,15 @@ h1 {
 
 .schedule-subview,
 .people-subview {
-  display: none;
   margin-top: 20px;
 }
 
+.schedule-subview {
+  display: none;
+}
+
 .schedule-subview.active,
-.people-subview.active {
+.people-subview {
   display: block;
 }
 

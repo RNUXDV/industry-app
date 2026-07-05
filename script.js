@@ -5,6 +5,8 @@ const scheduleViewCards = document.querySelectorAll(".schedule-view-card");
 const scheduleSubviews = document.querySelectorAll(".schedule-subview");
 const peopleViewCards = document.querySelectorAll(".people-view-card");
 const peopleSubviews = document.querySelectorAll(".people-subview");
+const peopleJumpCards = document.querySelectorAll(".people-jump-card");
+const peopleBackTopButtons = document.querySelectorAll(".people-back-top-button");
 const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
 const goToFeedbackButton = document.querySelector("#go-to-feedback-button");
@@ -250,6 +252,14 @@ function setActivePeopleView(viewName) {
   });
 }
 
+function scrollToElementById(elementId) {
+  const target = document.querySelector(`#${elementId}`);
+
+  if (target) {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 function toggleCardVisibility(cards, activeValue, dataKey) {
   cards.forEach((card) => {
     const matches =
@@ -341,6 +351,27 @@ peopleViewCards.forEach((card) => {
       event.preventDefault();
       openPeopleView();
     }
+  });
+});
+
+peopleJumpCards.forEach((card) => {
+  const openPeopleSection = () => {
+    setActiveSection("people");
+    scrollToElementById(card.dataset.scrollTarget);
+  };
+
+  card.addEventListener("click", openPeopleSection);
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openPeopleSection();
+    }
+  });
+});
+
+peopleBackTopButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    scrollToElementById(button.dataset.scrollTarget);
   });
 });
 
