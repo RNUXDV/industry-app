@@ -198,6 +198,11 @@ h1 {
   gap: 10px;
 }
 
+.workplace-list {
+  display: grid;
+  gap: 14px;
+}
+
 .feature-card,
 .detail-card,
 .stack-card,
@@ -288,8 +293,18 @@ h1 {
   display: none;
 }
 
+.workplace-preview.hidden-panel {
+  display: none;
+}
+
 .connection-status {
   margin-top: 16px;
+  display: grid;
+  gap: 6px;
+}
+
+.workplace-preview {
+  margin-top: 4px;
   display: grid;
   gap: 6px;
 }
@@ -354,7 +369,8 @@ h1 {
 }
 
 .shift-list,
-.form-grid {
+.form-grid,
+.workplace-list {
   margin-top: 16px;
 }
 

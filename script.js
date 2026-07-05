@@ -7,6 +7,10 @@ const saveShiftButton = document.querySelector("#save-shift-button");
 const shiftBoardList = document.querySelector("#shift-board-list");
 const shiftBoardStatus = document.querySelector("#shift-board-status");
 const postShiftStatus = document.querySelector("#post-shift-status");
+const shiftWorkplaceSelect = document.querySelector("#shift-workplace");
+const workplacePreviewPanel = document.querySelector("#workplace-preview-panel");
+const workplacePreviewMessage = document.querySelector("#workplace-preview-message");
+const workplacePreviewNeighborhood = document.querySelector("#workplace-preview-neighborhood");
 const connectionButtons = document.querySelectorAll(".connection-button");
 const connectionStatusPanel = document.querySelector("#connection-status-panel");
 const connectionStatusMessage = document.querySelector("#connection-status-message");
@@ -37,14 +41,29 @@ const feedbackStorageKey = "industry-v2-feedback";
 const feedbackFormUrl =
   "https://docs.google.com/forms/d/e/1FAIpQLScLUIuiBZ_a771qFUt_wRreHaN9pugo0OcDQ1zHVO3Y4q4wwQ/viewform?usp=publish-editor";
 
+const workplaces = {
+  "Departure Lounge|Pearl District": {
+    name: "Departure Lounge",
+    neighborhood: "Pearl District",
+  },
+  "Cafe Luna|SE Portland": {
+    name: "Cafe Luna",
+    neighborhood: "SE Portland",
+  },
+  "Event Pool|Portland Metro": {
+    name: "Event Pool",
+    neighborhood: "Portland Metro",
+  },
+};
+
 const sampleShifts = [
   {
     id: "sample-1",
-    restaurant: "Ava Gene's",
+    workplace: "Departure Lounge",
     role: "Server",
     day: "Thursday",
     time: "4:30 PM - 10:30 PM",
-    neighborhood: "Division",
+    neighborhood: "Pearl District",
     note: "Dinner service. Strong wine knowledge helps.",
     postType: "Release",
     postedTo: "Workplace crew",
@@ -52,11 +71,11 @@ const sampleShifts = [
   },
   {
     id: "sample-2",
-    restaurant: "Hey Love",
+    workplace: "Cafe Luna",
     role: "Bartender",
     day: "Saturday",
     time: "6:00 PM - Close",
-    neighborhood: "Eastside",
+    neighborhood: "SE Portland",
     note: "Busy cocktail shift with patio traffic.",
     postType: "Release",
     postedTo: "Workplace crew",
@@ -64,11 +83,11 @@ const sampleShifts = [
   },
   {
     id: "sample-3",
-    restaurant: "Screen Door",
+    workplace: "Event Pool",
     role: "Brunch",
     day: "Sunday",
     time: "9:00 AM - 3:00 PM",
-    neighborhood: "Burnside",
+    neighborhood: "Portland Metro",
     note: "High-volume brunch shift. Fast feet matter.",
     postType: "Swap",
     lookingFor: "Open to offers",
@@ -211,7 +230,6 @@ function createBoardPost(postData) {
   const savedShifts = readLocalJson(shiftsStorageKey, []);
   const newShift = {
     id: `shift-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
-    restaurant: "Workplace crew",
     status: "Open",
     ...postData,
   };
@@ -260,13 +278,15 @@ function renderShiftBoard() {
     shiftCard.innerHTML = `
       <div class="stack-copy">
         <p class="stack-kicker">Shift Board</p>
-        <h3>${shift.role}</h3>
+        <h3>${shift.workplace}</h3>
+        <p>${shift.role} - ${shift.postType}</p>
         <ul class="shift-meta">
           <li>${shift.day}</li>
           <li>${shift.time}</li>
+        </ul>
+        <ul class="shift-meta">
           <li>${shift.neighborhood}</li>
         </ul>
-        <p>Post type: ${shift.postType}</p>
         ${
           shift.lookingFor
             ? `<p>Looking for: ${shift.lookingFor}</p>`
@@ -274,6 +294,7 @@ function renderShiftBoard() {
         }
         <p>Posted to: ${shift.postedTo || "Workplace crew"}</p>
         <p>Status: ${displayedStatus}</p>
+        <p>${shift.note}</p>
       </div>
       <div class="shift-action-row">
         <button class="action-button board-action-button" type="button" data-shift-id="${shift.id}">
@@ -435,6 +456,7 @@ function renderImportedShifts() {
       }
 
       createBoardPost({
+        workplace: shift.workplace || "Departure Lounge",
         role: shift.role,
         day: shift.day,
         time: shift.time,
@@ -459,6 +481,7 @@ function renderImportedShifts() {
       }
 
       createBoardPost({
+        workplace: shift.workplace || "Departure Lounge",
         role: shift.role,
         day: shift.day,
         time: shift.time,
@@ -475,25 +498,27 @@ function renderImportedShifts() {
 }
 
 function getPostShiftFormData() {
+  const selectedWorkplace = workplaces[shiftWorkplaceSelect.value];
+
   return {
-    restaurant: document.querySelector("#shift-restaurant").value.trim(),
+    workplace: selectedWorkplace ? selectedWorkplace.name : "",
     role: document.querySelector("#shift-role").value,
     day: document.querySelector("#shift-day").value.trim(),
     time: document.querySelector("#shift-time").value.trim(),
-    neighborhood: document.querySelector("#shift-neighborhood").value,
-    note:
-      document.querySelector("#shift-note").value.trim() ||
-      "No extra note shared.",
+    neighborhood: selectedWorkplace ? selectedWorkplace.neighborhood : "",
+    postType: document.querySelector("#shift-coverage-type").value,
+    note: "Posted from Need coverage? flow.",
+    postedTo: "Workplace crew",
   };
 }
 
 function clearPostShiftForm() {
-  document.querySelector("#shift-restaurant").value = "";
+  document.querySelector("#shift-workplace").value = "";
   document.querySelector("#shift-role").value = "";
   document.querySelector("#shift-day").value = "";
   document.querySelector("#shift-time").value = "";
-  document.querySelector("#shift-neighborhood").value = "";
-  document.querySelector("#shift-note").value = "";
+  document.querySelector("#shift-coverage-type").value = "";
+  workplacePreviewPanel.classList.add("hidden-panel");
 }
 
 if (saveShiftButton) {
@@ -501,13 +526,14 @@ if (saveShiftButton) {
     const formData = getPostShiftFormData();
 
     if (
-      !formData.restaurant ||
+      !formData.workplace ||
       !formData.role ||
       !formData.day ||
       !formData.time ||
-      !formData.neighborhood
+      !formData.neighborhood ||
+      !formData.postType
     ) {
-      postShiftStatus.textContent = "Add the main shift details before posting.";
+      postShiftStatus.textContent = "Choose the workplace and shift details before posting.";
       return;
     }
 
@@ -515,8 +541,6 @@ if (saveShiftButton) {
     const newShift = {
       id: `shift-${Date.now()}`,
       ...formData,
-      postType: "Release",
-      postedTo: "Workplace crew",
       status: "Open",
     };
 
@@ -529,6 +553,21 @@ if (saveShiftButton) {
     renderShiftBoard();
     postShiftStatus.textContent = "Shift posted to the local prototype board.";
     setActiveSection("shift-board");
+  });
+}
+
+if (shiftWorkplaceSelect) {
+  shiftWorkplaceSelect.addEventListener("change", () => {
+    const selectedWorkplace = workplaces[shiftWorkplaceSelect.value];
+
+    if (!selectedWorkplace) {
+      workplacePreviewPanel.classList.add("hidden-panel");
+      return;
+    }
+
+    workplacePreviewPanel.classList.remove("hidden-panel");
+    workplacePreviewMessage.textContent = `Posting to: ${selectedWorkplace.name} crew`;
+    workplacePreviewNeighborhood.textContent = `Neighborhood: ${selectedWorkplace.neighborhood}`;
   });
 }
 

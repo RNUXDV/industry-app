@@ -55,8 +55,8 @@
 
             <article class="feature-card nav-card" data-target-section="post-shift" tabindex="0">
               <div class="card-icon" aria-hidden="true">P</div>
-              <h3>Post a Shift</h3>
-              <p>Share a shift you need covered without building a full job board.</p>
+              <h3>Need Coverage?</h3>
+              <p>Choose a workplace and post a release, swap, or pickup request to the right crew.</p>
             </article>
 
             <article class="feature-card nav-card" data-target-section="profile" tabindex="0">
@@ -182,24 +182,30 @@
 
         <section class="app-section" data-section="post-shift">
           <div class="section-heading">
-            <p class="section-label">Post a Shift</p>
+            <p class="section-label">Need Coverage?</p>
             <h2>Need coverage?</h2>
             <p>
-              Add a shift to the board in a few fields. This stays local to the
-              browser for the prototype.
+              Choose the workplace and shift first, then post a release or swap
+              request to the right crew.
             </p>
           </div>
 
           <section class="today-panel" aria-label="Post shift form">
             <div class="form-grid">
-              <label class="field-group" for="shift-restaurant">
-                <span class="field-label">Restaurant</span>
-                <input
-                  class="tip-input"
-                  id="shift-restaurant"
-                  type="text"
-                  placeholder="Example: Nostrana"
-                />
+              <label class="field-group" for="shift-workplace">
+                <span class="field-label">Workplace</span>
+                <select class="tip-input" id="shift-workplace">
+                  <option value="">Choose a workplace</option>
+                  <option value="Departure Lounge|Pearl District">
+                    Departure Lounge - Pearl District
+                  </option>
+                  <option value="Cafe Luna|SE Portland">
+                    Cafe Luna - SE Portland
+                  </option>
+                  <option value="Event Pool|Portland Metro">
+                    Event Pool - Portland Metro
+                  </option>
+                </select>
               </label>
 
               <label class="field-group" for="shift-role">
@@ -216,8 +222,8 @@
               </label>
 
               <label class="field-group" for="shift-day">
-                <span class="field-label">Day</span>
-                <input class="tip-input" id="shift-day" type="text" placeholder="Friday" />
+                <span class="field-label">Date</span>
+                <input class="tip-input" id="shift-day" type="text" placeholder="Friday, July 17" />
               </label>
 
               <label class="field-group" for="shift-time">
@@ -230,28 +236,25 @@
                 />
               </label>
 
-              <label class="field-group" for="shift-neighborhood">
-                <span class="field-label">Neighborhood</span>
-                <select class="tip-input" id="shift-neighborhood">
-                  <option value="">Choose a neighborhood</option>
-                  <option>Downtown</option>
-                  <option>Pearl</option>
-                  <option>Eastside</option>
-                  <option>Division</option>
-                  <option>Alberta</option>
-                  <option>Sellwood</option>
-                  <option>Other</option>
+              <label class="field-group" for="shift-coverage-type">
+                <span class="field-label">Coverage type</span>
+                <select class="tip-input" id="shift-coverage-type">
+                  <option value="">Choose coverage type</option>
+                  <option>Release shift</option>
+                  <option>Request swap</option>
+                  <option>Offer pickup</option>
                 </select>
               </label>
 
-              <label class="field-group" for="shift-note">
-                <span class="field-label">Shift note</span>
-                <textarea
-                  class="note-input"
-                  id="shift-note"
-                  placeholder="Share anything useful about the shift..."
-                ></textarea>
-              </label>
+              <div class="today-panel workplace-preview hidden-panel" id="workplace-preview-panel">
+                <p class="status-text" id="workplace-preview-message">
+                  Posting to: Departure Lounge crew
+                </p>
+                <p class="status-text">Visibility: Workplace crew only</p>
+                <p class="status-text" id="workplace-preview-neighborhood">
+                  Neighborhood: Pearl District
+                </p>
+              </div>
             </div>
 
             <button class="action-button" id="save-shift-button" type="button">
@@ -266,8 +269,8 @@
             <p class="section-label">My Profile</p>
             <h2>Save your work setup</h2>
             <p>
-              Keep a simple local profile so the prototype matches your role and
-              neighborhood a little more closely.
+              Your shift posts are tied to a workplace so the right crew sees
+              the right coverage requests.
             </p>
           </div>
 
@@ -328,6 +331,45 @@
               Save profile
             </button>
             <p class="status-text" id="profile-status" aria-live="polite"></p>
+          </section>
+
+          <section class="today-panel" aria-label="My workplaces">
+            <div class="panel-heading">
+              <p class="section-label">My Workplaces</p>
+              <h3>Workplace access</h3>
+            </div>
+
+            <section class="stack-list workplace-list">
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Current</p>
+                  <h3>Departure Lounge</h3>
+                  <p>Role: Bartender</p>
+                  <p>Neighborhood: Pearl District</p>
+                  <p>Status: Current</p>
+                </div>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Current</p>
+                  <h3>Cafe Luna</h3>
+                  <p>Role: Server</p>
+                  <p>Neighborhood: SE Portland</p>
+                  <p>Status: Current</p>
+                </div>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Occasional</p>
+                  <h3>Event Pool</h3>
+                  <p>Role: Catering / Banquet</p>
+                  <p>Neighborhood: Portland Metro</p>
+                  <p>Status: Occasional</p>
+                </div>
+              </article>
+            </section>
           </section>
         </section>
 
