@@ -479,7 +479,7 @@ h1 {
   bottom: 14px;
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
   width: min(calc(100% - 18px), 430px);
   padding: 10px;
@@ -488,6 +488,32 @@ h1 {
   background: var(--nav-bg);
   box-shadow: var(--shadow);
   backdrop-filter: blur(14px);
+}
+
+.home-logo-button {
+  position: fixed;
+  left: 50%;
+  bottom: 102px;
+  transform: translateX(-50%);
+  width: 62px;
+  height: 62px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+  color: white;
+  font: inherit;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  z-index: 2;
+}
+
+.home-logo-button.active {
+  box-shadow:
+    0 0 0 4px rgba(182, 84, 46, 0.18),
+    var(--shadow);
 }
 
 .nav-item {
@@ -507,6 +533,7 @@ h1 {
 }
 
 .theme-toggle:focus-visible,
+.home-logo-button:focus-visible,
 .nav-item:focus-visible,
 .action-button:focus-visible,
 .back-button:focus-visible,

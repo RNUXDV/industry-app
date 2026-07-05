@@ -1,6 +1,7 @@
 const navButtons = document.querySelectorAll(".nav-item");
 const appSections = document.querySelectorAll(".app-section");
 const navCards = document.querySelectorAll(".nav-card");
+const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
 const goToFeedbackButton = document.querySelector("#go-to-feedback-button");
 const startHereButton = document.querySelector("#start-here-button");
@@ -138,6 +139,10 @@ function setActiveSection(sectionName) {
     button.classList.toggle("active", isActive);
   });
 
+  if (homeLogoButton) {
+    homeLogoButton.classList.toggle("active", sectionName === "home");
+  }
+
   appSections.forEach((section) => {
     const isActive = section.dataset.section === sectionName;
     section.classList.toggle("active", isActive);
@@ -149,6 +154,12 @@ navButtons.forEach((button) => {
     setActiveSection(button.dataset.target);
   });
 });
+
+if (homeLogoButton) {
+  homeLogoButton.addEventListener("click", () => {
+    setActiveSection(homeLogoButton.dataset.target);
+  });
+}
 
 navCards.forEach((card) => {
   const openCardSection = () => {
