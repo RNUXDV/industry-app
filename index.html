@@ -575,44 +575,127 @@
             </p>
           </div>
 
-          <section class="stack-list shift-list" aria-label="Crew groups">
-            <article class="stack-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Verified workplace crew</p>
-                <h3>Departure Lounge Crew</h3>
-                <p>Crew type: Verified workplace crew</p>
-              </div>
-              <button class="action-button mock-preview-button" type="button" data-message="Crew view coming soon.">
-                View crew
-              </button>
-            </article>
-
-            <article class="stack-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Verified workplace crew</p>
-                <h3>Cafe Luna Crew</h3>
-                <p>Crew type: Verified workplace crew</p>
-              </div>
-              <button class="action-button mock-preview-button" type="button" data-message="Crew view coming soon.">
-                View crew
-              </button>
-            </article>
-
-            <article class="stack-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Verified workplace crew</p>
-                <h3>Event Pool</h3>
-                <p>Crew type: Verified workplace crew</p>
-              </div>
-              <button class="action-button mock-preview-button" type="button" data-message="Crew view coming soon.">
-                View crew
-              </button>
-            </article>
+          <section class="today-panel" aria-label="Crew guidance">
+            <p class="status-text">
+              Workplace Crew is everyone connected to a workplace. Shift Crew is
+              the team scheduled for one specific shift.
+            </p>
           </section>
 
-          <section class="today-panel" aria-label="Crew placeholder status">
-            <p class="status-text" id="crew-status-message">Crew spaces will grow from shift-related connection first.</p>
+          <section class="today-panel" aria-label="My crews">
+            <div class="panel-heading">
+              <p class="section-label">My Crews</p>
+              <h3>Verified workplace crews</h3>
+            </div>
+
+            <section class="stack-list shift-list" aria-label="Crew groups">
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Verified workplace crew</p>
+                  <h3>Departure Lounge Crew</h3>
+                  <p>Crew type: Verified workplace crew</p>
+                </div>
+                <button
+                  class="action-button crew-workplace-button"
+                  type="button"
+                  data-workplace="Departure Lounge"
+                >
+                  View crew
+                </button>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Verified workplace crew</p>
+                  <h3>Cafe Luna Crew</h3>
+                  <p>Crew type: Verified workplace crew</p>
+                </div>
+                <button
+                  class="action-button crew-workplace-button"
+                  type="button"
+                  data-workplace="Cafe Luna"
+                >
+                  View crew
+                </button>
+              </article>
+
+              <article class="stack-card">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Verified workplace crew</p>
+                  <h3>Event Pool</h3>
+                  <p>Crew type: Verified workplace crew</p>
+                </div>
+                <button
+                  class="action-button crew-workplace-button"
+                  type="button"
+                  data-workplace="Event Pool"
+                >
+                  View crew
+                </button>
+              </article>
+            </section>
           </section>
+
+          <section class="today-panel" aria-label="Shift Crew detail">
+            <div class="panel-heading">
+              <p class="section-label">Shift Crew</p>
+              <h3>See who is scheduled for this shift</h3>
+              <p>
+                See who is scheduled for this shift across Front of House, Back
+                of House, and Managers.
+              </p>
+            </div>
+
+            <article class="stack-card shift-card" id="shift-crew-summary-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Active shift</p>
+                <h3 id="crew-shift-date">Friday, July 10</h3>
+                <p id="crew-shift-workplace">Departure Lounge</p>
+                <ul class="shift-meta">
+                  <li id="crew-shift-time">6 PM-Close</li>
+                  <li id="crew-shift-role">Bartender release request</li>
+                </ul>
+                <p id="crew-shift-status">Status: Open</p>
+              </div>
+              <div class="shift-action-row">
+                <button class="action-button secondary-action" id="crew-shift-message-button" type="button">
+                  Shift message
+                </button>
+              </div>
+            </article>
+
+            <section class="crew-group-list" aria-label="Shift Crew roster">
+              <article class="today-panel crew-group-panel">
+                <div class="panel-heading">
+                  <p class="section-label">Front of House</p>
+                </div>
+                <div class="crew-member-list" id="front-of-house-list"></div>
+              </article>
+
+              <article class="today-panel crew-group-panel">
+                <div class="panel-heading">
+                  <p class="section-label">Back of House</p>
+                </div>
+                <div class="crew-member-list" id="back-of-house-list"></div>
+              </article>
+
+              <article class="today-panel crew-group-panel">
+                <div class="panel-heading">
+                  <p class="section-label">Managers</p>
+                </div>
+                <div class="crew-member-list" id="manager-list"></div>
+              </article>
+            </section>
+
+            <p class="status-text" id="crew-action-status">
+              Select a crew or shift to review the active Shift Crew.
+            </p>
+            <p class="status-text">
+              Future versions can verify schedules through workplace tools
+              before showing private shift details.
+            </p>
+          </section>
+
         </section>
       </main>
 

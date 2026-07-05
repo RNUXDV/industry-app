@@ -406,6 +406,21 @@ h1 {
   gap: 10px;
 }
 
+.crew-group-list,
+.crew-member-list {
+  display: grid;
+  gap: 12px;
+}
+
+.crew-group-panel {
+  padding: 18px;
+  box-shadow: none;
+}
+
+.crew-member-card {
+  gap: 12px;
+}
+
 .schedule-action-panel,
 .response-panel {
   display: grid;

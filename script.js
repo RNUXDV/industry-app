@@ -19,6 +19,17 @@ const connectionStatusMessage = document.querySelector("#connection-status-messa
 const connectionStatusDetail = document.querySelector("#connection-status-detail");
 const importedShiftsPanel = document.querySelector("#imported-shifts-panel");
 const importedShiftList = document.querySelector("#imported-shift-list");
+const crewShiftDate = document.querySelector("#crew-shift-date");
+const crewShiftWorkplace = document.querySelector("#crew-shift-workplace");
+const crewShiftTime = document.querySelector("#crew-shift-time");
+const crewShiftRole = document.querySelector("#crew-shift-role");
+const crewShiftStatus = document.querySelector("#crew-shift-status");
+const frontOfHouseList = document.querySelector("#front-of-house-list");
+const backOfHouseList = document.querySelector("#back-of-house-list");
+const managerList = document.querySelector("#manager-list");
+const crewActionStatus = document.querySelector("#crew-action-status");
+const crewShiftMessageButton = document.querySelector("#crew-shift-message-button");
+const crewWorkplaceButtons = document.querySelectorAll(".crew-workplace-button");
 const saveProfileButton = document.querySelector("#save-profile-button");
 const profileStatus = document.querySelector("#profile-status");
 const profileSummaryCard = document.querySelector("#profile-summary-card");
@@ -68,7 +79,7 @@ const sampleShifts = [
     time: "4:30 PM - 10:30 PM",
     neighborhood: "Pearl District",
     note: "Dinner service. Strong wine knowledge helps.",
-    postType: "Release",
+    postType: "Release shift",
     postedTo: "Workplace crew",
     status: "Open",
   },
@@ -80,7 +91,7 @@ const sampleShifts = [
     time: "6:00 PM - Close",
     neighborhood: "SE Portland",
     note: "Busy cocktail shift with patio traffic.",
-    postType: "Release",
+    postType: "Release shift",
     postedTo: "Workplace crew",
     status: "Open",
   },
@@ -92,7 +103,7 @@ const sampleShifts = [
     time: "9:00 AM - 3:00 PM",
     neighborhood: "Portland Metro",
     note: "High-volume brunch shift. Fast feet matter.",
-    postType: "Swap",
+    postType: "Request swap",
     lookingFor: "Open to offers",
     postedTo: "Workplace crew",
     status: "Open",
@@ -103,25 +114,80 @@ const importedScheduleShifts = [
   {
     id: "imported-1",
     day: "Thu, July 9",
+    workplace: "Departure Lounge",
     role: "Server",
     time: "5 PM-Close",
-    neighborhood: "Division",
+    neighborhood: "Pearl District",
   },
   {
     id: "imported-2",
     day: "Fri, July 10",
+    workplace: "Departure Lounge",
     role: "Bartender",
     time: "6 PM-Close",
-    neighborhood: "Eastside",
+    neighborhood: "Pearl District",
   },
   {
     id: "imported-3",
     day: "Sun, July 12",
+    workplace: "Cafe Luna",
     role: "Brunch",
     time: "9 AM-3 PM",
-    neighborhood: "Burnside",
+    neighborhood: "SE Portland",
   },
 ];
+
+const workplaceCrews = {
+  "Departure Lounge": {
+    frontOfHouse: [
+      { name: "Jordan", position: "Bartender", status: "Scheduled" },
+      { name: "Maya", position: "Server", status: "Scheduled" },
+      { name: "Alex", position: "Host", status: "Scheduled" },
+      { name: "Chris", position: "Barback", status: "Scheduled" },
+    ],
+    backOfHouse: [
+      { name: "Luis", position: "Line Cook", status: "Scheduled" },
+      { name: "Nia", position: "Prep Cook", status: "Scheduled" },
+      { name: "Sam", position: "Dishwasher", status: "Scheduled" },
+    ],
+    managers: [
+      { name: "Dana", position: "Floor Manager", status: "On duty" },
+      { name: "Renee", position: "General Manager", status: "Approval contact" },
+    ],
+  },
+  "Cafe Luna": {
+    frontOfHouse: [
+      { name: "Tori", position: "Server", status: "Scheduled" },
+      { name: "Elena", position: "Host", status: "Scheduled" },
+      { name: "Micah", position: "Support", status: "Scheduled" },
+    ],
+    backOfHouse: [
+      { name: "Andre", position: "Line Cook", status: "Scheduled" },
+      { name: "Viv", position: "Prep Cook", status: "Scheduled" },
+      { name: "Noah", position: "Dishwasher", status: "Scheduled" },
+    ],
+    managers: [
+      { name: "Kira", position: "Floor Manager", status: "On duty" },
+      { name: "Paul", position: "General Manager", status: "Approval contact" },
+    ],
+  },
+  "Event Pool": {
+    frontOfHouse: [
+      { name: "Ari", position: "Event Server", status: "Scheduled" },
+      { name: "Becca", position: "Banquet Captain", status: "Scheduled" },
+      { name: "Theo", position: "Barback", status: "Scheduled" },
+    ],
+    backOfHouse: [
+      { name: "Marco", position: "Line Cook", status: "Scheduled" },
+      { name: "June", position: "Prep Cook", status: "Scheduled" },
+      { name: "Eli", position: "Dishwasher", status: "Scheduled" },
+    ],
+    managers: [
+      { name: "Sonia", position: "Event Manager", status: "On duty" },
+      { name: "Harper", position: "Operations Manager", status: "Approval contact" },
+    ],
+  },
+};
 
 const swapPreferences = [
   "Earlier shift",
@@ -133,6 +199,7 @@ const swapPreferences = [
 let selectedFeedbackAnswer = "";
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
+let activeCrewShiftId = "";
 
 function setActiveSection(sectionName) {
   navButtons.forEach((button) => {
@@ -234,7 +301,7 @@ function getAllShifts() {
 }
 
 function getBoardButtonLabel(shift) {
-  if (shift.postType === "Swap") {
+  if (shift.postType === "Swap" || shift.postType === "Request swap") {
     return "Offer swap";
   }
 
@@ -246,7 +313,7 @@ function getBoardButtonLabel(shift) {
 }
 
 function getBoardRequestLabel(shift) {
-  if (shift.postType === "Swap") {
+  if (shift.postType === "Swap" || shift.postType === "Request swap") {
     return "Swap request";
   }
 
@@ -263,6 +330,68 @@ function getDisplayedShiftStatus(shift, responses) {
   }
 
   return shift.status || "Open";
+}
+
+function getCrewShiftSummary(shift) {
+  return `${shift.role} ${getBoardRequestLabel(shift).toLowerCase()}`;
+}
+
+function renderCrewMembers(listElement, members, actionLabel) {
+  listElement.innerHTML = members
+    .map(
+      (member) => `
+        <article class="stack-card crew-member-card">
+          <div class="stack-copy">
+            <h3>${member.name}</h3>
+            <p>${member.position}</p>
+            <p>Status: ${member.status}</p>
+          </div>
+          <button
+            class="action-button secondary-action crew-member-action-button"
+            type="button"
+            data-action-label="${actionLabel}"
+          >
+            ${actionLabel}
+          </button>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function bindCrewMemberActions() {
+  document.querySelectorAll(".crew-member-action-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.dataset.actionLabel === "Approval needed") {
+        crewActionStatus.textContent =
+          "Manager approval will be required before this shift is final.";
+        return;
+      }
+
+      crewActionStatus.textContent = "Availability request sent.";
+    });
+  });
+}
+
+function openCrewShift(shift, shouldNavigate = true) {
+  const crew = workplaceCrews[shift.workplace] || workplaceCrews["Departure Lounge"];
+
+  activeCrewShiftId = shift.id;
+  crewShiftDate.textContent = shift.day;
+  crewShiftWorkplace.textContent = shift.workplace;
+  crewShiftTime.textContent = shift.time;
+  crewShiftRole.textContent = getCrewShiftSummary(shift);
+  crewShiftStatus.textContent = `Status: ${getDisplayedShiftStatus(shift, getShiftResponses())}`;
+  crewActionStatus.textContent = `Viewing Shift Crew for ${shift.workplace}.`;
+
+  renderCrewMembers(frontOfHouseList, crew.frontOfHouse, "Ask availability");
+  renderCrewMembers(backOfHouseList, crew.backOfHouse, "Ask availability");
+  renderCrewMembers(managerList, crew.managers, "Approval needed");
+  bindCrewMemberActions();
+
+  if (shouldNavigate) {
+    setActiveSection("crew");
+  }
 }
 
 function createBoardPost(postData) {
@@ -340,6 +469,9 @@ function renderShiftBoard() {
         <button class="action-button board-action-button" type="button" data-shift-id="${shift.id}">
           ${getBoardButtonLabel(shift)}
         </button>
+        <button class="action-button secondary-action view-crew-button" type="button" data-shift-id="${shift.id}">
+          View shift crew
+        </button>
       </div>
       ${responsePanel}
     `;
@@ -401,6 +533,18 @@ function renderShiftBoard() {
       saveLocalJson(shiftResponseStorageKey, responses);
       renderShiftBoard();
       shiftBoardStatus.textContent = "Status returned to Open.";
+    });
+  });
+
+  document.querySelectorAll(".view-crew-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const shift = shifts.find((item) => item.id === button.dataset.shiftId);
+
+      if (!shift) {
+        return;
+      }
+
+      openCrewShift(shift);
     });
   });
 }
@@ -505,7 +649,7 @@ function renderImportedShifts() {
         time: shift.time,
         neighborhood: shift.neighborhood,
         note: `Released from ${selectedScheduleSource || "imported schedule"}.`,
-        postType: "Release",
+        postType: "Release shift",
         postedTo: "Workplace crew",
       });
       activeScheduleAction = null;
@@ -530,7 +674,7 @@ function renderImportedShifts() {
         time: shift.time,
         neighborhood: shift.neighborhood,
         note: `Swap request from ${selectedScheduleSource || "imported schedule"}.`,
-        postType: "Swap",
+        postType: "Request swap",
         lookingFor: button.dataset.preference,
         postedTo: "Workplace crew",
       });
@@ -708,6 +852,30 @@ mockPreviewButtons.forEach((button) => {
   });
 });
 
+crewWorkplaceButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const shifts = getAllShifts();
+    const matchedShift =
+      shifts.find((shift) => shift.workplace === button.dataset.workplace) || {
+        id: `crew-preview-${button.dataset.workplace}`,
+        workplace: button.dataset.workplace,
+        role: "Bartender",
+        day: "Friday, July 10",
+        time: "6 PM-Close",
+        postType: "Release shift",
+        status: "Open",
+      };
+
+    openCrewShift(matchedShift);
+  });
+});
+
+if (crewShiftMessageButton) {
+  crewShiftMessageButton.addEventListener("click", () => {
+    crewActionStatus.textContent = "Shift message preview opened for this shift.";
+  });
+}
+
 const savedTheme = localStorage.getItem(themeStorageKey) || "dark";
 applyTheme(savedTheme);
 
@@ -725,3 +893,13 @@ feedbackAnswerButtons.forEach((button) => {
 });
 
 renderShiftBoard();
+openCrewShift({
+  id: "crew-default",
+  workplace: "Departure Lounge",
+  role: "Bartender",
+  day: "Friday, July 10",
+  time: "6 PM-Close",
+  postType: "Release shift",
+  status: "Open",
+}, false);
+crewActionStatus.textContent = "Select a crew or shift to review the active Shift Crew.";
