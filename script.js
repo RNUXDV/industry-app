@@ -34,6 +34,7 @@ const feedbackNote = document.querySelector("#feedback-note");
 const saveFeedbackButton = document.querySelector("#save-feedback-button");
 const feedbackStatus = document.querySelector("#feedback-status");
 const openFeedbackFormButton = document.querySelector("#open-feedback-form-button");
+const mockPreviewButtons = document.querySelectorAll(".mock-preview-button");
 
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
@@ -695,6 +696,17 @@ if (saveFeedbackButton) {
 if (openFeedbackFormButton) {
   openFeedbackFormButton.href = feedbackFormUrl;
 }
+
+mockPreviewButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const message = button.dataset.message;
+    const statusPanel = button.closest(".app-section").querySelector(".status-text");
+
+    if (statusPanel) {
+      statusPanel.textContent = message;
+    }
+  });
+});
 
 const savedTheme = localStorage.getItem(themeStorageKey) || "dark";
 applyTheme(savedTheme);

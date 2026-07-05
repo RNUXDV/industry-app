@@ -43,19 +43,29 @@
           <section class="today-panel" aria-label="Flow summary">
             <div class="panel-heading">
               <p class="section-label">How the flow works</p>
-              <h3>Profile -> My Schedule -> Need Coverage -> Catch Board -> Shift Message</h3>
+              <h3>Schedule -> Post -> Catch -> Shift Message</h3>
+              <p>Future lanes: Jobs and Crew</p>
             </div>
           </section>
 
-          <section class="today-panel" aria-label="How Industry works">
+          <section class="today-panel" aria-label="How Industry is organized">
             <div class="panel-heading">
-              <p class="section-label">How Industry works</p>
-              <h3>Start with your workplace setup</h3>
+              <p class="section-label">How Industry is organized</p>
+              <h3>Three clear lanes</h3>
               <p>
-                Set up your profile, add your workplaces, import your schedule,
-                choose a shift that needs coverage, release, swap, or offer
-                pickup, post to the right workplace crew, coordinate through
-                Shift Message, and mark the shift as pending confirmation.
+                Industry has three lanes:
+              </p>
+              <p>
+                Shift Exchange
+                Manage your schedule, post coverage needs, and catch open shifts.
+              </p>
+              <p>
+                Jobs
+                Find new work, extra hours, and service-industry opportunities.
+              </p>
+              <p>
+                Crew
+                Stay connected with verified coworkers and workplace crews.
               </p>
             </div>
             <button class="action-button" id="start-here-button" type="button">
@@ -82,10 +92,28 @@
               <p>Choose a workplace and post a release, swap, or pickup request to the right crew.</p>
             </article>
 
+            <article class="feature-card nav-card" data-target-section="jobs" tabindex="0">
+              <div class="card-icon" aria-hidden="true">J</div>
+              <h3>Jobs</h3>
+              <p>Find new work, extra hours, event gigs, and service-industry opportunities.</p>
+            </article>
+
+            <article class="feature-card nav-card" data-target-section="crew" tabindex="0">
+              <div class="card-icon" aria-hidden="true">R</div>
+              <h3>Crew</h3>
+              <p>Connect with verified coworkers, workplace crews, and shift-related messages.</p>
+            </article>
+
             <article class="feature-card nav-card" data-target-section="profile" tabindex="0">
               <div class="card-icon" aria-hidden="true">M</div>
-              <h3>My Profile</h3>
-              <p>Save your role, neighborhood, and work focus for this prototype.</p>
+              <h3>Profile</h3>
+              <p>Manage your workplaces, roles, and crew visibility.</p>
+            </article>
+
+            <article class="feature-card nav-card" data-target-section="feedback" tabindex="0">
+              <div class="card-icon" aria-hidden="true">F</div>
+              <h3>Feedback</h3>
+              <p>Help shape the Industry prototype.</p>
             </article>
           </section>
 
@@ -488,6 +516,104 @@
             <p class="status-text" id="feedback-status" aria-live="polite"></p>
           </section>
         </section>
+
+        <section class="app-section" data-section="jobs">
+          <div class="section-heading">
+            <p class="section-label">Jobs</p>
+            <h2>Jobs</h2>
+            <p>
+              Find new work, extra hours, event gigs, and service-industry opportunities.
+            </p>
+          </div>
+
+          <section class="stack-list shift-list" aria-label="Job opportunities">
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Opportunity</p>
+                <h3>Line Cook</h3>
+                <p>Pearl District - Full-time</p>
+              </div>
+              <button class="action-button mock-preview-button" type="button" data-message="Job details preview coming soon.">
+                View opportunity
+              </button>
+            </article>
+
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Opportunity</p>
+                <h3>Bartender</h3>
+                <p>SE Portland - Weekend nights</p>
+              </div>
+              <button class="action-button mock-preview-button" type="button" data-message="Job details preview coming soon.">
+                View opportunity
+              </button>
+            </article>
+
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Opportunity</p>
+                <h3>Event Server</h3>
+                <p>Portland Metro - Flexible gigs</p>
+              </div>
+              <button class="action-button mock-preview-button" type="button" data-message="Job details preview coming soon.">
+                View opportunity
+              </button>
+            </article>
+          </section>
+
+          <section class="today-panel" aria-label="Jobs placeholder status">
+            <p class="status-text" id="jobs-status-message">Explore future opportunities here.</p>
+          </section>
+        </section>
+
+        <section class="app-section" data-section="crew">
+          <div class="section-heading">
+            <p class="section-label">Crew</p>
+            <h2>Crew</h2>
+            <p>
+              Connect with verified coworkers, workplace crews, and shift-related messages.
+            </p>
+          </div>
+
+          <section class="stack-list shift-list" aria-label="Crew groups">
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Verified workplace crew</p>
+                <h3>Departure Lounge Crew</h3>
+                <p>Crew type: Verified workplace crew</p>
+              </div>
+              <button class="action-button mock-preview-button" type="button" data-message="Crew view coming soon.">
+                View crew
+              </button>
+            </article>
+
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Verified workplace crew</p>
+                <h3>Cafe Luna Crew</h3>
+                <p>Crew type: Verified workplace crew</p>
+              </div>
+              <button class="action-button mock-preview-button" type="button" data-message="Crew view coming soon.">
+                View crew
+              </button>
+            </article>
+
+            <article class="stack-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Verified workplace crew</p>
+                <h3>Event Pool</h3>
+                <p>Crew type: Verified workplace crew</p>
+              </div>
+              <button class="action-button mock-preview-button" type="button" data-message="Crew view coming soon.">
+                View crew
+              </button>
+            </article>
+          </section>
+
+          <section class="today-panel" aria-label="Crew placeholder status">
+            <p class="status-text" id="crew-status-message">Crew spaces will grow from shift-related connection first.</p>
+          </section>
+        </section>
       </main>
 
       <button
@@ -501,11 +627,11 @@
       </button>
 
       <nav class="bottom-nav" aria-label="Bottom navigation">
-        <button class="nav-item" type="button" data-target="shift-board">Catch</button>
         <button class="nav-item" type="button" data-target="my-schedule">Schedule</button>
         <button class="nav-item" type="button" data-target="post-shift">Post</button>
-        <button class="nav-item" type="button" data-target="profile">Profile</button>
-        <button class="nav-item" type="button" data-target="feedback">Feedback</button>
+        <button class="nav-item" type="button" data-target="shift-board">Catch</button>
+        <button class="nav-item" type="button" data-target="jobs">Jobs</button>
+        <button class="nav-item" type="button" data-target="crew">Crew</button>
       </nav>
     </div>
 
