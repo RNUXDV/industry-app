@@ -233,7 +233,27 @@ function getAllShifts() {
 }
 
 function getBoardButtonLabel(shift) {
-  return shift.postType === "Swap" ? "Offer swap" : "I can take this";
+  if (shift.postType === "Swap") {
+    return "Offer swap";
+  }
+
+  if (shift.postType === "Offer pickup") {
+    return "Message worker";
+  }
+
+  return "I can take this";
+}
+
+function getBoardRequestLabel(shift) {
+  if (shift.postType === "Swap") {
+    return "Swap request";
+  }
+
+  if (shift.postType === "Offer pickup") {
+    return "Pickup opportunity";
+  }
+
+  return "Release request";
 }
 
 function getDisplayedShiftStatus(shift, responses) {
@@ -255,7 +275,7 @@ function createBoardPost(postData) {
   savedShifts.unshift(newShift);
   saveLocalJson(shiftsStorageKey, savedShifts);
   renderShiftBoard();
-  shiftBoardStatus.textContent = "Added to Shift Board.";
+  shiftBoardStatus.textContent = "Added to Catch Board.";
   setActiveSection("shift-board");
 }
 
@@ -296,9 +316,9 @@ function renderShiftBoard() {
     shiftCard.className = "stack-card shift-card";
     shiftCard.innerHTML = `
       <div class="stack-copy">
-        <p class="stack-kicker">Shift Board</p>
+        <p class="stack-kicker">Catch Board</p>
         <h3>${shift.workplace}</h3>
-        <p>${shift.role} - ${shift.postType}</p>
+        <p>${shift.role} - ${getBoardRequestLabel(shift)}</p>
         <ul class="shift-meta">
           <li>${shift.day}</li>
           <li>${shift.time}</li>
@@ -339,6 +359,7 @@ function renderShiftBoard() {
 
       saveLocalJson(shiftResponseStorageKey, responses);
       renderShiftBoard();
+      shiftBoardStatus.textContent = "Coworker response added on Catch Board.";
     });
   });
 
@@ -361,6 +382,7 @@ function renderShiftBoard() {
 
       saveLocalJson(shiftResponseStorageKey, responses);
       renderShiftBoard();
+      shiftBoardStatus.textContent = "Status updated to Pending confirmation.";
     });
   });
 
@@ -377,6 +399,7 @@ function renderShiftBoard() {
 
       saveLocalJson(shiftResponseStorageKey, responses);
       renderShiftBoard();
+      shiftBoardStatus.textContent = "Status returned to Open.";
     });
   });
 }
