@@ -3,6 +3,7 @@ const appSections = document.querySelectorAll(".app-section");
 const navCards = document.querySelectorAll(".nav-card");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
 const goToFeedbackButton = document.querySelector("#go-to-feedback-button");
+const startHereButton = document.querySelector("#start-here-button");
 const saveShiftButton = document.querySelector("#save-shift-button");
 const shiftBoardList = document.querySelector("#shift-board-list");
 const shiftBoardStatus = document.querySelector("#shift-board-status");
@@ -169,6 +170,12 @@ if (goToFeedbackButton) {
   });
 }
 
+if (startHereButton) {
+  startHereButton.addEventListener("click", () => {
+    setActiveSection("profile");
+  });
+}
+
 function applyTheme(themeName) {
   // Theme switching works by saving a short label in localStorage.
   // On refresh, we read that label back and restore the same look.
@@ -254,6 +261,7 @@ function renderShiftBoard() {
       ? `
         <div class="response-panel">
           <p class="status-text">Jordan is interested.</p>
+          <p class="status-text">Keep messages tied to the shift so coverage decisions stay clear.</p>
           <div class="message-preview">
             <p>I can take this if manager approves.</p>
             <p>Perfect. I'll mark it as pending.</p>
