@@ -193,6 +193,11 @@ h1 {
   gap: 14px;
 }
 
+.connection-grid {
+  display: grid;
+  gap: 10px;
+}
+
 .feature-card,
 .detail-card,
 .stack-card,
@@ -276,6 +281,17 @@ h1 {
 
 .profile-summary-card.visible {
   display: block;
+}
+
+.connection-status.hidden-panel,
+#imported-shifts-panel.hidden-panel {
+  display: none;
+}
+
+.connection-status {
+  margin-top: 16px;
+  display: grid;
+  gap: 6px;
 }
 
 .field-group {
@@ -369,6 +385,11 @@ h1 {
   gap: 10px;
 }
 
+.shift-action-row {
+  display: grid;
+  gap: 10px;
+}
+
 .interest-button {
   background: linear-gradient(135deg, var(--highlight), #1f5b55);
   color: white;
@@ -408,7 +429,7 @@ h1 {
   bottom: 14px;
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 8px;
   width: min(calc(100% - 18px), 430px);
   padding: 10px;
@@ -422,10 +443,10 @@ h1 {
 .nav-item {
   border: 0;
   border-radius: 16px;
-  padding: 14px 8px;
+  padding: 14px 6px;
   background: transparent;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -495,6 +516,10 @@ h1 {
 
   .card-list {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .connection-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .today-grid {

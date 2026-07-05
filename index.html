@@ -47,6 +47,12 @@
               <p>Browse realistic open shifts from nearby service workers and teams.</p>
             </article>
 
+            <article class="feature-card nav-card" data-target-section="connect-schedule" tabindex="0">
+              <div class="card-icon" aria-hidden="true">C</div>
+              <h3>Connect Schedule</h3>
+              <p>Mock-connect a schedule and turn shifts into release, swap, or pickup posts.</p>
+            </article>
+
             <article class="feature-card nav-card" data-target-section="post-shift" tabindex="0">
               <div class="card-icon" aria-hidden="true">P</div>
               <h3>Post a Shift</h3>
@@ -121,6 +127,57 @@
 
           <!-- Shift cards are rendered here from sample data plus localStorage. -->
           <section class="stack-list shift-list" id="shift-board-list" aria-label="Shift cards"></section>
+        </section>
+
+        <section class="app-section" data-section="connect-schedule">
+          <div class="section-heading">
+            <p class="section-label">Connect Schedule</p>
+            <h2>Bring your shifts in once</h2>
+            <p>
+              Connect or import your work schedule, then turn any shift into a
+              release, swap, or pickup post.
+            </p>
+          </div>
+
+          <section class="today-panel" aria-label="Schedule connection options">
+            <div class="panel-heading">
+              <p class="section-label">Connection options</p>
+              <h3>Choose a schedule source</h3>
+            </div>
+
+            <div class="connection-grid">
+              <button class="filter-button connection-button" type="button" data-source="Schedulefly">
+                Schedulefly
+              </button>
+              <button class="filter-button connection-button" type="button" data-source="Google Calendar">
+                Google Calendar
+              </button>
+              <button class="filter-button connection-button" type="button" data-source="Apple Calendar">
+                Apple Calendar
+              </button>
+              <button class="filter-button connection-button" type="button" data-source="Manual entry">
+                Manual entry
+              </button>
+            </div>
+
+            <div class="connection-status hidden-panel" id="connection-status-panel">
+              <p class="status-text" id="connection-status-message">Schedule connected</p>
+              <p class="status-text" id="connection-status-detail">3 upcoming shifts found</p>
+            </div>
+          </section>
+
+          <section
+            class="today-panel hidden-panel"
+            id="imported-shifts-panel"
+            aria-label="Imported upcoming shifts"
+          >
+            <div class="panel-heading">
+              <p class="section-label">Upcoming shifts</p>
+              <h3>Imported shift preview</h3>
+            </div>
+
+            <section class="stack-list shift-list" id="imported-shift-list" aria-label="Imported shifts"></section>
+          </section>
         </section>
 
         <section class="app-section" data-section="post-shift">
@@ -340,6 +397,7 @@
       <nav class="bottom-nav" aria-label="Bottom navigation">
         <button class="nav-item active" type="button" data-target="home">Home</button>
         <button class="nav-item" type="button" data-target="shift-board">Board</button>
+        <button class="nav-item" type="button" data-target="connect-schedule">Connect</button>
         <button class="nav-item" type="button" data-target="post-shift">Post</button>
         <button class="nav-item" type="button" data-target="profile">Profile</button>
         <button class="nav-item" type="button" data-target="feedback">Feedback</button>
