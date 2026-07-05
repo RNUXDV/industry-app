@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Industry</title>
+    <title>Industry V2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -16,7 +16,7 @@
     <div class="app-shell">
       <header class="hero">
         <div class="hero-top">
-          <p class="eyebrow">Mobile-first crew network</p>
+          <p class="eyebrow">Shift board prototype</p>
           <button class="theme-toggle" id="theme-toggle-button" type="button">
             Light / Dark: Dark
           </button>
@@ -24,32 +24,55 @@
         <h1>Industry</h1>
         <p class="tagline">The network behind the service.</p>
         <p class="intro">
-          A simple home base for restaurant workers to track shifts, find new
-          opportunities, and stay connected with their crew.
+          A calm mobile-first board for restaurant and service workers who need
+          faster ways to post shifts, pick them up, and stay organized.
         </p>
       </header>
 
       <main>
-        <!-- Each app section is toggled by the bottom navigation. -->
-        <section class="app-section active" id="home-section" data-section="home">
+        <section class="app-section active" data-section="home">
           <div class="section-heading">
             <p class="section-label">Home</p>
-            <div class="home-heading-row">
-              <h2 id="home-welcome-message">Welcome back</h2>
-              <div class="home-action-row">
-                <button class="back-button setup-button" id="open-profile-button" type="button">
-                  Set up profile
-                </button>
-                <button class="back-button setup-button" id="open-testing-button" type="button">
-                  Test this prototype
-                </button>
-              </div>
-            </div>
-            <p id="home-welcome-note">
-              Your shift week is lining up. Check today&apos;s priorities, browse
-              opportunities, and stay close to your people.
+            <h2>Welcome back</h2>
+            <p>
+              Check open shifts, post coverage needs, and keep your work life in
+              one lightweight place.
             </p>
           </div>
+
+          <section class="card-list" aria-label="Main actions">
+            <article class="feature-card nav-card" data-target-section="shift-board" tabindex="0">
+              <div class="card-icon" aria-hidden="true">S</div>
+              <h3>Shift Board</h3>
+              <p>Browse realistic open shifts from nearby service workers and teams.</p>
+            </article>
+
+            <article class="feature-card nav-card" data-target-section="post-shift" tabindex="0">
+              <div class="card-icon" aria-hidden="true">P</div>
+              <h3>Post a Shift</h3>
+              <p>Share a shift you need covered without building a full job board.</p>
+            </article>
+
+            <article class="feature-card nav-card" data-target-section="profile" tabindex="0">
+              <div class="card-icon" aria-hidden="true">M</div>
+              <h3>My Profile</h3>
+              <p>Save your role, neighborhood, and work focus for this prototype.</p>
+            </article>
+          </section>
+
+          <section class="today-panel" aria-label="Why test Industry">
+            <div class="panel-heading">
+              <p class="section-label">Testing Industry?</p>
+              <h3>Try the full flow</h3>
+              <p>
+                Explore Shift Board, Post a Shift, My Profile, and Feedback so the
+                prototype feels close to a real shift-coverage routine.
+              </p>
+            </div>
+            <button class="action-button" id="go-to-feedback-button" type="button">
+              Go to feedback
+            </button>
+          </section>
 
           <section
             class="today-panel profile-summary-card hidden-panel"
@@ -57,11 +80,11 @@
             aria-label="Saved profile summary"
           >
             <div class="panel-heading">
-              <p class="section-label">Your setup</p>
-              <h3>Profile snapshot</h3>
+              <p class="section-label">My profile</p>
+              <h3>Saved setup</h3>
             </div>
 
-            <div class="today-grid work-grid">
+            <div class="today-grid">
               <article class="detail-card">
                 <p class="detail-label">Role</p>
                 <h4 id="profile-role-summary">Server</h4>
@@ -74,552 +97,124 @@
 
               <article class="detail-card">
                 <p class="detail-label">Main goal</p>
-                <h4 id="profile-goal-summary">Manage my shifts</h4>
+                <h4 id="profile-goal-summary">Pick up extra shifts</h4>
               </article>
             </div>
-          </section>
-
-          <section class="card-list" aria-label="Main features">
-            <!-- The Work card opens a deeper workflow screen inside the app. -->
-            <article class="feature-card work-card" data-open-work="true" tabindex="0">
-              <div class="card-icon" aria-hidden="true">W</div>
-              <h3>Work</h3>
-              <p>
-                Check today&apos;s shift details, team notes, and what needs to get
-                done before service starts.
-              </p>
-            </article>
-
-            <article class="feature-card jobs-card" data-open-jobs="true" tabindex="0">
-              <div class="card-icon" aria-hidden="true">J</div>
-              <h3>Jobs</h3>
-              <p>
-                Explore nearby openings built for service workers who want extra
-                hours or a better fit.
-              </p>
-            </article>
-
-            <article class="feature-card">
-              <div class="card-icon" aria-hidden="true">C</div>
-              <h3>Connect</h3>
-              <p>
-                Keep in touch with trusted coworkers, swap referrals, and share
-                updates across your network.
-              </p>
-            </article>
-          </section>
-
-          <section class="today-panel" aria-label="Today in service">
-            <div class="panel-heading">
-              <p class="section-label">Today in service</p>
-              <h3>Service snapshot</h3>
-            </div>
-
-            <div class="today-grid">
-              <article class="detail-card">
-                <p class="detail-label">Upcoming shift</p>
-                <h4>5:00 PM at Cedar House</h4>
-                <p>Pre-shift lineup starts at 4:35 PM. Patio section is yours.</p>
-              </article>
-
-              <article class="detail-card">
-                <p class="detail-label">Tip note</p>
-                <h4>Brunch pool landed strong</h4>
-                <p>Yesterday&apos;s split averaged $148. Keep upsells focused on NA pairings.</p>
-              </article>
-
-              <article class="detail-card">
-                <p class="detail-label">Team reminder</p>
-                <h4>Menu tasting tomorrow</h4>
-                <p>Bring a notebook for the spring cocktail rundown before family meal.</p>
-              </article>
-            </div>
-          </section>
-
-          <section class="today-panel" aria-label="Group chat testing note">
-            <div class="panel-heading">
-              <p class="section-label">Testing Industry?</p>
-              <h3>Take your time exploring.</h3>
-              <p>
-                Try Work, Jobs, Network, and Profile before leaving feedback.
-              </p>
-            </div>
-
-            <button class="action-button" id="go-to-testing-tasks-button" type="button">
-              Go to testing tasks
-            </button>
           </section>
         </section>
 
-        <section class="app-section" id="work-section" data-section="work">
-          <div class="section-heading work-heading">
-            <button class="back-button" id="back-home-button" type="button">
-              Back to Home
-            </button>
-            <p class="section-label">Work</p>
-            <h2>Manage your shift before service starts.</h2>
-          </div>
-
-          <section class="today-panel" aria-label="Upcoming shift details">
-            <div class="panel-heading">
-              <p class="section-label">Upcoming shift</p>
-              <h3>Today, 4:30 PM - 11:00 PM</h3>
-            </div>
-
-            <div class="today-grid work-grid">
-              <article class="detail-card">
-                <p class="detail-label">Role</p>
-                <h4>Server</h4>
-              </article>
-
-              <article class="detail-card">
-                <p class="detail-label">Station</p>
-                <h4>Patio / Section B</h4>
-              </article>
-            </div>
-          </section>
-
-          <section class="stack-list work-tools" aria-label="Shift tools">
-            <article class="stack-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Shift tools</p>
-                <h3>Quick actions</h3>
-                <p>Handle coverage requests and crew communication before lineup.</p>
-              </div>
-
-              <div class="tool-button-group">
-                <button class="action-button work-action-button" type="button" data-status-message="Shift marked for release.">
-                  Release Shift
-                </button>
-                <button class="action-button work-action-button" type="button" data-status-message="Swap request posted.">
-                  Request Swap
-                </button>
-                <button class="action-button work-action-button" type="button" data-status-message="Team message started.">
-                  Message Team
-                </button>
-              </div>
-
-              <p class="status-text" id="work-status" aria-live="polite">
-                Choose an action for this shift.
-              </p>
-            </article>
-          </section>
-
-          <section class="work-detail-grid" aria-label="Shift notes and tip tracker">
-            <article class="stack-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Shift notes</p>
-                <h3>Pre-service notes</h3>
-                <p>Keep a quick reminder for yourself before the floor gets busy.</p>
-              </div>
-
-              <!-- A basic note field keeps the prototype easy to test. -->
-              <label class="sr-only" for="shift-note">Shift note</label>
-              <textarea
-                class="note-input"
-                id="shift-note"
-                placeholder="Add a note before service..."
-              ></textarea>
-              <button class="action-button" id="save-note-button" type="button">
-                Save Note
-              </button>
-              <p class="status-text" id="note-status" aria-live="polite"></p>
-            </article>
-
-            <article class="stack-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Tip tracker</p>
-                <h3>Tonight&apos;s tips</h3>
-                <p>Add quick cash or card totals and keep a simple running number.</p>
-              </div>
-
-              <label class="sr-only" for="tip-amount">Tip amount</label>
-              <input
-                class="tip-input"
-                id="tip-amount"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Enter tip amount"
-              />
-              <button class="action-button" id="add-tip-button" type="button">
-                Add Tip
-              </button>
-              <p class="tip-total">
-                Running total: <span id="tip-total-value">$0.00</span>
-              </p>
-            </article>
-          </section>
-        </section>
-
-        <section class="app-section" id="jobs-section" data-section="jobs">
-          <div class="section-heading work-heading">
-            <button class="back-button" id="back-home-from-jobs" type="button">
-              Back to Home
-            </button>
-            <p class="section-label">Jobs</p>
-            <h2>Find better shifts, better rooms, and better fits.</h2>
-            <p>
-              A calm browse for Portland hospitality roles, with quick filters
-              and simple actions that feel closer to a trusted referral board.
-            </p>
-          </div>
-
-          <section class="today-panel jobs-toolbar" aria-label="Job filters and updates">
-            <p class="status-text" id="jobs-status" aria-live="polite">
-              Showing all Portland jobs.
-            </p>
-
-            <div class="filter-row" role="group" aria-label="Job filters">
-              <!-- These filter buttons hide and show matching jobs. -->
-              <button class="filter-button active" type="button" data-filter="all">
-                All
-              </button>
-              <button class="filter-button" type="button" data-filter="serving">
-                Serving
-              </button>
-              <button class="filter-button" type="button" data-filter="bartending">
-                Bartending
-              </button>
-              <button class="filter-button" type="button" data-filter="support">
-                Support
-              </button>
-              <button class="filter-button" type="button" data-filter="brunch">
-                Brunch
-              </button>
-            </div>
-          </section>
-
-          <section class="stack-list jobs-list" aria-label="Job listings">
-            <article
-              class="stack-card job-card"
-              data-category="serving"
-              data-tags="Dinner Fine Dining"
-            >
-              <div class="stack-copy">
-                <p class="stack-kicker">Restaurant</p>
-                <h3>Ava Gene&apos;s</h3>
-                <p>Server</p>
-                <ul class="meta-list">
-                  <li>$18/hr + tips</li>
-                  <li>Division</li>
-                  <li>Dinner</li>
-                  <li>Fine Dining</li>
-                </ul>
-              </div>
-
-              <div class="job-action-row">
-                <button class="action-button save-button" type="button">
-                  Save
-                </button>
-                <button class="action-button interest-button" type="button">
-                  I&apos;m interested
-                </button>
-              </div>
-            </article>
-
-            <article
-              class="stack-card job-card"
-              data-category="support"
-              data-tags="Dinner High Volume"
-            >
-              <div class="stack-copy">
-                <p class="stack-kicker">Restaurant</p>
-                <h3>Kann</h3>
-                <p>Host / Support</p>
-                <ul class="meta-list">
-                  <li>$20/hr + tips</li>
-                  <li>Central Eastside</li>
-                  <li>Dinner</li>
-                  <li>High Volume</li>
-                </ul>
-              </div>
-
-              <div class="job-action-row">
-                <button class="action-button save-button" type="button">
-                  Save
-                </button>
-                <button class="action-button interest-button" type="button">
-                  I&apos;m interested
-                </button>
-              </div>
-            </article>
-
-            <article
-              class="stack-card job-card"
-              data-category="brunch serving"
-              data-tags="Brunch High Volume"
-            >
-              <div class="stack-copy">
-                <p class="stack-kicker">Restaurant</p>
-                <h3>Screen Door</h3>
-                <p>Brunch Server</p>
-                <ul class="meta-list">
-                  <li>$16/hr + tips</li>
-                  <li>Burnside</li>
-                  <li>Brunch</li>
-                  <li>High Volume</li>
-                </ul>
-              </div>
-
-              <div class="job-action-row">
-                <button class="action-button save-button" type="button">
-                  Save
-                </button>
-                <button class="action-button interest-button" type="button">
-                  I&apos;m interested
-                </button>
-              </div>
-            </article>
-
-            <article
-              class="stack-card job-card"
-              data-category="bartending"
-              data-tags="Bar Dinner"
-            >
-              <div class="stack-copy">
-                <p class="stack-kicker">Restaurant</p>
-                <h3>Hey Love</h3>
-                <p>Bartender</p>
-                <ul class="meta-list">
-                  <li>$17/hr + tips</li>
-                  <li>Eastside</li>
-                  <li>Bar</li>
-                  <li>Dinner</li>
-                </ul>
-              </div>
-
-              <div class="job-action-row">
-                <button class="action-button save-button" type="button">
-                  Save
-                </button>
-                <button class="action-button interest-button" type="button">
-                  I&apos;m interested
-                </button>
-              </div>
-            </article>
-          </section>
-        </section>
-
-        <section class="app-section" id="network-section" data-section="network">
+        <section class="app-section" data-section="shift-board">
           <div class="section-heading">
-            <p class="section-label">Network</p>
-            <h2>Stay connected with the people who understand the shift.</h2>
+            <p class="section-label">Shift Board</p>
+            <h2>Open shifts nearby</h2>
             <p>
-              A quieter community layer for trusted coworkers, local industry
-              support, and after-shift connection without the noise of a feed.
+              A focused list of open shifts for service workers who need coverage
+              or want to grab extra hours.
             </p>
           </div>
 
-          <section class="today-panel" aria-label="Tonight's pulse">
-            <div class="panel-heading">
-              <p class="section-label">Tonight&apos;s pulse</p>
-              <h3>Service community snapshot</h3>
-            </div>
-
-            <div class="today-grid network-pulse-grid">
-              <article class="detail-card">
-                <p class="detail-label">Check-ins</p>
-                <h4>3 coworkers checked in</h4>
-              </article>
-
-              <article class="detail-card">
-                <p class="detail-label">Shift swaps</p>
-                <h4>2 open shift swaps</h4>
-              </article>
-
-              <article class="detail-card">
-                <p class="detail-label">Meetups</p>
-                <h4>1 meetup nearby</h4>
-                <p>Mood: steady</p>
-              </article>
-            </div>
-          </section>
-
-          <section class="stack-list network-list" aria-label="Community tools">
-            <article class="stack-card network-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Crew board</p>
-                <h3>Shift swap board</h3>
-                <p>Post or pick up available shifts from trusted coworkers.</p>
-              </div>
-
-              <button
-                class="action-button network-button"
-                type="button"
-                data-panel="swaps"
-              >
-                View swaps
-              </button>
-            </article>
-
-            <article class="stack-card network-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Check-in</p>
-                <h3>Crew check-in</h3>
-                <p>A quick mental health pulse before or after service.</p>
-              </div>
-
-              <button
-                class="action-button network-button"
-                type="button"
-                data-panel="checkin"
-              >
-                Check in
-              </button>
-            </article>
-
-            <article class="stack-card network-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Community</p>
-                <h3>Industry meetups</h3>
-                <p>Find low-pressure hangs, pop-ups, and after-shift gatherings.</p>
-              </div>
-
-              <button
-                class="action-button network-button"
-                type="button"
-                data-panel="meetups"
-              >
-                See meetups
-              </button>
-            </article>
-
-            <article class="stack-card network-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Trusted circle</p>
-                <h3>Trusted circle</h3>
-                <p>Keep close contacts, references, and work friends in one place.</p>
-              </div>
-
-              <button
-                class="action-button network-button"
-                type="button"
-                data-panel="circle"
-              >
-                Open circle
-              </button>
-            </article>
-          </section>
-
-          <section class="today-panel network-detail-panel" aria-label="Network details">
-            <p class="status-text" id="network-status" aria-live="polite">
-              Open a network tool to see more.
+          <section class="today-panel" aria-label="Shift board status">
+            <p class="status-text" id="shift-board-status">
+              Browse sample shifts or post a new one below.
             </p>
+          </section>
 
-            <div class="network-panel active" id="network-panel-swaps" data-panel-content="swaps">
-              <div class="panel-heading">
-                <p class="section-label">Shift swaps</p>
-                <h3>Open swap posts</h3>
-              </div>
+          <!-- Shift cards are rendered here from sample data plus localStorage. -->
+          <section class="stack-list shift-list" id="shift-board-list" aria-label="Shift cards"></section>
+        </section>
 
-              <div class="network-item-list">
-                <article class="detail-card">
-                  <p class="detail-label">Tonight</p>
-                  <h4>Leah needs dinner coverage at Gado Gado</h4>
-                  <p>5:00 PM to close, server shift, inner SE.</p>
-                </article>
-                <article class="detail-card">
-                  <p class="detail-label">Tomorrow</p>
-                  <h4>Marco can pick up a brunch host shift</h4>
-                  <p>Available until 2:00 PM, east side only.</p>
-                </article>
-                <article class="detail-card">
-                  <p class="detail-label">Weekend</p>
-                  <h4>Tori posted a Sunday barback swap</h4>
-                  <p>Hotel lounge, 6:00 PM to midnight.</p>
-                </article>
-              </div>
+        <section class="app-section" data-section="post-shift">
+          <div class="section-heading">
+            <p class="section-label">Post a Shift</p>
+            <h2>Need coverage?</h2>
+            <p>
+              Add a shift to the board in a few fields. This stays local to the
+              browser for the prototype.
+            </p>
+          </div>
+
+          <section class="today-panel" aria-label="Post shift form">
+            <div class="form-grid">
+              <label class="field-group" for="shift-restaurant">
+                <span class="field-label">Restaurant</span>
+                <input
+                  class="tip-input"
+                  id="shift-restaurant"
+                  type="text"
+                  placeholder="Example: Nostrana"
+                />
+              </label>
+
+              <label class="field-group" for="shift-role">
+                <span class="field-label">Role</span>
+                <select class="tip-input" id="shift-role">
+                  <option value="">Choose a role</option>
+                  <option>Server</option>
+                  <option>Bartender</option>
+                  <option>Host</option>
+                  <option>Line Cook</option>
+                  <option>Barista</option>
+                  <option>Support</option>
+                </select>
+              </label>
+
+              <label class="field-group" for="shift-day">
+                <span class="field-label">Day</span>
+                <input class="tip-input" id="shift-day" type="text" placeholder="Friday" />
+              </label>
+
+              <label class="field-group" for="shift-time">
+                <span class="field-label">Time</span>
+                <input
+                  class="tip-input"
+                  id="shift-time"
+                  type="text"
+                  placeholder="4:00 PM - 10:30 PM"
+                />
+              </label>
+
+              <label class="field-group" for="shift-neighborhood">
+                <span class="field-label">Neighborhood</span>
+                <select class="tip-input" id="shift-neighborhood">
+                  <option value="">Choose a neighborhood</option>
+                  <option>Downtown</option>
+                  <option>Pearl</option>
+                  <option>Eastside</option>
+                  <option>Division</option>
+                  <option>Alberta</option>
+                  <option>Sellwood</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label class="field-group" for="shift-note">
+                <span class="field-label">Shift note</span>
+                <textarea
+                  class="note-input"
+                  id="shift-note"
+                  placeholder="Share anything useful about the shift..."
+                ></textarea>
+              </label>
             </div>
 
-            <div class="network-panel" id="network-panel-checkin" data-panel-content="checkin">
-              <div class="panel-heading">
-                <p class="section-label">Crew check-in</p>
-                <h3>How does the shift feel?</h3>
-              </div>
-
-              <div class="mood-row" role="group" aria-label="Mood check-in">
-                <button class="filter-button mood-button" type="button">Good</button>
-                <button class="filter-button mood-button" type="button">Tired</button>
-                <button class="filter-button mood-button" type="button">Overwhelmed</button>
-              </div>
-
-              <p class="status-text" id="checkin-status" aria-live="polite"></p>
-            </div>
-
-            <div class="network-panel" id="network-panel-meetups" data-panel-content="meetups">
-              <div class="panel-heading">
-                <p class="section-label">Meetups</p>
-                <h3>Nearby Portland gatherings</h3>
-              </div>
-
-              <div class="network-item-list">
-                <article class="detail-card">
-                  <p class="detail-label">Monday</p>
-                  <h4>Late staff meal hang at Psychic Bar</h4>
-                  <p>Small group after 9:30 PM, open to FOH and BOH.</p>
-                </article>
-                <article class="detail-card">
-                  <p class="detail-label">Wednesday</p>
-                  <h4>Pop-up tasting chat in Central Eastside</h4>
-                  <p>Casual tasting and job talk with local servers and bartenders.</p>
-                </article>
-                <article class="detail-card">
-                  <p class="detail-label">Friday</p>
-                  <h4>After-shift coffee meetup on Burnside</h4>
-                  <p>Low-key reset for workers coming off brunch and dinner.</p>
-                </article>
-              </div>
-            </div>
-
-            <div class="network-panel" id="network-panel-circle" data-panel-content="circle">
-              <div class="panel-heading">
-                <p class="section-label">Trusted circle</p>
-                <h3>Close contacts</h3>
-              </div>
-
-              <div class="network-contact-list">
-                <article class="detail-card">
-                  <p class="detail-label">Reference</p>
-                  <h4>Jess</h4>
-                  <p>Former floor lead, Ava Gene&apos;s</p>
-                </article>
-                <article class="detail-card">
-                  <p class="detail-label">Coworker</p>
-                  <h4>Andre</h4>
-                  <p>Reliable swap partner, Kann</p>
-                </article>
-                <article class="detail-card">
-                  <p class="detail-label">Friend</p>
-                  <h4>Monica</h4>
-                  <p>Brunch server, Screen Door</p>
-                </article>
-                <article class="detail-card">
-                  <p class="detail-label">Reference</p>
-                  <h4>Cal</h4>
-                  <p>Bar manager, Hey Love</p>
-                </article>
-                <article class="detail-card">
-                  <p class="detail-label">Support</p>
-                  <h4>Nia</h4>
-                  <p>Neighbor and post-shift check-in friend</p>
-                </article>
-              </div>
-            </div>
+            <button class="action-button" id="save-shift-button" type="button">
+              Post shift
+            </button>
+            <p class="status-text" id="post-shift-status" aria-live="polite"></p>
           </section>
         </section>
 
-        <section class="app-section" id="profile-section" data-section="profile">
-          <div class="section-heading work-heading">
-            <button class="back-button" id="back-home-from-profile" type="button">
-              Back to Home
-            </button>
-            <p class="section-label">Profile</p>
-            <h2>Set up your Industry profile</h2>
-            <p>Help Industry understand your work life.</p>
+        <section class="app-section" data-section="profile">
+          <div class="section-heading">
+            <p class="section-label">My Profile</p>
+            <h2>Save your work setup</h2>
+            <p>
+              Keep a simple local profile so the prototype matches your role and
+              neighborhood a little more closely.
+            </p>
           </div>
 
-          <section class="today-panel" aria-label="Profile setup form">
+          <section class="today-panel" aria-label="Profile form">
             <div class="form-grid">
               <label class="field-group" for="profile-name">
                 <span class="field-label">Name / nickname</span>
@@ -660,7 +255,7 @@
               </label>
 
               <label class="field-group" for="profile-goal">
-                <span class="field-label">Main reason for using Industry</span>
+                <span class="field-label">Main goal</span>
                 <select class="tip-input" id="profile-goal">
                   <option value="">Choose a goal</option>
                   <option>Manage my shifts</option>
@@ -677,218 +272,25 @@
             </button>
             <p class="status-text" id="profile-status" aria-live="polite"></p>
           </section>
-
-          <section class="today-panel" aria-label="Prototype testing note">
-            <div class="panel-heading">
-              <p class="section-label">Testing this prototype?</p>
-              <h3>Testing this prototype?</h3>
-              <p>
-                After exploring, ask yourself: Would this help before, during,
-                or after a shift?
-              </p>
-            </div>
-
-            <div class="tool-button-group">
-              <button class="action-button feedback-button" type="button">
-                Useful before shift
-              </button>
-              <button class="action-button feedback-button" type="button">
-                Useful after shift
-              </button>
-              <button class="action-button feedback-button" type="button">
-                Not useful yet
-              </button>
-            </div>
-
-            <p class="status-text" id="feedback-status" aria-live="polite"></p>
-          </section>
         </section>
 
-        <section class="app-section" id="testing-section" data-section="testing">
-          <div class="section-heading work-heading">
-            <button class="back-button" id="back-home-from-testing" type="button">
-              Back to Home
-            </button>
-            <p class="section-label">Testing</p>
-            <h2>Test Industry</h2>
-            <p>Help shape a better tool for service workers.</p>
+        <section class="app-section" data-section="feedback">
+          <div class="section-heading">
+            <p class="section-label">Feedback</p>
+            <h2>Share what feels useful</h2>
+            <p>
+              Keep feedback simple. Use the live form link or save a quick note in
+              this local prototype.
+            </p>
           </div>
 
-          <section class="today-panel" aria-label="Testing intro">
-            <div class="panel-heading">
-              <p class="section-label">Try this flow</p>
-              <h3>Try the tasks below, then leave quick feedback.</h3>
-              <p>
-                This is an early prototype, not a finished app.
-              </p>
-            </div>
-          </section>
-
-          <section class="stack-list testing-list" aria-label="Testing tasks">
-            <article class="stack-card testing-task-card" data-task-id="profile">
-              <div class="stack-copy">
-                <p class="stack-kicker">Task 1</p>
-                <h3>Set up your profile</h3>
-                <p>Add a name, role, neighborhood, and goal in the setup section.</p>
-              </div>
-              <div class="job-action-row">
-                <button class="action-button start-task-button" type="button" data-target-section="profile">
-                  Start task
-                </button>
-                <button class="action-button mark-task-button" type="button">
-                  Mark complete
-                </button>
-              </div>
-            </article>
-
-            <article class="stack-card testing-task-card" data-task-id="shift">
-              <div class="stack-copy">
-                <p class="stack-kicker">Task 2</p>
-                <h3>Check your upcoming shift</h3>
-                <p>Open the Work view and review the shift details before service.</p>
-              </div>
-              <div class="job-action-row">
-                <button class="action-button start-task-button" type="button" data-target-section="work">
-                  Start task
-                </button>
-                <button class="action-button mark-task-button" type="button">
-                  Mark complete
-                </button>
-              </div>
-            </article>
-
-            <article class="stack-card testing-task-card" data-task-id="job-save">
-              <div class="stack-copy">
-                <p class="stack-kicker">Task 3</p>
-                <h3>Save a job you might want</h3>
-                <p>Open Jobs and save one role that feels like a possible fit.</p>
-              </div>
-              <div class="job-action-row">
-                <button class="action-button start-task-button" type="button" data-target-section="jobs">
-                  Start task
-                </button>
-                <button class="action-button mark-task-button" type="button">
-                  Mark complete
-                </button>
-              </div>
-            </article>
-
-            <article class="stack-card testing-task-card" data-task-id="checkin">
-              <div class="stack-copy">
-                <p class="stack-kicker">Task 4</p>
-                <h3>Open the Network check-in</h3>
-                <p>Go to Network and open the crew check-in mood panel.</p>
-              </div>
-              <div class="job-action-row">
-                <button
-                  class="action-button start-task-button"
-                  type="button"
-                  data-target-section="network"
-                  data-network-panel="checkin"
-                >
-                  Start task
-                </button>
-                <button class="action-button mark-task-button" type="button">
-                  Mark complete
-                </button>
-              </div>
-            </article>
-
-            <article class="stack-card testing-task-card" data-task-id="swaps">
-              <div class="stack-copy">
-                <p class="stack-kicker">Task 5</p>
-                <h3>Try the shift swap board</h3>
-                <p>Open Network and view the shift swap list from trusted coworkers.</p>
-              </div>
-              <div class="job-action-row">
-                <button
-                  class="action-button start-task-button"
-                  type="button"
-                  data-target-section="network"
-                  data-network-panel="swaps"
-                >
-                  Start task
-                </button>
-                <button class="action-button mark-task-button" type="button">
-                  Mark complete
-                </button>
-              </div>
-            </article>
-          </section>
-
-          <section class="today-panel" aria-label="Quick testing feedback">
-            <div class="panel-heading">
-              <p class="section-label">Quick feedback</p>
-              <h3>Would Industry help your work life?</h3>
-            </div>
-
-            <div class="mood-row" role="group" aria-label="Testing feedback answer">
-              <button class="filter-button testing-answer-button" type="button" data-answer="Yes">
-                Yes
-              </button>
-              <button class="filter-button testing-answer-button" type="button" data-answer="Maybe">
-                Maybe
-              </button>
-              <button class="filter-button testing-answer-button" type="button" data-answer="Not yet">
-                Not yet
-              </button>
-            </div>
-
-            <label class="sr-only" for="testing-note">Testing note</label>
-            <textarea
-              class="note-input"
-              id="testing-note"
-              placeholder="What would make this more useful?"
-            ></textarea>
-            <button class="action-button" id="save-testing-feedback-button" type="button">
-              Save Feedback
-            </button>
-            <p class="status-text" id="testing-feedback-status" aria-live="polite"></p>
-          </section>
-
-          <section
-            class="today-panel"
-            id="testing-summary-panel"
-            aria-label="Saved testing summary"
-          >
-            <div class="panel-heading">
-              <p class="section-label">Saved feedback</p>
-              <h3>Testing summary</h3>
-            </div>
-
-            <div class="today-grid work-grid">
-              <article class="detail-card">
-                <p class="detail-label">Answer</p>
-                <h4 id="testing-answer-summary">Maybe</h4>
-              </article>
-
-              <article class="detail-card">
-                <p class="detail-label">Note</p>
-                <h4 id="testing-note-summary">No note yet.</h4>
-              </article>
-            </div>
-
-            <div class="summary-preview-box" id="copy-summary-preview">
-              Feedback summary preview will appear here.
-            </div>
-
-            <button class="action-button" id="copy-feedback-summary-button" type="button">
-              Copy feedback summary
-            </button>
-            <p class="status-text" id="copy-feedback-status" aria-live="polite"></p>
-
-            <button class="action-button" id="clear-testing-data-button" type="button">
-              Clear testing data
-            </button>
-          </section>
-
-          <section class="today-panel" aria-label="Research feedback handoff">
+          <section class="today-panel" aria-label="Research handoff">
             <div class="panel-heading">
               <p class="section-label">Ready to share feedback?</p>
-              <h3>Ready to share feedback?</h3>
+              <h3>Research handoff</h3>
               <p>
-                Explore the prototype first. When you&apos;re done, send feedback
-                using the form below or copy your prototype summary.
+                Open the feedback form in a new tab, or save a short note first so
+                you can gather your thoughts.
               </p>
             </div>
 
@@ -902,21 +304,45 @@
               Open feedback form
             </a>
           </section>
+
+          <section class="today-panel" aria-label="Local feedback note">
+            <div class="panel-heading">
+              <p class="section-label">Quick note</p>
+              <h3>Would this help your work life?</h3>
+            </div>
+
+            <div class="mood-row" role="group" aria-label="Feedback answer">
+              <button class="filter-button feedback-answer-button" type="button" data-answer="Yes">
+                Yes
+              </button>
+              <button class="filter-button feedback-answer-button" type="button" data-answer="Maybe">
+                Maybe
+              </button>
+              <button class="filter-button feedback-answer-button" type="button" data-answer="Not yet">
+                Not yet
+              </button>
+            </div>
+
+            <label class="sr-only" for="feedback-note">Feedback note</label>
+            <textarea
+              class="note-input"
+              id="feedback-note"
+              placeholder="What would make the shift board more useful?"
+            ></textarea>
+            <button class="action-button" id="save-feedback-button" type="button">
+              Save feedback
+            </button>
+            <p class="status-text" id="feedback-status" aria-live="polite"></p>
+          </section>
         </section>
       </main>
 
       <nav class="bottom-nav" aria-label="Bottom navigation">
-        <!-- Buttons switch app sections in the prototype. -->
-        <button class="nav-item active" type="button" data-target="home">
-          Home
-        </button>
-        <button class="nav-item" type="button" data-target="jobs">Jobs</button>
-        <button class="nav-item" type="button" data-target="network">
-          Network
-        </button>
-        <button class="nav-item" type="button" data-target="profile">
-          Profile
-        </button>
+        <button class="nav-item active" type="button" data-target="home">Home</button>
+        <button class="nav-item" type="button" data-target="shift-board">Board</button>
+        <button class="nav-item" type="button" data-target="post-shift">Post</button>
+        <button class="nav-item" type="button" data-target="profile">Profile</button>
+        <button class="nav-item" type="button" data-target="feedback">Feedback</button>
       </nav>
     </div>
 
