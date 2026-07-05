@@ -236,7 +236,7 @@ function createBoardPostFromImportedShift(shift, postType) {
   savedShifts.unshift(newShift);
   saveLocalJson(shiftsStorageKey, savedShifts);
   renderShiftBoard();
-  shiftBoardStatus.textContent = `${postType} post added from your connected schedule.`;
+  shiftBoardStatus.textContent = "Added to Shift Board.";
 }
 
 function renderImportedShifts(sourceName) {
@@ -257,11 +257,11 @@ function renderImportedShifts(sourceName) {
         </ul>
       </div>
       <div class="shift-action-row">
-        <button class="action-button imported-shift-button" type="button" data-shift-id="${shift.id}" data-post-type="Release">
-          Release
+      <button class="action-button imported-shift-button" type="button" data-shift-id="${shift.id}" data-post-type="Release shift">
+          Release shift
         </button>
-        <button class="action-button imported-shift-button" type="button" data-shift-id="${shift.id}" data-post-type="Swap">
-          Swap
+        <button class="action-button imported-shift-button" type="button" data-shift-id="${shift.id}" data-post-type="Request swap">
+          Request swap
         </button>
         <button class="action-button imported-shift-button" type="button" data-shift-id="${shift.id}" data-post-type="Offer pickup">
           Offer pickup
@@ -282,10 +282,7 @@ function renderImportedShifts(sourceName) {
         return;
       }
 
-      createBoardPostFromImportedShift(
-        { ...shift, source: sourceName },
-        button.dataset.postType
-      );
+      createBoardPostFromImportedShift({ ...shift, source: sourceName }, button.dataset.postType);
       button.textContent = "Added to board";
     });
   });
@@ -355,7 +352,7 @@ connectionButtons.forEach((button) => {
 
     connectionStatusPanel.classList.remove("hidden-panel");
     importedShiftsPanel.classList.remove("hidden-panel");
-    connectionStatusMessage.textContent = "Schedule connected";
+    connectionStatusMessage.textContent = "Schedule imported";
     connectionStatusDetail.textContent = `3 upcoming shifts found from ${sourceName}`;
     renderImportedShifts(sourceName);
   });
