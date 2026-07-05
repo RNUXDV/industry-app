@@ -1,6 +1,10 @@
 const navButtons = document.querySelectorAll(".nav-item");
 const appSections = document.querySelectorAll(".app-section");
 const navCards = document.querySelectorAll(".nav-card");
+const scheduleViewCards = document.querySelectorAll(".schedule-view-card");
+const scheduleSubviews = document.querySelectorAll(".schedule-subview");
+const peopleViewCards = document.querySelectorAll(".people-view-card");
+const peopleSubviews = document.querySelectorAll(".people-subview");
 const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
 const goToFeedbackButton = document.querySelector("#go-to-feedback-button");
@@ -28,8 +32,7 @@ const frontOfHouseList = document.querySelector("#front-of-house-list");
 const backOfHouseList = document.querySelector("#back-of-house-list");
 const managerList = document.querySelector("#manager-list");
 const crewActionStatus = document.querySelector("#crew-action-status");
-const crewShiftMessageButton = document.querySelector("#crew-shift-message-button");
-const crewWorkplaceButtons = document.querySelectorAll(".crew-workplace-button");
+const shiftMessageStatus = document.querySelector("#shift-message-status");
 const saveProfileButton = document.querySelector("#save-profile-button");
 const profileStatus = document.querySelector("#profile-status");
 const profileSummaryCard = document.querySelector("#profile-summary-card");
@@ -46,6 +49,8 @@ const saveFeedbackButton = document.querySelector("#save-feedback-button");
 const feedbackStatus = document.querySelector("#feedback-status");
 const openFeedbackFormButton = document.querySelector("#open-feedback-form-button");
 const mockPreviewButtons = document.querySelectorAll(".mock-preview-button");
+const coworkerPreviewButtons = document.querySelectorAll(".coworker-preview-button");
+const coworkerStatusMessage = document.querySelector("#coworker-status-message");
 
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
@@ -201,6 +206,26 @@ let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let activeCrewShiftId = "";
 
+function setActiveScheduleView(viewName) {
+  scheduleViewCards.forEach((card) => {
+    card.classList.toggle("active", card.dataset.scheduleView === viewName);
+  });
+
+  scheduleSubviews.forEach((subview) => {
+    subview.classList.toggle("active", subview.dataset.scheduleSubview === viewName);
+  });
+}
+
+function setActivePeopleView(viewName) {
+  peopleViewCards.forEach((card) => {
+    card.classList.toggle("active", card.dataset.peopleView === viewName);
+  });
+
+  peopleSubviews.forEach((subview) => {
+    subview.classList.toggle("active", subview.dataset.peopleSubview === viewName);
+  });
+}
+
 function setActiveSection(sectionName) {
   navButtons.forEach((button) => {
     const isActive = button.dataset.target === sectionName;
@@ -245,15 +270,45 @@ navCards.forEach((card) => {
 
 if (goToFeedbackButton) {
   goToFeedbackButton.addEventListener("click", () => {
-    setActiveSection("feedback");
+    setActiveSection("people");
+    setActivePeopleView("feedback");
   });
 }
 
 if (startHereButton) {
   startHereButton.addEventListener("click", () => {
-    setActiveSection("profile");
+    setActiveSection("people");
+    setActivePeopleView("profile");
   });
 }
+
+scheduleViewCards.forEach((card) => {
+  const openScheduleView = () => {
+    setActiveScheduleView(card.dataset.scheduleView);
+  };
+
+  card.addEventListener("click", openScheduleView);
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openScheduleView();
+    }
+  });
+});
+
+peopleViewCards.forEach((card) => {
+  const openPeopleView = () => {
+    setActivePeopleView(card.dataset.peopleView);
+  };
+
+  card.addEventListener("click", openPeopleView);
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openPeopleView();
+    }
+  });
+});
 
 function applyTheme(themeName) {
   // Theme switching works by saving a short label in localStorage.
@@ -390,7 +445,8 @@ function openCrewShift(shift, shouldNavigate = true) {
   bindCrewMemberActions();
 
   if (shouldNavigate) {
-    setActiveSection("crew");
+    setActiveSection("schedule");
+    setActiveScheduleView("shift-crew");
   }
 }
 
@@ -406,7 +462,8 @@ function createBoardPost(postData) {
   saveLocalJson(shiftsStorageKey, savedShifts);
   renderShiftBoard();
   shiftBoardStatus.textContent = "Added to Catch Board.";
-  setActiveSection("shift-board");
+  setActiveSection("schedule");
+  setActiveScheduleView("catch");
 }
 
 function renderShiftBoard() {
@@ -498,7 +555,9 @@ function renderShiftBoard() {
 
   document.querySelectorAll(".shift-message-button").forEach((button) => {
     button.addEventListener("click", () => {
-      shiftBoardStatus.textContent = "Shift message preview opened below the card.";
+      shiftMessageStatus.textContent = "Shift message preview updated from an active response.";
+      setActiveSection("schedule");
+      setActiveScheduleView("shift-message");
     });
   });
 
@@ -739,7 +798,8 @@ if (saveShiftButton) {
     clearPostShiftForm();
     renderShiftBoard();
     postShiftStatus.textContent = "Shift posted to the local prototype board.";
-    setActiveSection("shift-board");
+    setActiveSection("schedule");
+    setActiveScheduleView("catch");
   });
 }
 
@@ -852,29 +912,11 @@ mockPreviewButtons.forEach((button) => {
   });
 });
 
-crewWorkplaceButtons.forEach((button) => {
+coworkerPreviewButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const shifts = getAllShifts();
-    const matchedShift =
-      shifts.find((shift) => shift.workplace === button.dataset.workplace) || {
-        id: `crew-preview-${button.dataset.workplace}`,
-        workplace: button.dataset.workplace,
-        role: "Bartender",
-        day: "Friday, July 10",
-        time: "6 PM-Close",
-        postType: "Release shift",
-        status: "Open",
-      };
-
-    openCrewShift(matchedShift);
+    coworkerStatusMessage.textContent = button.dataset.message;
   });
 });
-
-if (crewShiftMessageButton) {
-  crewShiftMessageButton.addEventListener("click", () => {
-    crewActionStatus.textContent = "Shift message preview opened for this shift.";
-  });
-}
 
 const savedTheme = localStorage.getItem(themeStorageKey) || "dark";
 applyTheme(savedTheme);
@@ -893,6 +935,8 @@ feedbackAnswerButtons.forEach((button) => {
 });
 
 renderShiftBoard();
+setActiveScheduleView("my-shifts");
+setActivePeopleView("profile");
 openCrewShift({
   id: "crew-default",
   workplace: "Departure Lounge",
@@ -902,4 +946,4 @@ openCrewShift({
   postType: "Release shift",
   status: "Open",
 }, false);
-crewActionStatus.textContent = "Select a crew or shift to review the active Shift Crew.";
+crewActionStatus.textContent = "Select a shift to review the active Shift Crew.";

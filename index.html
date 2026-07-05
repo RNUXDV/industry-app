@@ -44,29 +44,17 @@
             <div class="panel-heading">
               <p class="section-label">How the flow works</p>
               <h3>Schedule -> Post -> Catch -> Shift Message</h3>
-              <p>Future lanes: Jobs and Crew</p>
+              <p>Jobs and People extend the core shift flow.</p>
             </div>
           </section>
 
           <section class="today-panel" aria-label="How Industry is organized">
             <div class="panel-heading">
-              <p class="section-label">How Industry is organized</p>
-              <h3>Three clear lanes</h3>
-              <p>
-                Industry has three lanes:
-              </p>
-              <p>
-                Shift Exchange
-                Manage your schedule, post coverage needs, and catch open shifts.
-              </p>
-              <p>
-                Jobs
-                Find new work, extra hours, and service-industry opportunities.
-              </p>
-              <p>
-                Crew
-                Stay connected with verified coworkers and workplace crews.
-              </p>
+              <p class="section-label">Industry has three lanes</p>
+              <h3>Schedule, Jobs, and People</h3>
+              <p>Schedule handles your shifts, coverage, pickups, swaps, and shift crew.</p>
+              <p>Jobs helps you find new work, extra hours, event gigs, and service-industry opportunities.</p>
+              <p>People holds your profile, workplaces, coworkers, referrals, and broader Industry connections.</p>
             </div>
             <button class="action-button" id="start-here-button" type="button">
               Start here
@@ -74,22 +62,10 @@
           </section>
 
           <section class="card-list" aria-label="Main actions">
-            <article class="feature-card nav-card" data-target-section="shift-board" tabindex="0">
+            <article class="feature-card nav-card" data-target-section="schedule" tabindex="0">
               <div class="card-icon" aria-hidden="true">S</div>
-              <h3>Catch</h3>
-              <p>Browse open shifts.</p>
-            </article>
-
-            <article class="feature-card nav-card" data-target-section="my-schedule" tabindex="0">
-              <div class="card-icon" aria-hidden="true">C</div>
-              <h3>My Schedule</h3>
-              <p>Connect a schedule and turn shifts into Catch, Release, or Swap.</p>
-            </article>
-
-            <article class="feature-card nav-card" data-target-section="post-shift" tabindex="0">
-              <div class="card-icon" aria-hidden="true">P</div>
-              <h3>Need Coverage?</h3>
-              <p>Choose a workplace and post a release, swap, or pickup request to the right crew.</p>
+              <h3>Schedule</h3>
+              <p>Manage your shifts, coverage needs, pickups, swaps, and shift crew.</p>
             </article>
 
             <article class="feature-card nav-card" data-target-section="jobs" tabindex="0">
@@ -98,22 +74,10 @@
               <p>Find new work, extra hours, event gigs, and service-industry opportunities.</p>
             </article>
 
-            <article class="feature-card nav-card" data-target-section="crew" tabindex="0">
-              <div class="card-icon" aria-hidden="true">R</div>
-              <h3>Crew</h3>
-              <p>Connect with verified coworkers, workplace crews, and shift-related messages.</p>
-            </article>
-
-            <article class="feature-card nav-card" data-target-section="profile" tabindex="0">
-              <div class="card-icon" aria-hidden="true">M</div>
-              <h3>Profile</h3>
-              <p>Manage your workplaces, roles, and crew visibility.</p>
-            </article>
-
-            <article class="feature-card nav-card" data-target-section="feedback" tabindex="0">
-              <div class="card-icon" aria-hidden="true">F</div>
-              <h3>Feedback</h3>
-              <p>Help shape the Industry prototype.</p>
+            <article class="feature-card nav-card" data-target-section="people" tabindex="0">
+              <div class="card-icon" aria-hidden="true">P</div>
+              <h3>People</h3>
+              <p>Manage your profile, workplaces, coworkers, referrals, and broader Industry connections.</p>
             </article>
           </section>
 
@@ -122,12 +86,12 @@
               <p class="section-label">Testing Industry?</p>
               <h3>Try the full flow</h3>
               <p>
-                Explore Catch Board, Post a Shift, My Profile, and Feedback so the
+                Explore Schedule, Jobs, and People so the
                 prototype feels close to a real shift-coverage routine.
               </p>
             </div>
             <button class="action-button" id="go-to-feedback-button" type="button">
-              Go to feedback
+              Go to People
             </button>
           </section>
 
@@ -160,360 +124,238 @@
           </section>
         </section>
 
-        <section class="app-section" data-section="shift-board">
+        <section class="app-section" data-section="schedule">
           <div class="section-heading">
-            <p class="section-label">Catch Board</p>
-            <h2>Catch Board</h2>
-            <p>
-              Browse open release, swap, and pickup requests from your workplace crew.
-            </p>
+            <p class="section-label">Schedule</p>
+            <h2>Schedule</h2>
+            <p>Manage your shifts, coverage needs, pickups, swaps, and shift crew.</p>
           </div>
 
-          <section class="today-panel" aria-label="Catch Board helper">
-            <p class="status-text">Need coverage? Use Post. Want more hours? Use Catch.</p>
+          <section class="today-panel" aria-label="Schedule guidance">
+            <p class="status-text">Catch and Release live inside Schedule because they are tied to actual shifts.</p>
           </section>
 
-          <section class="today-panel" aria-label="Catch Board guidance">
-            <p class="status-text">
-              This is where active coverage requests and open shifts appear for
-              your workplace crew.
-            </p>
+          <section class="card-list schedule-card-list" aria-label="Schedule tools">
+            <article class="feature-card schedule-view-card active" data-schedule-view="my-shifts" tabindex="0">
+              <div class="card-icon" aria-hidden="true">M</div>
+              <h3>My Shifts</h3>
+              <p>View your imported or added schedule.</p>
+            </article>
+            <article class="feature-card schedule-view-card" data-schedule-view="need-coverage" tabindex="0">
+              <div class="card-icon" aria-hidden="true">N</div>
+              <h3>Need Coverage</h3>
+              <p>Release a shift or request a swap.</p>
+            </article>
+            <article class="feature-card schedule-view-card" data-schedule-view="catch" tabindex="0">
+              <div class="card-icon" aria-hidden="true">C</div>
+              <h3>Catch</h3>
+              <p>Browse open shifts from your workplace crew.</p>
+            </article>
+            <article class="feature-card schedule-view-card" data-schedule-view="shift-crew" tabindex="0">
+              <div class="card-icon" aria-hidden="true">S</div>
+              <h3>Shift Crew</h3>
+              <p>See who is scheduled for a specific shift.</p>
+            </article>
+            <article class="feature-card schedule-view-card" data-schedule-view="shift-message" tabindex="0">
+              <div class="card-icon" aria-hidden="true">M</div>
+              <h3>Shift Message</h3>
+              <p>Coordinate coverage and confirmation.</p>
+            </article>
           </section>
 
-          <section class="today-panel" aria-label="Shift board status">
-            <p class="status-text" id="shift-board-status">
-              Browse sample shifts or post a new one below.
-            </p>
-          </section>
-
-          <!-- Shift cards are rendered here from sample data plus localStorage. -->
-          <section class="stack-list shift-list" id="shift-board-list" aria-label="Shift cards"></section>
-        </section>
-
-        <section class="app-section" data-section="my-schedule">
-          <div class="section-heading">
-            <p class="section-label">My Schedule</p>
-            <h2>Bring your shifts in once</h2>
-            <p>
-              Import your upcoming shifts, then turn any shift into a release,
-              swap, or pickup post.
-            </p>
-          </div>
-
-          <section class="today-panel" aria-label="My Schedule guidance">
-            <p class="status-text">
-              Import or add your upcoming shifts. From here, you can turn a
-              shift into a release or swap request.
-            </p>
-          </section>
-
-          <section class="today-panel" aria-label="Schedule connection options">
+          <section class="schedule-subview active" data-schedule-subview="my-shifts">
             <div class="panel-heading">
-              <p class="section-label">Connection options</p>
-              <h3>Choose a schedule source</h3>
+              <p class="section-label">My Shifts</p>
+              <h3>Bring your shifts in once</h3>
+              <p>Import or add your upcoming shifts. From here, you can turn a shift into a release or swap request.</p>
             </div>
 
-            <div class="connection-grid">
-              <button class="filter-button connection-button" type="button" data-source="Schedulefly">
-                Import from Schedulefly
-              </button>
-              <button class="filter-button connection-button" type="button" data-source="Google Calendar">
-                Import from Google Calendar
-              </button>
-              <button class="filter-button connection-button" type="button" data-source="Apple Calendar">
-                Import from Apple Calendar
-              </button>
-              <button class="filter-button connection-button" type="button" data-source="Manual entry">
-                Add manually
-              </button>
-            </div>
-
-            <div class="connection-status hidden-panel" id="connection-status-panel">
-              <p class="status-text" id="connection-status-message">Schedule imported</p>
-              <p class="status-text" id="connection-status-detail">3 upcoming shifts found</p>
-            </div>
-          </section>
-
-          <section
-            class="today-panel hidden-panel"
-            id="imported-shifts-panel"
-            aria-label="Imported upcoming shifts"
-          >
-            <div class="panel-heading">
-              <p class="section-label">Upcoming shifts</p>
-              <h3>Imported shift preview</h3>
-            </div>
-
-            <section class="stack-list shift-list" id="imported-shift-list" aria-label="Imported shifts"></section>
-          </section>
-        </section>
-
-        <section class="app-section" data-section="post-shift">
-          <div class="section-heading">
-            <p class="section-label">Need Coverage?</p>
-            <h2>Need coverage?</h2>
-            <p>
-              Choose the workplace and shift first, then post a release or swap
-              request to the right crew.
-            </p>
-          </div>
-
-          <section class="today-panel" aria-label="Need Coverage guidance">
-            <p class="status-text">
-              Choose the workplace first. Industry will post the request to that
-              workplace crew.
-            </p>
-          </section>
-
-          <section class="today-panel" aria-label="Post shift form">
-            <div class="form-grid">
-              <label class="field-group" for="shift-workplace">
-                <span class="field-label">Workplace</span>
-                <select class="tip-input" id="shift-workplace">
-                  <option value="">Choose a workplace</option>
-                  <option value="Departure Lounge|Pearl District">
-                    Departure Lounge - Pearl District
-                  </option>
-                  <option value="Cafe Luna|SE Portland">
-                    Cafe Luna - SE Portland
-                  </option>
-                  <option value="Event Pool|Portland Metro">
-                    Event Pool - Portland Metro
-                  </option>
-                </select>
-              </label>
-
-              <label class="field-group" for="shift-role">
-                <span class="field-label">Role</span>
-                <select class="tip-input" id="shift-role">
-                  <option value="">Choose a role</option>
-                  <option>Server</option>
-                  <option>Bartender</option>
-                  <option>Host</option>
-                  <option>Line Cook</option>
-                  <option>Barista</option>
-                  <option>Support</option>
-                </select>
-              </label>
-
-              <label class="field-group" for="shift-day">
-                <span class="field-label">Date</span>
-                <input class="tip-input" id="shift-day" type="text" placeholder="Friday, July 17" />
-              </label>
-
-              <label class="field-group" for="shift-time">
-                <span class="field-label">Time</span>
-                <input
-                  class="tip-input"
-                  id="shift-time"
-                  type="text"
-                  placeholder="4:00 PM - 10:30 PM"
-                />
-              </label>
-
-              <label class="field-group" for="shift-coverage-type">
-                <span class="field-label">Coverage type</span>
-                <select class="tip-input" id="shift-coverage-type">
-                  <option value="">Choose coverage type</option>
-                  <option>Release shift</option>
-                  <option>Request swap</option>
-                  <option>Offer pickup</option>
-                </select>
-              </label>
-
-              <div class="today-panel workplace-preview hidden-panel" id="workplace-preview-panel">
-                <p class="status-text" id="workplace-preview-message">
-                  Posting to: Departure Lounge crew
-                </p>
-                <p class="status-text">Visibility: Workplace crew only</p>
-                <p class="status-text" id="workplace-preview-neighborhood">
-                  Neighborhood: Pearl District
-                </p>
+            <section class="today-panel" aria-label="Schedule connection options">
+              <div class="panel-heading">
+                <p class="section-label">Connection options</p>
+                <h3>Choose a schedule source</h3>
               </div>
-            </div>
 
-            <button class="action-button" id="save-shift-button" type="button">
-              Post shift
-            </button>
-            <p class="status-text" id="post-shift-status" aria-live="polite"></p>
-          </section>
-        </section>
+              <div class="connection-grid">
+                <button class="filter-button connection-button" type="button" data-source="Schedulefly">
+                  Import from Schedulefly
+                </button>
+                <button class="filter-button connection-button" type="button" data-source="Google Calendar">
+                  Import from Google Calendar
+                </button>
+                <button class="filter-button connection-button" type="button" data-source="Apple Calendar">
+                  Import from Apple Calendar
+                </button>
+                <button class="filter-button connection-button" type="button" data-source="Manual entry">
+                  Add manually
+                </button>
+              </div>
 
-        <section class="app-section" data-section="profile">
-          <div class="section-heading">
-            <p class="section-label">My Profile</p>
-            <h2>Save your work setup</h2>
-            <p>
-              Your shift posts are tied to a workplace so the right crew sees
-              the right coverage requests.
-            </p>
-          </div>
+              <div class="connection-status hidden-panel" id="connection-status-panel">
+                <p class="status-text" id="connection-status-message">Schedule imported</p>
+                <p class="status-text" id="connection-status-detail">3 upcoming shifts found</p>
+              </div>
+            </section>
 
-          <section class="today-panel" aria-label="Profile guidance">
-            <p class="status-text">
-              Your profile connects you to your workplaces. Shift posts use this
-              information so the right crew sees the right coverage requests.
-            </p>
-          </section>
+            <section class="today-panel hidden-panel" id="imported-shifts-panel" aria-label="Imported upcoming shifts">
+              <div class="panel-heading">
+                <p class="section-label">Upcoming shifts</p>
+                <h3>Imported shift preview</h3>
+              </div>
 
-          <section class="today-panel" aria-label="Profile form">
-            <div class="form-grid">
-              <label class="field-group" for="profile-name">
-                <span class="field-label">Name / nickname</span>
-                <input
-                  class="tip-input"
-                  id="profile-name"
-                  type="text"
-                  placeholder="What should we call you?"
-                />
-              </label>
-
-              <label class="field-group" for="profile-role">
-                <span class="field-label">Primary role</span>
-                <select class="tip-input" id="profile-role">
-                  <option value="">Choose a role</option>
-                  <option>Server</option>
-                  <option>Bartender</option>
-                  <option>Host</option>
-                  <option>Line Cook</option>
-                  <option>Barista</option>
-                  <option>Manager</option>
-                  <option>Support</option>
-                </select>
-              </label>
-
-              <label class="field-group" for="profile-neighborhood">
-                <span class="field-label">Neighborhood</span>
-                <select class="tip-input" id="profile-neighborhood">
-                  <option value="">Choose a neighborhood</option>
-                  <option>Downtown</option>
-                  <option>Pearl</option>
-                  <option>Eastside</option>
-                  <option>Division</option>
-                  <option>Alberta</option>
-                  <option>Sellwood</option>
-                  <option>Other</option>
-                </select>
-              </label>
-
-              <label class="field-group" for="profile-goal">
-                <span class="field-label">Main goal</span>
-                <select class="tip-input" id="profile-goal">
-                  <option value="">Choose a goal</option>
-                  <option>Manage my shifts</option>
-                  <option>Find better jobs</option>
-                  <option>Pick up extra shifts</option>
-                  <option>Stay connected with coworkers</option>
-                  <option>Protect my mental health</option>
-                </select>
-              </label>
-            </div>
-
-            <button class="action-button" id="save-profile-button" type="button">
-              Save profile
-            </button>
-            <p class="status-text" id="profile-status" aria-live="polite"></p>
-          </section>
-
-          <section class="today-panel" aria-label="My workplaces">
-            <div class="panel-heading">
-              <p class="section-label">My Workplaces</p>
-              <h3>Workplace access</h3>
-            </div>
-
-            <section class="stack-list workplace-list">
-              <article class="stack-card">
-                <div class="stack-copy">
-                  <p class="stack-kicker">Current</p>
-                  <h3>Departure Lounge</h3>
-                  <p>Role: Bartender</p>
-                  <p>Neighborhood: Pearl District</p>
-                  <p>Status: Current</p>
-                </div>
-              </article>
-
-              <article class="stack-card">
-                <div class="stack-copy">
-                  <p class="stack-kicker">Current</p>
-                  <h3>Cafe Luna</h3>
-                  <p>Role: Server</p>
-                  <p>Neighborhood: SE Portland</p>
-                  <p>Status: Current</p>
-                </div>
-              </article>
-
-              <article class="stack-card">
-                <div class="stack-copy">
-                  <p class="stack-kicker">Occasional</p>
-                  <h3>Event Pool</h3>
-                  <p>Role: Catering / Banquet</p>
-                  <p>Neighborhood: Portland Metro</p>
-                  <p>Status: Occasional</p>
-                </div>
-              </article>
+              <section class="stack-list shift-list" id="imported-shift-list" aria-label="Imported shifts"></section>
             </section>
           </section>
-        </section>
 
-        <section class="app-section" data-section="feedback">
-          <div class="section-heading">
-            <p class="section-label">Feedback</p>
-            <h2>Share what feels useful</h2>
-            <p>
-              Keep feedback simple. Use the live form link or save a quick note in
-              this local prototype.
-            </p>
-          </div>
-
-          <section class="today-panel" aria-label="Research handoff">
+          <section class="schedule-subview" data-schedule-subview="need-coverage">
             <div class="panel-heading">
-              <p class="section-label">Ready to share feedback?</p>
-              <h3>Research handoff</h3>
-              <p>
-                Open the feedback form in a new tab, or save a short note first so
-                you can gather your thoughts.
-              </p>
+              <p class="section-label">Need Coverage</p>
+              <h3>Post to the right workplace crew</h3>
+              <p>Choose the workplace first. Industry will post the request to that workplace crew.</p>
             </div>
 
-            <a
-              class="action-button action-link-button"
-              id="open-feedback-form-button"
-              href="#"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Open feedback form
-            </a>
+            <section class="today-panel" aria-label="Post shift form">
+              <div class="form-grid">
+                <label class="field-group" for="shift-workplace">
+                  <span class="field-label">Workplace</span>
+                  <select class="tip-input" id="shift-workplace">
+                    <option value="">Choose a workplace</option>
+                    <option value="Departure Lounge|Pearl District">
+                      Departure Lounge - Pearl District
+                    </option>
+                    <option value="Cafe Luna|SE Portland">
+                      Cafe Luna - SE Portland
+                    </option>
+                    <option value="Event Pool|Portland Metro">
+                      Event Pool - Portland Metro
+                    </option>
+                  </select>
+                </label>
+
+                <label class="field-group" for="shift-role">
+                  <span class="field-label">Role</span>
+                  <select class="tip-input" id="shift-role">
+                    <option value="">Choose a role</option>
+                    <option>Server</option>
+                    <option>Bartender</option>
+                    <option>Host</option>
+                    <option>Line Cook</option>
+                    <option>Barista</option>
+                    <option>Support</option>
+                  </select>
+                </label>
+
+                <label class="field-group" for="shift-day">
+                  <span class="field-label">Date</span>
+                  <input class="tip-input" id="shift-day" type="text" placeholder="Friday, July 17" />
+                </label>
+
+                <label class="field-group" for="shift-time">
+                  <span class="field-label">Time</span>
+                  <input class="tip-input" id="shift-time" type="text" placeholder="4:00 PM - 10:30 PM" />
+                </label>
+
+                <label class="field-group" for="shift-coverage-type">
+                  <span class="field-label">Coverage type</span>
+                  <select class="tip-input" id="shift-coverage-type">
+                    <option value="">Choose coverage type</option>
+                    <option>Release shift</option>
+                    <option>Request swap</option>
+                    <option>Offer pickup</option>
+                  </select>
+                </label>
+
+                <div class="today-panel workplace-preview hidden-panel" id="workplace-preview-panel">
+                  <p class="status-text" id="workplace-preview-message">Posting to: Departure Lounge crew</p>
+                  <p class="status-text">Visibility: Workplace crew only</p>
+                  <p class="status-text" id="workplace-preview-neighborhood">Neighborhood: Pearl District</p>
+                </div>
+              </div>
+
+              <button class="action-button" id="save-shift-button" type="button">Post shift</button>
+              <p class="status-text" id="post-shift-status" aria-live="polite"></p>
+            </section>
           </section>
 
-          <section class="today-panel" aria-label="Local feedback note">
+          <section class="schedule-subview" data-schedule-subview="catch">
             <div class="panel-heading">
-              <p class="section-label">Quick note</p>
-              <h3>Would this help your work life?</h3>
+              <p class="section-label">Catch</p>
+              <h3>Catch Board</h3>
+              <p>Browse open release, swap, and pickup requests from your workplace crew.</p>
             </div>
 
-            <div class="mood-row" role="group" aria-label="Feedback answer">
-              <button class="filter-button feedback-answer-button" type="button" data-answer="Yes">
-                Yes
-              </button>
-              <button class="filter-button feedback-answer-button" type="button" data-answer="Maybe">
-                Maybe
-              </button>
-              <button class="filter-button feedback-answer-button" type="button" data-answer="Not yet">
-                Not yet
-              </button>
+            <section class="today-panel" aria-label="Catch Board helper">
+              <p class="status-text">Need coverage? Use Need Coverage. Want more hours? Use Catch.</p>
+            </section>
+
+            <section class="today-panel" aria-label="Shift board status">
+              <p class="status-text" id="shift-board-status">Browse sample shifts or post a new one below.</p>
+            </section>
+
+            <section class="stack-list shift-list" id="shift-board-list" aria-label="Shift cards"></section>
+          </section>
+
+          <section class="schedule-subview" data-schedule-subview="shift-crew">
+            <div class="panel-heading">
+              <p class="section-label">Shift Crew</p>
+              <h3>See who is scheduled for this shift</h3>
+              <p>See who is scheduled for this shift across Front of House, Back of House, and Managers.</p>
             </div>
 
-            <label class="sr-only" for="feedback-note">Feedback note</label>
-            <textarea
-              class="note-input"
-              id="feedback-note"
-              placeholder="What would make the shift board more useful?"
-            ></textarea>
-            <button class="action-button" id="save-feedback-button" type="button">
-              Save feedback
-            </button>
-            <p class="status-text" id="feedback-status" aria-live="polite"></p>
+            <article class="stack-card shift-card" id="shift-crew-summary-card">
+              <div class="stack-copy">
+                <p class="stack-kicker">Active shift</p>
+                <h3 id="crew-shift-date">Friday, July 10</h3>
+                <p id="crew-shift-workplace">Departure Lounge</p>
+                <ul class="shift-meta">
+                  <li id="crew-shift-time">6 PM-Close</li>
+                  <li id="crew-shift-role">Bartender release request</li>
+                </ul>
+                <p id="crew-shift-status">Status: Open</p>
+              </div>
+            </article>
+
+            <section class="crew-group-list" aria-label="Shift Crew roster">
+              <article class="today-panel crew-group-panel">
+                <div class="panel-heading">
+                  <p class="section-label">Front of House</p>
+                </div>
+                <div class="crew-member-list" id="front-of-house-list"></div>
+              </article>
+
+              <article class="today-panel crew-group-panel">
+                <div class="panel-heading">
+                  <p class="section-label">Back of House</p>
+                </div>
+                <div class="crew-member-list" id="back-of-house-list"></div>
+              </article>
+
+              <article class="today-panel crew-group-panel">
+                <div class="panel-heading">
+                  <p class="section-label">Managers</p>
+                </div>
+                <div class="crew-member-list" id="manager-list"></div>
+              </article>
+            </section>
+
+            <p class="status-text" id="crew-action-status">Select a shift to review the active Shift Crew.</p>
+            <p class="status-text">Future versions can verify schedules through workplace tools before showing private shift details.</p>
+          </section>
+
+          <section class="schedule-subview" data-schedule-subview="shift-message">
+            <div class="panel-heading">
+              <p class="section-label">Shift Message</p>
+              <h3>Keep coverage decisions clear</h3>
+              <p>Keep messages tied to the shift so coverage, approval, and confirmation stay in one place.</p>
+            </div>
+
+            <section class="today-panel" aria-label="Shift message preview">
+              <div class="message-preview" id="shift-message-preview">
+                <p>I can take this if manager approves.</p>
+                <p>Perfect. I'll mark it as pending.</p>
+              </div>
+              <p class="status-text" id="shift-message-status">Open a shift response to preview the latest Shift Message.</p>
+            </section>
           </section>
         </section>
 
@@ -566,41 +408,154 @@
           </section>
         </section>
 
-        <section class="app-section" data-section="crew">
+        <section class="app-section" data-section="people">
           <div class="section-heading">
-            <p class="section-label">Crew</p>
-            <h2>Crew</h2>
-            <p>
-              Connect with verified coworkers, workplace crews, and shift-related messages.
-            </p>
+            <p class="section-label">People</p>
+            <h2>People</h2>
+            <p>Manage your profile, workplaces, coworkers, referrals, and broader Industry connections.</p>
           </div>
 
-          <section class="today-panel" aria-label="Crew guidance">
-            <p class="status-text">
-              Workplace Crew is everyone connected to a workplace. Shift Crew is
-              the team scheduled for one specific shift.
-            </p>
+          <section class="card-list people-card-list" aria-label="People tools">
+            <article class="feature-card people-view-card active" data-people-view="profile" tabindex="0">
+              <div class="card-icon" aria-hidden="true">P</div>
+              <h3>Profile</h3>
+              <p>Manage your roles, workplaces, and crew visibility.</p>
+            </article>
+            <article class="feature-card people-view-card" data-people-view="workplaces" tabindex="0">
+              <div class="card-icon" aria-hidden="true">W</div>
+              <h3>Workplaces</h3>
+              <p>See the restaurants, bars, lounges, and events connected to your profile.</p>
+            </article>
+            <article class="feature-card people-view-card" data-people-view="coworkers" tabindex="0">
+              <div class="card-icon" aria-hidden="true">C</div>
+              <h3>Coworkers</h3>
+              <p>View verified coworkers and workplace connections.</p>
+            </article>
+            <article class="feature-card people-view-card" data-people-view="feedback" tabindex="0">
+              <div class="card-icon" aria-hidden="true">F</div>
+              <h3>Feedback</h3>
+              <p>Help shape the Industry prototype.</p>
+            </article>
           </section>
 
-          <section class="today-panel" aria-label="My crews">
+          <section class="people-subview active" data-people-subview="profile">
             <div class="panel-heading">
-              <p class="section-label">My Crews</p>
-              <h3>Verified workplace crews</h3>
+              <p class="section-label">Profile</p>
+              <h3>Save your work setup</h3>
+              <p>Your profile connects you to your workplaces. Shift posts use this information so the right crew sees the right coverage requests.</p>
             </div>
 
-            <section class="stack-list shift-list" aria-label="Crew groups">
+            <section class="today-panel" aria-label="Profile form">
+              <div class="form-grid">
+                <label class="field-group" for="profile-name">
+                  <span class="field-label">Name / nickname</span>
+                  <input class="tip-input" id="profile-name" type="text" placeholder="What should we call you?" />
+                </label>
+
+                <label class="field-group" for="profile-role">
+                  <span class="field-label">Primary role</span>
+                  <select class="tip-input" id="profile-role">
+                    <option value="">Choose a role</option>
+                    <option>Server</option>
+                    <option>Bartender</option>
+                    <option>Host</option>
+                    <option>Line Cook</option>
+                    <option>Barista</option>
+                    <option>Manager</option>
+                    <option>Support</option>
+                  </select>
+                </label>
+
+                <label class="field-group" for="profile-neighborhood">
+                  <span class="field-label">Neighborhood</span>
+                  <select class="tip-input" id="profile-neighborhood">
+                    <option value="">Choose a neighborhood</option>
+                    <option>Downtown</option>
+                    <option>Pearl</option>
+                    <option>Eastside</option>
+                    <option>Division</option>
+                    <option>Alberta</option>
+                    <option>Sellwood</option>
+                    <option>Other</option>
+                  </select>
+                </label>
+
+                <label class="field-group" for="profile-goal">
+                  <span class="field-label">Main goal</span>
+                  <select class="tip-input" id="profile-goal">
+                    <option value="">Choose a goal</option>
+                    <option>Manage my shifts</option>
+                    <option>Find better jobs</option>
+                    <option>Pick up extra shifts</option>
+                    <option>Stay connected with coworkers</option>
+                    <option>Protect my mental health</option>
+                  </select>
+                </label>
+              </div>
+
+              <button class="action-button" id="save-profile-button" type="button">Save profile</button>
+              <p class="status-text" id="profile-status" aria-live="polite"></p>
+            </section>
+          </section>
+
+          <section class="people-subview" data-people-subview="workplaces">
+            <div class="panel-heading">
+              <p class="section-label">Workplaces</p>
+              <h3>My Workplaces</h3>
+              <p>Your shift posts are tied to a workplace so the right crew sees the right coverage requests.</p>
+            </div>
+
+            <section class="today-panel" aria-label="My workplaces">
+              <section class="stack-list workplace-list">
+                <article class="stack-card">
+                  <div class="stack-copy">
+                    <p class="stack-kicker">Current</p>
+                    <h3>Departure Lounge</h3>
+                    <p>Role: Bartender</p>
+                    <p>Neighborhood: Pearl District</p>
+                    <p>Status: Current</p>
+                  </div>
+                </article>
+
+                <article class="stack-card">
+                  <div class="stack-copy">
+                    <p class="stack-kicker">Current</p>
+                    <h3>Cafe Luna</h3>
+                    <p>Role: Server</p>
+                    <p>Neighborhood: SE Portland</p>
+                    <p>Status: Current</p>
+                  </div>
+                </article>
+
+                <article class="stack-card">
+                  <div class="stack-copy">
+                    <p class="stack-kicker">Occasional</p>
+                    <h3>Event Pool</h3>
+                    <p>Role: Catering / Banquet</p>
+                    <p>Neighborhood: Portland Metro</p>
+                    <p>Status: Occasional</p>
+                  </div>
+                </article>
+              </section>
+            </section>
+          </section>
+
+          <section class="people-subview" data-people-subview="coworkers">
+            <div class="panel-heading">
+              <p class="section-label">Coworkers</p>
+              <h3>Verified workplace connections</h3>
+              <p>Workplace Crew is everyone connected to a workplace. Shift Crew stays tied to one scheduled shift.</p>
+            </div>
+
+            <section class="stack-list shift-list" aria-label="Coworker groups">
               <article class="stack-card">
                 <div class="stack-copy">
                   <p class="stack-kicker">Verified workplace crew</p>
                   <h3>Departure Lounge Crew</h3>
                   <p>Crew type: Verified workplace crew</p>
                 </div>
-                <button
-                  class="action-button crew-workplace-button"
-                  type="button"
-                  data-workplace="Departure Lounge"
-                >
-                  View crew
+                <button class="action-button coworker-preview-button" type="button" data-message="Coworker view coming soon.">
+                  View coworkers
                 </button>
               </article>
 
@@ -610,12 +565,8 @@
                   <h3>Cafe Luna Crew</h3>
                   <p>Crew type: Verified workplace crew</p>
                 </div>
-                <button
-                  class="action-button crew-workplace-button"
-                  type="button"
-                  data-workplace="Cafe Luna"
-                >
-                  View crew
+                <button class="action-button coworker-preview-button" type="button" data-message="Coworker view coming soon.">
+                  View coworkers
                 </button>
               </article>
 
@@ -625,77 +576,54 @@
                   <h3>Event Pool</h3>
                   <p>Crew type: Verified workplace crew</p>
                 </div>
-                <button
-                  class="action-button crew-workplace-button"
-                  type="button"
-                  data-workplace="Event Pool"
-                >
-                  View crew
+                <button class="action-button coworker-preview-button" type="button" data-message="Coworker view coming soon.">
+                  View coworkers
                 </button>
               </article>
             </section>
+
+            <section class="today-panel" aria-label="Coworker placeholder status">
+              <p class="status-text" id="coworker-status-message">Verified coworker connections will expand inside People.</p>
+            </section>
           </section>
 
-          <section class="today-panel" aria-label="Shift Crew detail">
+          <section class="people-subview" data-people-subview="feedback">
             <div class="panel-heading">
-              <p class="section-label">Shift Crew</p>
-              <h3>See who is scheduled for this shift</h3>
-              <p>
-                See who is scheduled for this shift across Front of House, Back
-                of House, and Managers.
-              </p>
+              <p class="section-label">Feedback</p>
+              <h3>Share what feels useful</h3>
+              <p>Keep feedback simple. Use the live form link or save a quick note in this local prototype.</p>
             </div>
 
-            <article class="stack-card shift-card" id="shift-crew-summary-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Active shift</p>
-                <h3 id="crew-shift-date">Friday, July 10</h3>
-                <p id="crew-shift-workplace">Departure Lounge</p>
-                <ul class="shift-meta">
-                  <li id="crew-shift-time">6 PM-Close</li>
-                  <li id="crew-shift-role">Bartender release request</li>
-                </ul>
-                <p id="crew-shift-status">Status: Open</p>
+            <section class="today-panel" aria-label="Research handoff">
+              <div class="panel-heading">
+                <p class="section-label">Ready to share feedback?</p>
+                <h3>Research handoff</h3>
+                <p>Open the feedback form in a new tab, or save a short note first so you can gather your thoughts.</p>
               </div>
-              <div class="shift-action-row">
-                <button class="action-button secondary-action" id="crew-shift-message-button" type="button">
-                  Shift message
-                </button>
-              </div>
-            </article>
 
-            <section class="crew-group-list" aria-label="Shift Crew roster">
-              <article class="today-panel crew-group-panel">
-                <div class="panel-heading">
-                  <p class="section-label">Front of House</p>
-                </div>
-                <div class="crew-member-list" id="front-of-house-list"></div>
-              </article>
-
-              <article class="today-panel crew-group-panel">
-                <div class="panel-heading">
-                  <p class="section-label">Back of House</p>
-                </div>
-                <div class="crew-member-list" id="back-of-house-list"></div>
-              </article>
-
-              <article class="today-panel crew-group-panel">
-                <div class="panel-heading">
-                  <p class="section-label">Managers</p>
-                </div>
-                <div class="crew-member-list" id="manager-list"></div>
-              </article>
+              <a class="action-button action-link-button" id="open-feedback-form-button" href="#" target="_blank" rel="noreferrer">
+                Open feedback form
+              </a>
             </section>
 
-            <p class="status-text" id="crew-action-status">
-              Select a crew or shift to review the active Shift Crew.
-            </p>
-            <p class="status-text">
-              Future versions can verify schedules through workplace tools
-              before showing private shift details.
-            </p>
-          </section>
+            <section class="today-panel" aria-label="Local feedback note">
+              <div class="panel-heading">
+                <p class="section-label">Quick note</p>
+                <h3>Would this help your work life?</h3>
+              </div>
 
+              <div class="mood-row" role="group" aria-label="Feedback answer">
+                <button class="filter-button feedback-answer-button" type="button" data-answer="Yes">Yes</button>
+                <button class="filter-button feedback-answer-button" type="button" data-answer="Maybe">Maybe</button>
+                <button class="filter-button feedback-answer-button" type="button" data-answer="Not yet">Not yet</button>
+              </div>
+
+              <label class="sr-only" for="feedback-note">Feedback note</label>
+              <textarea class="note-input" id="feedback-note" placeholder="What would make the shift board more useful?"></textarea>
+              <button class="action-button" id="save-feedback-button" type="button">Save feedback</button>
+              <p class="status-text" id="feedback-status" aria-live="polite"></p>
+            </section>
+          </section>
         </section>
       </main>
 
@@ -710,11 +638,9 @@
       </button>
 
       <nav class="bottom-nav" aria-label="Bottom navigation">
-        <button class="nav-item" type="button" data-target="my-schedule">Schedule</button>
-        <button class="nav-item" type="button" data-target="post-shift">Post</button>
-        <button class="nav-item" type="button" data-target="shift-board">Catch</button>
+        <button class="nav-item" type="button" data-target="schedule">Schedule</button>
         <button class="nav-item" type="button" data-target="jobs">Jobs</button>
-        <button class="nav-item" type="button" data-target="crew">Crew</button>
+        <button class="nav-item" type="button" data-target="people">People</button>
       </nav>
     </div>
 

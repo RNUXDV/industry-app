@@ -248,7 +248,19 @@ h1 {
   box-shadow: 0 18px 28px rgba(71, 43, 24, 0.1);
 }
 
+.schedule-view-card.active,
+.people-view-card.active {
+  border-color: rgba(182, 84, 46, 0.45);
+  background: var(--surface-strong);
+  box-shadow: 0 18px 28px rgba(71, 43, 24, 0.1);
+}
+
 .nav-card {
+  cursor: pointer;
+}
+
+.schedule-view-card,
+.people-view-card {
   cursor: pointer;
 }
 
@@ -291,6 +303,17 @@ h1 {
 .connection-status.hidden-panel,
 #imported-shifts-panel.hidden-panel {
   display: none;
+}
+
+.schedule-subview,
+.people-subview {
+  display: none;
+  margin-top: 20px;
+}
+
+.schedule-subview.active,
+.people-subview.active {
+  display: block;
 }
 
 .workplace-preview.hidden-panel {
@@ -494,7 +517,7 @@ h1 {
   bottom: 14px;
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   width: min(calc(100% - 18px), 430px);
   padding: 10px;
