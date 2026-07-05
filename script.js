@@ -51,13 +51,26 @@ const saveFeedbackButton = document.querySelector("#save-feedback-button");
 const feedbackStatus = document.querySelector("#feedback-status");
 const openFeedbackFormButton = document.querySelector("#open-feedback-form-button");
 const mockPreviewButtons = document.querySelectorAll(".mock-preview-button");
+const peopleFilterButtons = document.querySelectorAll(".people-filter-button");
+const networkWorkerCards = document.querySelectorAll(".network-worker-card");
 const workerPreviewButtons = document.querySelectorAll(".worker-preview-button");
 const networkStatusMessage = document.querySelector("#network-status-message");
+const networkPreviewName = document.querySelector("#network-preview-name");
+const networkPreviewRole = document.querySelector("#network-preview-role");
+const networkPreviewWorkplace = document.querySelector("#network-preview-workplace");
+const networkPreviewOpen = document.querySelector("#network-preview-open");
+const networkPreviewVerification = document.querySelector("#network-preview-verification");
+const networkShiftMessageButton = document.querySelector("#network-shift-message-button");
+const networkSaveConnectionButton = document.querySelector("#network-save-connection-button");
+const peopleEventCards = document.querySelectorAll(".people-event-card");
 const eventInterestButtons = document.querySelectorAll(".event-interest-button");
 const eventsStatusMessage = document.querySelector("#events-status-message");
 const mockNearbyButton = document.querySelector("#mock-nearby-button");
 const nearbyStatusMessage = document.querySelector("#nearby-status-message");
 const nearbyResultsPanel = document.querySelector("#nearby-results-panel");
+const nearbyVisibilityButtons = document.querySelectorAll(".nearby-visibility-button");
+const nearbyVisibilityStatus = document.querySelector("#nearby-visibility-status");
+const peopleResourceCards = document.querySelectorAll(".people-resource-card");
 const resourcePreviewButtons = document.querySelectorAll(".resource-preview-button");
 const resourceStatusMessage = document.querySelector("#resource-status-message");
 
@@ -67,6 +80,7 @@ const shiftResponseStorageKey = "industry-v2-shift-responses";
 const profileStorageKey = "industry-v2-profile";
 const feedbackStorageKey = "industry-v2-feedback";
 const nearbyStorageKey = "industry-v2-nearby";
+const nearbyVisibilityStorageKey = "industry-v2-nearby-visibility";
 const feedbackFormUrl =
   "https://docs.google.com/forms/d/e/1FAIpQLScLUIuiBZ_a771qFUt_wRreHaN9pugo0OcDQ1zHVO3Y4q4wwQ/viewform?usp=publish-editor";
 
@@ -236,6 +250,14 @@ function setActivePeopleView(viewName) {
   });
 }
 
+function toggleCardVisibility(cards, activeValue, dataKey) {
+  cards.forEach((card) => {
+    const matches =
+      activeValue === "all" || card.dataset[dataKey].includes(activeValue);
+    card.classList.toggle("hidden-panel", !matches);
+  });
+}
+
 function setActiveSection(sectionName) {
   navButtons.forEach((button) => {
     const isActive = button.dataset.target === sectionName;
@@ -318,6 +340,30 @@ peopleViewCards.forEach((card) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       openPeopleView();
+    }
+  });
+});
+
+peopleFilterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const { filterGroup, filterValue } = button.dataset;
+
+    document
+      .querySelectorAll(`.people-filter-button[data-filter-group="${filterGroup}"]`)
+      .forEach((filterButton) => {
+        filterButton.classList.toggle("active", filterButton === button);
+      });
+
+    if (filterGroup === "network") {
+      toggleCardVisibility(networkWorkerCards, filterValue, "networkTags");
+    }
+
+    if (filterGroup === "events") {
+      toggleCardVisibility(peopleEventCards, filterValue, "eventTags");
+    }
+
+    if (filterGroup === "resources") {
+      toggleCardVisibility(peopleResourceCards, filterValue, "resourceTags");
     }
   });
 });
@@ -927,8 +973,25 @@ mockPreviewButtons.forEach((button) => {
 workerPreviewButtons.forEach((button) => {
   button.addEventListener("click", () => {
     networkStatusMessage.textContent = "Profile preview coming soon.";
+    networkPreviewName.textContent = button.dataset.workerName;
+    networkPreviewRole.textContent = `Role: ${button.dataset.workerRole}`;
+    networkPreviewWorkplace.textContent = `Workplace: ${button.dataset.workerWorkplace}`;
+    networkPreviewOpen.textContent = `Open to: ${button.dataset.workerOpen}`;
+    networkPreviewVerification.textContent = `Verification: ${button.dataset.workerVerification}`;
   });
 });
+
+if (networkShiftMessageButton) {
+  networkShiftMessageButton.addEventListener("click", () => {
+    networkStatusMessage.textContent = "Shift message preview coming soon.";
+  });
+}
+
+if (networkSaveConnectionButton) {
+  networkSaveConnectionButton.addEventListener("click", () => {
+    networkStatusMessage.textContent = "Connection saved.";
+  });
+}
 
 eventInterestButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -941,8 +1004,22 @@ if (mockNearbyButton) {
     localStorage.setItem(nearbyStorageKey, "on");
     nearbyStatusMessage.textContent = "Mock nearby enabled";
     nearbyResultsPanel.classList.remove("hidden-panel");
+    nearbyVisibilityStatus.textContent = `Visibility: ${localStorage.getItem(nearbyVisibilityStorageKey) || "Hidden"}`;
   });
 }
+
+nearbyVisibilityButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const visibility = button.dataset.visibility;
+    localStorage.setItem(nearbyVisibilityStorageKey, visibility);
+
+    nearbyVisibilityButtons.forEach((visibilityButton) => {
+      visibilityButton.classList.toggle("active", visibilityButton === button);
+    });
+
+    nearbyVisibilityStatus.textContent = `Visibility: ${visibility}`;
+  });
+});
 
 resourcePreviewButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -961,6 +1038,8 @@ const savedFeedback = readLocalJson(feedbackStorageKey, {});
 selectedFeedbackAnswer = savedFeedback.answer || "";
 feedbackNote.value = savedFeedback.note || "";
 const savedNearbyState = localStorage.getItem(nearbyStorageKey) || "off";
+const savedNearbyVisibility =
+  localStorage.getItem(nearbyVisibilityStorageKey) || "Hidden";
 
 feedbackAnswerButtons.forEach((button) => {
   const isActive = button.dataset.answer === selectedFeedbackAnswer;
@@ -984,4 +1063,15 @@ crewActionStatus.textContent = "Select a shift to review the active Shift Crew."
 if (savedNearbyState === "on") {
   nearbyStatusMessage.textContent = "Mock nearby enabled";
   nearbyResultsPanel.classList.remove("hidden-panel");
+}
+
+nearbyVisibilityButtons.forEach((button) => {
+  button.classList.toggle(
+    "active",
+    button.dataset.visibility === savedNearbyVisibility
+  );
+});
+
+if (nearbyVisibilityStatus) {
+  nearbyVisibilityStatus.textContent = `Visibility: ${savedNearbyVisibility}`;
 }

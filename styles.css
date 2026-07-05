@@ -487,6 +487,12 @@ h1 {
   color: white;
 }
 
+.filter-button.active {
+  border-color: rgba(45, 106, 99, 0.3);
+  background: linear-gradient(135deg, var(--highlight), #1f5b55);
+  color: white;
+}
+
 .secondary-action {
   background: transparent;
   border: 1px solid var(--line);

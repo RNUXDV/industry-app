@@ -412,7 +412,7 @@
           <div class="section-heading">
             <p class="section-label">People</p>
             <h2>People</h2>
-            <p>Connect with industry workers, crews, events, meetups, and support resources beyond your own workplace.</p>
+            <p>Connect with workers, crews, events, nearby meetups, and support resources across the industry.</p>
           </div>
 
           <section class="today-panel" aria-label="People framing">
@@ -425,6 +425,10 @@
 
           <section class="today-panel" aria-label="People guidance">
             <p class="status-text">People is for real-world connection, not follower counts or popularity scoring.</p>
+          </section>
+
+          <section class="today-panel" aria-label="People system connection">
+            <p class="status-text">People connects to Schedule when workers coordinate shifts, and to Jobs when referrals or opportunities open up.</p>
           </section>
 
           <section class="card-list people-card-list" aria-label="People tools">
@@ -454,69 +458,104 @@
             <div class="panel-heading">
               <p class="section-label">Network</p>
               <h3>Network</h3>
-              <p>Find workers across restaurants, bars, lounges, events, and neighborhoods.</p>
+              <p>Find workers across restaurants, bars, lounges, events, neighborhoods, and roles.</p>
+            </div>
+
+            <div class="mood-row" role="group" aria-label="Network filters">
+              <button class="filter-button people-filter-button active" type="button" data-filter-group="network" data-filter-value="all">All</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="network" data-filter-value="front-of-house">Front of House</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="network" data-filter-value="back-of-house">Back of House</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="network" data-filter-value="managers">Managers</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="network" data-filter-value="open-to-swaps">Open to swaps</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="network" data-filter-value="open-to-referrals">Open to referrals</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="network" data-filter-value="open-to-meetups">Open to meetups</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="network" data-filter-value="extra-hours">Extra hours</button>
             </div>
 
             <section class="stack-list shift-list" aria-label="Network workers">
-              <article class="stack-card">
+              <article class="stack-card network-worker-card" data-network-tags="front-of-house open-to-swaps open-to-meetups">
                 <div class="stack-copy">
                   <p class="stack-kicker">Worker</p>
                   <h3>Jordan</h3>
-                  <p>Bartender</p>
+                  <p>Role: Bartender</p>
                   <p>Workplace: Departure Lounge</p>
                   <p>Neighborhood: Pearl District</p>
-                  <p>Signal: Open to shift swaps and industry meetups</p>
+                  <p>Category: Front of House</p>
+                  <p>Open to: Shift swaps, meetups</p>
+                  <p>Verification: Verified workplace worker</p>
+                  <p>Shared connection: 2 shared crews</p>
                 </div>
-                <button class="action-button worker-preview-button" type="button">
+                <button class="action-button worker-preview-button" type="button" data-worker-name="Jordan" data-worker-role="Bartender" data-worker-workplace="Departure Lounge" data-worker-open="Shift swaps, meetups" data-worker-verification="Verified workplace worker">
                   View profile
                 </button>
               </article>
 
-              <article class="stack-card">
+              <article class="stack-card network-worker-card" data-network-tags="front-of-house open-to-referrals">
                 <div class="stack-copy">
                   <p class="stack-kicker">Worker</p>
                   <h3>Maya</h3>
-                  <p>Server</p>
+                  <p>Role: Server</p>
                   <p>Workplace: Cafe Luna</p>
                   <p>Neighborhood: SE Portland</p>
-                  <p>Signal: Open to referrals and brunch shifts</p>
+                  <p>Category: Front of House</p>
+                  <p>Open to: Referrals, brunch shifts</p>
+                  <p>Verification: Verified workplace worker</p>
+                  <p>Shared connection: 1 shared crew</p>
                 </div>
-                <button class="action-button worker-preview-button" type="button">
+                <button class="action-button worker-preview-button" type="button" data-worker-name="Maya" data-worker-role="Server" data-worker-workplace="Cafe Luna" data-worker-open="Referrals, brunch shifts" data-worker-verification="Verified workplace worker">
                   View profile
                 </button>
               </article>
 
-              <article class="stack-card">
+              <article class="stack-card network-worker-card" data-network-tags="back-of-house extra-hours">
                 <div class="stack-copy">
                   <p class="stack-kicker">Worker</p>
                   <h3>Luis</h3>
-                  <p>Line Cook</p>
+                  <p>Role: Line Cook</p>
                   <p>Workplace: Northside Kitchen</p>
                   <p>Neighborhood: NE Portland</p>
-                  <p>Signal: Looking for pop-ups and extra hours</p>
+                  <p>Category: Back of House</p>
+                  <p>Open to: Pop-ups, extra hours</p>
+                  <p>Verification: Verified workplace worker</p>
+                  <p>Shared connection: 3 shared workers</p>
                 </div>
-                <button class="action-button worker-preview-button" type="button">
+                <button class="action-button worker-preview-button" type="button" data-worker-name="Luis" data-worker-role="Line Cook" data-worker-workplace="Northside Kitchen" data-worker-open="Pop-ups, extra hours" data-worker-verification="Verified workplace worker">
                   View profile
                 </button>
               </article>
 
-              <article class="stack-card">
+              <article class="stack-card network-worker-card" data-network-tags="managers open-to-referrals">
                 <div class="stack-copy">
                   <p class="stack-kicker">Worker</p>
                   <h3>Dana</h3>
-                  <p>Floor Manager</p>
+                  <p>Role: Floor Manager</p>
                   <p>Workplace: Event Pool</p>
                   <p>Neighborhood: Portland Metro</p>
-                  <p>Signal: Can refer reliable workers</p>
+                  <p>Category: Manager</p>
+                  <p>Open to: Referrals, staffing events</p>
+                  <p>Verification: Manager contact</p>
+                  <p>Shared connection: Event crew</p>
                 </div>
-                <button class="action-button worker-preview-button" type="button">
+                <button class="action-button worker-preview-button" type="button" data-worker-name="Dana" data-worker-role="Floor Manager" data-worker-workplace="Event Pool" data-worker-open="Referrals, staffing events" data-worker-verification="Manager contact">
                   View profile
                 </button>
               </article>
             </section>
 
             <section class="today-panel" aria-label="Network status">
+              <div class="panel-heading">
+                <p class="section-label">Profile preview</p>
+                <h3 id="network-preview-name">Tap a worker</h3>
+              </div>
               <p class="status-text" id="network-status-message">Tap a worker to preview how cross-establishment profiles could work.</p>
+              <p class="status-text" id="network-preview-role">Role: -</p>
+              <p class="status-text" id="network-preview-workplace">Workplace: -</p>
+              <p class="status-text" id="network-preview-open">Open to: -</p>
+              <p class="status-text" id="network-preview-verification">Verification: -</p>
+              <div class="shift-action-row">
+                <button class="action-button secondary-action" id="network-shift-message-button" type="button">Shift message</button>
+                <button class="action-button" id="network-save-connection-button" type="button">Save connection</button>
+              </div>
             </section>
           </section>
 
@@ -524,43 +563,74 @@
             <div class="panel-heading">
               <p class="section-label">Events</p>
               <h3>Events</h3>
-              <p>Find industry nights, meetups, workshops, pop-ups, and community events.</p>
+              <p>Find industry nights, sober meetups, pop-ups, workshops, and community events.</p>
+            </div>
+
+            <div class="mood-row" role="group" aria-label="Event filters">
+              <button class="filter-button people-filter-button active" type="button" data-filter-group="events" data-filter-value="all">All</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="events" data-filter-value="industry-night">Industry night</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="events" data-filter-value="sober">Sober</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="events" data-filter-value="pop-up">Pop-up</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="events" data-filter-value="workshop">Workshop</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="events" data-filter-value="hiring-mixer">Hiring mixer</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="events" data-filter-value="support">Support</button>
             </div>
 
             <section class="stack-list shift-list" aria-label="Industry events">
-              <article class="stack-card">
+              <article class="stack-card people-event-card" data-event-tags="industry-night">
                 <div class="stack-copy">
                   <p class="stack-kicker">Event</p>
                   <h3>Industry Night Meetup</h3>
                   <p>Monday, 8 PM</p>
                   <p>Area: SE Portland</p>
                   <p>Type: Social meetup</p>
+                  <p>For: FOH, BOH, managers</p>
+                  <p>Vibe: Casual, after-shift</p>
                 </div>
                 <button class="action-button event-interest-button" type="button">
                   I'm interested
                 </button>
               </article>
 
-              <article class="stack-card">
+              <article class="stack-card people-event-card" data-event-tags="sober support">
                 <div class="stack-copy">
                   <p class="stack-kicker">Event</p>
                   <h3>Sober Industry Coffee</h3>
                   <p>Sunday, 10 AM</p>
                   <p>Area: Pearl District</p>
                   <p>Type: Supportive meetup</p>
+                  <p>For: Workers who want connection without alcohol</p>
+                  <p>Vibe: Calm, low-pressure</p>
                 </div>
                 <button class="action-button event-interest-button" type="button">
                   I'm interested
                 </button>
               </article>
 
-              <article class="stack-card">
+              <article class="stack-card people-event-card" data-event-tags="pop-up hiring-mixer">
                 <div class="stack-copy">
                   <p class="stack-kicker">Event</p>
                   <h3>Pop-up Shift Mixer</h3>
                   <p>Thursday, 6 PM</p>
                   <p>Area: Portland Metro</p>
                   <p>Type: Work + networking</p>
+                  <p>For: Workers looking for extra hours</p>
+                  <p>Vibe: Practical, referral-friendly</p>
+                </div>
+                <button class="action-button event-interest-button" type="button">
+                  I'm interested
+                </button>
+              </article>
+
+              <article class="stack-card people-event-card" data-event-tags="workshop support">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Event</p>
+                  <h3>Conflict at Work Workshop</h3>
+                  <p>Tuesday, 4 PM</p>
+                  <p>Area: Online / Portland</p>
+                  <p>Type: Workshop</p>
+                  <p>For: Workers dealing with difficult workplace dynamics</p>
+                  <p>Vibe: Educational, supportive</p>
                 </div>
                 <button class="action-button event-interest-button" type="button">
                   I'm interested
@@ -577,7 +647,7 @@
             <div class="panel-heading">
               <p class="section-label">Nearby</p>
               <h3>Nearby</h3>
-              <p>Opt in to see nearby industry workers, crews, and meetups.</p>
+              <p>Opt in to see nearby workers, crews, open shifts, and meetups.</p>
             </div>
 
             <section class="today-panel" aria-label="Nearby map concept">
@@ -587,6 +657,11 @@
                 <p>This is a mock nearby layer only. No real maps or location tracking are active in this prototype.</p>
               </div>
 
+              <div class="mood-row" role="group" aria-label="Nearby visibility">
+                <button class="filter-button nearby-visibility-button active" type="button" data-visibility="Hidden">Hidden</button>
+                <button class="filter-button nearby-visibility-button" type="button" data-visibility="Visible to my crews">Visible to my crews</button>
+                <button class="filter-button nearby-visibility-button" type="button" data-visibility="Visible to nearby industry workers">Visible to nearby industry workers</button>
+              </div>
               <button class="action-button" id="mock-nearby-button" type="button">Turn on mock nearby</button>
               <p class="status-text" id="nearby-status-message">Nearby is off until you opt in.</p>
             </section>
@@ -600,8 +675,43 @@
                 <li>3 workers nearby</li>
                 <li>2 meetups nearby</li>
                 <li>1 open shift nearby</li>
+                <li>1 crew nearby</li>
               </ul>
-              <p class="status-text">Nearby should always be opt-in. Future versions should let users choose when and how they appear.</p>
+              <p class="status-text" id="nearby-visibility-status">Visibility: Hidden</p>
+              <section class="stack-list shift-list" aria-label="Nearby items">
+                <article class="stack-card">
+                  <div class="stack-copy">
+                    <p class="stack-kicker">Nearby worker</p>
+                    <h3>Jordan</h3>
+                    <p>Bartender - 0.7 mi</p>
+                    <p>Open to meetup</p>
+                  </div>
+                </article>
+                <article class="stack-card">
+                  <div class="stack-copy">
+                    <p class="stack-kicker">Nearby meetup</p>
+                    <h3>Sober Industry Coffee</h3>
+                    <p>Sunday</p>
+                    <p>Pearl District</p>
+                  </div>
+                </article>
+                <article class="stack-card">
+                  <div class="stack-copy">
+                    <p class="stack-kicker">Nearby open shift</p>
+                    <h3>Server release request</h3>
+                    <p>Tonight</p>
+                    <p>Cafe Luna</p>
+                  </div>
+                </article>
+                <article class="stack-card">
+                  <div class="stack-copy">
+                    <p class="stack-kicker">Nearby crew</p>
+                    <h3>Departure Lounge Crew</h3>
+                    <p>Pearl District</p>
+                  </div>
+                </article>
+              </section>
+              <p class="status-text">Nearby should always be opt-in, time-limited, and approximate. Future versions should let users control when and how they appear.</p>
             </section>
           </section>
 
@@ -612,39 +722,63 @@
               <p>Support for the real-life pressure of service work.</p>
             </div>
 
+            <div class="mood-row" role="group" aria-label="Resource filters">
+              <button class="filter-button people-filter-button active" type="button" data-filter-group="resources" data-filter-value="all">All</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="resources" data-filter-value="mental-health">Mental health</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="resources" data-filter-value="burnout">Burnout</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="resources" data-filter-value="workplace-abuse">Workplace abuse</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="resources" data-filter-value="addiction-recovery">Addiction / recovery</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="resources" data-filter-value="safety">Safety</button>
+              <button class="filter-button people-filter-button" type="button" data-filter-group="resources" data-filter-value="wage-issues">Wage issues</button>
+            </div>
+
             <section class="stack-list shift-list" aria-label="Support resources">
-              <article class="stack-card">
+              <article class="stack-card people-resource-card" data-resource-tags="mental-health">
                 <div class="stack-copy">
                   <p class="stack-kicker">Support</p>
                   <h3>Mental health support</h3>
                   <p>Find support for burnout, stress, anxiety, and emotional overload.</p>
+                  <p>Type: Support</p>
                 </div>
                 <button class="action-button resource-preview-button" type="button">View resources</button>
               </article>
 
-              <article class="stack-card">
+              <article class="stack-card people-resource-card" data-resource-tags="burnout">
+                <div class="stack-copy">
+                  <p class="stack-kicker">Recovery</p>
+                  <h3>Burnout reset</h3>
+                  <p>Tools and spaces for workers who feel depleted, overextended, or emotionally exhausted.</p>
+                  <p>Type: Recovery</p>
+                </div>
+                <button class="action-button resource-preview-button" type="button">View resources</button>
+              </article>
+
+              <article class="stack-card people-resource-card" data-resource-tags="workplace-abuse safety wage-issues">
                 <div class="stack-copy">
                   <p class="stack-kicker">Support</p>
                   <h3>Workplace abuse support</h3>
-                  <p>Find guidance for harassment, unsafe workplaces, wage issues, and reporting concerns.</p>
+                  <p>Guidance for harassment, unsafe workplaces, retaliation, wage issues, and reporting concerns.</p>
+                  <p>Type: Safety</p>
                 </div>
                 <button class="action-button resource-preview-button" type="button">View resources</button>
               </article>
 
-              <article class="stack-card">
+              <article class="stack-card people-resource-card" data-resource-tags="addiction-recovery">
                 <div class="stack-copy">
                   <p class="stack-kicker">Support</p>
                   <h3>Addiction and recovery support</h3>
-                  <p>Find sober meetups, recovery support, and nonjudgmental help.</p>
+                  <p>Sober meetups, recovery support, and nonjudgmental help for industry workers.</p>
+                  <p>Type: Recovery</p>
                 </div>
                 <button class="action-button resource-preview-button" type="button">View resources</button>
               </article>
 
-              <article class="stack-card">
+              <article class="stack-card people-resource-card" data-resource-tags="safety">
                 <div class="stack-copy">
                   <p class="stack-kicker">Safety</p>
                   <h3>Emergency safety</h3>
                   <p>For urgent danger, contact local emergency services or trusted local crisis support.</p>
+                  <p>Type: Safety</p>
                 </div>
                 <button class="action-button resource-preview-button" type="button">View safety options</button>
               </article>
