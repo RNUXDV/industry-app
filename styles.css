@@ -14,7 +14,11 @@
   --radius-lg: 28px;
   --radius-md: 20px;
   --radius-sm: 14px;
-  --hero-bg: linear-gradient(180deg, rgba(35, 39, 35, 0.96), rgba(27, 31, 28, 0.92));
+  --hero-bg: linear-gradient(
+    180deg,
+    rgba(35, 39, 35, 0.96),
+    rgba(27, 31, 28, 0.92)
+  );
   --panel-bg: rgba(32, 35, 32, 0.82);
   --input-bg: rgba(31, 34, 31, 0.95);
   --nav-bg: rgba(24, 27, 24, 0.92);
@@ -33,7 +37,11 @@ body[data-theme="light"] {
   --muted: #6b655c;
   --line: rgba(29, 28, 25, 0.1);
   --shadow: 0 20px 45px rgba(71, 43, 24, 0.12);
-  --hero-bg: linear-gradient(180deg, rgba(255, 250, 242, 0.96), rgba(239, 228, 211, 0.92));
+  --hero-bg: linear-gradient(
+    180deg,
+    rgba(255, 250, 242, 0.96),
+    rgba(239, 228, 211, 0.92)
+  );
   --panel-bg: rgba(255, 250, 242, 0.78);
   --input-bg: rgba(255, 252, 247, 0.95);
   --nav-bg: rgba(255, 250, 242, 0.92);
@@ -53,7 +61,11 @@ body {
   font-family: "Manrope", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(182, 84, 46, 0.18), transparent 30%),
+    radial-gradient(
+      circle at top left,
+      rgba(182, 84, 46, 0.18),
+      transparent 30%
+    ),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-end) 100%);
 }
 
@@ -343,33 +355,45 @@ h1 {
   align-content: start;
 }
 
-.people-hub-badge {
+.people-link-card {
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.people-link-card:visited {
+  color: inherit;
+}
+
+.people-link-card h3 {
+  color: var(--text-main);
+  margin: 0;
+}
+
+.people-link-card p {
+  margin: 0;
+}
+
+.feature-pill {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 72px;
-  height: 72px;
-  margin-bottom: 16px;
+  width: fit-content;
+  padding: 0.35rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid var(--line);
-  font-size: 1.6rem;
-  font-weight: 800;
+  border: 1px solid rgba(182, 84, 46, 0.6);
+  color: var(--brand);
+  background: rgba(182, 84, 46, 0.08);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.people-badge-network {
-  background: rgba(45, 106, 99, 0.16);
-}
-
-.people-badge-events {
-  background: rgba(182, 84, 46, 0.14);
-}
-
-.people-badge-nearby {
-  background: rgba(115, 133, 164, 0.14);
-}
-
-.people-badge-resources {
-  background: rgba(120, 116, 94, 0.16);
+.people-link-card:hover,
+.people-link-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(182, 84, 46, 0.45);
+  outline: none;
 }
 
 .workplace-preview.hidden-panel {
