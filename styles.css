@@ -271,11 +271,54 @@ h1 {
   cursor: pointer;
 }
 
-.schedule-view-card,
-.people-hub-card {
+.schedule-view-card {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  border: 1px solid var(--line);
+  background: var(--surface);
   cursor: pointer;
 }
 
+.schedule-card-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.schedule-primary-card {
+  min-height: 220px;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.schedule-primary-card .card-icon {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.schedule-primary-card h3 {
+  font-size: clamp(2rem, 8vw, 3rem);
+}
+
+.schedule-primary-card p {
+  max-width: 24rem;
+}
+
+@media (min-width: 640px) {
+  .schedule-card-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .schedule-primary-card {
+    grid-column: 1 / -1;
+  }
+}
+
+.people-hub-card {
+  cursor: pointer;
+}
 .people-link-card,
 .nav-link-item,
 .home-logo-link {
