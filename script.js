@@ -66,6 +66,15 @@ const profileNeighborhoodSummary = document.querySelector(
 const profileGoalSummary = document.querySelector("#profile-goal-summary");
 const mockPreviewButtons = document.querySelectorAll(".mock-preview-button");
 
+const totalTipsInput = document.querySelector("#total-tips-input");
+const tipoutPercentInput = document.querySelector("#tipout-percent-input");
+const calculateTipoutButton = document.querySelector(
+  "#calculate-tipout-button",
+);
+const tipoutResult = document.querySelector("#tipout-result");
+const tipoutTotal = document.querySelector("#tipout-total");
+const tipoutRemaining = document.querySelector("#tipout-remaining");
+
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
 const shiftResponseStorageKey = "industry-v2-shift-responses";
@@ -267,15 +276,18 @@ scheduleViewCards.forEach((card) => {
 
 function showScheduleHub() {
   if (scheduleHub) {
-    scheduleHub.classList.remove("hidden-panel");
+    scheduleHub.classList.add("hidden-panel");
   }
 
   scheduleSubviews.forEach((subview) => {
-    subview.classList.remove("active");
+    subview.classList.toggle(
+      "active",
+      subview.dataset.scheduleSubview === "my-shifts",
+    );
   });
 
   scheduleViewCards.forEach((card) => {
-    card.classList.remove("active");
+    card.classList.toggle("active", card.dataset.scheduleView === "my-shifts");
   });
 }
 
@@ -659,7 +671,43 @@ function renderShiftBoard() {
     });
   });
 }
+function formatMoney(amount) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount);
+}
 
+if (calculateTipoutButton) {
+  calculateTipoutButton.addEventListener("click", () => {
+    const totalTips = Number(totalTipsInput.value);
+    const rawTipoutPercent = Number(tipoutPercentInput.value);
+
+    if (
+      !totalTipsInput.value ||
+      !tipoutPercentInput.value ||
+      totalTips < 0 ||
+      rawTipoutPercent < 0
+    ) {
+      tipoutResult.classList.remove("hidden-panel");
+      tipoutTotal.textContent = "$0.00";
+      tipoutRemaining.textContent =
+        "Enter your total tips and tip-out percentage to calculate.";
+      return;
+    }
+
+    const tipoutRate =
+      rawTipoutPercent <= 1 ? rawTipoutPercent : rawTipoutPercent / 100;
+
+    const tipoutAmount = totalTips * tipoutRate;
+    const remainingTips = Math.max(totalTips - tipoutAmount, 0);
+
+    tipoutResult.classList.remove("hidden-panel");
+    tipoutTotal.textContent = formatMoney(tipoutAmount);
+    tipoutRemaining.textContent =
+      "Remaining after tip-out: " + formatMoney(remainingTips);
+  });
+}
 function renderMockCalendar() {
   if (!mockCalendarPanel || !mockCalendarGrid) {
     return;

@@ -177,7 +177,7 @@
 
           <section
             id="schedule-hub"
-            class="card-list schedule-card-list"
+            class="card-list schedule-card-list hidden-panel"
             aria-label="Schedule tools"
           >
             <button
@@ -189,6 +189,8 @@
               <h3>My Shifts</h3>
               <p>View your imported or added schedule.</p>
             </button>
+
+            
 
             <button
               class="feature-card schedule-view-card"
@@ -235,14 +237,7 @@
             class="schedule-subview active"
             data-schedule-subview="my-shifts"
           >
-            <button
-              class="back-to-schedule-button"
-              type="button"
-              data-back-to-schedule
-            >
-              ← Back to Schedule
-            </button>
-
+            
             <div class="section-heading">
               <p class="section-label">Schedule / My Shifts</p>
               <h2>My Shifts</h2>
@@ -384,12 +379,141 @@
                 aria-label="Imported shifts"
               ></section>
             </section>
+            <section class="today-panel schedule-quick-tools" aria-label="Schedule quick tools">
+  <div class="panel-heading">
+    <p class="section-label">Quick tools</p>
+    <h3>Tools for your shift</h3>
+    <p>
+      Open focused tools without crowding your schedule.
+    </p>
+  </div>
+
+  <div class="quick-tools-grid">
+    <button
+      class="feature-card schedule-view-card quick-tool-card"
+      type="button"
+      data-schedule-view="earnings-tools"
+    >
+      <span class="card-kicker">Earnings</span>
+      <strong>Earnings Tools</strong>
+      <span>
+        Track tips, calculate tip-out, and estimate pay-period totals.
+      </span>
+    </button>
+
+    <button
+      class="feature-card schedule-view-card quick-tool-card"
+      type="button"
+      data-schedule-view="catch"
+    >
+      <span class="card-kicker">Open shifts</span>
+      <strong>Catch Open Shifts</strong>
+      <span>
+        See released shifts available at your workplace.
+      </span>
+    </button>
+  </div>
+</section>
+
           </section>
+
+           <section class="schedule-subview" data-schedule-subview="earnings-tools">
+  <button class="back-to-schedule-button" type="button" data-back-to-schedule>
+    ← Back to My Shifts
+  </button>
+
+  <div class="section-heading">
+    <p class="section-label">Schedule / Earnings</p>
+    <h2>Earnings Tools</h2>
+    <p>
+      Track shift money, calculate tip-out, and estimate what is going into your paycheck.
+    </p>
+  </div>
+
+  <section class="card-list earnings-tool-list" aria-label="Earnings tools">
+    <article class="feature-card">
+      <span class="card-kicker">Tip tracker</span>
+      <strong>Cash + credit tips</strong>
+      <span>
+        Log what you made during each shift.
+      </span>
+    </article>
+
+    <button
+  class="feature-card schedule-view-card earnings-tool-card"
+  type="button"
+  data-schedule-view="tip-out-calculator"
+>
+  <span class="card-kicker">Calculator</span>
+  <strong>Tip-out calculator</strong>
+  <span>
+    Calculate tip-out before leaving work.
+  </span>
+</button>
+
+    <article class="feature-card">
+      <span class="card-kicker">Pay period</span>
+      <strong>Paycheck estimate</strong>
+      <span>
+        Estimate paycheck tips and shift earnings.
+      </span>
+    </article>
+
+    <article class="feature-card">
+      <span class="card-kicker">Notes</span>
+      <strong>Shift notes</strong>
+      <span>
+        Save sales notes, cash notes, or anything unusual from the shift.
+      </span>
+    </article>
+  </section>
+</section>
+
+<section class="schedule-subview" data-schedule-subview="tip-out-calculator">
+  <button class="back-to-schedule-button" type="button" data-back-to-schedule>
+    ← Back to My Shifts
+  </button>
+
+  <div class="section-heading">
+    <p class="section-label">Earnings / Calculator</p>
+    <h2>Tip-Out Calculator</h2>
+    <p>
+      Quickly estimate what you owe for tip-out before leaving work.
+    </p>
+  </div>
+
+  <section class="today-panel tip-calculator-panel" aria-label="Tip-out calculator">
+    <label class="form-field">
+      <span>Total tips</span>
+      <input id="total-tips-input" type="number" placeholder="Example: 220" />
+    </label>
+
+    <label class="form-field">
+      <span>Tip-out percentage</span>
+      <input id="tipout-percent-input" type="number" placeholder="Example: 5" />
+    </label>
+
+    <button class="action-button" type="button" id="calculate-tipout-button">
+      Calculate tip-out
+    </button>
+
+    <div class="calculator-result hidden-panel" id="tipout-result">
+      <p class="section-label">Estimated tip-out</p>
+      <h3 id="tipout-total">$0.00</h3>
+      <p id="tipout-remaining">Remaining after tip-out: $0.00</p>
+    </div>
+  </section>
+</section>
+
+          
 
           <section
             class="schedule-subview"
             data-schedule-subview="need-coverage"
           >
+
+         
+
             <button
               class="back-to-schedule-button"
               type="button"
