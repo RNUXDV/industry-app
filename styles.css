@@ -306,6 +306,130 @@ h1 {
   max-width: 24rem;
 }
 
+.back-to-schedule-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.back-to-schedule-button:hover,
+.back-to-schedule-button:focus-visible {
+  border-color: rgba(182, 84, 46, 0.55);
+  background: var(--surface-strong);
+  outline: none;
+}
+
+.mock-calendar-panel {
+  margin-top: 1rem;
+}
+
+.mock-calendar-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.mock-calendar-day {
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: var(--surface);
+  padding: 1rem;
+}
+
+.mock-calendar-day.has-shift {
+  border-color: rgba(182, 84, 46, 0.45);
+  background: var(--surface-strong);
+}
+
+.mock-calendar-date {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.mock-calendar-date span {
+  color: var(--muted);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mock-calendar-date strong {
+  color: var(--text);
+}
+
+.mock-calendar-shift {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: rgba(182, 84, 46, 0.12);
+}
+
+.mock-calendar-shift strong {
+  color: var(--text);
+}
+
+.mock-calendar-shift span,
+.mock-calendar-empty {
+  color: var(--muted);
+  margin: 0;
+}
+
+@media (min-width: 700px) {
+  .mock-calendar-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .mock-calendar-day {
+    min-height: 180px;
+  }
+}
+
+.import-schedule-details {
+  margin-top: 1rem;
+}
+
+.import-schedule-details summary {
+  list-style: none;
+}
+
+.import-schedule-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.import-schedule-summary {
+  width: 100%;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.import-schedule-options {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.import-schedule-options .connection-button {
+  width: 100%;
+}
+
+.schedule-status-panel .connection-status {
+  margin-top: 1rem;
+}
+
 @media (min-width: 640px) {
   .schedule-card-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));

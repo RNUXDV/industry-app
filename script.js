@@ -15,6 +15,12 @@ const shiftWorkplaceSelect = document.querySelector("#shift-workplace");
 const workplacePreviewPanel = document.querySelector(
   "#workplace-preview-panel",
 );
+const mockCalendarPanel = document.querySelector("#mock-calendar-panel");
+const mockCalendarGrid = document.querySelector("#mock-calendar-grid");
+const scheduleHub = document.querySelector("#schedule-hub");
+const backToScheduleButtons = document.querySelectorAll(
+  "[data-back-to-schedule]",
+);
 const workplacePreviewMessage = document.querySelector(
   "#workplace-preview-message",
 );
@@ -24,6 +30,15 @@ const workplacePreviewNeighborhood = document.querySelector(
 const connectionButtons = document.querySelectorAll(".connection-button");
 const connectionStatusPanel = document.querySelector(
   "#connection-status-panel",
+);
+const importScheduleDetails = document.querySelector(
+  "#import-schedule-details",
+);
+const scheduleStatusHeading = document.querySelector(
+  ".schedule-status-panel .panel-heading h3",
+);
+const scheduleStatusCopy = document.querySelector(
+  ".schedule-status-panel .panel-heading p:last-child",
 );
 const connectionStatusMessage = document.querySelector(
   "#connection-status-message",
@@ -116,27 +131,36 @@ const sampleShifts = [
 const importedScheduleShifts = [
   {
     id: "imported-1",
-    day: "Thu, July 9",
+    day: "Thu, July 16",
     workplace: "Departure Lounge",
     role: "Server",
-    time: "5 PM-Close",
+    time: "5:00 PM - Close",
     neighborhood: "Pearl District",
+    station: "Dining room",
+    manager: "Dana",
+    notes: "Dinner service. Patio may stay open if weather holds.",
   },
   {
     id: "imported-2",
-    day: "Fri, July 10",
+    day: "Fri, July 17",
     workplace: "Departure Lounge",
     role: "Bartender",
-    time: "6 PM-Close",
+    time: "6:00 PM - Close",
     neighborhood: "Pearl District",
+    station: "Main bar",
+    manager: "Dana",
+    notes: "High-volume cocktail shift. Barback scheduled.",
   },
   {
     id: "imported-3",
-    day: "Sun, July 12",
+    day: "Sun, July 19",
     workplace: "Cafe Luna",
-    role: "Brunch",
-    time: "9 AM-3 PM",
+    role: "Brunch Server",
+    time: "9:00 AM - 3:00 PM",
     neighborhood: "SE Portland",
+    station: "Brunch floor",
+    manager: "Kira",
+    notes: "Busy brunch block. Good shift for swap or release testing.",
   },
 ];
 
@@ -212,6 +236,10 @@ let activeScheduleAction = null;
 let activeCrewShiftId = "";
 
 function setActiveScheduleView(viewName) {
+  if (scheduleHub) {
+    scheduleHub.classList.add("hidden-panel");
+  }
+
   scheduleViewCards.forEach((card) => {
     card.classList.toggle("active", card.dataset.scheduleView === viewName);
   });
@@ -235,6 +263,24 @@ scheduleViewCards.forEach((card) => {
       setActiveScheduleView(card.dataset.scheduleView);
     }
   });
+});
+
+function showScheduleHub() {
+  if (scheduleHub) {
+    scheduleHub.classList.remove("hidden-panel");
+  }
+
+  scheduleSubviews.forEach((subview) => {
+    subview.classList.remove("active");
+  });
+
+  scheduleViewCards.forEach((card) => {
+    card.classList.remove("active");
+  });
+}
+
+backToScheduleButtons.forEach((button) => {
+  button.addEventListener("click", showScheduleHub);
 });
 
 function setActiveSection(sectionName) {
@@ -614,6 +660,70 @@ function renderShiftBoard() {
   });
 }
 
+function renderMockCalendar() {
+  if (!mockCalendarPanel || !mockCalendarGrid) {
+    return;
+  }
+
+  const calendarDays = [
+    { label: "Mon", date: "Jul 13", shifts: [] },
+    { label: "Tue", date: "Jul 14", shifts: [] },
+    { label: "Wed", date: "Jul 15", shifts: [] },
+    {
+      label: "Thu",
+      date: "Jul 16",
+      shifts: importedScheduleShifts.filter((shift) =>
+        shift.day.includes("Thu"),
+      ),
+    },
+    {
+      label: "Fri",
+      date: "Jul 17",
+      shifts: importedScheduleShifts.filter((shift) =>
+        shift.day.includes("Fri"),
+      ),
+    },
+    { label: "Sat", date: "Jul 18", shifts: [] },
+    {
+      label: "Sun",
+      date: "Jul 19",
+      shifts: importedScheduleShifts.filter((shift) =>
+        shift.day.includes("Sun"),
+      ),
+    },
+  ];
+
+  mockCalendarGrid.innerHTML = calendarDays
+    .map((day) => {
+      const shiftBlocks = day.shifts.length
+        ? day.shifts
+            .map(
+              (shift) => `
+                <div class="mock-calendar-shift">
+                  <strong>${shift.role}</strong>
+                  <span>${shift.time}</span>
+                  <span>${shift.workplace}</span>
+                </div>
+              `,
+            )
+            .join("")
+        : `<p class="mock-calendar-empty">No shift</p>`;
+
+      return `
+        <article class="mock-calendar-day ${day.shifts.length ? "has-shift" : ""}">
+          <div class="mock-calendar-date">
+            <span>${day.label}</span>
+            <strong>${day.date}</strong>
+          </div>
+          ${shiftBlocks}
+        </article>
+      `;
+    })
+    .join("");
+
+  mockCalendarPanel.classList.remove("hidden-panel");
+}
+
 function renderImportedShifts() {
   importedShiftList.innerHTML = "";
 
@@ -668,18 +778,27 @@ function renderImportedShifts() {
         <h3>${shift.day}</h3>
         <p>${shift.role}</p>
         <ul class="shift-meta">
-          <li>${shift.time}</li>
-          <li>${shift.neighborhood}</li>
-        </ul>
+  <li>${shift.time}</li>
+  <li>${shift.neighborhood}</li>
+</ul>
+<ul class="shift-meta">
+  <li>${shift.workplace}</li>
+  <li>${shift.station}</li>
+</ul>
+<p>Manager: ${shift.manager}</p>
+<p>${shift.notes}</p>
       </div>
       <div class="shift-action-row">
-        <button class="action-button imported-action-button" type="button" data-shift-id="${shift.id}" data-action="release">
-          Release shift
-        </button>
-        <button class="action-button secondary-action imported-action-button" type="button" data-shift-id="${shift.id}" data-action="swap">
-          Request swap
-        </button>
-      </div>
+  <button class="action-button imported-action-button" type="button" data-shift-id="${shift.id}" data-action="release">
+    Release shift
+  </button>
+  <button class="action-button secondary-action imported-action-button" type="button" data-shift-id="${shift.id}" data-action="swap">
+    Request swap
+  </button>
+  <button class="action-button secondary-action imported-crew-button" type="button" data-shift-id="${shift.id}">
+    View shift crew
+  </button>
+</div>
       ${releasePrompt}
       ${swapPrompt}
     `;
@@ -694,6 +813,29 @@ function renderImportedShifts() {
         type: button.dataset.action,
       };
       renderImportedShifts();
+      renderMockCalendar();
+    });
+  });
+
+  document.querySelectorAll(".imported-crew-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const shift = importedScheduleShifts.find(
+        (item) => item.id === button.dataset.shiftId,
+      );
+
+      if (!shift) {
+        return;
+      }
+
+      openCrewShift({
+        id: shift.id,
+        workplace: shift.workplace,
+        role: shift.role,
+        day: shift.day,
+        time: shift.time,
+        postType: "Imported shift",
+        status: "Scheduled",
+      });
     });
   });
 
@@ -828,6 +970,18 @@ if (shiftWorkplaceSelect) {
 connectionButtons.forEach((button) => {
   button.addEventListener("click", () => {
     selectedScheduleSource = button.dataset.source;
+    if (importScheduleDetails) {
+      importScheduleDetails.open = false;
+    }
+
+    if (scheduleStatusHeading) {
+      scheduleStatusHeading.textContent = "Schedule connected";
+    }
+
+    if (scheduleStatusCopy) {
+      scheduleStatusCopy.textContent = `${selectedScheduleSource} is connected. Your upcoming shifts are ready below.`;
+    }
+
     activeScheduleAction = null;
 
     connectionButtons.forEach((connectionButton) => {
@@ -838,8 +992,9 @@ connectionButtons.forEach((button) => {
     connectionStatusPanel.classList.remove("hidden-panel");
     importedShiftsPanel.classList.remove("hidden-panel");
     connectionStatusMessage.textContent = "Schedule imported";
-    connectionStatusDetail.textContent = "3 upcoming shifts found";
+    connectionStatusDetail.textContent = `3 upcoming shifts found from ${selectedScheduleSource}.`;
     renderImportedShifts();
+    renderMockCalendar();
   });
 });
 

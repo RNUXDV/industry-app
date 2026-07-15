@@ -235,6 +235,34 @@
             class="schedule-subview active"
             data-schedule-subview="my-shifts"
           >
+            <button
+              class="back-to-schedule-button"
+              type="button"
+              data-back-to-schedule
+            >
+              ← Back to Schedule
+            </button>
+
+            <div class="section-heading">
+              <p class="section-label">Schedule / My Shifts</p>
+              <h2>My Shifts</h2>
+              <p>
+                Import your schedule, review upcoming shifts, and turn any shift
+                into a release, swap, or shift crew action.
+              </p>
+            </div>
+
+            <section class="today-panel" aria-label="My Shifts next action">
+              <div class="panel-heading">
+                <p class="section-label">Start here</p>
+                <h3>Your shifts are the control center</h3>
+                <p>
+                  Once your schedule is imported, choose a shift to release it,
+                  request a swap, or review who is scheduled with you.
+                </p>
+              </div>
+            </section>
+
             <div class="panel-heading">
               <p class="section-label">My Shifts</p>
               <h3>Bring your shifts in once</h3>
@@ -245,44 +273,79 @@
             </div>
 
             <section
-              class="today-panel"
-              aria-label="Schedule connection options"
+              class="today-panel mock-calendar-panel hidden-panel"
+              id="mock-calendar-panel"
+              aria-label="Mock weekly schedule calendar"
             >
               <div class="panel-heading">
-                <p class="section-label">Connection options</p>
-                <h3>Choose a schedule source</h3>
+                <p class="section-label">Week view</p>
+                <h3>Your upcoming schedule</h3>
+                <p>A visual reference for where your shifts land this week.</p>
               </div>
 
-              <div class="connection-grid">
-                <button
-                  class="filter-button connection-button"
-                  type="button"
-                  data-source="Schedulefly"
-                >
-                  Import from Schedulefly
-                </button>
-                <button
-                  class="filter-button connection-button"
-                  type="button"
-                  data-source="Google Calendar"
-                >
-                  Import from Google Calendar
-                </button>
-                <button
-                  class="filter-button connection-button"
-                  type="button"
-                  data-source="Apple Calendar"
-                >
-                  Import from Apple Calendar
-                </button>
-                <button
-                  class="filter-button connection-button"
-                  type="button"
-                  data-source="Manual entry"
-                >
-                  Add manually
-                </button>
+              <div class="mock-calendar-grid" id="mock-calendar-grid"></div>
+            </section>
+
+            <section
+              class="today-panel schedule-status-panel"
+              aria-label="Schedule status"
+            >
+              <div class="panel-heading">
+                <p class="section-label">Schedule status</p>
+                <h3>No schedule connected yet</h3>
+                <p>
+                  Connect Schedulefly, Google Calendar, Apple Calendar, or add
+                  shifts manually. Once connected, your upcoming shifts will
+                  appear here.
+                </p>
               </div>
+
+              <details
+                class="import-schedule-details"
+                id="import-schedule-details"
+              >
+                <summary class="action-button import-schedule-summary">
+                  Connect schedule
+                </summary>
+
+                <div class="import-schedule-options">
+                  <p class="status-text">
+                    Bring your schedule into Industry. Choose a source below.
+                  </p>
+
+                  <button
+                    class="filter-button connection-button"
+                    type="button"
+                    data-source="Schedulefly"
+                  >
+                    Import from Schedulefly
+                  </button>
+
+                  <button
+                    class="filter-button connection-button"
+                    type="button"
+                    data-source="Google Calendar"
+                  >
+                    Import from Google Calendar
+                  </button>
+
+                  <button
+                    class="filter-button connection-button"
+                    type="button"
+                    data-source="Apple Calendar"
+                  >
+                    Import from Apple Calendar
+                  </button>
+
+                  <button
+                    class="filter-button connection-button"
+                    type="button"
+                    data-source="Manual entry"
+                  >
+                    Add manually
+                  </button>
+                </div>
+              </details>
 
               <div
                 class="connection-status hidden-panel"
@@ -296,7 +359,15 @@
                 </p>
               </div>
             </section>
+            
+              <div class="panel-heading">
+                <p class="section-label">Week view</p>
+                <h3>Your upcoming schedule</h3>
+                <p>A visual reference for where your shifts land this week.</p>
+              </div>
 
+              <div class="mock-calendar-grid" id="mock-calendar-grid"></div>
+            </section>
             <section
               class="today-panel hidden-panel"
               id="imported-shifts-panel"
@@ -319,6 +390,13 @@
             class="schedule-subview"
             data-schedule-subview="need-coverage"
           >
+            <button
+              class="back-to-schedule-button"
+              type="button"
+              data-back-to-schedule
+            >
+              ← Back to Schedule
+            </button>
             <div class="panel-heading">
               <p class="section-label">Need Coverage</p>
               <h3>Post to the right workplace crew</h3>
@@ -419,6 +497,13 @@
           </section>
 
           <section class="schedule-subview" data-schedule-subview="catch">
+            <button
+              class="back-to-schedule-button"
+              type="button"
+              data-back-to-schedule
+            >
+              ← Back to Schedule
+            </button>
             <div class="panel-heading">
               <p class="section-label">Catch</p>
               <h3>Catch Board</h3>
@@ -448,6 +533,14 @@
           </section>
 
           <section class="schedule-subview" data-schedule-subview="shift-crew">
+            <button
+              class="back-to-schedule-button"
+              type="button"
+              data-back-to-schedule
+            >
+              ← Back to Schedule
+            </button>
+
             <div class="panel-heading">
               <p class="section-label">Shift Crew</p>
               <h3>See who is scheduled for this shift</h3>
@@ -506,6 +599,13 @@
             class="schedule-subview"
             data-schedule-subview="shift-message"
           >
+            <button
+              class="back-to-schedule-button"
+              type="button"
+              data-back-to-schedule
+            >
+              ← Back to Schedule
+            </button>
             <div class="panel-heading">
               <p class="section-label">Shift Message</p>
               <h3>Keep coverage decisions clear</h3>
