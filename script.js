@@ -12,13 +12,25 @@ const shiftBoardList = document.querySelector("#shift-board-list");
 const shiftBoardStatus = document.querySelector("#shift-board-status");
 const postShiftStatus = document.querySelector("#post-shift-status");
 const shiftWorkplaceSelect = document.querySelector("#shift-workplace");
-const workplacePreviewPanel = document.querySelector("#workplace-preview-panel");
-const workplacePreviewMessage = document.querySelector("#workplace-preview-message");
-const workplacePreviewNeighborhood = document.querySelector("#workplace-preview-neighborhood");
+const workplacePreviewPanel = document.querySelector(
+  "#workplace-preview-panel",
+);
+const workplacePreviewMessage = document.querySelector(
+  "#workplace-preview-message",
+);
+const workplacePreviewNeighborhood = document.querySelector(
+  "#workplace-preview-neighborhood",
+);
 const connectionButtons = document.querySelectorAll(".connection-button");
-const connectionStatusPanel = document.querySelector("#connection-status-panel");
-const connectionStatusMessage = document.querySelector("#connection-status-message");
-const connectionStatusDetail = document.querySelector("#connection-status-detail");
+const connectionStatusPanel = document.querySelector(
+  "#connection-status-panel",
+);
+const connectionStatusMessage = document.querySelector(
+  "#connection-status-message",
+);
+const connectionStatusDetail = document.querySelector(
+  "#connection-status-detail",
+);
 const importedShiftsPanel = document.querySelector("#imported-shifts-panel");
 const importedShiftList = document.querySelector("#imported-shift-list");
 const crewShiftDate = document.querySelector("#crew-shift-date");
@@ -33,7 +45,9 @@ const crewActionStatus = document.querySelector("#crew-action-status");
 const shiftMessageStatus = document.querySelector("#shift-message-status");
 const profileSummaryCard = document.querySelector("#profile-summary-card");
 const profileRoleSummary = document.querySelector("#profile-role-summary");
-const profileNeighborhoodSummary = document.querySelector("#profile-neighborhood-summary");
+const profileNeighborhoodSummary = document.querySelector(
+  "#profile-neighborhood-summary",
+);
 const profileGoalSummary = document.querySelector("#profile-goal-summary");
 const mockPreviewButtons = document.querySelectorAll(".mock-preview-button");
 
@@ -141,7 +155,11 @@ const workplaceCrews = {
     ],
     managers: [
       { name: "Dana", position: "Floor Manager", status: "On duty" },
-      { name: "Renee", position: "General Manager", status: "Approval contact" },
+      {
+        name: "Renee",
+        position: "General Manager",
+        status: "Approval contact",
+      },
     ],
   },
   "Cafe Luna": {
@@ -173,7 +191,11 @@ const workplaceCrews = {
     ],
     managers: [
       { name: "Sonia", position: "Event Manager", status: "On duty" },
-      { name: "Harper", position: "Operations Manager", status: "Approval contact" },
+      {
+        name: "Harper",
+        position: "Operations Manager",
+        status: "Approval contact",
+      },
     ],
   },
 };
@@ -195,9 +217,25 @@ function setActiveScheduleView(viewName) {
   });
 
   scheduleSubviews.forEach((subview) => {
-    subview.classList.toggle("active", subview.dataset.scheduleSubview === viewName);
+    subview.classList.toggle(
+      "active",
+      subview.dataset.scheduleSubview === viewName,
+    );
   });
 }
+
+scheduleViewCards.forEach((card) => {
+  card.addEventListener("click", () => {
+    setActiveScheduleView(card.dataset.scheduleView);
+  });
+
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setActiveScheduleView(card.dataset.scheduleView);
+    }
+  });
+});
 
 function setActiveSection(sectionName) {
   navButtons.forEach((button) => {
@@ -291,8 +329,7 @@ function applyTheme(themeName) {
 
 if (themeToggleButton) {
   themeToggleButton.addEventListener("click", () => {
-    const nextTheme =
-      document.body.dataset.theme === "dark" ? "light" : "dark";
+    const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
     localStorage.setItem(themeStorageKey, nextTheme);
     applyTheme(nextTheme);
   });
@@ -380,7 +417,7 @@ function renderCrewMembers(listElement, members, actionLabel) {
             ${actionLabel}
           </button>
         </article>
-      `
+      `,
     )
     .join("");
 }
@@ -400,7 +437,8 @@ function bindCrewMemberActions() {
 }
 
 function openCrewShift(shift, shouldNavigate = true) {
-  const crew = workplaceCrews[shift.workplace] || workplaceCrews["Departure Lounge"];
+  const crew =
+    workplaceCrews[shift.workplace] || workplaceCrews["Departure Lounge"];
 
   activeCrewShiftId = shift.id;
   crewShiftDate.textContent = shift.day;
@@ -484,11 +522,7 @@ function renderShiftBoard() {
         <ul class="shift-meta">
           <li>${shift.neighborhood}</li>
         </ul>
-        ${
-          shift.lookingFor
-            ? `<p>Looking for: ${shift.lookingFor}</p>`
-            : ""
-        }
+        ${shift.lookingFor ? `<p>Looking for: ${shift.lookingFor}</p>` : ""}
         <p>Posted to: ${shift.postedTo || "Workplace crew"}</p>
         <p>Status: ${displayedStatus}</p>
         <p>${shift.note}</p>
@@ -526,7 +560,8 @@ function renderShiftBoard() {
 
   document.querySelectorAll(".shift-message-button").forEach((button) => {
     button.addEventListener("click", () => {
-      shiftMessageStatus.textContent = "Shift message preview updated from an active response.";
+      shiftMessageStatus.textContent =
+        "Shift message preview updated from an active response.";
       setActiveSection("schedule");
       setActiveScheduleView("shift-message");
     });
@@ -617,7 +652,7 @@ function renderImportedShifts() {
                   >
                     ${preference}
                   </button>
-                `
+                `,
               )
               .join("")}
           </div>
@@ -665,7 +700,7 @@ function renderImportedShifts() {
   document.querySelectorAll(".post-to-crew-button").forEach((button) => {
     button.addEventListener("click", () => {
       const shift = importedScheduleShifts.find(
-        (item) => item.id === button.dataset.shiftId
+        (item) => item.id === button.dataset.shiftId,
       );
 
       if (!shift) {
@@ -690,7 +725,7 @@ function renderImportedShifts() {
   document.querySelectorAll(".swap-preference-button").forEach((button) => {
     button.addEventListener("click", () => {
       const shift = importedScheduleShifts.find(
-        (item) => item.id === button.dataset.shiftId
+        (item) => item.id === button.dataset.shiftId,
       );
 
       if (!shift) {
@@ -750,7 +785,8 @@ if (saveShiftButton) {
       !formData.neighborhood ||
       !formData.postType
     ) {
-      postShiftStatus.textContent = "Choose the workplace and shift details before posting.";
+      postShiftStatus.textContent =
+        "Choose the workplace and shift details before posting.";
       return;
     }
 
@@ -808,7 +844,12 @@ connectionButtons.forEach((button) => {
 });
 
 function updateProfileSummary(profileData) {
-  if (!profileSummaryCard || !profileRoleSummary || !profileNeighborhoodSummary || !profileGoalSummary) {
+  if (
+    !profileSummaryCard ||
+    !profileRoleSummary ||
+    !profileNeighborhoodSummary ||
+    !profileGoalSummary
+  ) {
     return;
   }
 
@@ -827,7 +868,9 @@ function updateProfileSummary(profileData) {
 mockPreviewButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const message = button.dataset.message;
-    const statusPanel = button.closest(".app-section").querySelector(".status-text");
+    const statusPanel = button
+      .closest(".app-section")
+      .querySelector(".status-text");
 
     if (statusPanel) {
       statusPanel.textContent = message;
@@ -843,16 +886,20 @@ updateProfileSummary(savedProfile);
 
 renderShiftBoard();
 setActiveScheduleView("my-shifts");
-openCrewShift({
-  id: "crew-default",
-  workplace: "Departure Lounge",
-  role: "Bartender",
-  day: "Friday, July 10",
-  time: "6 PM-Close",
-  postType: "Release shift",
-  status: "Open",
-}, false);
-crewActionStatus.textContent = "Select a shift to review the active Shift Crew.";
+openCrewShift(
+  {
+    id: "crew-default",
+    workplace: "Departure Lounge",
+    role: "Bartender",
+    day: "Friday, July 10",
+    time: "6 PM-Close",
+    postType: "Release shift",
+    status: "Open",
+  },
+  false,
+);
+crewActionStatus.textContent =
+  "Select a shift to review the active Shift Crew.";
 
 applyHashSection();
 window.addEventListener("hashchange", applyHashSection);
