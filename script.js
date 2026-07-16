@@ -75,10 +75,29 @@ const tipoutResult = document.querySelector("#tipout-result");
 const tipoutTotal = document.querySelector("#tipout-total");
 const tipoutRemaining = document.querySelector("#tipout-remaining");
 
+const tipDateInput = document.querySelector("#tip-date-input");
+const tipWorkplaceInput = document.querySelector("#tip-workplace-input");
+const tipRoleInput = document.querySelector("#tip-role-input");
+const cashTipsInput = document.querySelector("#cash-tips-input");
+const creditTipsInput = document.querySelector("#credit-tips-input");
+const tipNotesInput = document.querySelector("#tip-notes-input");
+const saveTipEntryButton = document.querySelector("#save-tip-entry-button");
+const tipEntryStatus = document.querySelector("#tip-entry-status");
+
+const liveEarningsTotal = document.querySelector("#live-earnings-total");
+const liveCashTotal = document.querySelector("#live-cash-total");
+const liveCreditTotal = document.querySelector("#live-credit-total");
+
+const tipSummaryPanel = document.querySelector("#tip-summary-panel");
+const tipSummaryTotal = document.querySelector("#tip-summary-total");
+const tipSummaryDetail = document.querySelector("#tip-summary-detail");
+const tipEntryList = document.querySelector("#tip-entry-list");
+
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
 const shiftResponseStorageKey = "industry-v2-shift-responses";
 const profileStorageKey = "industry-v2-profile";
+const tipEntriesStorageKey = "industry-v2-tip-entries";
 const feedbackFormUrl =
   "https://docs.google.com/forms/d/e/1FAIpQLScLUIuiBZ_a771qFUt_wRreHaN9pugo0OcDQ1zHVO3Y4q4wwQ/viewform?usp=publish-editor";
 
@@ -362,20 +381,6 @@ if (startHereButton) {
     setActiveSection("schedule");
   });
 }
-
-scheduleViewCards.forEach((card) => {
-  const openScheduleView = () => {
-    setActiveScheduleView(card.dataset.scheduleView);
-  };
-
-  card.addEventListener("click", openScheduleView);
-  card.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      openScheduleView();
-    }
-  });
-});
 
 function applyTheme(themeName) {
   // Theme switching works by saving a short label in localStorage.
@@ -676,6 +681,181 @@ function formatMoney(amount) {
     style: "currency",
     currency: "USD",
   }).format(amount);
+}
+
+function formatSavedDate(dateString) {
+  if (!dateString) {
+    return "Date not added";
+  }
+
+  const date = new Date(`${dateString}T00:00:00`);
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
+function updateLiveEarnings() {
+  const cashTips = Number(cashTipsInput?.value) || 0;
+  const creditTips = Number(creditTipsInput?.value) || 0;
+  const totalTips = cashTips + creditTips;
+
+  if (liveCashTotal) {
+    liveCashTotal.textContent = formatMoney(cashTips);
+  }
+
+  if (liveCreditTotal) {
+    liveCreditTotal.textContent = formatMoney(creditTips);
+  }
+
+  if (liveEarningsTotal) {
+    liveEarningsTotal.textContent = formatMoney(totalTips);
+  }
+}ßß
+
+if (cashTipsInput) {
+  cashTipsInput.addEventListener("input", updateLiveEarnings);
+}
+
+if (creditTipsInput) {
+  creditTipsInput.addEventListener("input", updateLiveEarnings);
+}
+
+function getTipEntries() {
+  return readLocalJson(tipEntriesStorageKey, []);
+}
+
+function renderTipEntries() {
+  if (
+    !tipEntryList ||
+    !tipSummaryPanel ||
+    !tipSummaryTotal ||
+    !tipSummaryDetail
+  ) {
+    return;
+  }
+
+  const entries = getTipEntries();
+
+  tipEntryList.innerHTML = "";
+
+  if (!entries.length) {
+    tipSummaryPanel.classList.add("hidden-panel");
+    tipSummaryTotal.textContent = "$0.00";
+    tipSummaryDetail.textContent = "No saved tip entries yet.";
+    return;
+  }
+
+  const totalEarned = entries.reduce(
+    (sum, entry) => sum + entry.cashTips + entry.creditTips,
+    0,
+  );
+
+  tipSummaryPanel.classList.remove("hidden-panel");
+  tipSummaryTotal.textContent = formatMoney(totalEarned);
+  tipSummaryDetail.textContent = `${entries.length} saved ${
+    entries.length === 1 ? "shift" : "shifts"
+  }.`;
+
+  entries.forEach((entry) => {
+    const entryTotal = entry.cashTips + entry.creditTips;
+    const card = document.createElement("article");
+
+    card.className = "stack-card tip-entry-card";
+
+    card.innerHTML = `
+  <div class="stack-copy">
+    <p class="stack-kicker">${formatSavedDate(entry.date)}</p>
+    <h3>${entry.workplace || "Workplace not added"}</h3>
+    <p>${entry.role || "Role not added"}</p>
+
+    <div class="tip-entry-breakdown">
+      <div>
+        <span>Cash</span>
+        <strong>${formatMoney(entry.cashTips)}</strong>
+      </div>
+
+      <div>
+        <span>Credit</span>
+        <strong>${formatMoney(entry.creditTips)}</strong>
+      </div>
+    </div>
+
+    <p class="tip-entry-total">
+      Total: ${formatMoney(entryTotal)}
+    </p>
+
+    ${entry.notes ? `<p>${entry.notes}</p>` : ""}
+
+    <button
+      class="action-button secondary-action delete-tip-entry-button"
+      type="button"
+      data-entry-id="${entry.id}"
+    >
+      Delete entry
+    </button>
+  </div>
+`;
+
+    tipEntryList.appendChild(card);
+  });
+
+  document.querySelectorAll(".delete-tip-entry-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const updatedEntries = getTipEntries().filter(
+        (entry) => entry.id !== button.dataset.entryId,
+      );
+
+      saveLocalJson(tipEntriesStorageKey, updatedEntries);
+      renderTipEntries();
+    });
+  });
+}
+
+if (saveTipEntryButton) {
+  saveTipEntryButton.addEventListener("click", () => {
+    const cashTips = Number(cashTipsInput?.value) || 0;
+    const creditTips = Number(creditTipsInput?.value) || 0;
+
+    if (!tipDateInput?.value) {
+      tipEntryStatus.textContent = "Add the shift date before saving.";
+      return;
+    }
+
+    if (cashTips <= 0 && creditTips <= 0) {
+      tipEntryStatus.textContent =
+        "Enter cash tips, credit-card tips, or both before saving.";
+      return;
+    }
+
+    const entries = getTipEntries();
+
+    const newEntry = {
+      id: `tip-${Date.now()}`,
+      date: tipDateInput.value,
+      workplace: tipWorkplaceInput?.value.trim() || "",
+      role: tipRoleInput?.value.trim() || "",
+      cashTips,
+      creditTips,
+      notes: tipNotesInput?.value.trim() || "",
+    };
+
+    entries.unshift(newEntry);
+    saveLocalJson(tipEntriesStorageKey, entries);
+
+    tipEntryStatus.textContent = `Shift saved — ${formatMoney(
+      cashTips + creditTips,
+    )} earned.`;
+
+    cashTipsInput.value = "";
+    creditTipsInput.value = "";
+    tipNotesInput.value = "";
+
+    updateLiveEarnings();
+    renderTipEntries();
+  });
 }
 
 if (calculateTipoutButton) {

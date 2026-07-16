@@ -190,8 +190,6 @@
               <p>View your imported or added schedule.</p>
             </button>
 
-            
-
             <button
               class="feature-card schedule-view-card"
               type="button"
@@ -237,7 +235,6 @@
             class="schedule-subview active"
             data-schedule-subview="my-shifts"
           >
-            
             <div class="section-heading">
               <p class="section-label">Schedule / My Shifts</p>
               <h2>My Shifts</h2>
@@ -354,15 +351,7 @@
                 </p>
               </div>
             </section>
-            
-              <div class="panel-heading">
-                <p class="section-label">Week view</p>
-                <h3>Your upcoming schedule</h3>
-                <p>A visual reference for where your shifts land this week.</p>
-              </div>
 
-              <div class="mock-calendar-grid" id="mock-calendar-grid"></div>
-            </section>
             <section
               class="today-panel hidden-panel"
               id="imported-shifts-panel"
@@ -379,141 +368,308 @@
                 aria-label="Imported shifts"
               ></section>
             </section>
-            <section class="today-panel schedule-quick-tools" aria-label="Schedule quick tools">
-  <div class="panel-heading">
-    <p class="section-label">Quick tools</p>
-    <h3>Tools for your shift</h3>
-    <p>
-      Open focused tools without crowding your schedule.
-    </p>
-  </div>
+            <section
+              class="today-panel schedule-quick-tools"
+              aria-label="Schedule quick tools"
+            >
+              <div class="panel-heading">
+                <p class="section-label">Quick tools</p>
+                <h3>Tools for your shift</h3>
+                <p>Open focused tools without crowding your schedule.</p>
+              </div>
 
-  <div class="quick-tools-grid">
-    <button
-      class="feature-card schedule-view-card quick-tool-card"
-      type="button"
-      data-schedule-view="earnings-tools"
-    >
-      <span class="card-kicker">Earnings</span>
-      <strong>Earnings Tools</strong>
-      <span>
-        Track tips, calculate tip-out, and estimate pay-period totals.
-      </span>
-    </button>
+              <div class="quick-tools-grid">
+                <button
+                  class="feature-card schedule-view-card quick-tool-card"
+                  type="button"
+                  data-schedule-view="earnings-tools"
+                >
+                  <span class="card-kicker">Earnings</span>
+                  <strong>Earnings Tools</strong>
+                  <span>
+                    Track tips, calculate tip-out, and estimate pay-period
+                    totals.
+                  </span>
+                </button>
 
-    <button
-      class="feature-card schedule-view-card quick-tool-card"
-      type="button"
-      data-schedule-view="catch"
-    >
-      <span class="card-kicker">Open shifts</span>
-      <strong>Catch Open Shifts</strong>
-      <span>
-        See released shifts available at your workplace.
-      </span>
-    </button>
-  </div>
-</section>
-
+                <button
+                  class="feature-card schedule-view-card quick-tool-card"
+                  type="button"
+                  data-schedule-view="catch"
+                >
+                  <span class="card-kicker">Open shifts</span>
+                  <strong>Catch Open Shifts</strong>
+                  <span>
+                    See released shifts available at your workplace.
+                  </span>
+                </button>
+              </div>
+            </section>
           </section>
 
-           <section class="schedule-subview" data-schedule-subview="earnings-tools">
-  <button class="back-to-schedule-button" type="button" data-back-to-schedule>
-    ← Back to My Shifts
-  </button>
+          <section
+            class="schedule-subview"
+            data-schedule-subview="earnings-tools"
+          >
+            <button
+              class="back-to-schedule-button"
+              type="button"
+              data-back-to-schedule
+            >
+              ← Back to My Shifts
+            </button>
 
-  <div class="section-heading">
-    <p class="section-label">Schedule / Earnings</p>
-    <h2>Earnings Tools</h2>
-    <p>
-      Track shift money, calculate tip-out, and estimate what is going into your paycheck.
-    </p>
-  </div>
+            <div class="section-heading">
+              <p class="section-label">Schedule / Earnings</p>
+              <h2>Earnings Tools</h2>
+              <p>
+                Track shift money, calculate tip-out, and estimate what is going
+                into your paycheck.
+              </p>
+            </div>
 
-  <section class="card-list earnings-tool-list" aria-label="Earnings tools">
-    <article class="feature-card">
-      <span class="card-kicker">Tip tracker</span>
-      <strong>Cash + credit tips</strong>
-      <span>
-        Log what you made during each shift.
-      </span>
-    </article>
+            <section
+              class="card-list earnings-tool-list"
+              aria-label="Earnings tools"
+            >
+              <button
+                class="feature-card schedule-view-card earnings-tool-card"
+                type="button"
+                data-schedule-view="tip-out-calculator"
+              >
+                <span class="card-kicker">Calculator</span>
+                <strong>Tip-out calculator</strong>
+                <span> Calculate tip-out before leaving work. </span>
+              </button>
 
-    <button
-  class="feature-card schedule-view-card earnings-tool-card"
-  type="button"
-  data-schedule-view="tip-out-calculator"
->
-  <span class="card-kicker">Calculator</span>
-  <strong>Tip-out calculator</strong>
-  <span>
-    Calculate tip-out before leaving work.
-  </span>
-</button>
+              <button
+                class="feature-card schedule-view-card earnings-tool-card"
+                type="button"
+                data-schedule-view="tip-tracker"
+              >
+                <span class="card-kicker">Tip tracker</span>
+                <strong>Cash + credit tips</strong>
+                <span>Log what you made during each shift.</span>
+              </button>
 
-    <article class="feature-card">
-      <span class="card-kicker">Pay period</span>
-      <strong>Paycheck estimate</strong>
-      <span>
-        Estimate paycheck tips and shift earnings.
-      </span>
-    </article>
+              <article class="feature-card earnings-tool-card">
+                <span class="card-kicker">Pay period</span>
+                <strong>Paycheck estimate</strong>
+                <span> Estimate paycheck tips and shift earnings. </span>
+              </article>
 
-    <article class="feature-card">
-      <span class="card-kicker">Notes</span>
-      <strong>Shift notes</strong>
-      <span>
-        Save sales notes, cash notes, or anything unusual from the shift.
-      </span>
-    </article>
-  </section>
-</section>
+              <article class="feature-card earnings-tool-card">
+                <span class="card-kicker">Notes</span>
+                <strong>Shift notes</strong>
+                <span>
+                  Save sales notes, cash notes, or anything unusual from the
+                  shift.
+                </span>
+              </article>
+            </section>
+          </section>
 
-<section class="schedule-subview" data-schedule-subview="tip-out-calculator">
-  <button class="back-to-schedule-button" type="button" data-back-to-schedule>
-    ← Back to My Shifts
-  </button>
+          <section
+            class="schedule-subview"
+            data-schedule-subview="tip-out-calculator"
+          >
+            <button
+              class="back-to-schedule-button"
+              type="button"
+              data-back-to-schedule
+            >
+              ← Back to My Shifts
+            </button>
 
-  <div class="section-heading">
-    <p class="section-label">Earnings / Calculator</p>
-    <h2>Tip-Out Calculator</h2>
-    <p>
-      Quickly estimate what you owe for tip-out before leaving work.
-    </p>
-  </div>
+            <div class="section-heading">
+              <p class="section-label">Earnings / Calculator</p>
+              <h2>Tip-Out Calculator</h2>
+              <p>
+                Quickly estimate what you owe for tip-out before leaving work.
+              </p>
+            </div>
 
-  <section class="today-panel tip-calculator-panel" aria-label="Tip-out calculator">
-    <label class="form-field">
-      <span>Total tips</span>
-      <input id="total-tips-input" type="number" placeholder="Example: 220" />
-    </label>
+            <section
+              class="today-panel tip-calculator-panel"
+              aria-label="Tip-out calculator"
+            >
+              <label class="form-field">
+                <span>Total tips</span>
+                <input
+                  id="total-tips-input"
+                  type="number"
+                  placeholder="Example: 220"
+                />
+              </label>
 
-    <label class="form-field">
-      <span>Tip-out percentage</span>
-      <input id="tipout-percent-input" type="number" placeholder="Example: 5" />
-    </label>
+              <label class="form-field">
+                <span>Tip-out percentage</span>
+                <input
+                  id="tipout-percent-input"
+                  type="number"
+                  placeholder="Example: 5"
+                />
+              </label>
 
-    <button class="action-button" type="button" id="calculate-tipout-button">
-      Calculate tip-out
-    </button>
+              <button
+                class="action-button"
+                type="button"
+                id="calculate-tipout-button"
+              >
+                Calculate tip-out
+              </button>
 
-    <div class="calculator-result hidden-panel" id="tipout-result">
-      <p class="section-label">Estimated tip-out</p>
-      <h3 id="tipout-total">$0.00</h3>
-      <p id="tipout-remaining">Remaining after tip-out: $0.00</p>
-    </div>
-  </section>
-</section>
+              <div class="calculator-result hidden-panel" id="tipout-result">
+                <p class="section-label">Estimated tip-out</p>
+                <h3 id="tipout-total">$0.00</h3>
+                <p id="tipout-remaining">Remaining after tip-out: $0.00</p>
+              </div>
+            </section>
+          </section>
 
-          
+          <section class="schedule-subview" data-schedule-subview="tip-tracker">
+            <button
+              class="back-to-schedule-button"
+              type="button"
+              data-back-to-schedule
+            >
+              ← Back to My Shifts
+            </button>
+
+            <div class="section-heading">
+              <p class="section-label">Earnings / Tip Tracker</p>
+              <h2>Tip Tracker</h2>
+              <p>
+                Record what you earned during each shift and keep a running
+                history.
+              </p>
+            </div>
+
+            <section
+              class="today-panel live-earnings-panel"
+              aria-label="Live shift earnings"
+            >
+              <div class="panel-heading">
+                <p class="section-label">Today’s earnings</p>
+                <h3 class="live-earnings-total" id="live-earnings-total">
+                  $0.00
+                </h3>
+                <p>Your total updates automatically as you enter tips.</p>
+              </div>
+
+              <div class="live-earnings-breakdown">
+                <div>
+                  <span>Cash</span>
+                  <strong id="live-cash-total">$0.00</strong>
+                </div>
+
+                <div>
+                  <span>Credit</span>
+                  <strong id="live-credit-total">$0.00</strong>
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="today-panel tip-tracker-panel"
+              aria-label="Tip tracker form"
+            >
+              <div class="form-grid">
+                <label class="form-field">
+                  <span>Date</span>
+                  <input id="tip-date-input" type="date" />
+                </label>
+
+                <label class="form-field">
+                  <span>Workplace</span>
+                  <input
+                    id="tip-workplace-input"
+                    type="text"
+                    placeholder="Example: Departure Lounge"
+                  />
+                </label>
+
+                <label class="form-field">
+                  <span>Role</span>
+                  <input
+                    id="tip-role-input"
+                    type="text"
+                    placeholder="Example: Server"
+                  />
+                </label>
+
+                <label class="form-field">
+                  <span>Cash tips</span>
+                  <input
+                    id="cash-tips-input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    inputmode="decimal"
+                    placeholder="0.00"
+                  />
+                </label>
+
+                <label class="form-field">
+                  <span>Credit-card tips</span>
+                  <input
+                    id="credit-tips-input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    inputmode="decimal"
+                    placeholder="0.00"
+                  />
+                </label>
+
+                <label class="form-field">
+                  <span>Shift notes</span>
+                  <textarea
+                    id="tip-notes-input"
+                    rows="3"
+                    placeholder="Busy dinner shift, large party, unusual tip-out..."
+                  ></textarea>
+                </label>
+              </div>
+
+              <button
+                class="action-button"
+                id="save-tip-entry-button"
+                type="button"
+              >
+                Save today’s shift
+              </button>
+
+              <p
+                class="status-text"
+                id="tip-entry-status"
+                aria-live="polite"
+              ></p>
+            </section>
+
+            <section
+              class="today-panel hidden-panel"
+              id="tip-summary-panel"
+              aria-label="Saved earnings summary"
+            >
+              <div class="panel-heading">
+                <p class="section-label">Saved earnings</p>
+                <h3 id="tip-summary-total">$0.00</h3>
+                <p id="tip-summary-detail">No saved tip entries yet.</p>
+              </div>
+            </section>
+
+            <section
+              class="stack-list tip-entry-list"
+              id="tip-entry-list"
+              aria-label="Saved tip entries"
+            ></section>
+          </section>
 
           <section
             class="schedule-subview"
             data-schedule-subview="need-coverage"
           >
-
-         
-
             <button
               class="back-to-schedule-button"
               type="button"

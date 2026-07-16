@@ -409,6 +409,135 @@ h1 {
   padding-top: 1rem;
 }
 
+/* ---------- Tip Tracker ---------- */
+
+.tip-tracker-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.form-field span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  padding: 1rem 1.1rem;
+  border-radius: 18px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(195, 98, 52, 0.18);
+}
+
+.status-text {
+  min-height: 1.25rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+#tip-entry-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tip-entry-card {
+  padding: 1rem 1.25rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tip-entry-card h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+.tip-entry-card p {
+  margin: 0.2rem 0;
+  color: var(--text-secondary);
+}
+
+.tip-entry-total {
+  margin-top: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.tip-entry-card {
+  padding: 1.25rem;
+}
+
+.tip-entry-breakdown {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.tip-entry-breakdown div {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface);
+}
+
+.tip-entry-breakdown span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tip-entry-breakdown strong {
+  font-size: 1.1rem;
+}
+
+.tip-entry-total {
+  margin: 0.8rem 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.delete-tip-entry-button {
+  width: fit-content;
+  margin-top: 0.5rem;
+}
+
 .calculator-result h3 {
   margin: 0.4rem 0;
   font-size: 2rem;
