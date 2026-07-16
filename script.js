@@ -713,7 +713,7 @@ function updateLiveEarnings() {
   if (liveEarningsTotal) {
     liveEarningsTotal.textContent = formatMoney(totalTips);
   }
-}ßß
+}
 
 if (cashTipsInput) {
   cashTipsInput.addEventListener("input", updateLiveEarnings);
@@ -1268,6 +1268,7 @@ const savedProfile = readLocalJson(profileStorageKey, {});
 updateProfileSummary(savedProfile);
 
 renderShiftBoard();
+renderTipEntries();
 setActiveScheduleView("my-shifts");
 openCrewShift(
   {
