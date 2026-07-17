@@ -1,7 +1,11 @@
 const navButtons = document.querySelectorAll(".nav-item");
 const appSections = document.querySelectorAll(".app-section");
 const navCards = document.querySelectorAll(".nav-card");
-const scheduleViewCards = document.querySelectorAll(".schedule-view-card");
+const scheduleViewCards = document.querySelectorAll("[data-schedule-view]");
+const dashboardLinks = document.querySelectorAll("[data-dashboard-section]");
+const dashboardViewScheduleButton = document.querySelector(
+  "#dashboard-view-schedule",
+);
 const scheduleSubviews = document.querySelectorAll(".schedule-subview");
 const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
@@ -381,6 +385,56 @@ navCards.forEach((card) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       openCardSection();
+    }
+  });
+});
+
+/* Dashboard direct links */
+
+dashboardLinks.forEach((link) => {
+  link.addEventListener("click", () => {
+    const sectionName = link.dataset.dashboardSection;
+    const scheduleView = link.dataset.dashboardView;
+    const scrollTarget = link.dataset.scrollTarget;
+
+    if (!sectionName) {
+      return;
+    }
+
+    if (dashboardViewScheduleButton) {
+      dashboardViewScheduleButton.addEventListener("click", () => {
+        setActiveSection("schedule");
+        setActiveScheduleView("my-shifts");
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      });
+    }
+
+    setActiveSection(sectionName);
+
+    if (sectionName === "schedule" && scheduleView) {
+      setActiveScheduleView(scheduleView);
+    }
+
+    if (scrollTarget) {
+      requestAnimationFrame(() => {
+        const targetElement = document.getElementById(scrollTarget);
+
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      });
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   });
 });

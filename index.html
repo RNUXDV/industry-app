@@ -14,120 +14,179 @@
   </head>
   <body data-theme="dark">
     <div class="app-shell">
-      <header class="hero">
-        <div class="hero-top">
-          <p class="eyebrow">Industry prototype</p>
-          <button class="theme-toggle" id="theme-toggle-button" type="button">
-            Light / Dark: Dark
-          </button>
-        </div>
-        <h1>Industry</h1>
-        <p class="tagline">The network behind the service.</p>
-        <p class="intro">
-          A calm mobile-first board for restaurant and service workers who need
-          faster ways to post shifts, pick them up, and stay organized.
-        </p>
-      </header>
+     <header class="hero compact-hero">
+  <div class="hero-top compact-hero-top">
+    <div>
+      <p class="eyebrow">Industry</p>
+      <h1>Good Afternoon</h1>
+      <p class="compact-hero-date">Thursday • July 17</p>
+    </div>
 
+    <button class="theme-toggle" id="theme-toggle-button" type="button">
+      Light / Dark: Dark
+    </button>
+  </div>
+</header>
       <main>
         <section class="app-section active" data-section="home">
-          <div class="section-heading">
-            <p class="section-label">Home</p>
-            <h2>Welcome back</h2>
-            <p>
-              Check open shifts, post coverage needs, and keep your work life in
-              one lightweight place.
-            </p>
-          </div>
 
-          <section class="today-panel" aria-label="Flow summary">
-            <div class="panel-heading">
-              <p class="section-label">How the flow works</p>
-              <h3>Schedule -> Post -> Catch -> Shift Message</h3>
-              <p>Jobs and People extend the core shift flow.</p>
-            </div>
-          </section>
+  
+  <!-- Countdown Hero -->
 
-          <section class="today-panel" aria-label="How Industry is organized">
-            <div class="panel-heading">
-              <p class="section-label">Industry has three lanes</p>
-              <h3>Schedule, Jobs, and People</h3>
-              <p>
-                Schedule handles your shifts, coverage, pickups, swaps, and
-                shift crew.
-              </p>
-              <p>
-                Jobs helps you find new work, extra hours, event gigs, and
-                service-industry opportunities.
-              </p>
-              <p>
-                People holds your profile, workplaces, coworkers, referrals, and
-                broader Industry connections.
-              </p>
-            </div>
-            <button class="action-button" id="start-here-button" type="button">
-              Start here
-            </button>
-          </section>
+  <section class="today-panel countdown-panel">
 
-          <section class="card-list" aria-label="Main actions">
-            <article
-              class="feature-card nav-card"
-              data-target-section="schedule"
-              tabindex="0"
-            >
-              <div class="card-icon" aria-hidden="true">S</div>
-              <h3>Schedule</h3>
-              <p>
-                Manage your shifts, coverage needs, pickups, swaps, and shift
-                crew.
-              </p>
-            </article>
+    <p class="section-label">Next Shift</p>
 
-            <article
-              class="feature-card nav-card"
-              data-target-section="jobs"
-              tabindex="0"
-            >
-              <div class="card-icon" aria-hidden="true">J</div>
-              <h3>Jobs</h3>
-              <p>
-                Find new work, extra hours, event gigs, and service-industry
-                opportunities.
-              </p>
-            </article>
+    <div class="countdown-time">
+      1h 18m
+    </div>
 
-            <article
-              class="feature-card nav-card"
-              data-target-section="people"
-              tabindex="0"
-            >
-              <div class="card-icon" aria-hidden="true">P</div>
-              <h3>People</h3>
-              <p>
-                Manage your profile, workplaces, coworkers, referrals, and
-                broader Industry connections.
-              </p>
-            </article>
-          </section>
+    <p class="countdown-copy">
+      until your next shift
+    </p>
 
-          <section class="today-panel" aria-label="Why test Industry">
-            <div class="panel-heading">
-              <p class="section-label">Testing Industry?</p>
-              <h3>Try the full flow</h3>
-              <p>
-                Explore Schedule, Jobs, and People so the prototype feels close
-                to a real shift-coverage routine.
-              </p>
-            </div>
-            <button
-              class="action-button"
-              id="go-to-feedback-button"
-              type="button"
-            >
-              Open feedback form
-            </button>
-          </section>
+    <div class="next-shift-summary">
+      <strong>Today • 5:00 PM – Close</strong>
+      <span>Departure Lounge</span>
+    </div>
+
+    <button
+  class="action-button"
+  data-dashboard-section="schedule"
+  data-dashboard-view="my-shifts"
+  type="button"
+>
+  View Schedule
+</button>
+  </section>
+
+  <!-- Before You Go -->
+
+  <section class="today-panel conditions-panel">
+
+  <div class="panel-heading">
+    <p class="section-label">Before You Go</p>
+  </div>
+
+  <div class="conditions-grid">
+
+    <article class="condition-item">
+
+      <p class="condition-icon">☀️</p>
+
+      <div>
+        <h3>74°</h3>
+        <p>Sunny this afternoon</p>
+      </div>
+
+    </article>
+
+    <article class="condition-item">
+
+      <p class="condition-icon">🚗</p>
+
+      <div>
+        <h3>18 min</h3>
+        <p>Traffic is normal</p>
+      </div>
+
+    </article>
+
+  </div>
+
+  <p class="conditions-insight">
+    You're good to go. Leave around 4:32 PM.
+  </p>
+
+</section>
+
+  <!-- Today's Snapshot -->
+
+  <section class="today-panel snapshot-panel">
+  <div class="panel-heading">
+    <p class="section-label">Today</p>
+  </div>
+
+  <div class="snapshot-grid">
+   <button
+  class="snapshot-item"
+  data-dashboard-section="schedule"
+  data-dashboard-view="earnings-tools"
+  data-scroll-target="tip-tracker-panel"
+  type="button"
+>
+    
+      <span class="snapshot-icon" aria-hidden="true">💵</span>
+      <span class="snapshot-value">$214</span>
+      <span class="snapshot-label">Yesterday’s tips</span>
+    </button>
+
+    <button
+  class="snapshot-item"
+  data-dashboard-section="schedule"
+  data-dashboard-view="catch"
+  type="button"
+>
+      <span class="snapshot-icon" aria-hidden="true">📅</span>
+      <span class="snapshot-value">2</span>
+      <span class="snapshot-label">Open catches</span>
+    </button>
+
+    <button
+      class="snapshot-item"
+      data-dashboard-section="people"
+      type="button"
+    >
+      <span class="snapshot-icon" aria-hidden="true">💬</span>
+      <span class="snapshot-value">1</span>
+      <span class="snapshot-label">New message</span>
+    </button>
+  </div>
+</section>
+  <!-- Quick Actions -->
+
+  <section class="today-panel quick-actions-panel">
+  <div class="panel-heading">
+    <p class="section-label">Quick Actions</p>
+  </div>
+
+  <div class="quick-actions-grid">
+    <button
+  class="quick-action-item"
+  data-dashboard-section="schedule"
+  data-dashboard-view="earnings-tools"
+  data-scroll-target="tip-tracker-panel"
+  type="button"
+>
+  <span class="quick-action-icon" aria-hidden="true">💵</span>
+  <span>Tip Tracker</span>
+</button>
+
+    <button
+      class="quick-action-item"
+      data-dashboard-section="jobs"
+      type="button"
+    >
+      <span class="quick-action-icon" aria-hidden="true">🔎</span>
+      <span>Find Jobs</span>
+    </button>
+
+    <button
+      class="quick-action-item"
+      data-dashboard-section="schedule"
+      data-dashboard-view="need-coverage"
+      type="button"
+    >
+      <span class="quick-action-icon" aria-hidden="true">↗</span>
+      <span>Release Shift</span>
+    </button>
+  </div>
+</section>
+
+
+          
+              
+          
 
           <section
             class="today-panel profile-summary-card hidden-panel"
@@ -244,30 +303,67 @@
               </p>
             </div>
 
-            <section class="today-panel" aria-label="My Shifts next action">
-              <div class="panel-heading">
-                <p class="section-label">Start here</p>
-                <h3>Your shifts are the control center</h3>
-                <p>
-                  Once your schedule is imported, choose a shift to release it,
-                  request a swap, or review who is scheduled with you.
-                </p>
-              </div>
-            </section>
+            
 
             <div class="panel-heading">
-              <p class="section-label">My Shifts</p>
-              <h3>Bring your shifts in once</h3>
-              <p>
-                Import or add your upcoming shifts. From here, you can turn a
-                shift into a release or swap request.
-              </p>
-            </div>
+  <p class="section-label">My Shifts</p>
+  <h3>Your work week at a glance</h3>
+  <p>
+    Review your next shift, upcoming schedule, crew, and available shift actions.
+  </p>
+</div>
 
-            <section
+            <section class="today-panel next-shift-panel" aria-label="Next shift">
+  <div class="next-shift-header">
+    <div class="next-shift-title-row">
+  <div>
+    <p class="section-label">Next shift</p>
+    <h3>Today · 5:00 PM &ndash; Close</h3>
+  </div>
+
+  <span class="shift-status-badge">Upcoming</span>
+</div>
+
+  <div class="next-shift-details">
+    <div>
+      <span>Role</span>
+      <strong>Server</strong>
+    </div>
+
+    <div>
+      <span>Workplace</span>
+      <strong>Departure Lounge</strong>
+    </div>
+
+    <div>
+      <span>Manager</span>
+      <strong>Dana</strong>
+    </div>
+  </div>
+
+  <div class="next-shift-actions">
+    <button
+      class="action-button"
+      type="button"
+      data-schedule-view="shift-crew"
+    >
+      View crew
+    </button>
+
+    <button
+      class="action-button secondary-action"
+      type="button"
+      data-schedule-view="need-coverage"
+    >
+      Release shift
+    </button>
+  </div>
+</section>
+
+<section
               class="today-panel mock-calendar-panel hidden-panel"
               id="mock-calendar-panel"
-              aria-label="Mock weekly schedule calendar"
+              aria-label="Weekly schedule calendar"
             >
               <div class="panel-heading">
                 <p class="section-label">Week view</p>
@@ -278,18 +374,18 @@
               <div class="mock-calendar-grid" id="mock-calendar-grid"></div>
             </section>
 
+            
+
             <section
               class="today-panel schedule-status-panel"
               aria-label="Schedule status"
             >
               <div class="panel-heading">
                 <p class="section-label">Schedule status</p>
-                <h3>No schedule connected yet</h3>
-                <p>
-                  Connect Schedulefly, Google Calendar, Apple Calendar, or add
-                  shifts manually. Once connected, your upcoming shifts will
-                  appear here.
-                </p>
+                <h3>Schedule connected</h3>
+<p>
+  ScheduleFly is connected. Your upcoming shifts are ready to review.
+</p>
               </div>
 
               <details
@@ -297,7 +393,7 @@
                 id="import-schedule-details"
               >
                 <summary class="action-button import-schedule-summary">
-                  Connect schedule
+                Manage schedule connection  
                 </summary>
 
                 <div class="import-schedule-options">
