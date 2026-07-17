@@ -527,6 +527,14 @@
             </section>
           </section>
 
+          <button
+  class="back-to-schedule-button tip-tracker-back-button"
+  type="button"
+  data-back-to-tools
+>
+  ← Back to Earnings Tools
+</button>
+
           <section class="schedule-subview" data-schedule-subview="tip-tracker">
             <button
               class="back-to-schedule-button"
@@ -648,6 +656,35 @@
             </section>
 
             <section
+  class="today-panel tip-analytics-panel hidden-panel"
+  id="tip-analytics-panel"
+  aria-label="Tip earnings analytics"
+>
+  <div class="panel-heading">
+    <p class="section-label">Earnings snapshot</p>
+    <h3>Your tip trends</h3>
+  </div>
+
+  <div class="tip-analytics-grid">
+    <article>
+      <span>This week</span>
+      <strong id="tip-week-total">$0.00</strong>
+    </article>
+
+    <article>
+      <span>This month</span>
+      <strong id="tip-month-total">$0.00</strong>
+    </article>
+
+    <article>
+      <span>Best shift</span>
+      <strong id="tip-best-shift-total">$0.00</strong>
+      <small id="tip-best-shift-detail">No shift data yet</small>
+    </article>
+  </div>
+</section>
+
+            <section
               class="today-panel hidden-panel"
               id="tip-summary-panel"
               aria-label="Saved earnings summary"
@@ -655,7 +692,9 @@
               <div class="panel-heading">
                 <p class="section-label">Saved earnings</p>
                 <h3 id="tip-summary-total">$0.00</h3>
-                <p id="tip-summary-detail">No saved tip entries yet.</p>
+                <p id="tip-summary-detail">
+  Save your first shift to start tracking your earnings over time.
+</p>
               </div>
             </section>
 
@@ -664,6 +703,23 @@
               id="tip-entry-list"
               aria-label="Saved tip entries"
             ></section>
+
+            <section
+  class="stack-list tip-entry-list"
+  id="tip-entry-list"
+  aria-label="Saved tip entries"
+></section>
+
+<button
+  class="back-to-schedule-button tip-tracker-back-button"
+  type="button"
+  data-back-to-tools
+>
+  ← Back to Earnings Tools
+</button>
+
+</section>
+
           </section>
 
           <section

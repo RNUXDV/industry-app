@@ -21,6 +21,8 @@ const scheduleHub = document.querySelector("#schedule-hub");
 const backToScheduleButtons = document.querySelectorAll(
   "[data-back-to-schedule]",
 );
+
+const backToToolsButtons = document.querySelectorAll("[data-back-to-tools]");
 const workplacePreviewMessage = document.querySelector(
   "#workplace-preview-message",
 );
@@ -92,6 +94,12 @@ const tipSummaryPanel = document.querySelector("#tip-summary-panel");
 const tipSummaryTotal = document.querySelector("#tip-summary-total");
 const tipSummaryDetail = document.querySelector("#tip-summary-detail");
 const tipEntryList = document.querySelector("#tip-entry-list");
+
+const tipAnalyticsPanel = document.querySelector("#tip-analytics-panel");
+const tipWeekTotal = document.querySelector("#tip-week-total");
+const tipMonthTotal = document.querySelector("#tip-month-total");
+const tipBestShiftTotal = document.querySelector("#tip-best-shift-total");
+const tipBestShiftDetail = document.querySelector("#tip-best-shift-detail");
 
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
@@ -262,6 +270,7 @@ const swapPreferences = [
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let activeCrewShiftId = "";
+let activeTipEntryId = "";
 
 function setActiveScheduleView(viewName) {
   if (scheduleHub) {
@@ -312,6 +321,12 @@ function showScheduleHub() {
 
 backToScheduleButtons.forEach((button) => {
   button.addEventListener("click", showScheduleHub);
+});
+
+backToToolsButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setActiveScheduleView("earnings-tools");
+  });
 });
 
 function setActiveSection(sectionName) {
@@ -727,6 +742,62 @@ function getTipEntries() {
   return readLocalJson(tipEntriesStorageKey, []);
 }
 
+function renderTipAnalytics(entries) {
+  if (
+    !tipAnalyticsPanel ||
+    !tipWeekTotal ||
+    !tipMonthTotal ||
+    !tipBestShiftTotal ||
+    !tipBestShiftDetail
+  ) {
+    return;
+  }
+
+  if (!entries.length) {
+    tipAnalyticsPanel.classList.add("hidden-panel");
+    return;
+  }
+
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  const dayOfWeek = now.getDay();
+
+  startOfWeek.setDate(now.getDate() - dayOfWeek);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const normalizedEntries = entries.map((entry) => ({
+    ...entry,
+    entryDate: new Date(`${entry.date}T00:00:00`),
+    total: entry.cashTips + entry.creditTips,
+  }));
+
+  const weekTotal = normalizedEntries
+    .filter((entry) => entry.entryDate >= startOfWeek)
+    .reduce((sum, entry) => sum + entry.total, 0);
+
+  const monthTotal = normalizedEntries
+    .filter((entry) => entry.entryDate >= startOfMonth)
+    .reduce((sum, entry) => sum + entry.total, 0);
+
+  const bestShift = normalizedEntries.reduce((best, entry) => {
+    if (!best || entry.total > best.total) {
+      return entry;
+    }
+
+    return best;
+  }, null);
+
+  tipAnalyticsPanel.classList.remove("hidden-panel");
+  tipWeekTotal.textContent = formatMoney(weekTotal);
+  tipMonthTotal.textContent = formatMoney(monthTotal);
+  tipBestShiftTotal.textContent = formatMoney(bestShift.total);
+  tipBestShiftDetail.textContent = `${
+    bestShift.workplace || "Workplace not added"
+  } · ${formatSavedDate(bestShift.date)}`;
+}
+
 function renderTipEntries() {
   if (
     !tipEntryList ||
@@ -737,14 +808,27 @@ function renderTipEntries() {
     return;
   }
 
-  const entries = getTipEntries();
+  const entries = [...getTipEntries()].sort((entryA, entryB) => {
+    const dateDifference =
+      new Date(`${entryB.date}T00:00:00`) - new Date(`${entryA.date}T00:00:00`);
 
+    if (dateDifference !== 0) {
+      return dateDifference;
+    }
+
+    return entryB.id.localeCompare(entryA.id);
+  });
+
+  renderTipAnalytics(entries);
   tipEntryList.innerHTML = "";
 
   if (!entries.length) {
     tipSummaryPanel.classList.add("hidden-panel");
     tipSummaryTotal.textContent = "$0.00";
-    tipSummaryDetail.textContent = "No saved tip entries yet.";
+    tipSummaryDetail.textContent =
+      "Save your first shift to start tracking your earnings over time.";
+
+    renderTipAnalytics([]);
     return;
   }
 
@@ -789,22 +873,82 @@ function renderTipEntries() {
 
     ${entry.notes ? `<p>${entry.notes}</p>` : ""}
 
-    <button
-      class="action-button secondary-action delete-tip-entry-button"
-      type="button"
-      data-entry-id="${entry.id}"
-    >
-      Delete entry
-    </button>
-  </div>
+    <div class="tip-entry-actions">
+  <button
+    class="action-button secondary-action edit-tip-entry-button"
+    type="button"
+    data-entry-id="${entry.id}"
+  >
+    Edit entry
+  </button>
+
+  <button
+    class="action-button secondary-action delete-tip-entry-button"
+    type="button"
+    data-entry-id="${entry.id}"
+  >
+    Delete entry
+  </button>
+</div>
 `;
 
     tipEntryList.appendChild(card);
   });
 
+  document.querySelectorAll(".edit-tip-entry-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const entry = getTipEntries().find(
+        (item) => item.id === button.dataset.entryId,
+      );
+
+      if (!entry) {
+        return;
+      }
+
+      activeTipEntryId = entry.id;
+
+      tipDateInput.value = entry.date || "";
+      tipWorkplaceInput.value = entry.workplace || "";
+      tipRoleInput.value = entry.role || "";
+      cashTipsInput.value = entry.cashTips || "";
+      creditTipsInput.value = entry.creditTips || "";
+      tipNotesInput.value = entry.notes || "";
+
+      saveTipEntryButton.textContent = "Update shift";
+      tipEntryStatus.textContent = "Editing saved shift.";
+
+      updateLiveEarnings();
+
+      tipDateInput.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+  });
+
   document.querySelectorAll(".delete-tip-entry-button").forEach((button) => {
     button.addEventListener("click", () => {
-      const updatedEntries = getTipEntries().filter(
+      const entries = getTipEntries();
+
+      const entryToDelete = entries.find(
+        (entry) => entry.id === button.dataset.entryId,
+      );
+
+      if (!entryToDelete) {
+        return;
+      }
+
+      const confirmed = window.confirm(
+        `Delete the ${formatSavedDate(entryToDelete.date)} shift from ${
+          entryToDelete.workplace || "this workplace"
+        }?`,
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const updatedEntries = entries.filter(
         (entry) => entry.id !== button.dataset.entryId,
       );
 
@@ -842,16 +986,32 @@ if (saveTipEntryButton) {
       notes: tipNotesInput?.value.trim() || "",
     };
 
-    entries.unshift(newEntry);
-    saveLocalJson(tipEntriesStorageKey, entries);
+    if (activeTipEntryId) {
+      const entryIndex = entries.findIndex(
+        (entry) => entry.id === activeTipEntryId,
+      );
 
-    tipEntryStatus.textContent = `Shift saved — ${formatMoney(
-      cashTips + creditTips,
-    )} earned.`;
+      if (entryIndex !== -1) {
+        entries[entryIndex] = {
+          ...newEntry,
+          id: activeTipEntryId,
+        };
+      }
+    } else {
+      entries.unshift(newEntry);
+    }
+
+    saveLocalJson(tipEntriesStorageKey, entries);
+    tipEntryStatus.textContent = activeTipEntryId
+      ? `Shift updated — ${formatMoney(cashTips + creditTips)} earned.`
+      : `Shift saved — ${formatMoney(cashTips + creditTips)} earned.`;
 
     cashTipsInput.value = "";
     creditTipsInput.value = "";
     tipNotesInput.value = "";
+
+    activeTipEntryId = "";
+    saveTipEntryButton.textContent = "Save today’s shift";
 
     updateLiveEarnings();
     renderTipEntries();
