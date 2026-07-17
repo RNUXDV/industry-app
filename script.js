@@ -852,24 +852,31 @@ function renderTipEntries() {
     card.innerHTML = `
   <div class="stack-copy">
     <p class="stack-kicker">${formatSavedDate(entry.date)}</p>
-    <h3>${entry.workplace || "Workplace not added"}</h3>
-    <p>${entry.role || "Role not added"}</p>
+    <h3 class="tip-entry-workplace">
+  <span aria-hidden="true">📍</span>
+  ${entry.workplace || "Workplace not added"}
+</h3>
 
+<p class="tip-entry-role">
+  <span aria-hidden="true">👤</span>
+  ${entry.role || "Role not added"}
+</p>
     <div class="tip-entry-breakdown">
       <div>
-        <span>Cash</span>
+        <span><span aria-hidden="true">💵</span> Cash</span>
         <strong>${formatMoney(entry.cashTips)}</strong>
       </div>
 
       <div>
-        <span>Credit</span>
+        <span><span aria-hidden="true">💳</span> Credit</span>
         <strong>${formatMoney(entry.creditTips)}</strong>
       </div>
     </div>
 
-    <p class="tip-entry-total">
-      Total: ${formatMoney(entryTotal)}
-    </p>
+   <div class="tip-entry-total">
+  <span>Shift Total</span>
+  <strong>${formatMoney(entryTotal)}</strong>
+</div>
 
     ${entry.notes ? `<p>${entry.notes}</p>` : ""}
 

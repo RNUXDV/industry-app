@@ -422,6 +422,46 @@ h1 {
   margin-bottom: 1rem;
 }
 
+.tip-entry-workplace,
+.tip-entry-role {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.tip-entry-workplace span,
+.tip-entry-role span {
+  flex: 0 0 auto;
+}
+
+.tip-entry-breakdown > div > span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: none;
+  opacity: 0.72;
+}
+
+.tip-entry-total {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 1rem;
+}
+
+.tip-entry-total span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.68;
+}
+
+.tip-entry-total strong {
+  font-size: 1.75rem;
+  line-height: 1.1;
+}
+
 .form-grid {
   display: grid;
   gap: 1rem;
