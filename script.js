@@ -26,6 +26,8 @@ const backToScheduleButtons = document.querySelectorAll(
   "[data-back-to-schedule]",
 );
 
+const resetDemoDataButton = document.querySelector("#reset-demo-data-button");
+
 const backToToolsButtons = document.querySelectorAll("[data-back-to-tools]");
 const workplacePreviewMessage = document.querySelector(
   "#workplace-preview-message",
@@ -160,9 +162,8 @@ const sampleShifts = [
     day: "Sunday",
     time: "9:00 AM - 3:00 PM",
     neighborhood: "Portland Metro",
-    note: "High-volume brunch shift. Fast feet matter.",
-    postType: "Request swap",
-    lookingFor: "Open to offers",
+    note: "Extra brunch shift available. Fast feet matter.",
+    postType: "Offer pickup",
     postedTo: "Workplace crew",
     status: "Open",
   },
@@ -263,13 +264,6 @@ const workplaceCrews = {
     ],
   },
 };
-
-const swapPreferences = [
-  "Earlier shift",
-  "Later shift",
-  "Different day",
-  "Open to offers",
-];
 
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
@@ -401,18 +395,6 @@ dashboardLinks.forEach((link) => {
       return;
     }
 
-    if (dashboardViewScheduleButton) {
-      dashboardViewScheduleButton.addEventListener("click", () => {
-        setActiveSection("schedule");
-        setActiveScheduleView("my-shifts");
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-      });
-    }
-
     setActiveSection(sectionName);
 
     if (sectionName === "schedule" && scheduleView) {
@@ -467,6 +449,16 @@ if (themeToggleButton) {
   });
 }
 
+if (resetDemoDataButton) {
+  resetDemoDataButton.addEventListener("click", () => {
+    localStorage.removeItem("industry-v2-shifts");
+    localStorage.removeItem("industry-v2-shift-responses");
+    localStorage.removeItem("industry-v2-tip-entries");
+
+    location.reload();
+  });
+}
+
 function readLocalJson(storageKey, fallbackValue) {
   const savedValue = localStorage.getItem(storageKey);
 
@@ -496,10 +488,6 @@ function getAllShifts() {
 }
 
 function getBoardButtonLabel(shift) {
-  if (shift.postType === "Swap" || shift.postType === "Request swap") {
-    return "Offer swap";
-  }
-
   if (shift.postType === "Offer pickup") {
     return "Message worker";
   }
@@ -508,10 +496,6 @@ function getBoardButtonLabel(shift) {
 }
 
 function getBoardRequestLabel(shift) {
-  if (shift.postType === "Swap" || shift.postType === "Request swap") {
-    return "Swap request";
-  }
-
   if (shift.postType === "Offer pickup") {
     return "Pickup opportunity";
   }
@@ -615,27 +599,68 @@ function renderShiftBoard() {
 
   shifts.forEach((shift) => {
     const displayedStatus = getDisplayedShiftStatus(shift, responses);
+    const interestedCount = responses[shift.id]?.interestedCount || 1;
+
+    const interestedLabel =
+      interestedCount === 1
+        ? "1 coworker is interested."
+        : `${interestedCount} coworkers are interested.`;
     const hasInterest = Boolean(responses[shift.id]?.interested);
+    const isAccepted = Boolean(responses[shift.id]?.accepted);
+    const boardButtonLabel = hasInterest
+      ? "Interest sent"
+      : getBoardButtonLabel(shift);
+
     const responsePanel = hasInterest
       ? `
         <div class="response-panel">
-          <p class="status-text">Jordan is interested.</p>
+         <p class="status-text">${interestedLabel}</p>
           <p class="status-text">Keep messages tied to the shift so coverage decisions stay clear.</p>
           <div class="message-preview">
             <p>I can take this if manager approves.</p>
             <p>Perfect. I'll mark it as pending.</p>
           </div>
-          <div class="shift-action-row">
-            <button class="action-button secondary-action shift-message-button" type="button">
-              Shift message
-            </button>
-            <button class="action-button accept-button" type="button" data-shift-id="${shift.id}">
-              Accept
-            </button>
-            <button class="action-button secondary-action decline-button" type="button" data-shift-id="${shift.id}">
-              Decline
-            </button>
-          </div>
+          ${
+            isAccepted
+              ? `
+      <div class="schedule-action-panel">
+        <p class="status-text">Worker selected.</p>
+
+        <button
+          class="action-button secondary-action shift-message-button"
+          type="button"
+        >
+          Open shift message
+        </button>
+      </div>
+    `
+              : `
+      <div class="shift-action-row">
+        <button
+          class="action-button secondary-action shift-message-button"
+          type="button"
+        >
+          Shift message
+        </button>
+
+        <button
+          class="action-button accept-button"
+          type="button"
+          data-shift-id="${shift.id}"
+        >
+          Accept
+        </button>
+
+        <button
+          class="action-button secondary-action decline-button"
+          type="button"
+          data-shift-id="${shift.id}"
+        >
+          Decline
+        </button>
+      </div>
+    `
+          }
         </div>
       `
       : "";
@@ -644,24 +669,29 @@ function renderShiftBoard() {
     shiftCard.className = "stack-card shift-card";
     shiftCard.innerHTML = `
       <div class="stack-copy">
-        <p class="stack-kicker">Catch Board</p>
-        <h3>${shift.workplace}</h3>
-        <p>${shift.role} - ${getBoardRequestLabel(shift)}</p>
-        <ul class="shift-meta">
-          <li>${shift.day}</li>
-          <li>${shift.time}</li>
-        </ul>
-        <ul class="shift-meta">
-          <li>${shift.neighborhood}</li>
-        </ul>
-        ${shift.lookingFor ? `<p>Looking for: ${shift.lookingFor}</p>` : ""}
-        <p>Posted to: ${shift.postedTo || "Workplace crew"}</p>
-        <p>Status: ${displayedStatus}</p>
-        <p>${shift.note}</p>
-      </div>
+  <p class="stack-kicker">${getBoardRequestLabel(shift)}</p>
+  <h3>${shift.workplace}</h3>
+<p class="detail-label">Position</p>
+<p>${shift.role}</p>
+
+  <ul class="shift-meta">
+    <li>${shift.day}</li>
+    <li>${shift.time}</li>
+  </ul>
+
+  <ul class="shift-meta">
+    <li>${shift.neighborhood}</li>
+  </ul>
+
+  <p>Status: ${displayedStatus}</p>
+<p>Shared with ${shift.postedTo || "Workplace crew"}</p>
+<p>${shift.note}</p>
+</div>
       <div class="shift-action-row">
-        <button class="action-button board-action-button" type="button" data-shift-id="${shift.id}">
-          ${getBoardButtonLabel(shift)}
+        <button class="action-button board-action-button" type="button" data-shift-id="${shift.id}"
+        ${hasInterest ? "disabled" : ""}
+        >
+          ${boardButtonLabel}
         </button>
         <button class="action-button secondary-action view-crew-button" type="button" data-shift-id="${shift.id}">
           View shift crew
@@ -678,9 +708,12 @@ function renderShiftBoard() {
       const responses = getShiftResponses();
       const shiftId = button.dataset.shiftId;
 
+      const currentCount = responses[shiftId]?.interestedCount || 0;
+
       responses[shiftId] = {
-        ...(responses[shiftId] || {}),
+        ...responses[shiftId],
         interested: true,
+        interestedCount: currentCount + 1,
         status: "Open",
       };
 
@@ -707,6 +740,8 @@ function renderShiftBoard() {
       responses[shiftId] = {
         ...(responses[shiftId] || {}),
         interested: true,
+        accepted: true,
+        declined: false,
         status: "Pending confirmation",
       };
 
@@ -1180,9 +1215,6 @@ function renderImportedShifts() {
     const isReleaseActive =
       activeScheduleAction?.shiftId === shift.id &&
       activeScheduleAction.type === "release";
-    const isSwapActive =
-      activeScheduleAction?.shiftId === shift.id &&
-      activeScheduleAction.type === "swap";
 
     const releasePrompt = isReleaseActive
       ? `
@@ -1195,37 +1227,14 @@ function renderImportedShifts() {
       `
       : "";
 
-    const swapPrompt = isSwapActive
-      ? `
-        <div class="schedule-action-panel">
-          <p class="status-text">Choose a swap preference.</p>
-          <div class="shift-action-row">
-            ${swapPreferences
-              .map(
-                (preference) => `
-                  <button
-                    class="filter-button swap-preference-button"
-                    type="button"
-                    data-shift-id="${shift.id}"
-                    data-preference="${preference}"
-                  >
-                    ${preference}
-                  </button>
-                `,
-              )
-              .join("")}
-          </div>
-        </div>
-      `
-      : "";
-
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
     shiftCard.innerHTML = `
       <div class="stack-copy">
         <p class="stack-kicker">Imported shift</p>
         <h3>${shift.day}</h3>
-        <p>${shift.role}</p>
+        
+<p>${shift.role}</p>
         <ul class="shift-meta">
   <li>${shift.time}</li>
   <li>${shift.neighborhood}</li>
@@ -1241,15 +1250,13 @@ function renderImportedShifts() {
   <button class="action-button imported-action-button" type="button" data-shift-id="${shift.id}" data-action="release">
     Release shift
   </button>
-  <button class="action-button secondary-action imported-action-button" type="button" data-shift-id="${shift.id}" data-action="swap">
-    Request swap
-  </button>
+  
   <button class="action-button secondary-action imported-crew-button" type="button" data-shift-id="${shift.id}">
     View shift crew
   </button>
 </div>
       ${releasePrompt}
-      ${swapPrompt}
+     
     `;
 
     importedShiftList.appendChild(shiftCard);
@@ -1329,13 +1336,12 @@ function renderImportedShifts() {
         day: shift.day,
         time: shift.time,
         neighborhood: shift.neighborhood,
-        note: `Swap request from ${selectedScheduleSource || "imported schedule"}.`,
-        postType: "Request swap",
-        lookingFor: button.dataset.preference,
+        note: `Pickup opportunity from ${
+          selectedScheduleSource || "imported schedule"
+        }.`,
+        postType: "Offer pickup",
         postedTo: "Workplace crew",
       });
-      activeScheduleAction = null;
-      renderImportedShifts();
     });
   });
 }
