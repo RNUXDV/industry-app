@@ -504,8 +504,18 @@ function getBoardRequestLabel(shift) {
 }
 
 function getDisplayedShiftStatus(shift, responses) {
-  if (responses[shift.id]?.status) {
-    return responses[shift.id].status;
+  const response = responses[shift.id];
+
+  if (response?.confirmed) {
+    return "Confirmed";
+  }
+
+  if (response?.accepted) {
+    return "Pending approval";
+  }
+
+  if (response?.interested) {
+    return "Interest received";
   }
 
   return shift.status || "Open";
@@ -607,6 +617,7 @@ function renderShiftBoard() {
         : `${interestedCount} coworkers are interested.`;
     const hasInterest = Boolean(responses[shift.id]?.interested);
     const isAccepted = Boolean(responses[shift.id]?.accepted);
+    const isConfirmed = Boolean(responses[shift.id]?.confirmed);
     const boardButtonLabel = hasInterest
       ? "Interest sent"
       : getBoardButtonLabel(shift);
@@ -620,11 +631,14 @@ function renderShiftBoard() {
             <p>I can take this if manager approves.</p>
             <p>Perfect. I'll mark it as pending.</p>
           </div>
-          ${
-            isAccepted
-              ? `
+         ${
+           isConfirmed
+             ? `
       <div class="schedule-action-panel">
-        <p class="status-text">Worker selected.</p>
+        <p class="status-text">Coverage confirmed.</p>
+        <p class="shift-helper-text">
+          This shift has been filled and is no longer available.
+        </p>
 
         <button
           class="action-button secondary-action shift-message-button"
@@ -634,33 +648,55 @@ function renderShiftBoard() {
         </button>
       </div>
     `
-              : `
-      <div class="shift-action-row">
-        <button
-          class="action-button secondary-action shift-message-button"
-          type="button"
-        >
-          Shift message
-        </button>
+             : isAccepted
+               ? `
+        <div class="schedule-action-panel">
+          <p class="status-text">Worker selected.</p>
+          <p class="shift-helper-text">Awaiting manager approval.</p>
 
-        <button
-          class="action-button accept-button"
-          type="button"
-          data-shift-id="${shift.id}"
-        >
-          Accept
-        </button>
+          <button
+            class="action-button manager-approve-button"
+            type="button"
+            data-shift-id="${shift.id}"
+          >
+            Approve coverage
+          </button>
 
-        <button
-          class="action-button secondary-action decline-button"
-          type="button"
-          data-shift-id="${shift.id}"
-        >
-          Decline
-        </button>
-      </div>
-    `
-          }
+          <button
+            class="action-button secondary-action shift-message-button"
+            type="button"
+          >
+            Open shift message
+          </button>
+        </div>
+      `
+               : `
+        <div class="shift-action-row">
+          <button
+            class="action-button secondary-action shift-message-button"
+            type="button"
+          >
+            Shift message
+          </button>
+
+          <button
+            class="action-button accept-button"
+            type="button"
+            data-shift-id="${shift.id}"
+          >
+            Accept
+          </button>
+
+          <button
+            class="action-button secondary-action decline-button"
+            type="button"
+            data-shift-id="${shift.id}"
+          >
+            Decline
+          </button>
+        </div>
+      `
+         } 
         </div>
       `
       : "";
@@ -684,6 +720,23 @@ function renderShiftBoard() {
   </ul>
 
   <p>Status: ${displayedStatus}</p>
+  <div class="catch-progress" aria-label="Shift coverage progress">
+  <div class="catch-progress-step ${hasInterest ? "is-complete" : ""}">
+    <span class="catch-progress-dot"></span>
+    <span>Interest</span>
+  </div>
+
+  <div class="catch-progress-step ${isAccepted ? "is-complete" : ""}">
+    <span class="catch-progress-dot"></span>
+    <span>Selected</span>
+  </div>
+
+  <div class="catch-progress-step ${isConfirmed ? "is-complete" : ""}">
+    <span class="catch-progress-dot"></span>
+    <span>Confirmed</span>
+  </div>
+</div>
+
 <p>Shared with ${shift.postedTo || "Workplace crew"}</p>
 <p>${shift.note}</p>
 </div>
@@ -748,6 +801,20 @@ function renderShiftBoard() {
       saveLocalJson(shiftResponseStorageKey, responses);
       renderShiftBoard();
       shiftBoardStatus.textContent = "Status updated to Pending confirmation.";
+    });
+  });
+
+  document.querySelectorAll(".manager-approve-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const shiftId = button.dataset.shiftId;
+
+      responses[shiftId] = {
+        ...(responses[shiftId] || {}),
+        confirmed: true,
+      };
+
+      saveLocalJson("industry-v2-shift-responses", responses);
+      renderShiftBoard();
     });
   });
 

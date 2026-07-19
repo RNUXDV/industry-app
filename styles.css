@@ -1467,6 +1467,60 @@ h1 {
   line-height: 1;
 }
 
+/* Catch Board */
+
+.catch-progress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.catch-progress-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--muted-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.catch-progress-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 0.45rem;
+  left: calc(50% + 0.55rem);
+  width: calc(100% - 0.35rem);
+  height: 2px;
+  background: var(--border-color);
+}
+
+.catch-progress-dot {
+  position: relative;
+  z-index: 1;
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--card-background);
+}
+
+.catch-progress-step.is-complete {
+  color: var(--text-color);
+}
+
+.catch-progress-step.is-complete .catch-progress-dot {
+  border-color: currentColor;
+  background: currentColor;
+}
+
+.catch-progress-step.is-complete:not(:last-child)::after {
+  background: currentColor;
+}
+
 @media (max-width: 350px) {
   .quick-actions-grid {
     grid-template-columns: 1fr;
