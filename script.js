@@ -521,6 +521,49 @@ function getDisplayedShiftStatus(shift, responses) {
   return shift.status || "Open";
 }
 
+function getCatchEventTime() {
+  return new Date().toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function getCatchTimeline(shift, responses) {
+  const response = responses[shift.id] || {};
+  const events = [];
+
+  events.push({
+    time: shift.releasedAt || "Posted earlier",
+    label: "Shift released",
+    detail: "This shift was posted to the Catch Board.",
+  });
+
+  if (response.interested) {
+    events.push({
+      time: response.interestedAt || "Time unavailable",
+      label: "Interest received",
+      detail: "A coworker offered to take the shift.",
+    });
+  }
+
+  if (response.accepted) {
+    events.push({
+      time: response.acceptedAt || "Time unavailable",
+      label: "Worker selected",
+      detail: "A coworker was selected for coverage.",
+    });
+  }
+
+  if (response.confirmed) {
+    events.push({
+      time: response.confirmedAt || "Time unavailable",
+      label: "Coverage confirmed",
+      detail: "Manager approval completed the shift transfer.",
+    });
+  }
+
+  return events;
+}
 function getCrewShiftSummary(shift) {
   return `${shift.role} ${getBoardRequestLabel(shift).toLowerCase()}`;
 }
@@ -591,9 +634,11 @@ function createBoardPost(postData) {
     id: `shift-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
     status: "Open",
     ...postData,
+    releasedAt: getCatchEventTime(),
   };
 
   savedShifts.unshift(newShift);
+  console.log("New Shift:", newShift);
   saveLocalJson(shiftsStorageKey, savedShifts);
   renderShiftBoard();
   shiftBoardStatus.textContent = "Added to Catch Board.";
@@ -608,6 +653,7 @@ function renderShiftBoard() {
   shiftBoardList.innerHTML = "";
 
   shifts.forEach((shift) => {
+    console.log("Rendering shift:", shift);
     const displayedStatus = getDisplayedShiftStatus(shift, responses);
     const interestedCount = responses[shift.id]?.interestedCount || 1;
 
@@ -617,7 +663,27 @@ function renderShiftBoard() {
         : `${interestedCount} coworkers are interested.`;
     const hasInterest = Boolean(responses[shift.id]?.interested);
     const isAccepted = Boolean(responses[shift.id]?.accepted);
+    const catchTimeline = getCatchTimeline(shift, responses);
     const isConfirmed = Boolean(responses[shift.id]?.confirmed);
+    const catchTimelineMarkup = catchTimeline
+      .map(
+        (event, index) => `
+      <div
+        class="catch-timeline-event ${
+          index === catchTimeline.length - 1 ? "is-current" : ""
+        }"
+      >
+        <span class="catch-timeline-marker" aria-hidden="true"></span>
+
+        <div>
+  <p class="catch-timeline-time">${event.time}</p>
+  <p class="catch-timeline-label">${event.label}</p>
+  <p class="catch-timeline-detail">${event.detail}</p>
+</div>
+      </div>
+    `,
+      )
+      .join("");
     const boardButtonLabel = hasInterest
       ? "Interest sent"
       : getBoardButtonLabel(shift);
@@ -626,6 +692,17 @@ function renderShiftBoard() {
       ? `
         <div class="response-panel">
          <p class="status-text">${interestedLabel}</p>
+         ${
+           hasInterest
+             ? `
+      <div class="catch-timeline">
+        <h4 class="catch-timeline-heading">Timeline</h4>
+
+        ${catchTimelineMarkup}
+      </div>
+    `
+             : ""
+         }
           <p class="status-text">Keep messages tied to the shift so coverage decisions stay clear.</p>
           <div class="message-preview">
             <p>I can take this if manager approves.</p>
@@ -766,6 +843,7 @@ function renderShiftBoard() {
       responses[shiftId] = {
         ...responses[shiftId],
         interested: true,
+        interestedAt: getCatchEventTime(),
         interestedCount: currentCount + 1,
         status: "Open",
       };
@@ -794,6 +872,7 @@ function renderShiftBoard() {
         ...(responses[shiftId] || {}),
         interested: true,
         accepted: true,
+        acceptedAt: getCatchEventTime(),
         declined: false,
         status: "Pending confirmation",
       };
@@ -811,6 +890,8 @@ function renderShiftBoard() {
       responses[shiftId] = {
         ...(responses[shiftId] || {}),
         confirmed: true,
+        confirmedAt: getCatchEventTime(),
+        status: "Confirmed",
       };
 
       saveLocalJson("industry-v2-shift-responses", responses);
@@ -1459,6 +1540,7 @@ if (saveShiftButton) {
       id: `shift-${Date.now()}`,
       ...formData,
       status: "Open",
+      releasedAt: getCatchEventTime(),
     };
 
     // localStorage keeps the posted shifts in this browser only.
