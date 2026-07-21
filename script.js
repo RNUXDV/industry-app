@@ -528,6 +528,44 @@ function getCatchEventTime() {
   });
 }
 
+function getRelativeReleaseTime(timestamp) {
+  if (!timestamp) {
+    return "earlier";
+  }
+
+  const minutes = Math.floor((Date.now() - timestamp) / 60000);
+
+  if (minutes < 1) {
+    return "Just now";
+  }
+
+  if (minutes === 1) {
+    return "1 minute ago";
+  }
+
+  if (minutes < 60) {
+    return `${minutes} minutes ago`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours === 1) {
+    return "1 hour ago";
+  }
+
+  if (hours < 24) {
+    return `${hours} hours ago`;
+  }
+
+  const days = Math.floor(hours / 24);
+
+  if (days === 1) {
+    return "Yesterday";
+  }
+
+  return `${days} days ago`;
+}
+
 function getCatchTimeline(shift, responses) {
   const response = responses[shift.id] || {};
   const events = [];
@@ -635,6 +673,7 @@ function createBoardPost(postData) {
     status: "Open",
     ...postData,
     releasedAt: getCatchEventTime(),
+    releasedTimestamp: Date.now(),
   };
 
   savedShifts.unshift(newShift);
@@ -790,8 +829,21 @@ function renderShiftBoard() {
       `
       : "";
 
+    const releasedTimeLabel = getRelativeReleaseTime(shift.releasedTimestamp);
+
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
+
+    let statusClass = "status-open";
+
+    if (isConfirmed) {
+      statusClass = "status-confirmed";
+    } else if (isAccepted) {
+      statusClass = "status-pending";
+    } else if (hasInterest) {
+      statusClass = "status-interest";
+    }
+
     shiftCard.innerHTML = `
       <div class="stack-copy">
   <p class="stack-kicker">${getBoardRequestLabel(shift)}</p>
@@ -808,11 +860,21 @@ function renderShiftBoard() {
     <li>${shift.neighborhood}</li>
   </ul>
 
-  <p>Status: ${displayedStatus}</p>
+  <p class="shift-release-time">
+  Released ${releasedTimeLabel}
+</p>
+
+  
+
+
+ <div class="catch-status-chip ${statusClass}">
+  <span class="catch-status-dot" aria-hidden="true"></span>
+  <span>${displayedStatus}</span>
+</div>
   <div class="catch-progress" aria-label="Shift coverage progress">
   <div class="catch-progress-step ${hasInterest ? "is-complete" : ""} ${
-  hasInterest && !isAccepted ? "is-current" : ""
-}">
+    hasInterest && !isAccepted ? "is-current" : ""
+  }">
     <span class="catch-progress-dot"></span>
     <span>Interest</span>
   </div>
@@ -1555,6 +1617,7 @@ if (saveShiftButton) {
       ...formData,
       status: "Open",
       releasedAt: getCatchEventTime(),
+      releasedTimestamp: Date.now(),
     };
 
     // localStorage keeps the posted shifts in this browser only.
