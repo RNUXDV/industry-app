@@ -1503,9 +1503,10 @@ h1 {
   z-index: 1;
   width: 0.9rem;
   height: 0.9rem;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--muted-text);
   border-radius: 50%;
   background: var(--card-background);
+  opacity: 0.65;
 }
 
 .catch-progress-step.is-complete {
@@ -1515,10 +1516,32 @@ h1 {
 .catch-progress-step.is-complete .catch-progress-dot {
   border-color: currentColor;
   background: currentColor;
+  opacity: 1;
 }
 
 .catch-progress-step.is-complete:not(:last-child)::after {
   background: currentColor;
+}
+
+.catch-progress-step.is-current {
+  color: var(--text-color);
+}
+
+.catch-progress-step.is-current .catch-progress-dot {
+  transform: scale(1.12);
+  box-shadow:
+    0 0 0 0.22rem var(--card-background),
+    0 0 0 0.38rem currentColor;
+}
+
+.catch-progress-step.is-current span:last-child {
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+  text-decoration-thickness: 2px;
+}
+
+.catch-progress-step.is-current span:last-child {
+  font-weight: 800;
 }
 
 .catch-timeline {
