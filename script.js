@@ -638,7 +638,7 @@ function createBoardPost(postData) {
   };
 
   savedShifts.unshift(newShift);
-  console.log("New Shift:", newShift);
+
   saveLocalJson(shiftsStorageKey, savedShifts);
   renderShiftBoard();
   shiftBoardStatus.textContent = "Added to Catch Board.";
@@ -652,8 +652,20 @@ function renderShiftBoard() {
 
   shiftBoardList.innerHTML = "";
 
+  if (shifts.length === 0) {
+    shiftBoardList.innerHTML = `
+    <div class="catch-empty-state">
+      <p class="catch-empty-title">No open shifts right now.</p>
+      <p class="catch-empty-text">
+        Released shifts and pickup opportunities will appear here.
+      </p>
+    </div>
+  `;
+
+    return;
+  }
+
   shifts.forEach((shift) => {
-    console.log("Rendering shift:", shift);
     const displayedStatus = getDisplayedShiftStatus(shift, responses);
     const interestedCount = responses[shift.id]?.interestedCount || 1;
 
