@@ -685,6 +685,19 @@ function createBoardPost(postData) {
   setActiveScheduleView("catch");
 }
 
+function renderStatusPill(label, status) {
+  return `
+        <span class="interested-worker-availability status-${status}">
+            <span
+                class="interested-worker-availability-dot"
+                aria-hidden="true"
+            ></span>
+
+            ${label}
+        </span>
+    `;
+}
+
 function renderPresenceCard(worker, workerIndex, shiftId) {
   return `
         <div
@@ -712,16 +725,10 @@ function renderPresenceCard(worker, workerIndex, shiftId) {
                         ${worker.role}
                     </p>
 
-                    <span
-                        class="interested-worker-availability status-${worker.availability.status}"
-                    >
-                        <span
-                            class="interested-worker-availability-dot"
-                            aria-hidden="true"
-                        ></span>
-
-                        ${worker.availability.label}
-                    </span>
+                    ${renderStatusPill(
+                      worker.availability.label,
+                      worker.availability.status,
+                    )}
                 </div>
             </div>
         </div>
