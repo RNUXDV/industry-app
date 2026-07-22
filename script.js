@@ -685,6 +685,49 @@ function createBoardPost(postData) {
   setActiveScheduleView("catch");
 }
 
+function renderPresenceCard(worker, workerIndex, shiftId) {
+  return `
+        <div
+            class="interested-worker ${worker.selected ? "is-selected" : ""}"
+            data-shift-id="${shiftId}"
+            data-worker-index="${workerIndex}"
+            role="button"
+            tabindex="0"
+            aria-pressed="${worker.selected}"
+        >
+            <span
+                class="interested-worker-avatar"
+                aria-hidden="true"
+            >
+                ${worker.selected ? "✓" : worker.name.charAt(0)}
+            </span>
+
+            <div>
+                <p class="interested-worker-name">
+                    ${worker.name}
+                </p>
+
+                <div class="interested-worker-meta">
+                    <p class="interested-worker-role">
+                        ${worker.role}
+                    </p>
+
+                    <span
+                        class="interested-worker-availability status-${worker.availability.status}"
+                    >
+                        <span
+                            class="interested-worker-availability-dot"
+                            aria-hidden="true"
+                        ></span>
+
+                        ${worker.availability.label}
+                    </span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 function renderShiftBoard() {
   const shifts = getAllShifts();
   const responses = getShiftResponses();
@@ -718,49 +761,11 @@ function renderShiftBoard() {
 
             <div class="interested-workers-list">
                 ${interestedWorkers
-                  .map(
-                    (worker, workerIndex) => `
-                            <div
-    class="interested-worker ${worker.selected ? "is-selected" : ""}"
-    data-shift-id="${shift.id}"
-    data-worker-index="${workerIndex}"
-    role="button"
-    tabindex="0"
-    aria-pressed="${worker.selected}"
->
-                                <span
-                                    class="interested-worker-avatar"
-                                    aria-hidden="true"
-                                >
-                                    ${worker.selected ? "✓" : worker.name.charAt(0)}
-                                </span>
 
-                                <div>
-                                    <p class="interested-worker-name">
-                                        ${worker.name}
-                                    </p>
-
-                                    <div class="interested-worker-meta">
-    <p class="interested-worker-role">
-        ${worker.role}
-    </p>
-
-    <span
-    class="interested-worker-availability status-${worker.availability.status}"
->
-    <span
-        class="interested-worker-availability-dot"
-        aria-hidden="true"
-    ></span>
-
-    ${worker.availability.label}
-</span>
-</div>
-                                </div>
-                            </div>
-                        `,
+                  .map((worker, workerIndex) =>
+                    renderPresenceCard(worker, workerIndex, shift.id),
                   )
-                  .join("")}
+                  .join("")}     
             </div>
         </section>
     `
