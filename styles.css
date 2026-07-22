@@ -1672,6 +1672,128 @@ h1 {
   text-transform: uppercase;
 }
 
+.interested-workers {
+    padding: 0.75rem 0 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.interested-workers-heading {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.interested-workers-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.interested-worker {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    padding: 0.75rem;
+
+    transition:
+        background 180ms ease,
+        border-color 180ms ease;
+}
+
+.interested-worker:hover {
+    background: rgba(255, 255, 255, 0.035);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.interested-worker.is-selected {
+    background: rgba(200, 101, 53, 0.08);
+    border-color: var(--accent-color, #c86535);
+}
+
+.interested-worker.is-selected .interested-worker-avatar {
+    background: rgba(200, 101, 53, 0.15);
+}
+
+.interested-worker-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.interested-worker-name,
+.interested-worker-role {
+    margin: 0;
+}
+
+.interested-worker-name {
+    font-weight: 700;
+}
+
+.interested-worker-role {
+    margin-top: 0.2rem;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.interested-worker-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.interested-worker-availability {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.2rem;
+    padding: 0.18rem 0.5rem;
+    border: 1px solid rgba(109, 220, 145, 0.22);
+    border-radius: 999px;
+    background: rgba(109, 220, 145, 0.1);
+    color: #6ddc91;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+}
+
+.interested-worker-availability.status-available {
+    border-color: rgba(109, 220, 145, 0.28);
+    background: rgba(109, 220, 145, 0.1);
+    color: #6ddc91;
+}
+
+.interested-worker-availability.status-working {
+    border-color: rgba(103, 178, 255, 0.28);
+    background: rgba(103, 178, 255, 0.1);
+    color: #67b2ff;
+}
+
+.interested-worker-availability.status-off {
+    border-color: rgba(190, 190, 190, 0.22);
+    background: rgba(190, 190, 190, 0.08);
+    color: #bdbdbd;
+}›
+
+.interested-worker-availability-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+
 .catch-empty-state {
   padding: 2rem 1.25rem;
   border: 1px dashed var(--border-color);

@@ -707,6 +707,64 @@ function renderShiftBoard() {
   shifts.forEach((shift) => {
     const displayedStatus = getDisplayedShiftStatus(shift, responses);
     const interestedCount = responses[shift.id]?.interestedCount || 1;
+    const interestedWorkers = responses[shift.id]?.interestedWorkers || [];
+
+    const interestedWorkersMarkup = interestedWorkers.length
+      ? `
+        <section class="interested-workers">
+            <h4 class="interested-workers-heading">
+                Interested coworkers
+            </h4>
+
+            <div class="interested-workers-list">
+                ${interestedWorkers
+                  .map(
+                    (worker, workerIndex) => `
+                            <div
+    class="interested-worker ${worker.selected ? "is-selected" : ""}"
+    data-shift-id="${shift.id}"
+    data-worker-index="${workerIndex}"
+    role="button"
+    tabindex="0"
+    aria-pressed="${worker.selected}"
+>
+                                <span
+                                    class="interested-worker-avatar"
+                                    aria-hidden="true"
+                                >
+                                    ${worker.selected ? "✓" : worker.name.charAt(0)}
+                                </span>
+
+                                <div>
+                                    <p class="interested-worker-name">
+                                        ${worker.name}
+                                    </p>
+
+                                    <div class="interested-worker-meta">
+    <p class="interested-worker-role">
+        ${worker.role}
+    </p>
+
+    <span
+    class="interested-worker-availability status-${worker.availability.status}"
+>
+    <span
+        class="interested-worker-availability-dot"
+        aria-hidden="true"
+    ></span>
+
+    ${worker.availability.label}
+</span>
+</div>
+                                </div>
+                            </div>
+                        `,
+                  )
+                  .join("")}
+            </div>
+        </section>
+    `
+      : "";
 
     const interestedLabel =
       interestedCount === 1
@@ -742,7 +800,7 @@ function renderShiftBoard() {
     const responsePanel = hasInterest
       ? `
         <div class="response-panel">
-         <p class="status-text">${interestedLabel}</p>
+         ${interestedWorkersMarkup}
          ${
            hasInterest
              ? `
@@ -921,6 +979,38 @@ function renderShiftBoard() {
         interested: true,
         interestedAt: getCatchEventTime(),
         interestedCount: currentCount + 1,
+        interestedWorkers: [
+          {
+            id: 1,
+            name: "Maya Chen",
+            role: "Server",
+            availability: {
+              label: "Available",
+              status: "available",
+            },
+            selected: false,
+          },
+          {
+            id: 2,
+            name: "Chris Hall",
+            role: "Bartender",
+            availability: {
+              label: "Working",
+              status: "working",
+            },
+            selected: false,
+          },
+          {
+            id: 3,
+            name: "Sam Ortiz",
+            role: "Host",
+            availability: {
+              label: "Off Today",
+              status: "off",
+            },
+            selected: false,
+          },
+        ],
         status: "Open",
       };
 
@@ -956,6 +1046,50 @@ function renderShiftBoard() {
       saveLocalJson(shiftResponseStorageKey, responses);
       renderShiftBoard();
       shiftBoardStatus.textContent = "Status updated to Pending confirmation.";
+    });
+  });
+
+  document.querySelectorAll(".interested-worker").forEach((workerRow) => {
+    const selectWorker = () => {
+      const responses = getShiftResponses();
+      const shiftId = workerRow.dataset.shiftId;
+      const workerIndex = Number(workerRow.dataset.workerIndex);
+      const response = responses[shiftId];
+
+      if (!response?.interestedWorkers?.[workerIndex]) {
+        return;
+      }
+
+      const updatedWorkers = response.interestedWorkers.map(
+        (worker, index) => ({
+          ...worker,
+          selected: index === workerIndex,
+        }),
+      );
+
+      responses[shiftId] = {
+        ...response,
+        interested: true,
+        interestedWorkers: updatedWorkers,
+        accepted: true,
+        acceptedAt: getCatchEventTime(),
+        declined: false,
+        status: "Pending confirmation",
+      };
+
+      saveLocalJson(shiftResponseStorageKey, responses);
+      renderShiftBoard();
+
+      shiftBoardStatus.textContent = `${updatedWorkers[workerIndex].name} selected for coverage.`;
+    };
+
+    workerRow.addEventListener("click", selectWorker);
+
+    workerRow.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectWorker();
+      }
     });
   });
 
