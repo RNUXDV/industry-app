@@ -530,40 +530,40 @@ function getCatchEventTime() {
 
 function getRelativeReleaseTime(timestamp) {
   if (!timestamp) {
-    return "earlier";
+    return "Posted earlier";
   }
 
   const minutes = Math.floor((Date.now() - timestamp) / 60000);
 
   if (minutes < 1) {
-    return "Just now";
+    return "Posted just now";
   }
 
   if (minutes === 1) {
-    return "1 minute ago";
+    return "Posted 1 minute ago";
   }
 
   if (minutes < 60) {
-    return `${minutes} minutes ago`;
+    return `Posted ${minutes} minutes ago`;
   }
 
   const hours = Math.floor(minutes / 60);
 
   if (hours === 1) {
-    return "1 hour ago";
+    return "Posted 1 hour ago";
   }
 
   if (hours < 24) {
-    return `${hours} hours ago`;
+    return `Posted ${hours} hours ago`;
   }
 
   const days = Math.floor(hours / 24);
 
   if (days === 1) {
-    return "Yesterday";
+    return "Posted yesterday";
   }
 
-  return `${days} days ago`;
+  return `Posted ${days} days ago`;
 }
 
 function getCatchTimeline(shift, responses) {
@@ -573,7 +573,7 @@ function getCatchTimeline(shift, responses) {
   events.push({
     time: shift.releasedAt || "Posted earlier",
     label: "Shift released",
-    detail: "This shift was posted to the Catch Board.",
+    detail: "Made available for coworkers to claim.",
   });
 
   if (response.interested) {
@@ -747,7 +747,7 @@ function renderShiftBoard() {
            hasInterest
              ? `
       <div class="catch-timeline">
-        <h4 class="catch-timeline-heading">Timeline</h4>
+        <h4 class="catch-timeline-heading">Coverage History</h4>
 
         ${catchTimelineMarkup}
       </div>
@@ -861,7 +861,7 @@ function renderShiftBoard() {
   </ul>
 
   <p class="shift-release-time">
-  Released ${releasedTimeLabel}
+  ${releasedTimeLabel}
 </p>
 
   
