@@ -54,3 +54,4 @@ Larger product experiences composed from reusable components and interaction pat
 - Update this registry whenever the component system changes.
 - Component IDs are assigned sequentially when a reusable component is first created.
 - Component categories determine where a component is listed; IDs do not.
+
