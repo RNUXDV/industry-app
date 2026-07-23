@@ -685,6 +685,29 @@ function createBoardPost(postData) {
   setActiveScheduleView("catch");
 }
 
+// IDL-002 — Avatar
+// Props: label, selected
+// States: default, selected
+// Used by: Presence Card
+
+function renderAvatar({ label, selected = false }) {
+  const initial = label?.charAt(0) || "?";
+
+  return `
+        <span
+            class="interested-worker-avatar"
+            aria-hidden="true"
+        >
+            ${selected ? "✓" : initial}
+        </span>
+    `;
+}
+
+// IDL-001 — Status Pill
+// Props: label, status
+// States: available, working, off
+// Used by: Presence Card
+
 function renderStatusPill(label, status) {
   return `
         <span class="interested-worker-availability status-${status}">
@@ -698,6 +721,11 @@ function renderStatusPill(label, status) {
     `;
 }
 
+// IDL-003 — Presence Card
+// Props: worker, workerIndex, shiftId
+// States: default, hover, selected
+// Composes: Avatar, Status Pill
+
 function renderPresenceCard(worker, workerIndex, shiftId) {
   return `
         <div
@@ -708,12 +736,10 @@ function renderPresenceCard(worker, workerIndex, shiftId) {
             tabindex="0"
             aria-pressed="${worker.selected}"
         >
-            <span
-                class="interested-worker-avatar"
-                aria-hidden="true"
-            >
-                ${worker.selected ? "✓" : worker.name.charAt(0)}
-            </span>
+            ${renderAvatar({
+              label: worker.name,
+              selected: worker.selected,
+            })}
 
             <div>
                 <p class="interested-worker-name">
