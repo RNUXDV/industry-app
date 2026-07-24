@@ -967,7 +967,7 @@ function renderShiftBoard() {
   <span class="catch-status-dot" aria-hidden="true"></span>
   <span>${displayedStatus}</span>
 </div>
-  <div class="catch-progress" aria-label="Shift coverage progress">
+ <div class="catch-progress ${statusClass}" aria-label="Shift coverage progress">
   <div class="catch-progress-step ${hasInterest ? "is-complete" : ""} ${
     hasInterest && !isAccepted ? "is-current" : ""
   }">
@@ -975,10 +975,14 @@ function renderShiftBoard() {
     <span>Interest</span>
   </div>
 
-  <div class="catch-progress-step ${isAccepted ? "is-complete" : ""}">
-    <span class="catch-progress-dot"></span>
-    <span>Selected</span>
-  </div>
+  <div class="catch-progress-step ${
+  isAccepted ? "is-complete" : ""
+} ${
+  isAccepted && !isConfirmed ? "is-current" : ""
+}">
+  <span class="catch-progress-dot"></span>
+  <span>Selected</span>
+</div>
 
  <div class="catch-progress-step ${isConfirmed ? "is-complete is-current" : ""}">
     <span class="catch-progress-dot"></span>
