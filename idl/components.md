@@ -129,3 +129,41 @@ Combine identity, role, and availability into one reusable component that suppor
 - People
 - Jobs
 - Messages
+
+---
+
+# IDL-004 — Progress Rail
+
+## Purpose
+
+Displays a user's current position within a linear workflow.
+
+## Why
+
+Reduces uncertainty by showing the current stage, completed stages, and remaining stages in a shift-coverage process.
+
+## Props
+
+- `currentStep`
+- `labels`
+- `completed`
+
+## States
+
+- Interest
+- Selected
+- Confirmed
+
+## Accessibility
+
+- Communicates the current stage with text, not color alone.
+- Presents steps in their correct sequence.
+- Uses sufficient contrast for nodes, connectors, and labels.
+- Can provide a descriptive screen-reader label for the complete workflow state.
+
+## Used By
+
+- Catch
+
+---
+
