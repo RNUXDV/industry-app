@@ -45,10 +45,31 @@
       until your next shift
     </p>
 
-    <div class="next-shift-summary">
-      <strong>Today • 5:00 PM – Close</strong>
-      <span>Departure Lounge</span>
+   <section class="schedule-card">
+    <div class="schedule-card-header">
+        <span class="schedule-day">Today</span>
+        <span class="schedule-date">Fri, Jul 24</span>
     </div>
+
+    <div class="schedule-card-time">
+        5:00 PM – Close
+    </div>
+
+    <div class="schedule-card-role">
+        Server
+    </div>
+
+    <div class="schedule-card-workplace">
+        Departure Lounge
+    </div>
+
+    <button
+  id="dashboard-shift-details-button"
+  type="button"
+>
+  View Details
+</button>
+</section>
 
     <button
   class="action-button"
@@ -322,11 +343,18 @@
   </p>
 </div>
 
-            <section class="today-panel next-shift-panel" aria-label="Next shift">
+            <section
+  class="today-panel next-shift-panel schedule-card"
+  role="button"
+  tabindex="0"
+  aria-label="Open shift details for today at 5 PM"
+  data-schedule-view="shift-details"
+>
+
   <div class="next-shift-header">
     <div class="next-shift-title-row">
   <div>
-    <p class="section-label">Next shift</p>
+    <p class="section-label">Upcoming shift</p>
     <h3>Today · 5:00 PM &ndash; Close</h3>
   </div>
 
@@ -344,29 +372,9 @@
       <strong>Departure Lounge</strong>
     </div>
 
-    <div>
-      <span>Manager</span>
-      <strong>Dana</strong>
-    </div>
-  </div>
+    
 
-  <div class="next-shift-actions">
-    <button
-      class="action-button"
-      type="button"
-      data-schedule-view="shift-crew"
-    >
-      View crew
-    </button>
-
-    <button
-      class="action-button secondary-action"
-      type="button"
-      data-schedule-view="need-coverage"
-    >
-      Release shift
-    </button>
-  </div>
+  
 </section>
 
 <section
@@ -511,6 +519,76 @@
               </div>
             </section>
           </section>
+
+          <section
+  class="schedule-subview"
+  data-schedule-subview="shift-details"
+>
+  <button
+    class="back-to-schedule-button"
+    type="button"
+    data-back-to-schedule
+  >
+    ← Back to My Shifts
+  </button>
+
+  <div class="section-heading">
+    <p class="section-label">Schedule / Shift Details</p>
+    <h2>Shift Details</h2>
+    <p>Review the information and actions for this shift.</p>
+  </div>
+
+  <div class="panel-heading">
+  <p class="section-label">Upcoming Shift</p>
+  <h3>Today · 5:00 PM – Close</h3>
+</div>
+
+<div class="shift-detail-list">
+  <div class="shift-detail-group">
+    <span>Role</span>
+    <strong>Server</strong>
+  </div>
+
+  <div class="shift-detail-group">
+    <span>Workplace</span>
+    <strong>Departure Lounge</strong>
+  </div>
+
+  <div class="shift-detail-group">
+    <span>Manager</span>
+    <strong>Dana</strong>
+  </div>
+
+  <div class="shift-detail-group">
+    <span>Status</span>
+    <strong>Confirmed</strong>
+  </div>
+</div>
+
+<div class="shift-notes-panel">
+  <span>Manager Notes</span>
+  <p>No notes provided.</p>
+</div>
+
+<div class="shift-detail-actions">
+  <button
+    class="action-button"
+    type="button"
+    data-schedule-view="shift-crew"
+  >
+    View Crew
+  </button>
+
+  <button
+    class="action-button secondary-action"
+    type="button"
+    data-schedule-view="need-coverage"
+  >
+    Release Shift
+  </button>
+</div>
+  </section>
+
 
           <section
             class="schedule-subview"
@@ -820,12 +898,12 @@
             data-schedule-subview="need-coverage"
           >
             <button
-              class="back-to-schedule-button"
-              type="button"
-              data-back-to-schedule
-            >
-              ← Back to Schedule
-            </button>
+  class="back-to-schedule-button"
+  type="button"
+  data-schedule-view="shift-details"
+>
+  ← Back to Shift Details
+</button>
             <div class="panel-heading">
               <p class="section-label">Need Coverage</p>
               <h3>Post to the right workplace crew</h3>
@@ -942,6 +1020,7 @@
                 workplace crew.
               </p>
             </div>
+            
 
             <section class="today-panel" aria-label="Catch Board helper">
               <p class="status-text">
@@ -1055,6 +1134,7 @@
               </p>
             </section>
           </section>
+        </section>
         
 
         <section class="app-section" data-section="jobs">
@@ -1066,6 +1146,7 @@
               opportunities.
             </p>
           </div>
+          
 
           <section class="stack-list shift-list" aria-label="Job opportunities">
             <article class="stack-card">

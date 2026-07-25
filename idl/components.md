@@ -166,4 +166,41 @@ Reduces uncertainty by showing the current stage, completed stages, and remainin
 - Catch
 
 ---
+## IDL-005 — Schedule Card
 
+### Purpose
+
+The Schedule Card is the primary reusable component used to display a scheduled shift.
+
+It provides a concise summary of a shift and serves as the entry point into the Shift Details experience.
+
+### Contains
+
+- Day / Date
+- Time
+- Role
+- Workplace
+- Status (optional)
+- Primary action (View Details)
+
+### Optional Content
+
+- Coverage Status
+- Manager Notes indicator
+- Crew count
+- Special Event indicator
+
+### Primary Action
+
+- View Details
+
+### Principles
+
+- Every scheduled shift uses the same Schedule Card.
+- The card summarizes a shift without overwhelming the user.
+- A shift's origin (scheduled, imported, or picked up) does not change the card.
+- The card is optimized for quick scanning.
+
+### Interaction
+
+Selecting a Schedule Card opens the Shift Details experience.

@@ -27,7 +27,7 @@ Components built by combining smaller primitives.
 - [x] IDL-003 — Presence Card
 - [ ] Schedule Card
 - [ ] Timeline
-- [x] IDL-004 — Progress Rail
+- [x] IDL-004 — Progress Railwhere 
 - [ ] Message Preview
 - [ ] Notification Card
 

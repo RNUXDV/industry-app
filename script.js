@@ -6,6 +6,9 @@ const dashboardLinks = document.querySelectorAll("[data-dashboard-section]");
 const dashboardViewScheduleButton = document.querySelector(
   "#dashboard-view-schedule",
 );
+const dashboardShiftDetailsButton = document.querySelector(
+  "#dashboard-shift-details-button",
+);
 const scheduleSubviews = document.querySelectorAll(".schedule-subview");
 const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
@@ -288,14 +291,21 @@ function setActiveScheduleView(viewName) {
 }
 
 scheduleViewCards.forEach((card) => {
-  card.addEventListener("click", () => {
+  const openScheduleView = () => {
     setActiveScheduleView(card.dataset.scheduleView);
-  });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  card.addEventListener("click", openScheduleView);
 
   card.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      setActiveScheduleView(card.dataset.scheduleView);
+      openScheduleView();
     }
   });
 });
@@ -359,9 +369,22 @@ function applyHashSection() {
 
 navButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    setActiveSection(button.dataset.target);
+    const targetSection = button.dataset.target;
+
+    setActiveSection(targetSection);
+
+    if (targetSection === "schedule") {
+      showScheduleHub();
+    }
   });
 });
+
+if (dashboardShiftDetailsButton) {
+  dashboardShiftDetailsButton.addEventListener("click", () => {
+    setActiveSection("schedule");
+    setActiveScheduleView("shift-details");
+  });
+}
 
 if (homeLogoButton) {
   homeLogoButton.addEventListener("click", () => {
@@ -975,11 +998,9 @@ function renderShiftBoard() {
     <span>Interest</span>
   </div>
 
-  <div class="catch-progress-step ${
-  isAccepted ? "is-complete" : ""
-} ${
-  isAccepted && !isConfirmed ? "is-current" : ""
-}">
+  <div class="catch-progress-step ${isAccepted ? "is-complete" : ""} ${
+    isAccepted && !isConfirmed ? "is-current" : ""
+  }">
   <span class="catch-progress-dot"></span>
   <span>Selected</span>
 </div>
