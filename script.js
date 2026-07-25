@@ -274,6 +274,9 @@ let activeCrewShiftId = "";
 let activeTipEntryId = "";
 
 function setActiveScheduleView(viewName) {
+  if (viewName === "my-shifts") {
+  renderImportedShifts();
+}
   if (scheduleHub) {
     scheduleHub.classList.add("hidden-panel");
   }
@@ -1632,7 +1635,15 @@ function renderMockCalendar() {
 function renderImportedShifts() {
   importedShiftList.innerHTML = "";
 
-  importedScheduleShifts.forEach((shift) => {
+  const responses = getShiftResponses();
+
+  const confirmedCatchShifts = getAllShifts().filter((shift) => {
+    return responses[shift.id]?.confirmed;
+  });
+
+  const myShifts = [...importedScheduleShifts, ...confirmedCatchShifts];
+
+  myShifts.forEach((shift) => {
     const isReleaseActive =
       activeScheduleAction?.shiftId === shift.id &&
       activeScheduleAction.type === "release";
@@ -1648,11 +1659,21 @@ function renderImportedShifts() {
       `
       : "";
 
+    const isConfirmedCatch = Boolean(responses[shift.id]?.confirmed);
+
+    const shiftSourceLabel = isConfirmedCatch
+      ? "Confirmed catch"
+      : "Imported shift";
+
+    const station = shift.station || "Station not provided";
+    const manager = shift.manager || "Manager not provided";
+    const notes = shift.notes || shift.note || "No notes provided.";
+
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
     shiftCard.innerHTML = `
       <div class="stack-copy">
-        <p class="stack-kicker">Imported shift</p>
+       <p class="stack-kicker">${shiftSourceLabel}</p>
         <h3>${shift.day}</h3>
         
 <p>${shift.role}</p>
@@ -1662,10 +1683,10 @@ function renderImportedShifts() {
 </ul>
 <ul class="shift-meta">
   <li>${shift.workplace}</li>
-  <li>${shift.station}</li>
+  <li>${station}</li>
 </ul>
-<p>Manager: ${shift.manager}</p>
-<p>${shift.notes}</p>
+<p>Manager: ${manager}</p>
+<p>${notes}</p>
       </div>
       <div class="shift-action-row">
   <button class="action-button imported-action-button" type="button" data-shift-id="${shift.id}" data-action="release">
@@ -1918,6 +1939,7 @@ const savedProfile = readLocalJson(profileStorageKey, {});
 updateProfileSummary(savedProfile);
 
 renderShiftBoard();
+renderImportedShifts();
 renderTipEntries();
 setActiveScheduleView("my-shifts");
 openCrewShift(
