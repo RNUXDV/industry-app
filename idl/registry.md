@@ -45,6 +45,30 @@ Larger product experiences composed from reusable components and interaction pat
 
 ---
 
+## Catch to My Shifts Workflow
+
+### Status
+Implemented
+
+### Flow
+Catch Board
+→ Interest
+→ Selected
+→ Confirmed
+→ Added to My Shifts
+
+### Behavior
+- Confirmed catches appear alongside imported shifts.
+- Confirmed catches use the label `Confirmed catch`.
+- My Shifts re-renders whenever the view opens.
+- Dashboard and bottom navigation show the same stored shift state.
+- Missing station, manager, and notes fields use fallback copy instead of displaying `undefined`.
+
+### Data
+- Shift records are read from the shared shifts store.
+- Catch responses are read from `industry-v2-shift-responses`.
+- Confirmed responses are merged into the My Shifts list.
+
 ## Registry Rules
 
 - Add components only when the product needs them.
