@@ -74,6 +74,22 @@ const profileRoleSummary = document.querySelector("#profile-role-summary");
 const profileNeighborhoodSummary = document.querySelector(
   "#profile-neighborhood-summary",
 );
+
+const shiftDetailsTime = document.querySelector("#shift-details-time");
+const shiftDetailsRole = document.querySelector("#shift-details-role");
+const shiftDetailsWorkplace = document.querySelector(
+  "#shift-details-workplace",
+);
+const shiftDetailsManager = document.querySelector("#shift-details-manager");
+const shiftDetailsStatus = document.querySelector("#shift-details-status");
+const shiftDetailsNotes = document.querySelector("#shift-details-notes");
+const shiftDetailsCrewButton = document.querySelector(
+  "#shift-details-crew-button",
+);
+const shiftDetailsReleaseButton = document.querySelector(
+  "#shift-details-release-button",
+);
+
 const profileGoalSummary = document.querySelector("#profile-goal-summary");
 const mockPreviewButtons = document.querySelectorAll(".mock-preview-button");
 
@@ -275,8 +291,8 @@ let activeTipEntryId = "";
 
 function setActiveScheduleView(viewName) {
   if (viewName === "my-shifts") {
-  renderImportedShifts();
-}
+    renderImportedShifts();
+  }
   if (scheduleHub) {
     scheduleHub.classList.add("hidden-panel");
   }
@@ -297,9 +313,13 @@ scheduleViewCards.forEach((card) => {
   const openScheduleView = () => {
     setActiveScheduleView(card.dataset.scheduleView);
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      });
     });
   };
 
@@ -785,6 +805,39 @@ function renderPresenceCard(worker, workerIndex, shiftId) {
             </div>
         </div>
     `;
+}
+
+function openShiftDetails(shift) {
+  if (!shift) {
+    return;
+  }
+
+  const responses = getShiftResponses();
+  const response = responses[shift.id];
+
+  const status = response?.confirmed
+    ? "Confirmed Catch"
+    : shift.status || "Scheduled";
+
+  shiftDetailsTime.textContent = `${shift.day} · ${shift.time}`;
+  shiftDetailsRole.textContent = shift.role || "Role not provided";
+  shiftDetailsWorkplace.textContent =
+    shift.workplace || "Workplace not provided";
+  shiftDetailsManager.textContent = shift.manager || "Manager not provided";
+  shiftDetailsStatus.textContent = status;
+  shiftDetailsNotes.textContent =
+    shift.notes || shift.note || "No notes provided.";
+
+  shiftDetailsCrewButton.dataset.shiftId = shift.id;
+  shiftDetailsReleaseButton.dataset.shiftId = shift.id;
+
+  setActiveSection("schedule");
+  setActiveScheduleView("shift-details");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
 }
 
 function renderShiftBoard() {
@@ -1689,13 +1742,18 @@ function renderImportedShifts() {
 <p>${notes}</p>
       </div>
       <div class="shift-action-row">
+    <button
+  class="action-button imported-details-button"
+  type="button"
+  data-shift-id="${shift.id}"
+>
+  View details
+</button>  
   <button class="action-button imported-action-button" type="button" data-shift-id="${shift.id}" data-action="release">
     Release shift
   </button>
   
-  <button class="action-button secondary-action imported-crew-button" type="button" data-shift-id="${shift.id}">
-    View shift crew
-  </button>
+  
 </div>
       ${releasePrompt}
      
@@ -1715,25 +1773,19 @@ function renderImportedShifts() {
     });
   });
 
-  document.querySelectorAll(".imported-crew-button").forEach((button) => {
+  document.querySelectorAll(".imported-details-button").forEach((button) => {
     button.addEventListener("click", () => {
-      const shift = importedScheduleShifts.find(
-        (item) => item.id === button.dataset.shiftId,
-      );
+      const shiftId = button.dataset.shiftId;
+
+      const shift =
+        myShifts.find((item) => item.id === shiftId) ||
+        getAllShifts().find((item) => item.id === shiftId);
 
       if (!shift) {
         return;
       }
 
-      openCrewShift({
-        id: shift.id,
-        workplace: shift.workplace,
-        role: shift.role,
-        day: shift.day,
-        time: shift.time,
-        postType: "Imported shift",
-        status: "Scheduled",
-      });
+      openShiftDetails(shift);
     });
   });
 

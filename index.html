@@ -540,52 +540,54 @@
 
   <div class="panel-heading">
   <p class="section-label">Upcoming Shift</p>
-  <h3>Today · 5:00 PM – Close</h3>
+  <h3 id="shift-details-time">Today · 5:00 PM – Close</h3>
 </div>
 
 <div class="shift-detail-list">
   <div class="shift-detail-group">
     <span>Role</span>
-    <strong>Server</strong>
+    <strong id="shift-details-role">Server</strong>
   </div>
 
   <div class="shift-detail-group">
     <span>Workplace</span>
-    <strong>Departure Lounge</strong>
+    <strong id="shift-details-workplace">Departure Lounge</strong>
   </div>
 
   <div class="shift-detail-group">
     <span>Manager</span>
-    <strong>Dana</strong>
+    <strong id="shift-details-manager">Dana</strong>
   </div>
 
   <div class="shift-detail-group">
     <span>Status</span>
-    <strong>Confirmed</strong>
+    <strong id="shift-details-status">Confirmed</strong>
   </div>
 </div>
 
 <div class="shift-notes-panel">
   <span>Manager Notes</span>
-  <p>No notes provided.</p>
+  <p id="shift-details-notes">No notes provided.</p>
 </div>
 
 <div class="shift-detail-actions">
   <button
-    class="action-button"
-    type="button"
-    data-schedule-view="shift-crew"
-  >
-    View Crew
-  </button>
+  id="shift-details-crew-button"
+  class="action-button"
+  type="button"
+  data-schedule-view="shift-crew"
+>
+  View Crew
+</button>
 
-  <button
-    class="action-button secondary-action"
-    type="button"
-    data-schedule-view="need-coverage"
-  >
-    Release Shift
-  </button>
+<button
+  id="shift-details-release-button"
+  class="action-button secondary-action"
+  type="button"
+  data-schedule-view="need-coverage"
+>
+  Release Shift
+</button>
 </div>
   </section>
 
