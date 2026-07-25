@@ -69,6 +69,37 @@ Catch Board
 - Catch responses are read from `industry-v2-shift-responses`.
 - Confirmed responses are merged into the My Shifts list.
 
+---
+
+## Shift Command Card Workflow
+
+### Status
+Implemented
+
+### Flow
+My Shifts
+→ Shift Command Card
+→ View Details
+→ Shift Details
+→ View Crew or Release Shift
+
+### Behavior
+- Each shift card uses `View details` as the primary management entry point.
+- Shift Details dynamically displays the selected shift.
+- Imported shifts and confirmed catches use the same detail workflow.
+- Shift time, role, workplace, manager, status, and notes update from the selected shift record.
+- Missing optional fields use fallback copy.
+- Crew and release actions are centralized inside Shift Details.
+- Duplicate `View shift crew` actions were removed from My Shifts cards.
+
+### Architecture
+- My Shifts acts as the shift navigation layer.
+- Shift Details acts as the operational control center.
+- `openShiftDetails(shift)` populates and opens the shared detail view.
+- Selected shift IDs are passed to the Crew and Release actions for future lifecycle development.
+
+---
+
 ## Registry Rules
 
 - Add components only when the product needs them.
