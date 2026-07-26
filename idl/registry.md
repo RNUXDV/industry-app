@@ -100,6 +100,79 @@ My Shifts
 
 ---
 
+# Industry Design Language Registry
+
+The Industry Design Language (IDL) is the single source of truth for reusable UI components, interaction patterns, and user workflows.
+
+Each document defines a specific part of the product and should be updated whenever new reusable systems are introduced.
+
+---
+
+# Documents
+
+## components.md
+
+Reusable interface components shared throughout Industry.
+
+Current Components
+
+- Status Pill
+- Avatar
+- Presence Card
+- Progress Rail
+
+---
+
+## flows.md
+
+Defines reusable user workflows and behavioral systems.
+
+Current Flows
+
+### Shift Transfer Flow
+
+Status: Defined (Implementation in Progress)
+
+Purpose
+
+- Release an entire scheduled shift.
+- Route the shift to either:
+  - The Catch Board (public)
+  - A specific coworker (private)
+- Define the complete lifecycle of a transferred shift.
+
+Key Concepts
+
+- Shift-centered workflow
+- Release
+- Catch
+- Direct Offer
+- Shift Lifecycle
+- Shift States
+- UX Rules
+- Language Standards
+
+---
+
+# Documentation Guidelines
+
+When adding new work:
+
+1. Build the feature.
+2. Identify reusable elements.
+3. Document reusable UI in `components.md`.
+4. Document reusable workflows in `flows.md`.
+5. Update this registry.
+6. Commit and push changes.
+
+---
+
+Last Updated
+
+Schedule V1 Milestone
+
+---
+
 ## Registry Rules
 
 - Add components only when the product needs them.
