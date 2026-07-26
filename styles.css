@@ -652,6 +652,10 @@ h1 {
   gap: 0.45rem;
 }
 
+.release-known-field {
+  display: none;
+}
+
 .form-field span {
   font-size: 0.82rem;
   font-weight: 700;

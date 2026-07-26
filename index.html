@@ -907,74 +907,44 @@
   ← Back to Shift Details
 </button>
             <div class="panel-heading">
-              <p class="section-label">Need Coverage</p>
-              <h3>Post to the right workplace crew</h3>
-              <p>
-                Choose the workplace first. Industry will post the request to
-                that workplace crew.
-              </p>
+              <p class="section-label">Release Shift</p>
+<h3>Post this shift to your workplace crew</h3>
+<p>
+  Review the shift information, choose a coverage type, and post the request to your workplace crew.
+</p>
             </div>
 
-            <section class="today-panel" aria-label="Post shift form">
+            <section class="today-panel" aria-label="Release shift form">
+              <div class="release-shift-summary" aria-label="Selected shift summary">
+  <p class="section-label">Selected Shift</p>
+
+  <h3 id="release-summary-workplace">Workplace</h3>
+
+  <div class="shift-meta">
+    <span id="release-summary-role">Role</span>
+    <span id="release-summary-day">Date</span>
+    <span id="release-summary-time">Time</span>
+  </div>
+</div>
               <div class="form-grid">
-                <label class="field-group" for="shift-workplace">
-                  <span class="field-label">Workplace</span>
-                  <select class="tip-input" id="shift-workplace">
-                    <option value="">Choose a workplace</option>
-                    <option value="Departure Lounge|Pearl District">
-                      Departure Lounge - Pearl District
-                    </option>
-                    <option value="Cafe Luna|SE Portland">
-                      Cafe Luna - SE Portland
-                    </option>
-                    <option value="Event Pool|Portland Metro">
-                      Event Pool - Portland Metro
-                    </option>
-                  </select>
-                </label>
+                
 
-                <label class="field-group" for="shift-role">
-                  <span class="field-label">Role</span>
-                  <select class="tip-input" id="shift-role">
-                    <option value="">Choose a role</option>
-                    <option>Server</option>
-                    <option>Bartender</option>
-                    <option>Host</option>
-                    <option>Line Cook</option>
-                    <option>Barista</option>
-                    <option>Support</option>
-                  </select>
-                </label>
+                
 
-                <label class="field-group" for="shift-day">
-                  <span class="field-label">Date</span>
-                  <input
-                    class="tip-input"
-                    id="shift-day"
-                    type="text"
-                    placeholder="Friday, July 17"
-                  />
-                </label>
+                
 
-                <label class="field-group" for="shift-time">
-                  <span class="field-label">Time</span>
-                  <input
-                    class="tip-input"
-                    id="shift-time"
-                    type="text"
-                    placeholder="4:00 PM - 10:30 PM"
-                  />
-                </label>
+                
 
                 <label class="field-group" for="shift-coverage-type">
-                  <span class="field-label">Coverage type</span>
-                  <select class="tip-input" id="shift-coverage-type">
-                    <option value="">Choose coverage type</option>
-                    <option>Release shift</option>
-                    <option>Request swap</option>
-                    <option>Offer pickup</option>
-                  </select>
-                </label>
+  <span class="field-label">How would you like to release it?</span>
+
+  <select class="tip-input" id="shift-coverage-type">
+    <option value="">Select release type</option>
+    <option>Entire shift</option>
+    <option>Running late</option>
+    <option>Leaving early</option>
+  </select>
+</label>
 
                 <div
                   class="today-panel workplace-preview hidden-panel"
@@ -995,7 +965,7 @@
                 id="save-shift-button"
                 type="button"
               >
-                Post shift
+                Release shift
               </button>
               <p
                 class="status-text"

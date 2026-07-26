@@ -75,6 +75,13 @@ const profileNeighborhoodSummary = document.querySelector(
   "#profile-neighborhood-summary",
 );
 
+const releaseSummaryWorkplace = document.querySelector(
+  "#release-summary-workplace",
+);
+const releaseSummaryRole = document.querySelector("#release-summary-role");
+const releaseSummaryDay = document.querySelector("#release-summary-day");
+const releaseSummaryTime = document.querySelector("#release-summary-time");
+
 const shiftDetailsTime = document.querySelector("#shift-details-time");
 const shiftDetailsRole = document.querySelector("#shift-details-role");
 const shiftDetailsWorkplace = document.querySelector(
@@ -807,6 +814,54 @@ function renderPresenceCard(worker, workerIndex, shiftId) {
     `;
 }
 
+function prefillReleaseForm(shift) {
+  if (!shift) {
+    return;
+  }
+
+  releaseSummaryWorkplace.textContent =
+    shift.workplace || "Workplace not provided";
+
+  releaseSummaryRole.textContent = shift.role || "Role not provided";
+
+  releaseSummaryDay.textContent = shift.day || "Date not provided";
+
+  releaseSummaryTime.textContent = shift.time || "Time not provided";
+
+  const workplaceOption = Array.from(shiftWorkplaceSelect.options).find(
+    (option) => {
+      const [workplaceName] = option.value.split("|");
+      return workplaceName === shift.workplace;
+    },
+  );
+
+  if (workplaceOption) {
+    shiftWorkplaceSelect.value = workplaceOption.value;
+  }
+
+  const shiftRoleSelect = document.querySelector("#shift-role");
+  const normalizedRole = shift.role?.toLowerCase() || "";
+
+  if (normalizedRole.includes("server")) {
+    shiftRoleSelect.value = "Server";
+  } else if (normalizedRole.includes("bartender")) {
+    shiftRoleSelect.value = "Bartender";
+  } else if (normalizedRole.includes("host")) {
+    shiftRoleSelect.value = "Host";
+  } else if (normalizedRole.includes("cook")) {
+    shiftRoleSelect.value = "Line Cook";
+  } else if (normalizedRole.includes("barista")) {
+    shiftRoleSelect.value = "Barista";
+  } else if (normalizedRole.includes("support")) {
+    shiftRoleSelect.value = "Support";
+  } else {
+    shiftRoleSelect.value = "";
+  }
+  document.querySelector("#shift-day").value = shift.day || "";
+  document.querySelector("#shift-time").value = shift.time || "";
+  document.querySelector("#shift-coverage-type").value = "";
+}
+
 function openShiftDetails(shift) {
   if (!shift) {
     return;
@@ -837,6 +892,29 @@ function openShiftDetails(shift) {
   window.scrollTo({
     top: 0,
     behavior: "smooth",
+  });
+}
+
+if (shiftDetailsReleaseButton) {
+  shiftDetailsReleaseButton.addEventListener("click", () => {
+    const shiftId = shiftDetailsReleaseButton.dataset.shiftId;
+
+    const shift =
+      importedScheduleShifts.find((item) => item.id === shiftId) ||
+      getAllShifts().find((item) => item.id === shiftId);
+
+    if (!shift) {
+      return;
+    }
+
+    setActiveSection("schedule");
+    setActiveScheduleView("need-coverage");
+    prefillReleaseForm(shift);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "auto",
+    });
   });
 }
 
@@ -1748,10 +1826,7 @@ function renderImportedShifts() {
   data-shift-id="${shift.id}"
 >
   View details
-</button>  
-  <button class="action-button imported-action-button" type="button" data-shift-id="${shift.id}" data-action="release">
-    Release shift
-  </button>
+
   
   
 </div>
