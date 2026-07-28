@@ -133,6 +133,10 @@ const tipMonthTotal = document.querySelector("#tip-month-total");
 const tipBestShiftTotal = document.querySelector("#tip-best-shift-total");
 const tipBestShiftDetail = document.querySelector("#tip-best-shift-detail");
 
+const releaseToBoardButton = document.querySelector("#release-to-board-button");
+
+const directReleaseButton = document.querySelector("#direct-release-button");
+
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
 const shiftResponseStorageKey = "industry-v2-shift-responses";
@@ -293,6 +297,7 @@ const workplaceCrews = {
 
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
+let selectedReleaseShift = null;
 let activeCrewShiftId = "";
 let activeTipEntryId = "";
 
@@ -436,6 +441,48 @@ navCards.forEach((card) => {
   });
 });
 
+/* Shift transfer actions */
+
+if (releaseToBoardButton) {
+  releaseToBoardButton.addEventListener("click", () => {
+    if (!selectedReleaseShift) {
+      return;
+    }
+
+    const storedOriginalShift = findShiftById(selectedReleaseShift.id);
+
+    const updatedOriginalShift = {
+      ...storedOriginalShift,
+      ...selectedReleaseShift,
+      owner: "current-user",
+      source: storedOriginalShift?.source || "imported",
+      status: "Pending Coverage",
+    };
+
+    updateShift(updatedOriginalShift);
+    selectedReleaseShift = updatedOriginalShift;
+
+    const { id, status, owner, source, ...shiftData } = selectedReleaseShift;
+
+    createBoardPost({
+      ...shiftData,
+      sourceShiftId: id,
+      source: "catch-board",
+      requestType: "release",
+    });
+
+    renderImportedShifts();
+
+    console.log("Shift Store After Release:", getShiftStore());
+  });
+}
+
+if (directReleaseButton) {
+  directReleaseButton.addEventListener("click", () => {
+    console.log("Send Directly to Coworker");
+  });
+}
+
 /* Dashboard direct links */
 
 dashboardLinks.forEach((link) => {
@@ -535,9 +582,56 @@ function getShiftResponses() {
   return readLocalJson(shiftResponseStorageKey, {});
 }
 
+function saveShiftResponses(responses) {
+  saveLocalJson(shiftResponseStorageKey, responses);
+}
+
 function getAllShifts() {
-  const savedShifts = readLocalJson(shiftsStorageKey, []);
+  const savedShifts = getShiftStore();
   return [...savedShifts, ...sampleShifts];
+}
+
+function getShiftStore() {
+  return readLocalJson(shiftsStorageKey, []);
+}
+
+function saveShiftStore(shifts) {
+  saveLocalJson(shiftsStorageKey, shifts);
+}
+
+function initializeShiftStore() {
+  const savedShifts = getShiftStore();
+
+  if (savedShifts.length > 0) {
+    return;
+  }
+
+  const initializedShifts = importedScheduleShifts.map((shift) => ({
+    ...shift,
+    owner: "current-user",
+    source: "imported",
+    status: "Scheduled",
+  }));
+
+  saveShiftStore(initializedShifts);
+}
+
+function findShiftById(shiftId) {
+  return getShiftStore().find((shift) => shift.id === shiftId);
+}
+
+function updateShift(updatedShift) {
+  const shifts = getShiftStore();
+
+  const index = shifts.findIndex((shift) => shift.id === updatedShift.id);
+
+  if (index === -1) {
+    return;
+  }
+
+  shifts[index] = updatedShift;
+
+  saveShiftStore(shifts);
 }
 
 function getBoardButtonLabel(shift) {
@@ -720,7 +814,7 @@ function openCrewShift(shift, shouldNavigate = true) {
 }
 
 function createBoardPost(postData) {
-  const savedShifts = readLocalJson(shiftsStorageKey, []);
+  const savedShifts = getShiftStore();
   const newShift = {
     id: `shift-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
     status: "Open",
@@ -731,7 +825,7 @@ function createBoardPost(postData) {
 
   savedShifts.unshift(newShift);
 
-  saveLocalJson(shiftsStorageKey, savedShifts);
+  saveShiftStore(savedShifts);
   renderShiftBoard();
   shiftBoardStatus.textContent = "Added to Catch Board.";
   setActiveSection("schedule");
@@ -819,6 +913,8 @@ function prefillReleaseForm(shift) {
     return;
   }
 
+  selectedReleaseShift = shift;
+
   releaseSummaryWorkplace.textContent =
     shift.workplace || "Workplace not provided";
 
@@ -827,39 +923,6 @@ function prefillReleaseForm(shift) {
   releaseSummaryDay.textContent = shift.day || "Date not provided";
 
   releaseSummaryTime.textContent = shift.time || "Time not provided";
-
-  const workplaceOption = Array.from(shiftWorkplaceSelect.options).find(
-    (option) => {
-      const [workplaceName] = option.value.split("|");
-      return workplaceName === shift.workplace;
-    },
-  );
-
-  if (workplaceOption) {
-    shiftWorkplaceSelect.value = workplaceOption.value;
-  }
-
-  const shiftRoleSelect = document.querySelector("#shift-role");
-  const normalizedRole = shift.role?.toLowerCase() || "";
-
-  if (normalizedRole.includes("server")) {
-    shiftRoleSelect.value = "Server";
-  } else if (normalizedRole.includes("bartender")) {
-    shiftRoleSelect.value = "Bartender";
-  } else if (normalizedRole.includes("host")) {
-    shiftRoleSelect.value = "Host";
-  } else if (normalizedRole.includes("cook")) {
-    shiftRoleSelect.value = "Line Cook";
-  } else if (normalizedRole.includes("barista")) {
-    shiftRoleSelect.value = "Barista";
-  } else if (normalizedRole.includes("support")) {
-    shiftRoleSelect.value = "Support";
-  } else {
-    shiftRoleSelect.value = "";
-  }
-  document.querySelector("#shift-day").value = shift.day || "";
-  document.querySelector("#shift-time").value = shift.time || "";
-  document.querySelector("#shift-coverage-type").value = "";
 }
 
 function openShiftDetails(shift) {
@@ -1211,7 +1274,7 @@ function renderShiftBoard() {
         status: "Open",
       };
 
-      saveLocalJson(shiftResponseStorageKey, responses);
+      saveShiftResponses(responses);
       renderShiftBoard();
       shiftBoardStatus.textContent = "Coworker response added on Catch Board.";
     });
@@ -1240,7 +1303,7 @@ function renderShiftBoard() {
         status: "Pending confirmation",
       };
 
-      saveLocalJson(shiftResponseStorageKey, responses);
+      saveShiftResponses(responses);
       renderShiftBoard();
       shiftBoardStatus.textContent = "Status updated to Pending confirmation.";
     });
@@ -1274,7 +1337,7 @@ function renderShiftBoard() {
         status: "Pending confirmation",
       };
 
-      saveLocalJson(shiftResponseStorageKey, responses);
+      saveShiftResponses(responses);
       renderShiftBoard();
 
       shiftBoardStatus.textContent = `${updatedWorkers[workerIndex].name} selected for coverage.`;
@@ -1317,7 +1380,7 @@ function renderShiftBoard() {
         status: "Open",
       };
 
-      saveLocalJson(shiftResponseStorageKey, responses);
+      saveShiftResponses(responses);
       renderShiftBoard();
       shiftBoardStatus.textContent = "Status returned to Open.";
     });
@@ -1772,8 +1835,11 @@ function renderImportedShifts() {
     return responses[shift.id]?.confirmed;
   });
 
-  const myShifts = [...importedScheduleShifts, ...confirmedCatchShifts];
+  const scheduledShifts = getShiftStore().filter((shift) => {
+    return shift.owner === "current-user";
+  });
 
+  const myShifts = [...scheduledShifts, ...confirmedCatchShifts];
   myShifts.forEach((shift) => {
     const isReleaseActive =
       activeScheduleAction?.shiftId === shift.id &&
@@ -1794,8 +1860,9 @@ function renderImportedShifts() {
 
     const shiftSourceLabel = isConfirmedCatch
       ? "Confirmed catch"
-      : "Imported shift";
-
+      : shift.status === "Pending Coverage"
+        ? "Pending Coverage"
+        : "Imported shift";
     const station = shift.station || "Station not provided";
     const manager = shift.manager || "Manager not provided";
     const notes = shift.notes || shift.note || "No notes provided.";
@@ -2064,6 +2131,8 @@ applyTheme(savedTheme);
 
 const savedProfile = readLocalJson(profileStorageKey, {});
 updateProfileSummary(savedProfile);
+
+initializeShiftStore();
 
 renderShiftBoard();
 renderImportedShifts();

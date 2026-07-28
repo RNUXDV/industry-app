@@ -291,66 +291,64 @@ h1 {
 }
 
 .schedule-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    cursor: pointer;
-    transition:
-        transform 0.15s ease,
-        border-color 0.15s ease;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .schedule-card:hover {
-    transform: translateY(-2px);
-    border-color: var(--accent);
+  transform: translateY(-2px);
+  border-color: var(--accent);
 }
 
 .schedule-card:active {
-    transform: scale(0.985);
+  transform: scale(0.985);
 }
 
 .schedule-card:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 4px;
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
 }
 
-
-
 .schedule-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .schedule-day {
-    font-weight: 700;
-    font-size: 0.95rem;
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
 .schedule-date {
-    opacity: .7;
-    font-size: .9rem;
+  opacity: 0.7;
+  font-size: 0.9rem;
 }
 
 .schedule-card-time {
-    font-size: 1.1rem;
-    font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .schedule-card-role {
-    font-size: .95rem;
+  font-size: 0.95rem;
 }
 
 .schedule-card-workplace {
-    opacity: .75;
+  opacity: 0.75;
 }
 
 .schedule-card-button {
-    margin-top: 8px;
+  margin-top: 8px;
 }
 
 .schedule-card-list {
@@ -652,8 +650,57 @@ h1 {
   gap: 0.45rem;
 }
 
+.release-summary-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
+.release-summary-meta span:not(:last-child)::after {
+  content: "•";
+  margin-left: 0.75rem;
+}
+
 .release-known-field {
   display: none;
+}
+
+.release-actions {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.release-actions .action-button,
+.release-actions .secondary-action {
+    width: 100%;
+}
+
+.release-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.25rem 0;
+    color: var(--muted-text);
+    font-size: 0.95rem;
+}
+
+.release-divider::before,
+.release-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.release-divider span {
+    white-space: nowrap;
+}
+
+#direct-release-button {
+    min-height: 3.5rem;
 }
 
 .form-field span {

@@ -907,20 +907,16 @@
   ← Back to Shift Details
 </button>
             <div class="panel-heading">
-              <p class="section-label">Release Shift</p>
-<h3>Post this shift to your workplace crew</h3>
-<p>
-  Review the shift information, choose a coverage type, and post the request to your workplace crew.
-</p>
-            </div>
-
+    <p class="section-label">Release Shift</p>
+    <h3>Choose where this shift goes</h3>
+</div>
             <section class="today-panel" aria-label="Release shift form">
               <div class="release-shift-summary" aria-label="Selected shift summary">
   <p class="section-label">Selected Shift</p>
 
   <h3 id="release-summary-workplace">Workplace</h3>
 
-  <div class="shift-meta">
+  <div class="release-summary-meta">
     <span id="release-summary-role">Role</span>
     <span id="release-summary-day">Date</span>
     <span id="release-summary-time">Time</span>
@@ -935,43 +931,33 @@
 
                 
 
-                <label class="field-group" for="shift-coverage-type">
-  <span class="field-label">How would you like to release it?</span>
+                <div class="release-actions">
+    <button
+        class="action-button"
+        id="release-to-board-button"
+        type="button"
+    >
+        Release to Catch Board
+    </button>
 
-  <select class="tip-input" id="shift-coverage-type">
-    <option value="">Select release type</option>
-    <option>Entire shift</option>
-    <option>Running late</option>
-    <option>Leaving early</option>
-  </select>
-</label>
+    <div class="release-divider">
+        <span>Already have someone?</span>
+    </div>
 
-                <div
-                  class="today-panel workplace-preview hidden-panel"
-                  id="workplace-preview-panel"
-                >
-                  <p class="status-text" id="workplace-preview-message">
-                    Posting to: Departure Lounge crew
-                  </p>
-                  <p class="status-text">Visibility: Workplace crew only</p>
-                  <p class="status-text" id="workplace-preview-neighborhood">
-                    Neighborhood: Pearl District
-                  </p>
-                </div>
-              </div>
+    <button
+        class="secondary-action"
+        id="direct-release-button"
+        type="button"
+    >
+        Send Directly to Coworker
+    </button>
 
-              <button
-                class="action-button"
-                id="save-shift-button"
-                type="button"
-              >
-                Release shift
-              </button>
-              <p
-                class="status-text"
-                id="post-shift-status"
-                aria-live="polite"
-              ></p>
+    <p
+        class="status-text"
+        id="post-shift-status"
+        aria-live="polite"
+    ></p>
+</div>
             </section>
             </section>
           
