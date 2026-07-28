@@ -167,6 +167,33 @@ When adding new work:
 
 ---
 
+## PAT-001 — Release Workflow State Synchronization
+
+**Status:** Complete
+
+**Description**
+
+Established the first synchronized workflow between My Shifts and the Catch Board.
+
+A released shift now creates a public Catch Board request while preserving the worker's original shift inside My Shifts. Both records remain synchronized through the Shift Store.
+
+**Related**
+
+- Flow: Release Shift
+- Component: Catch Board
+- Component: My Shifts
+- Principle: Single Source of Truth
+- Foundation: State Management
+- Principle: Synchronized State
+
+---
+Last Updated: 2026-07-28
+Sprint: 002
+Status: Active
+---
+
+
+
 Last Updated
 
 Schedule V1 Milestone

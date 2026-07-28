@@ -91,3 +91,37 @@ Interfaces should feel lightweight.
 Fast interactions build trust.
 
 Every animation, component, and dependency should justify its cost.
+
+---
+
+# Foundation: State Management
+
+Industry treats application state as the source of truth.
+
+User actions update application state first.
+
+The interface reflects application state instead of creating it.
+
+Every workflow follows this sequence:
+
+User Action
+
+↓
+
+Update Shift Store
+
+↓
+
+Persist Data
+
+↓
+
+Render Updated Interface
+
+No screen should maintain independent state that conflicts with the Shift Store.
+
+The Shift Store is responsible for ownership, status, and workflow progression.
+---
+Last Updated: 2026-07-28
+Sprint: 002
+Status: Active

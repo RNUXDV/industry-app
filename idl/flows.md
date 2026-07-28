@@ -36,3 +36,71 @@ Shift Details
     ↓
 Release Shift
 ```
+
+# Release Shift Flow
+
+## Goal
+
+Allow a worker to request shift coverage while maintaining ownership until the transfer is complete.
+
+---
+
+## Flow
+
+Scheduled Shift
+
+↓
+
+Release Shift
+
+↓
+
+Update Original Shift
+
+owner = current-user
+status = Pending Coverage
+
+↓
+
+Create Catch Board Request
+
+source = catch-board
+status = Open
+
+↓
+
+Render My Shifts
+
+↓
+
+Render Catch Board
+
+---
+
+## Result
+
+Original Shift
+
+- remains owned by worker
+- visible in My Shifts
+- status = Pending Coverage
+
+Catch Board Request
+
+- visible to coworkers
+- status = Open
+- linked to original shift
+
+---
+
+## Future Extensions
+
+- Coworker Interest
+- Shift Claim
+- Manager Approval
+- Ownership Transfer
+- Notifications
+---
+Last Updated: 2026-07-28
+Sprint: 002
+Status: Active

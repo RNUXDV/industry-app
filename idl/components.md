@@ -204,3 +204,52 @@ It provides a concise summary of a shift and serves as the entry point into the 
 ### Interaction
 
 Selecting a Schedule Card opens the Shift Details experience.
+
+## Component: My Shifts
+- Display worker-owned shifts as the authoritative schedule.
+
+### Purpose
+
+The worker's personal schedule and the authoritative view of shift ownership.
+
+### Responsibilities
+
+- Display owned shifts
+- Display current shift status
+- Maintain ownership throughout the shift lifecycle
+- Reflect state changes immediately after user actions
+
+### Supported States
+
+- Scheduled
+- Pending Coverage
+- Pending Approval
+- Transferred
+- Completed
+
+---
+
+## Component: Catch Board
+
+### Purpose
+
+Public workplace board for available shifts.
+
+### Responsibilities
+
+- Display Open Release Requests
+- Display Open Pickup Requests
+- Allow coworkers to express interest
+- Never replace the worker's original shift
+
+### Data Ownership
+
+Catch Board requests are independent records linked to an original shift through:
+
+- sourceShiftId
+- requestType
+- status
+---
+Last Updated: 2026-07-28
+Sprint: 002
+Status: Active

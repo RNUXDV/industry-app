@@ -97,3 +97,58 @@ Industry measures success by helping people accomplish meaningful work and build
 Attention is not the product.
 
 Useful connection, clarity, and trust are.
+
+---
+
+# Principle: Single Source of Truth
+
+Every shift exists as one authoritative record.
+
+Additional views should reference that record rather than replacing it.
+
+---
+
+# Principle: Separation of Concerns
+
+A worker's schedule and workplace requests are different concepts.
+
+My Shifts represents ownership.
+
+Catch Board represents availability.
+
+Each maintains its own responsibilities while remaining linked.
+
+---
+
+# Principle: Synchronized State
+
+A single user action may affect multiple areas of Industry.
+
+When state changes:
+
+- Update data
+- Persist data
+- Refresh affected interfaces
+
+Every view should present the same application state regardless of navigation path.
+
+---
+
+# Principle: State Before Interface
+
+Behavior is designed before presentation.
+
+Interfaces should communicate application state rather than define it.
+
+---
+
+# Principle: Data Before Display
+
+Application data should always be updated before interface rendering.
+
+Interfaces are reflections of application state, not independent sources of truth.
+
+---
+Last Updated: 2026-07-28
+Sprint: 002
+Status: Active
