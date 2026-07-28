@@ -948,6 +948,13 @@ function openShiftDetails(shift) {
 
   shiftDetailsCrewButton.dataset.shiftId = shift.id;
   shiftDetailsReleaseButton.dataset.shiftId = shift.id;
+  const releaseLocked =
+    status === "Pending Coverage" ||
+    status === "Pending Approval" ||
+    status === "Confirmed Catch";
+
+  shiftDetailsReleaseButton.hidden = releaseLocked;
+  shiftDetailsReleaseButton.disabled = releaseLocked;
 
   setActiveSection("schedule");
   setActiveScheduleView("shift-details");
@@ -1004,23 +1011,55 @@ function renderShiftBoard() {
     const displayedStatus = getDisplayedShiftStatus(shift, responses);
     const interestedCount = responses[shift.id]?.interestedCount || 1;
     const interestedWorkers = responses[shift.id]?.interestedWorkers || [];
+    const confirmedWorkerId = responses[shift.id]?.confirmedWorkerId;
+
+    const confirmedWorker = interestedWorkers.find(
+      (worker) => worker.id === confirmedWorkerId,
+    );
+
+    const hasInterest = Boolean(responses[shift.id]?.interested);
+    const isAccepted = Boolean(responses[shift.id]?.accepted);
+    const catchTimeline = getCatchTimeline(shift, responses);
+    const isConfirmed = Boolean(responses[shift.id]?.confirmed);
 
     const interestedWorkersMarkup = interestedWorkers.length
-      ? `
-        <section class="interested-workers">
-            <h4 class="interested-workers-heading">
-                Interested coworkers
-            </h4>
+      ? isConfirmed && confirmedWorker
+        ? `
+      <section class="interested-workers confirmed-worker-summary">
+        <h4 class="interested-workers-heading">Shift transferred to</h4>
 
-            <div class="interested-workers-list">
-                ${interestedWorkers
+        <div class="interested-workers-list">
+          ${renderPresenceCard(
+            {
+              ...confirmedWorker,
+              selected: true,
+            },
+            interestedWorkers.findIndex(
+              (worker) => worker.id === confirmedWorker.id,
+            ),
+            shift.id,
+          )}
+        </div>
 
-                  .map((worker, workerIndex) =>
-                    renderPresenceCard(worker, workerIndex, shift.id),
-                  )
-                  .join("")}     
-            </div>
-        </section>
+        <p class="shift-helper-text">
+          Transfer Complete.
+        </p>
+      </section>
+    `
+        : `
+      <section class="interested-workers">
+        <h4 class="interested-workers-heading">
+          Interested coworkers
+        </h4>
+
+        <div class="interested-workers-list">
+          ${interestedWorkers
+            .map((worker, workerIndex) =>
+              renderPresenceCard(worker, workerIndex, shift.id),
+            )
+            .join("")}
+        </div>
+      </section>
     `
       : "";
 
@@ -1028,10 +1067,7 @@ function renderShiftBoard() {
       interestedCount === 1
         ? "1 coworker is interested."
         : `${interestedCount} coworkers are interested.`;
-    const hasInterest = Boolean(responses[shift.id]?.interested);
-    const isAccepted = Boolean(responses[shift.id]?.accepted);
-    const catchTimeline = getCatchTimeline(shift, responses);
-    const isConfirmed = Boolean(responses[shift.id]?.confirmed);
+
     const catchTimelineMarkup = catchTimeline
       .map(
         (event, index) => `
@@ -1051,10 +1087,13 @@ function renderShiftBoard() {
     `,
       )
       .join("");
-    const boardButtonLabel = hasInterest
-      ? "Interest sent"
-      : getBoardButtonLabel(shift);
-
+    const boardButtonLabel = isConfirmed
+      ? "Coverage confirmed"
+      : isAccepted
+        ? "Waiting for approval"
+        : hasInterest
+          ? "Interest sent"
+          : getBoardButtonLabel(shift);
     const responsePanel = hasInterest
       ? `
         <div class="response-panel">
@@ -1209,7 +1248,7 @@ function renderShiftBoard() {
 </div>
 
 <p>Shared with ${shift.postedTo || "Workplace crew"}</p>
-<p>${shift.note}</p>
+<p>${shift.notes || shift.note || "No additional notes."}</p>
 </div>
       <div class="shift-action-row">
         <button class="action-button board-action-button" type="button" data-shift-id="${shift.id}"
@@ -1217,9 +1256,19 @@ function renderShiftBoard() {
         >
           ${boardButtonLabel}
         </button>
-        <button class="action-button secondary-action view-crew-button" type="button" data-shift-id="${shift.id}">
-          View shift crew
-        </button>
+        ${
+          isConfirmed
+            ? ""
+            : `
+      <button
+        class="action-button secondary-action view-crew-button"
+        type="button"
+        data-shift-id="${shift.id}"
+      >
+        View shift crew
+      </button>
+    `
+        }
       </div>
       ${responsePanel}
     `;
@@ -1274,9 +1323,58 @@ function renderShiftBoard() {
         status: "Open",
       };
 
+      const caughtByWorker = {
+        id: "worker-maya",
+        name: "Maya Chen",
+        role: "Server",
+      };
+
+      responses[shiftId] = {
+        ...responses[shiftId],
+        accepted: true,
+        acceptedAt: getCatchEventTime(),
+        status: "Pending Approval",
+        caughtByWorkerId: caughtByWorker.id,
+        caughtByWorkerName: caughtByWorker.name,
+      };
+
+      const boardPost = findShiftById(shiftId);
+      console.log("Caught board post:", boardPost);
+      console.log("Linked source shift ID:", boardPost?.sourceShiftId);
+
+      if (boardPost) {
+        const updatedBoardPost = {
+          ...boardPost,
+          status: "Pending Approval",
+          caughtByWorkerId: caughtByWorker.id,
+          caughtByWorkerName: caughtByWorker.name,
+          caughtAt: getCatchEventTime(),
+        };
+
+        updateShift(updatedBoardPost);
+
+        if (boardPost.sourceShiftId) {
+          const originalShift = findShiftById(boardPost.sourceShiftId);
+
+          console.log("Linked original shift:", originalShift);
+          if (originalShift) {
+            const updatedOriginalShift = {
+              ...originalShift,
+              status: "Pending Approval",
+              pendingWorkerId: caughtByWorker.id,
+              pendingWorkerName: caughtByWorker.name,
+            };
+
+            updateShift(updatedOriginalShift);
+          }
+        }
+      }
+
       saveShiftResponses(responses);
       renderShiftBoard();
-      shiftBoardStatus.textContent = "Coworker response added on Catch Board.";
+      renderImportedShifts();
+
+      shiftBoardStatus.textContent = "Shift caught. Waiting for approval.";
     });
   });
 
@@ -1355,17 +1453,68 @@ function renderShiftBoard() {
 
   document.querySelectorAll(".manager-approve-button").forEach((button) => {
     button.addEventListener("click", () => {
+      const responses = getShiftResponses();
       const shiftId = button.dataset.shiftId;
+      const currentResponse = responses[shiftId] || {};
+
+      const selectedWorker = currentResponse.interestedWorkers?.find(
+        (worker) => worker.selected,
+      ) || {
+        id: currentResponse.caughtByWorkerId || "worker-maya",
+        name: currentResponse.caughtByWorkerName || "Maya Chen",
+        role: "Server",
+      };
 
       responses[shiftId] = {
-        ...(responses[shiftId] || {}),
+        ...currentResponse,
+        accepted: true,
         confirmed: true,
         confirmedAt: getCatchEventTime(),
         status: "Confirmed",
+        confirmedWorkerId: selectedWorker.id,
+        confirmedWorkerName: selectedWorker.name,
       };
 
-      saveLocalJson("industry-v2-shift-responses", responses);
+      const boardPost = findShiftById(shiftId);
+
+      if (boardPost) {
+        const updatedBoardPost = {
+          ...boardPost,
+          status: "Confirmed",
+          approvedAt: getCatchEventTime(),
+          confirmedWorkerId: selectedWorker.id,
+          confirmedWorkerName: selectedWorker.name,
+        };
+
+        updateShift(updatedBoardPost);
+
+        if (boardPost.sourceShiftId) {
+          const originalShift = findShiftById(boardPost.sourceShiftId);
+
+          if (originalShift) {
+            const transferredShift = {
+              ...originalShift,
+              previousOwner: originalShift.owner,
+              owner: selectedWorker.id,
+              ownerName: selectedWorker.name,
+              status: "Transferred",
+              transferredAt: getCatchEventTime(),
+              transferredFromWorkerId: "current-user",
+            };
+
+            delete transferredShift.pendingWorkerId;
+            delete transferredShift.pendingWorkerName;
+
+            updateShift(transferredShift);
+          }
+        }
+      }
+
+      saveShiftResponses(responses);
       renderShiftBoard();
+      renderImportedShifts();
+
+      shiftBoardStatus.textContent = `Coverage approved. Shift transferred to ${selectedWorker.name}.`;
     });
   });
 
@@ -1831,14 +1980,17 @@ function renderImportedShifts() {
 
   const responses = getShiftResponses();
 
-  const confirmedCatchShifts = getAllShifts().filter((shift) => {
-    return responses[shift.id]?.confirmed;
+  const confirmedCatchShifts = getShiftStore().filter((shift) => {
+    return (
+      shift.owner === "current-user" &&
+      shift.status === "Transferred" &&
+      shift.previousOwner !== "current-user"
+    );
   });
 
   const scheduledShifts = getShiftStore().filter((shift) => {
-    return shift.owner === "current-user";
+    return shift.owner === "current-user" && shift.status !== "Transferred";
   });
-
   const myShifts = [...scheduledShifts, ...confirmedCatchShifts];
   myShifts.forEach((shift) => {
     const isReleaseActive =
@@ -1860,9 +2012,11 @@ function renderImportedShifts() {
 
     const shiftSourceLabel = isConfirmedCatch
       ? "Confirmed catch"
-      : shift.status === "Pending Coverage"
-        ? "Pending Coverage"
-        : "Imported shift";
+      : shift.status === "Pending Approval"
+        ? "Pending Approval"
+        : shift.status === "Pending Coverage"
+          ? "Pending Coverage"
+          : "Imported shift";
     const station = shift.station || "Station not provided";
     const manager = shift.manager || "Manager not provided";
     const notes = shift.notes || shift.note || "No notes provided.";
