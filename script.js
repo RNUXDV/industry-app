@@ -295,6 +295,11 @@ const workplaceCrews = {
   },
 };
 
+const CURRENT_USER = {
+  id: "worker-maya",
+  name: "Maya Chen",
+};
+
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let selectedReleaseShift = null;
@@ -454,7 +459,7 @@ if (releaseToBoardButton) {
     const updatedOriginalShift = {
       ...storedOriginalShift,
       ...selectedReleaseShift,
-      owner: "current-user",
+      owner: CURRENT_USER.id,
       source: storedOriginalShift?.source || "imported",
       status: "Pending Coverage",
     };
@@ -472,8 +477,6 @@ if (releaseToBoardButton) {
     });
 
     renderImportedShifts();
-
-    console.log("Shift Store After Release:", getShiftStore());
   });
 }
 
@@ -608,7 +611,7 @@ function initializeShiftStore() {
 
   const initializedShifts = importedScheduleShifts.map((shift) => ({
     ...shift,
-    owner: "current-user",
+    owner: CURRENT_USER.id,
     source: "imported",
     status: "Scheduled",
   }));
@@ -1290,7 +1293,7 @@ function renderShiftBoard() {
         interestedCount: currentCount + 1,
         interestedWorkers: [
           {
-            id: 1,
+            id: "worker-maya",
             name: "Maya Chen",
             role: "Server",
             availability: {
@@ -1300,7 +1303,7 @@ function renderShiftBoard() {
             selected: false,
           },
           {
-            id: 2,
+            id: "worker-chris",
             name: "Chris Hall",
             role: "Bartender",
             availability: {
@@ -1310,7 +1313,7 @@ function renderShiftBoard() {
             selected: false,
           },
           {
-            id: 3,
+            id: "worker-sam",
             name: "Sam Ortiz",
             role: "Host",
             availability: {
@@ -1339,8 +1342,6 @@ function renderShiftBoard() {
       };
 
       const boardPost = findShiftById(shiftId);
-      console.log("Caught board post:", boardPost);
-      console.log("Linked source shift ID:", boardPost?.sourceShiftId);
 
       if (boardPost) {
         const updatedBoardPost = {
@@ -1356,7 +1357,6 @@ function renderShiftBoard() {
         if (boardPost.sourceShiftId) {
           const originalShift = findShiftById(boardPost.sourceShiftId);
 
-          console.log("Linked original shift:", originalShift);
           if (originalShift) {
             const updatedOriginalShift = {
               ...originalShift,
@@ -1499,7 +1499,7 @@ function renderShiftBoard() {
               ownerName: selectedWorker.name,
               status: "Transferred",
               transferredAt: getCatchEventTime(),
-              transferredFromWorkerId: "current-user",
+              transferredFromWorkerId: CURRENT_USER.id,
             };
 
             delete transferredShift.pendingWorkerId;
@@ -1982,14 +1982,14 @@ function renderImportedShifts() {
 
   const confirmedCatchShifts = getShiftStore().filter((shift) => {
     return (
-      shift.owner === "current-user" &&
+      shift.owner === CURRENT_USER.id &&
       shift.status === "Transferred" &&
-      shift.previousOwner !== "current-user"
+      shift.previousOwner !== CURRENT_USER.id
     );
   });
 
   const scheduledShifts = getShiftStore().filter((shift) => {
-    return shift.owner === "current-user" && shift.status !== "Transferred";
+    return shift.owner === CURRENT_USER.id && shift.status !== "Transferred";
   });
   const myShifts = [...scheduledShifts, ...confirmedCatchShifts];
   myShifts.forEach((shift) => {
@@ -2008,10 +2008,12 @@ function renderImportedShifts() {
       `
       : "";
 
-    const isConfirmedCatch = Boolean(responses[shift.id]?.confirmed);
-
+    const isConfirmedCatch =
+      shift.status === "Transferred" &&
+      shift.owner === CURRENT_USER.id &&
+      shift.previousOwner !== CURRENT_USER.id;
     const shiftSourceLabel = isConfirmedCatch
-      ? "Confirmed catch"
+      ? "Caught shift"
       : shift.status === "Pending Approval"
         ? "Pending Approval"
         : shift.status === "Pending Coverage"
@@ -2021,6 +2023,14 @@ function renderImportedShifts() {
     const manager = shift.manager || "Manager not provided";
     const notes = shift.notes || shift.note || "No notes provided.";
 
+    const transferContextMarkup = isConfirmedCatch
+      ? `
+    <p class="shift-transfer-context">
+      Coverage approved through Catch
+    </p>
+  `
+      : "";
+
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
     shiftCard.innerHTML = `
@@ -2029,6 +2039,8 @@ function renderImportedShifts() {
         <h3>${shift.day}</h3>
         
 <p>${shift.role}</p>
+
+${transferContextMarkup}
         <ul class="shift-meta">
   <li>${shift.time}</li>
   <li>${shift.neighborhood}</li>
