@@ -462,7 +462,9 @@ function renderDashboardShift() {
   }
 
   dashboardShiftDetailsButton.hidden = false;
-  
+  dashboardShiftDetailsButton.dataset.shiftId = upcomingShift.id;
+  dashboardShiftDetailsButton.dataset.shiftId = upcomingShift.id;
+
   dashboardCountdownTime.textContent = getCountdownText(upcomingShift);
   dashboardShiftDay.textContent = getShiftDayLabel(upcomingShift);
   dashboardShiftDate.textContent = upcomingShift.day;
@@ -566,11 +568,17 @@ navButtons.forEach((button) => {
 
 if (dashboardShiftDetailsButton) {
   dashboardShiftDetailsButton.addEventListener("click", () => {
-    setActiveSection("schedule");
-    setActiveScheduleView("shift-details");
+    const shiftId = dashboardShiftDetailsButton.dataset.shiftId;
+
+    const shift = getShiftStore().find((item) => item.id === shiftId);
+
+    if (!shift) {
+      return;
+    }
+
+    openShiftDetails(shift);
   });
 }
-
 if (homeLogoButton) {
   homeLogoButton.addEventListener("click", () => {
     setActiveSection(homeLogoButton.dataset.target);
