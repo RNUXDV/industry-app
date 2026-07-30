@@ -256,6 +256,23 @@ Schedule V1 Milestone
 
 **Last Updated:** 2026-07-30
 
+**Identity Model:** `CURRENT_USER`
+
+**Supported Demo Users:**
+
+- `worker-maya`
+- `worker-chris`
+- `worker-sam`
+
+**Behavior:**
+
+- Catch requests use the active worker
+- Approval transfers ownership to the selected worker
+- Activity is filtered by worker ID
+- No worker-specific fallback is used
+
+**Last Updated:** 2026-07-30
+
 ## Registry Rules
 
 - Add components only when the product needs them.

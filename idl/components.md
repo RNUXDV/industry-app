@@ -329,3 +329,29 @@ Each activity card contains:
 Last Updated: 2026-07-30
 Sprint: 002
 Status: Active
+
+---
+
+### Multi-Worker Behavior
+
+The Catch workflow is driven by `CURRENT_USER`.
+
+When a worker selects “I Can Take This,” the system stores the active worker’s:
+
+- `id`
+- `name`
+- `role`
+
+The approval flow then transfers the shift to that worker and creates worker-specific activity.
+
+Supported demo workers:
+
+- Maya Chen
+- Chris Hall
+- Sam Ortiz
+
+No worker is hardcoded into the Catch or approval logic.
+
+Last Updated: 2026-07-30
+Sprint: 003
+Status: Active
