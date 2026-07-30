@@ -1978,7 +1978,7 @@ h1 {
   z-index: 1000;
   display: grid;
   gap: 0.4rem;
-  width: min(11rem, calc(100vw - 1.5rem));
+  width: min(10rem, calc(100vw - 1.5rem));
   padding: 0.85rem;
   border: 1px solid var(--border-color);
   border-radius: 1rem;

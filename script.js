@@ -9,6 +9,21 @@ const dashboardViewScheduleButton = document.querySelector(
 const dashboardShiftDetailsButton = document.querySelector(
   "#dashboard-shift-details-button",
 );
+const dashboardCountdownTime = document.querySelector(
+  "#dashboard-countdown-time",
+);
+
+const dashboardShiftDay = document.querySelector("#dashboard-shift-day");
+
+const dashboardShiftDate = document.querySelector("#dashboard-shift-date");
+
+const dashboardShiftTime = document.querySelector("#dashboard-shift-time");
+
+const dashboardShiftRole = document.querySelector("#dashboard-shift-role");
+
+const dashboardShiftWorkplace = document.querySelector(
+  "#dashboard-shift-workplace",
+);
 const scheduleSubviews = document.querySelectorAll(".schedule-subview");
 const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
@@ -319,6 +334,8 @@ const DEMO_USERS = {
   },
 };
 
+const DEMO_NOW = new Date("2026-07-16T15:42:00");
+
 const savedDemoUser = localStorage.getItem(demoUserStorageKey) || "maya";
 
 let CURRENT_USER = DEMO_USERS[savedDemoUser] || DEMO_USERS.maya;
@@ -347,6 +364,111 @@ function setActiveScheduleView(viewName) {
       subview.dataset.scheduleSubview === viewName,
     );
   });
+}
+
+function getShiftDateValue(shift) {
+  const dateText = shift.day.replace(/^[A-Za-z]{3},\s*/, "");
+
+  return new Date(`${dateText}, 2026`).getTime();
+}
+
+function getShiftStartDate(shift) {
+  const dateText = shift.day.replace(/^[A-Za-z]{3},\s*/, "");
+  const startTimeText = shift.time.split(/\s*[–—-]\s*/)[0].trim();
+
+  return new Date(`${dateText}, 2026 ${startTimeText}`);
+}
+
+function getCountdownText(shift) {
+  const shiftStart = getShiftStartDate(shift);
+  const differenceMs = shiftStart.getTime() - DEMO_NOW.getTime();
+
+  if (differenceMs <= 0) {
+    return "Starting soon";
+  }
+
+  const totalMinutes = Math.floor(differenceMs / 60000);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  const minutes = totalMinutes % 60;
+
+  if (days > 0) {
+    return `${days}d ${hours}h`;
+  }
+
+  if (hours === 0) {
+    return `${minutes}m`;
+  }
+
+  if (minutes === 0) {
+    return `${hours}h`;
+  }
+
+  return `${hours}h ${minutes}m`;
+}
+
+function getShiftDayLabel(shift) {
+  const shiftDate = getShiftStartDate(shift);
+
+  const demoDay = new Date(DEMO_NOW);
+  demoDay.setHours(0, 0, 0, 0);
+
+  const targetDay = new Date(shiftDate);
+  targetDay.setHours(0, 0, 0, 0);
+
+  const differenceInDays = Math.round((targetDay - demoDay) / 86400000);
+
+  if (differenceInDays === 0) {
+    return "Today";
+  }
+
+  if (differenceInDays === 1) {
+    return "Tomorrow";
+  }
+
+  return targetDay.toLocaleDateString("en-US", {
+    weekday: "long",
+  });
+}
+
+function renderDashboardShift() {
+  if (
+    !dashboardCountdownTime ||
+    !dashboardShiftDay ||
+    !dashboardShiftDate ||
+    !dashboardShiftTime ||
+    !dashboardShiftRole ||
+    !dashboardShiftWorkplace
+  ) {
+    return;
+  }
+
+  const upcomingShift = getShiftStore()
+    .filter((shift) => shift.owner === CURRENT_USER.id)
+    .sort((shiftA, shiftB) => {
+      return getShiftDateValue(shiftA) - getShiftDateValue(shiftB);
+    })[0];
+
+  if (!upcomingShift) {
+    dashboardShiftDetailsButton.hidden = true;
+    dashboardCountdownTime.textContent = "--";
+    dashboardShiftDay.textContent = "No shift";
+    dashboardShiftDate.textContent = "";
+    dashboardShiftTime.textContent = "";
+    dashboardShiftRole.textContent = "";
+    dashboardShiftWorkplace.textContent = "";
+    return;
+  }
+
+  dashboardShiftDetailsButton.hidden = false;
+  
+  dashboardCountdownTime.textContent = getCountdownText(upcomingShift);
+  dashboardShiftDay.textContent = getShiftDayLabel(upcomingShift);
+  dashboardShiftDate.textContent = upcomingShift.day;
+  dashboardShiftTime.textContent = upcomingShift.time;
+  dashboardShiftRole.textContent = upcomingShift.role;
+  dashboardShiftWorkplace.textContent = upcomingShift.workplace;
 }
 
 scheduleViewCards.forEach((card) => {
@@ -2325,6 +2447,7 @@ if (demoUserSelect) {
 
     renderImportedShifts();
     renderShiftBoard();
+    renderDashboardShift();
   });
 }
 
@@ -2351,6 +2474,7 @@ initializeShiftStore();
 
 renderShiftBoard();
 renderImportedShifts();
+renderDashboardShift();
 renderTipEntries();
 setActiveScheduleView("my-shifts");
 openCrewShift(
