@@ -548,9 +548,49 @@
                     See released shifts available at your workplace.
                   </span>
                 </button>
+                
+                <button
+  class="feature-card schedule-view-card quick-tool-card"
+  type="button"
+  data-schedule-view="activity-feed"
+>
+  <span class="card-kicker">Updates</span>
+  <strong>Activity</strong>
+  <span>
+    Review shift releases, approvals, and schedule changes.
+  </span>
+</button>
               </div>
             </section>
           </section>
+
+          <section
+  class="schedule-subview"
+  data-schedule-subview="activity-feed"
+>
+  <button
+    class="back-to-schedule-button"
+    type="button"
+    data-back-to-schedule
+  >
+    ← Back to My Shifts
+  </button>
+
+  <div class="section-heading">
+    <p class="section-label">Schedule / Activity</p>
+    <h2>Activity</h2>
+    <p>
+      Review updates about your shifts, Catch requests, and schedule changes.
+    </p>
+  </div>
+
+  <div
+    id="activity-feed-list"
+    class="activity-feed-list"
+  >
+    <p class="status-text">No activity yet.</p>
+  </div>
+</section>
 
           <section
   class="schedule-subview"
@@ -600,6 +640,14 @@
 <div class="shift-notes-panel">
   <span>Manager Notes</span>
   <p id="shift-details-notes">No notes provided.</p>
+</div>
+
+<div class="shift-activity-panel">
+  <span>Activity</span>
+
+  <div id="shift-details-activity">
+    <p>No activity recorded.</p>
+  </div>
 </div>
 
 <div class="shift-detail-actions">

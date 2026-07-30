@@ -24,6 +24,7 @@ const dashboardShiftRole = document.querySelector("#dashboard-shift-role");
 const dashboardShiftWorkplace = document.querySelector(
   "#dashboard-shift-workplace",
 );
+const activityFeedList = document.querySelector("#activity-feed-list");
 const scheduleSubviews = document.querySelectorAll(".schedule-subview");
 const homeLogoButton = document.querySelector("#home-logo-button");
 const themeToggleButton = document.querySelector("#theme-toggle-button");
@@ -103,6 +104,7 @@ const shiftDetailsRole = document.querySelector("#shift-details-role");
 const shiftDetailsWorkplace = document.querySelector(
   "#shift-details-workplace",
 );
+const shiftDetailsActivity = document.querySelector("#shift-details-activity");
 const shiftDetailsManager = document.querySelector("#shift-details-manager");
 const shiftDetailsStatus = document.querySelector("#shift-details-status");
 const shiftDetailsNotes = document.querySelector("#shift-details-notes");
@@ -349,6 +351,9 @@ let activeTipEntryId = "";
 function setActiveScheduleView(viewName) {
   if (viewName === "my-shifts") {
     renderImportedShifts();
+  }
+  if (viewName === "activity-feed") {
+    renderActivityFeed();
   }
   if (scheduleHub) {
     scheduleHub.classList.add("hidden-panel");
@@ -620,6 +625,15 @@ if (releaseToBoardButton) {
     updateShift(updatedOriginalShift);
     selectedReleaseShift = updatedOriginalShift;
 
+    addActivity({
+      type: "shift-released",
+      title: "Shift released",
+      message: `${updatedOriginalShift.role} at ${updatedOriginalShift.workplace} was released to Catch.`,
+      workerId: updatedOriginalShift.owner,
+      shiftId: updatedOriginalShift.id,
+      workplace: updatedOriginalShift.workplace,
+    });
+
     const { id, status, owner, source, ...shiftData } = selectedReleaseShift;
 
     createBoardPost({
@@ -710,6 +724,7 @@ if (resetDemoDataButton) {
     localStorage.removeItem("industry-v2-shifts");
     localStorage.removeItem("industry-v2-shift-responses");
     localStorage.removeItem("industry-v2-tip-entries");
+    localStorage.removeItem("industry-v2-activity");
 
     location.reload();
   });
@@ -788,6 +803,32 @@ function updateShift(updatedShift) {
   shifts[index] = updatedShift;
 
   saveShiftStore(shifts);
+}
+
+const ACTIVITY_STORAGE_KEY = "industry-v2-activity";
+
+function getActivityFeed() {
+  return readLocalJson(ACTIVITY_STORAGE_KEY, []);
+}
+
+function saveActivityFeed(feed) {
+  saveLocalJson(ACTIVITY_STORAGE_KEY, feed);
+}
+
+function addActivity(activity) {
+  const feed = getActivityFeed();
+
+  feed.unshift({
+    id: `activity-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
+    createdAt: new Date().toISOString(),
+    ...activity,
+  });
+
+  saveActivityFeed(feed);
+}
+
+function clearActivityFeed() {
+  saveActivityFeed([]);
 }
 
 function getBoardButtonLabel(shift) {
@@ -1101,14 +1142,46 @@ function openShiftDetails(shift) {
   shiftDetailsStatus.textContent = status;
   shiftDetailsNotes.textContent =
     shift.notes || shift.note || "No notes provided.";
+  const activityItems = [];
+
+  if (shift.source === "imported") {
+    activityItems.push("Imported from ScheduleFly");
+  }
+
+  if (shift.status === "Pending Coverage") {
+    activityItems.push("Released to Catch");
+  }
+
+  if (shift.transferredAt) {
+    activityItems.push(
+      `Coverage transferred to ${shift.ownerName || "another worker"}`,
+    );
+  }
+
+  if (shift.previousOwner) {
+    activityItems.push("Ownership updated through Catch");
+  }
+
+  shiftDetailsActivity.innerHTML =
+    activityItems.length > 0
+      ? activityItems
+          .map(
+            (item) => `
+            <p class="shift-activity-item">
+              ${item}
+            </p>
+          `,
+          )
+          .join("")
+      : "<p>No activity recorded.</p>";
 
   shiftDetailsCrewButton.dataset.shiftId = shift.id;
   shiftDetailsReleaseButton.dataset.shiftId = shift.id;
   const releaseLocked =
     status === "Pending Coverage" ||
     status === "Pending Approval" ||
-    status === "Confirmed Catch";
-
+    status === "Confirmed Catch" ||
+    Boolean(shift.transferredAt);
   shiftDetailsReleaseButton.hidden = releaseLocked;
   shiftDetailsReleaseButton.disabled = releaseLocked;
 
@@ -1144,6 +1217,66 @@ if (shiftDetailsReleaseButton) {
   });
 }
 
+function renderActivityFeed() {
+  if (!activityFeedList) {
+    return;
+  }
+
+  const activities = getActivityFeed().filter((activity) => {
+    return activity.workerId === CURRENT_USER.id;
+  });
+
+  if (activities.length === 0) {
+    activityFeedList.innerHTML = `
+      <p class="status-text">No activity yet.</p>
+    `;
+    return;
+  }
+
+  activityFeedList.innerHTML = activities
+    .map((activity) => {
+      const activityTime = new Date(activity.createdAt).toLocaleString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        },
+      );
+
+      const approvalMarkup =
+        activity.type === "shift-approved"
+          ? `
+            <p class="activity-feed-detail">
+              Approved by ${activity.approvedBy || "Manager"}
+            </p>
+          `
+          : "";
+
+      return `
+        <article class="activity-feed-item">
+          <div class="activity-feed-marker" aria-hidden="true">✓</div>
+
+          <div class="activity-feed-content">
+            <div class="activity-feed-header">
+              <p class="activity-feed-type">${activity.title}</p>
+              <p class="activity-feed-time">${activityTime}</p>
+            </div>
+
+            <h3>${activity.message}</h3>
+
+            ${approvalMarkup}
+
+            <p class="activity-feed-meta">
+              ${activity.workplace || "Workplace not provided"}
+            </p>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
 function renderShiftBoard() {
   const shifts = getAllShifts();
   const responses = getShiftResponses();
@@ -1659,6 +1792,15 @@ function renderShiftBoard() {
             delete transferredShift.pendingWorkerName;
 
             updateShift(transferredShift);
+            addActivity({
+              type: "shift-approved",
+              title: "Coverage approved",
+              message: `${selectedWorker.name} was approved for ${transferredShift.role} at ${transferredShift.workplace}.`,
+              workerId: selectedWorker.id,
+              shiftId: transferredShift.id,
+              workplace: transferredShift.workplace,
+              approvedBy: transferredShift.manager || "Manager",
+            });
           }
         }
       }

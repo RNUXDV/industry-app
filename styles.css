@@ -411,6 +411,40 @@ h1 {
   margin-bottom: 0;
 }
 
+.shift-activity-panel {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.shift-activity-panel > span {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  opacity: 0.65;
+}
+
+#shift-details-activity {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.shift-activity-item {
+  position: relative;
+  margin: 0;
+  padding: 1rem 1rem 1rem 2.75rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+}
+
+.shift-activity-item::before {
+  content: "✓";
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-weight: 700;
+}
+
 .shift-detail-actions {
   display: grid;
   gap: 1rem;
@@ -872,6 +906,90 @@ h1 {
 
 .earnings-tool-list .feature-card {
   min-height: 140px;
+}
+
+.activity-feed-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.activity-feed-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: var(--panel);
+}
+
+.activity-feed-marker {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: white;
+  font-weight: 800;
+}
+
+.activity-feed-content {
+  min-width: 0;
+}
+
+.activity-feed-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.activity-feed-type {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.activity-feed-time {
+  margin: 0;
+  opacity: 0.65;
+  font-size: 0.9rem;
+  text-align: right;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.activity-feed-content h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+
+.activity-feed-detail {
+  margin: 0.75rem 0 0;
+  opacity: 0.8;
+}
+
+.activity-feed-meta {
+  margin: 0.75rem 0 0;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+@media (max-width: 560px) {
+  .activity-feed-header {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .activity-feed-time {
+    text-align: left;
+  }
 }
 
 @media (min-width: 700px) {

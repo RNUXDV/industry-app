@@ -166,6 +166,7 @@ Reduces uncertainty by showing the current stage, completed stages, and remainin
 - Catch
 
 ---
+
 ## IDL-005 — Schedule Card
 
 ### Purpose
@@ -206,6 +207,7 @@ It provides a concise summary of a shift and serves as the entry point into the 
 Selecting a Schedule Card opens the Shift Details experience.
 
 ## Component: My Shifts
+
 - Display worker-owned shifts as the authoritative schedule.
 
 ### Purpose
@@ -249,7 +251,81 @@ Catch Board requests are independent records linked to an original shift through
 - sourceShiftId
 - requestType
 - status
+
 ---
+
 Last Updated: 2026-07-28
+Sprint: 002
+Status: Active
+
+## Schedule Activity Feed
+
+### Purpose
+
+Displays persistent worker-specific updates related to shift releases, Catch approvals, ownership changes, and future schedule events.
+
+### Entry Point
+
+My Shifts → Quick Tools → Activity
+
+### Data Source
+
+Local storage key:
+
+`industry-v2-activity`
+
+Rendered through:
+
+- `getActivityFeed()`
+- `addActivity(activity)`
+- `renderActivityFeed()`
+
+### Current Event Types
+
+#### Shift Released
+
+Shown to the worker who released the shift.
+
+Fields used:
+
+- `type`
+- `title`
+- `message`
+- `workerId`
+- `shiftId`
+- `workplace`
+- `createdAt`
+
+#### Coverage Approved
+
+Shown to the worker approved for the shift.
+
+Additional field:
+
+- `approvedBy`
+
+### Behavior
+
+- Filters events using `CURRENT_USER.id`
+- Displays newest events first
+- Persists through local storage
+- Clears when demo data is reset
+- Opens as the `activity-feed` Schedule subview
+- Returns to My Shifts through the existing back navigation
+
+### Visual Structure
+
+Each activity card contains:
+
+- status marker
+- event title
+- timestamp
+- event message
+- optional approval detail
+- workplace
+
+---
+
+Last Updated: 2026-07-30
 Sprint: 002
 Status: Active
