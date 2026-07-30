@@ -13,7 +13,39 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-theme="dark">
-    <div class="app-shell">
+
+<button
+  class="developer-toggle"
+  id="developer-toggle"
+  type="button"
+  aria-expanded="false"
+  aria-controls="developer-switcher"
+>
+  DEV
+</button>
+
+<aside
+  class="developer-switcher is-collapsed"
+  id="developer-switcher"
+  aria-label="Developer user switcher"
+>
+  <p class="developer-switcher-label">Developer</p>
+
+  <label for="demo-user-select">Viewing as</label>
+
+  <select id="demo-user-select">
+    <option value="original">Original Worker</option>
+    <option value="maya" selected>Maya Chen</option>
+    <option value="chris">Chris Hall</option>
+    <option value="sam">Sam Ortiz</option>
+  </select>
+</aside>
+
+<div class="app-shell">
+    
+    
+    
+<div class="app-shell">
      <header class="hero compact-hero">
   <div class="hero-top compact-hero-top">
     <div>

@@ -64,6 +64,7 @@ const crewShiftWorkplace = document.querySelector("#crew-shift-workplace");
 const crewShiftTime = document.querySelector("#crew-shift-time");
 const crewShiftRole = document.querySelector("#crew-shift-role");
 const crewShiftStatus = document.querySelector("#crew-shift-status");
+const demoUserSelect = document.querySelector("#demo-user-select");
 const frontOfHouseList = document.querySelector("#front-of-house-list");
 const backOfHouseList = document.querySelector("#back-of-house-list");
 const managerList = document.querySelector("#manager-list");
@@ -137,11 +138,15 @@ const releaseToBoardButton = document.querySelector("#release-to-board-button");
 
 const directReleaseButton = document.querySelector("#direct-release-button");
 
+const developerToggle = document.querySelector("#developer-toggle");
+const developerSwitcher = document.querySelector("#developer-switcher");
+
 const themeStorageKey = "industry-v2-theme";
 const shiftsStorageKey = "industry-v2-shifts";
 const shiftResponseStorageKey = "industry-v2-shift-responses";
 const profileStorageKey = "industry-v2-profile";
 const tipEntriesStorageKey = "industry-v2-tip-entries";
+const demoUserStorageKey = "industry-v2-demo-user";
 const feedbackFormUrl =
   "https://docs.google.com/forms/d/e/1FAIpQLScLUIuiBZ_a771qFUt_wRreHaN9pugo0OcDQ1zHVO3Y4q4wwQ/viewform?usp=publish-editor";
 
@@ -295,10 +300,28 @@ const workplaceCrews = {
   },
 };
 
-const CURRENT_USER = {
-  id: "worker-maya",
-  name: "Maya Chen",
+const DEMO_USERS = {
+  original: {
+    id: "current-user",
+    name: "Original Worker",
+  },
+  maya: {
+    id: "worker-maya",
+    name: "Maya Chen",
+  },
+  chris: {
+    id: "worker-chris",
+    name: "Chris Hall",
+  },
+  sam: {
+    id: "worker-sam",
+    name: "Sam Ortiz",
+  },
 };
+
+const savedDemoUser = localStorage.getItem(demoUserStorageKey) || "maya";
+
+let CURRENT_USER = DEMO_USERS[savedDemoUser] || DEMO_USERS.maya;
 
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
@@ -2211,6 +2234,14 @@ if (saveShiftButton) {
   });
 }
 
+if (developerToggle && developerSwitcher) {
+  developerToggle.addEventListener("click", () => {
+    const isCollapsed = developerSwitcher.classList.toggle("is-collapsed");
+
+    developerToggle.setAttribute("aria-expanded", String(!isCollapsed));
+  });
+}
+
 if (shiftWorkplaceSelect) {
   shiftWorkplaceSelect.addEventListener("change", () => {
     const selectedWorkplace = workplaces[shiftWorkplaceSelect.value];
@@ -2277,6 +2308,24 @@ function updateProfileSummary(profileData) {
       profileData.neighborhood || "Not set yet";
     profileGoalSummary.textContent = profileData.goal || "Not set yet";
   }
+}
+
+if (demoUserSelect) {
+  demoUserSelect.value = savedDemoUser;
+  demoUserSelect.addEventListener("change", () => {
+    const selectedUser = DEMO_USERS[demoUserSelect.value];
+
+    if (!selectedUser) {
+      return;
+    }
+
+    CURRENT_USER = selectedUser;
+
+    localStorage.setItem(demoUserStorageKey, demoUserSelect.value);
+
+    renderImportedShifts();
+    renderShiftBoard();
+  });
 }
 
 mockPreviewButtons.forEach((button) => {
