@@ -764,7 +764,7 @@ function initializeShiftStore() {
 
   const initializedShifts = importedScheduleShifts.map((shift) => ({
     ...shift,
-    owner: CURRENT_USER.id,
+    owner: DEMO_USERS.original.id,
     source: "imported",
     status: "Scheduled",
   }));
@@ -1650,7 +1650,7 @@ function renderShiftBoard() {
               previousOwner: originalShift.owner,
               owner: selectedWorker.id,
               ownerName: selectedWorker.name,
-              status: "Transferred",
+              status: "Scheduled",
               transferredAt: getCatchEventTime(),
               transferredFromWorkerId: CURRENT_USER.id,
             };
@@ -2162,9 +2162,10 @@ function renderImportedShifts() {
       : "";
 
     const isConfirmedCatch =
-      shift.status === "Transferred" &&
       shift.owner === CURRENT_USER.id &&
-      shift.previousOwner !== CURRENT_USER.id;
+      shift.previousOwner &&
+      shift.previousOwner !== CURRENT_USER.id &&
+      Boolean(shift.transferredAt);
     const shiftSourceLabel = isConfirmedCatch
       ? "Caught shift"
       : shift.status === "Pending Approval"
