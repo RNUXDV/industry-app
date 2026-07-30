@@ -1613,9 +1613,9 @@ function renderShiftBoard() {
       };
 
       const caughtByWorker = {
-        id: "worker-maya",
-        name: "Maya Chen",
-        role: "Server",
+        id: CURRENT_USER.id,
+        name: CURRENT_USER.name,
+        role: CURRENT_USER.role || "Worker",
       };
 
       responses[shiftId] = {
@@ -1746,11 +1746,22 @@ function renderShiftBoard() {
       const selectedWorker = currentResponse.interestedWorkers?.find(
         (worker) => worker.selected,
       ) || {
-        id: currentResponse.caughtByWorkerId || "worker-maya",
-        name: currentResponse.caughtByWorkerName || "Maya Chen",
-        role: "Server",
+        id: currentResponse.caughtByWorkerId,
+        name: currentResponse.caughtByWorkerName,
+        role: currentResponse.caughtByWorkerRole || "Worker",
       };
 
+      if (!selectedWorker.id || !selectedWorker.name) {
+        console.error("No valid worker selected for approval.", {
+          shiftId,
+          currentResponse,
+        });
+
+        shiftBoardStatus.textContent =
+          "Unable to approve coverage because no worker was selected.";
+
+        return;
+      }
       responses[shiftId] = {
         ...currentResponse,
         accepted: true,
