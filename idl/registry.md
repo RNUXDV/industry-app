@@ -27,7 +27,7 @@ Components built by combining smaller primitives.
 - [x] IDL-003 — Presence Card
 - [ ] Schedule Card
 - [ ] Timeline
-- [x] IDL-004 — Progress Railwhere 
+- [x] IDL-004 — Progress Railwhere
 - [ ] Message Preview
 - [ ] Notification Card
 
@@ -48,9 +48,11 @@ Larger product experiences composed from reusable components and interaction pat
 ## Catch to My Shifts Workflow
 
 ### Status
+
 Implemented
 
 ### Flow
+
 Catch Board
 → Interest
 → Selected
@@ -58,6 +60,7 @@ Catch Board
 → Added to My Shifts
 
 ### Behavior
+
 - Confirmed catches appear alongside imported shifts.
 - Confirmed catches use the label `Confirmed catch`.
 - My Shifts re-renders whenever the view opens.
@@ -65,6 +68,7 @@ Catch Board
 - Missing station, manager, and notes fields use fallback copy instead of displaying `undefined`.
 
 ### Data
+
 - Shift records are read from the shared shifts store.
 - Catch responses are read from `industry-v2-shift-responses`.
 - Confirmed responses are merged into the My Shifts list.
@@ -74,9 +78,11 @@ Catch Board
 ## Shift Command Card Workflow
 
 ### Status
+
 Implemented
 
 ### Flow
+
 My Shifts
 → Shift Command Card
 → View Details
@@ -84,6 +90,7 @@ My Shifts
 → View Crew or Release Shift
 
 ### Behavior
+
 - Each shift card uses `View details` as the primary management entry point.
 - Shift Details dynamically displays the selected shift.
 - Imported shifts and confirmed catches use the same detail workflow.
@@ -93,6 +100,7 @@ My Shifts
 - Duplicate `View shift crew` actions were removed from My Shifts cards.
 
 ### Architecture
+
 - My Shifts acts as the shift navigation layer.
 - Shift Details acts as the operational control center.
 - `openShiftDetails(shift)` populates and opens the shared detail view.
@@ -187,18 +195,66 @@ A released shift now creates a public Catch Board request while preserving the w
 - Principle: Synchronized State
 
 ---
+
 Last Updated: 2026-07-28
 Sprint: 002
 Status: Active
+
 ---
-
-
 
 Last Updated
 
 Schedule V1 Milestone
 
 ---
+
+## Schedule Activity Feed
+
+**Component ID:** `schedule-activity-feed`
+
+**Category:** Schedule / Updates
+
+**Status:** Active
+
+**Sprint:** 002
+
+**Entry Point:** My Shifts → Quick Tools → Activity
+
+**Subview:** `activity-feed`
+
+**Files:**
+
+- `index.html`
+- `script.js`
+- `style.css`
+- `idl/components.md`
+
+**Primary Functions:**
+
+- `getActivityFeed()`
+- `saveActivityFeed(feed)`
+- `addActivity(activity)`
+- `clearActivityFeed()`
+- `renderActivityFeed()`
+
+**Storage Key:**
+
+`industry-v2-activity`
+
+**Current Event Types:**
+
+- `shift-released`
+- `shift-approved`
+
+**Dependencies:**
+
+- `CURRENT_USER`
+- shift ownership state
+- Catch approval workflow
+- Schedule subview navigation
+- demo-data reset
+
+**Last Updated:** 2026-07-30
 
 ## Registry Rules
 
@@ -209,4 +265,3 @@ Schedule V1 Milestone
 - Update this registry whenever the component system changes.
 - Component IDs are assigned sequentially when a reusable component is first created.
 - Component categories determine where a component is listed; IDs do not.
-
