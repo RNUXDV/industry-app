@@ -195,6 +195,20 @@ it does not belong.
 
 ---
 
+# Principle 11
+
+Organize experiences around human intent,
+not software features.
+
+People think in goals.
+
+Interfaces often think in tools.
+
+Industry should translate tools into journeys.
+
+
+---
+
 # Emotional Foundations
 
 Each pillar should create its own emotional experience while maintaining one consistent design language.
@@ -304,3 +318,7 @@ Workers may forget individual features.
 They should never forget how Industry made them feel.
 
 Nothing ships because it's finished. It ships because it meets the standard.
+
+Design should meet users where they are, then gently guide them toward where they want to be.
+
+Different intentions deserve different journeys.
