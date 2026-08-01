@@ -206,7 +206,6 @@ Interfaces often think in tools.
 
 Industry should translate tools into journeys.
 
-
 ---
 
 # Emotional Foundations
@@ -306,6 +305,46 @@ The goal is not to build screens.
 The goal is to discover the language of Industry.
 
 ---
+
+Industry Workflow
+
+1.  Discover
+
+What problem are we solving?
+
+↓
+
+2.  Design
+
+What should the experience feel like?
+
+↓
+
+3.  Prototype
+
+CodePen
+
+↓
+
+4.  Build
+
+VS Code
+
+↓
+
+5.  Refine
+
+Feedback
+
+↓
+
+6.  Document
+
+IDL
+
+↓
+
+7.  Commit
 
 # Final Thought
 
