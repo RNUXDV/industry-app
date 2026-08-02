@@ -3465,6 +3465,8 @@ window.addEventListener("hashchange", applyHashSection);
     "[data-profile-dashboard-action]",
   );
 
+  const jobsHomeGreeting = document.querySelector("[data-jobs-home-greeting]");
+
   if (
     !profileForm ||
     !profileNameInput ||
@@ -3538,6 +3540,14 @@ window.addEventListener("hashchange", applyHashSection);
       profileDashboardAction.textContent = profileState.completed
         ? "Edit my profile"
         : "Build my profile";
+    }
+
+    if (jobsHomeGreeting) {
+      const preferredName = profileState.preferredName.trim();
+
+      jobsHomeGreeting.textContent = preferredName
+        ? `How can Industry help today, ${preferredName}?`
+        : "How can Industry help today?";
     }
   }
 
