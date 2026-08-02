@@ -1218,7 +1218,7 @@
   </span>
 </button>
 
-  <button class="jobs-path" type="button" data-jobs-path="prepare">
+  <button class="jobs-path" type="button" data-open-jobs-view="prepare">
     <span class="jobs-path-label">Prepare</span>
     <strong>Prepare for My Next Move</strong>
     <span>
@@ -1249,6 +1249,292 @@
 </div>
 
 <!-- JOBS VIEW: HOME — END -->
+
+<!-- =================================================
+| | | | JOBS VIEW: PREPARE - START
+================================================== -->
+
+<div
+  class="jobs-view jobs-track-view"
+  data-jobs-view="prepare"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="home"
+  >
+    ← Jobs
+  </button>
+
+  <!-- Prepare heading -->
+  <section class="jobs-track-hero">
+    <span class="eyebrow">Prepare</span>
+
+    <h1>My Next Move</h1>
+
+    <p>
+      Build a professional profile that helps Industry understand what
+      you do, what you want, and where you would like to go next.
+    </p>
+  </section>
+
+  <!-- Preparation dashboard -->
+  <section class="jobs-track-list">
+    <span class="eyebrow">Your workspace</span>
+
+    <h2>Make Industry yours.</h2>
+
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span
+  class="jobs-track-status"
+  data-profile-dashboard-status
+>
+  Not started
+</span>
+        <span class="jobs-track-workplace-type">
+          Profile
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">About you</span>
+
+        <h3>My Profile</h3>
+
+        <p>
+          Add your preferred name, current role, experience, and
+          location.
+        </p>
+      </div>
+
+      <button
+  class="jobs-secondary-button"
+  type="button"
+  data-open-jobs-view="prepare-profile"
+  data-profile-dashboard-action
+>
+  Build my profile
+</button>
+    </article>
+
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span class="jobs-track-status">
+          Not started
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Preferences
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Your direction</span>
+
+        <h3>What I’m Looking For</h3>
+
+        <p>
+          Choose the roles, workplaces, and opportunities that feel
+          right for your next move.
+        </p>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-prepare-action="preferences"
+      >
+        Add preferences
+      </button>
+    </article>
+
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span class="jobs-track-status">
+          Not started
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Availability
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Your time</span>
+
+        <h3>Availability</h3>
+
+        <p>
+          Set the days, shifts, and number of hours that work for your
+          life.
+        </p>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-prepare-action="availability"
+      >
+        Set availability
+      </button>
+    </article>
+
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span class="jobs-track-status">
+          Needs attention
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Readiness
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Application tools</span>
+
+        <h3>Application Readiness</h3>
+
+        <p>
+          Review your resume and make sure your reusable application
+          information is ready.
+        </p>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-prepare-action="readiness"
+      >
+        Review readiness
+      </button>
+    </article>
+  </section>
+</div>
+
+<!-- JOBS VIEW: PREPARE - END -->
+
+<!-- =================================================
+| | | | JOBS VIEW: PREPARE PROFILE - START
+================================================== -->
+
+<div
+  class="jobs-view jobs-track-view"
+  data-jobs-view="prepare-profile"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="prepare"
+  >
+    ← My Next Move
+  </button>
+
+  <section class="jobs-track-hero">
+    <span class="eyebrow">About you</span>
+
+    <h1>My Profile</h1>
+
+    <p>
+      Add the professional information Industry can use to personalize
+      your experience and prepare future applications.
+    </p>
+  </section>
+
+  <section class="jobs-profile-section">
+    <div class="jobs-profile-heading">
+      <span class="eyebrow">Professional identity</span>
+
+      <h2>Tell Industry about you.</h2>
+
+      <p>
+        You can update this information whenever your work or goals
+        change.
+      </p>
+    </div>
+
+    <form class="jobs-profile-form" data-jobs-profile-form>
+      <div class="jobs-form-field">
+        <label for="jobs-profile-name">Preferred name</label>
+
+        <input
+          id="jobs-profile-name"
+          name="preferredName"
+          type="text"
+          autocomplete="given-name"
+          placeholder="How should Industry address you?"
+          data-profile-name
+          required
+        />
+      </div>
+
+      <div class="jobs-form-field">
+        <label for="jobs-profile-role">Current role</label>
+
+        <input
+          id="jobs-profile-role"
+          name="currentRole"
+          type="text"
+          placeholder="Server, bartender, cook, manager..."
+          data-profile-role
+          required
+        />
+      </div>
+
+      <div class="jobs-form-field">
+        <label for="jobs-profile-experience">
+          Years of industry experience
+        </label>
+
+        <input
+          id="jobs-profile-experience"
+          name="experienceYears"
+          type="number"
+          min="0"
+          max="60"
+          step="1"
+          inputmode="numeric"
+          placeholder="0"
+          data-profile-experience
+          required
+        />
+      </div>
+
+      <div class="jobs-form-field">
+        <label for="jobs-profile-location">Current location</label>
+
+        <input
+          id="jobs-profile-location"
+          name="location"
+          type="text"
+          autocomplete="address-level2"
+          placeholder="City, state"
+          data-profile-location
+          required
+        />
+      </div>
+
+      <p
+        class="jobs-form-message"
+        data-profile-message
+        aria-live="polite"
+        hidden
+      ></p>
+
+      <button
+        class="primary-button jobs-profile-save"
+        type="submit"
+      >
+        Save my profile
+      </button>
+    </form>
+  </section>
+</div>
+
+<!-- JOBS VIEW: PREPARE PROFILE - END -->
 
 
 <!-- ================================================

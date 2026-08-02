@@ -3433,3 +3433,143 @@ window.addEventListener("hashchange", applyHashSection);
     updateTrackApplications();
   });
 })();
+
+/* =================================================
+   JOBS: USER PROFILE
+================================================== */
+
+(() => {
+  const PROFILE_STORAGE_KEY = "industry-user-profile";
+
+  const profileForm = document.querySelector("[data-jobs-profile-form]");
+
+  const profileNameInput = document.querySelector("[data-profile-name]");
+
+  const profileRoleInput = document.querySelector("[data-profile-role]");
+
+  const profileExperienceInput = document.querySelector(
+    "[data-profile-experience]",
+  );
+
+  const profileLocationInput = document.querySelector(
+    "[data-profile-location]",
+  );
+
+  const profileMessage = document.querySelector("[data-profile-message]");
+
+  const profileDashboardStatus = document.querySelector(
+    "[data-profile-dashboard-status]",
+  );
+
+  const profileDashboardAction = document.querySelector(
+    "[data-profile-dashboard-action]",
+  );
+
+  if (
+    !profileForm ||
+    !profileNameInput ||
+    !profileRoleInput ||
+    !profileExperienceInput ||
+    !profileLocationInput
+  ) {
+    return;
+  }
+
+  const defaultProfileState = {
+    preferredName: "",
+    currentRole: "",
+    experienceYears: "",
+    location: "",
+    completed: false,
+    updatedAt: null,
+  };
+
+  function loadProfileState() {
+    try {
+      const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
+
+      if (!savedProfile) {
+        return { ...defaultProfileState };
+      }
+
+      return {
+        ...defaultProfileState,
+        ...JSON.parse(savedProfile),
+      };
+    } catch (error) {
+      console.warn("Unable to load Industry profile.", error);
+
+      return { ...defaultProfileState };
+    }
+  }
+
+  let profileState = loadProfileState();
+
+  function profileIsComplete(profile) {
+    return Boolean(
+      profile.preferredName.trim() &&
+      profile.currentRole.trim() &&
+      String(profile.experienceYears).trim() &&
+      profile.location.trim(),
+    );
+  }
+
+  function saveProfileState() {
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profileState));
+  }
+
+  function updateProfileInterface() {
+    profileNameInput.value = profileState.preferredName;
+    profileRoleInput.value = profileState.currentRole;
+    profileExperienceInput.value = profileState.experienceYears;
+    profileLocationInput.value = profileState.location;
+
+    if (profileDashboardStatus) {
+      profileDashboardStatus.textContent = profileState.completed
+        ? "Complete"
+        : "Not started";
+
+      profileDashboardStatus.dataset.profileStatus = profileState.completed
+        ? "complete"
+        : "not-started";
+    }
+
+    if (profileDashboardAction) {
+      profileDashboardAction.textContent = profileState.completed
+        ? "Edit my profile"
+        : "Build my profile";
+    }
+  }
+
+  profileForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    if (!profileForm.checkValidity()) {
+      profileForm.reportValidity();
+      return;
+    }
+
+    profileState = {
+      preferredName: profileNameInput.value.trim(),
+      currentRole: profileRoleInput.value.trim(),
+      experienceYears: profileExperienceInput.value.trim(),
+      location: profileLocationInput.value.trim(),
+      completed: false,
+      updatedAt: new Date().toISOString(),
+    };
+
+    profileState.completed = profileIsComplete(profileState);
+
+    saveProfileState();
+    updateProfileInterface();
+
+    if (profileMessage) {
+      profileMessage.textContent =
+        "Profile saved. Industry can now use this information to personalize your experience.";
+
+      profileMessage.hidden = false;
+    }
+  });
+
+  updateProfileInterface();
+})();
