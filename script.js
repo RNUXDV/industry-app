@@ -3764,3 +3764,197 @@ window.addEventListener("hashchange", applyHashSection);
 
   updatePreferencesInterface();
 })();
+
+/* =================================================
+   JOBS: USER AVAILABILITY
+================================================== */
+
+(() => {
+  const AVAILABILITY_STORAGE_KEY =
+    "industry-user-availability";
+
+  const availabilityForm = document.querySelector(
+    "[data-jobs-availability-form]",
+  );
+
+  const dayInputs = Array.from(
+    document.querySelectorAll("[data-availability-day]"),
+  );
+
+  const shiftInputs = Array.from(
+    document.querySelectorAll("[data-availability-shift]"),
+  );
+
+  const hoursInput = document.querySelector(
+    "[data-availability-hours]",
+  );
+
+  const startInput = document.querySelector(
+    "[data-availability-start]",
+  );
+
+  const availabilityMessage = document.querySelector(
+    "[data-availability-message]",
+  );
+
+  const dashboardStatus = document.querySelector(
+    "[data-availability-dashboard-status]",
+  );
+
+  const dashboardAction = document.querySelector(
+    "[data-availability-dashboard-action]",
+  );
+
+  if (!availabilityForm || !hoursInput || !startInput) {
+    return;
+  }
+
+  const defaultAvailabilityState = {
+    availableDays: [],
+    preferredShifts: [],
+    weeklyHours: "",
+    startAvailability: "",
+    completed: false,
+    updatedAt: null,
+  };
+
+  function loadAvailabilityState() {
+    try {
+      const savedAvailability = localStorage.getItem(
+        AVAILABILITY_STORAGE_KEY,
+      );
+
+      if (!savedAvailability) {
+        return { ...defaultAvailabilityState };
+      }
+
+      return {
+        ...defaultAvailabilityState,
+        ...JSON.parse(savedAvailability),
+      };
+    } catch (error) {
+      console.warn(
+        "Unable to load Industry availability.",
+        error,
+      );
+
+      return { ...defaultAvailabilityState };
+    }
+  }
+
+  let availabilityState = loadAvailabilityState();
+
+  function availabilityIsComplete(availability) {
+    return Boolean(
+      availability.availableDays.length &&
+        availability.preferredShifts.length &&
+        availability.weeklyHours &&
+        availability.startAvailability,
+    );
+  }
+
+  function saveAvailabilityState() {
+    localStorage.setItem(
+      AVAILABILITY_STORAGE_KEY,
+      JSON.stringify(availabilityState),
+    );
+  }
+
+  function updateAvailabilityInterface() {
+    dayInputs.forEach((input) => {
+      input.checked =
+        availabilityState.availableDays.includes(
+          input.value,
+        );
+    });
+
+    shiftInputs.forEach((input) => {
+      input.checked =
+        availabilityState.preferredShifts.includes(
+          input.value,
+        );
+    });
+
+    hoursInput.value = availabilityState.weeklyHours;
+
+    startInput.value =
+      availabilityState.startAvailability;
+
+    if (dashboardStatus) {
+      dashboardStatus.textContent =
+        availabilityState.completed
+          ? "Complete"
+          : "Not started";
+
+      dashboardStatus.dataset.availabilityStatus =
+        availabilityState.completed
+          ? "complete"
+          : "not-started";
+    }
+
+    if (dashboardAction) {
+      dashboardAction.textContent =
+        availabilityState.completed
+          ? "Edit availability"
+          : "Set availability";
+    }
+  }
+
+  availabilityForm.addEventListener(
+    "submit",
+    (event) => {
+      event.preventDefault();
+
+      if (!availabilityForm.checkValidity()) {
+        availabilityForm.reportValidity();
+        return;
+      }
+
+      const availableDays = dayInputs
+        .filter((input) => input.checked)
+        .map((input) => input.value);
+
+      const preferredShifts = shiftInputs
+        .filter((input) => input.checked)
+        .map((input) => input.value);
+
+      if (
+        availableDays.length === 0 ||
+        preferredShifts.length === 0
+      ) {
+        if (availabilityMessage) {
+          availabilityMessage.textContent =
+            "Choose at least one available day and one preferred shift.";
+
+          availabilityMessage.hidden = false;
+        }
+
+        return;
+      }
+
+      availabilityState = {
+        availableDays,
+        preferredShifts,
+        weeklyHours: hoursInput.value,
+        startAvailability: startInput.value,
+        completed: false,
+        updatedAt: new Date().toISOString(),
+      };
+
+      availabilityState.completed =
+        availabilityIsComplete(availabilityState);
+
+      saveAvailabilityState();
+      updateAvailabilityInterface();
+
+      if (availabilityMessage) {
+        availabilityMessage.textContent =
+          "Availability saved. Industry can now use your schedule preferences when matching opportunities.";
+
+        availabilityMessage.hidden = false;
+      }
+    },
+  );
+
+  updateAvailabilityInterface();
+})();

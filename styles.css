@@ -4057,6 +4057,12 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   border-color: rgba(103, 211, 135, 0.36);
 }
 
+.jobs-track-status[data-availability-status="complete"] {
+  color: #9debb3;
+  background: rgba(103, 211, 135, 0.15);
+  border-color: rgba(103, 211, 135, 0.36);
+}
+
 /* Light-theme status contrast */
 [data-theme="light"] .jobs-track-status[data-track-status="submitted"] {
   color: #256d60;

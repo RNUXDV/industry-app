@@ -1357,9 +1357,12 @@
 
     <article class="jobs-track-card">
       <div class="jobs-track-card-top">
-        <span class="jobs-track-status">
-          Not started
-        </span>
+        <span
+  class="jobs-track-status"
+  data-availability-dashboard-status
+>
+  Not started
+</span>
 
         <span class="jobs-track-workplace-type">
           Availability
@@ -1378,12 +1381,13 @@
       </div>
 
       <button
-        class="jobs-secondary-button"
-        type="button"
-        data-prepare-action="availability"
-      >
-        Set availability
-      </button>
+  class="jobs-secondary-button"
+  type="button"
+  data-open-jobs-view="prepare-availability"
+  data-availability-dashboard-action
+>
+  Set availability
+</button>
     </article>
 
     <article class="jobs-track-card">
@@ -1793,6 +1797,265 @@
 </div>
 
 <!-- JOBS VIEW: PREPARE PREFERENCES - END -->
+
+<!-- =================================================
+| | | | JOBS VIEW: PREPARE AVAILABILITY - START
+================================================== -->
+
+<div
+  class="jobs-view jobs-track-view"
+  data-jobs-view="prepare-availability"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="prepare"
+  >
+    ← My Next Move
+  </button>
+
+  <section class="jobs-track-hero">
+    <span class="eyebrow">Your time</span>
+
+    <h1>Availability</h1>
+
+    <p>
+      Tell Industry when you are generally available so opportunities
+      can better match your schedule and your life.
+    </p>
+  </section>
+
+  <section class="jobs-profile-section">
+    <div class="jobs-profile-heading">
+      <span class="eyebrow">Schedule preferences</span>
+
+      <h2>When can you work?</h2>
+
+      <p>
+        These preferences describe your general availability. You can
+        update them whenever your schedule changes.
+      </p>
+    </div>
+
+    <form
+      class="jobs-profile-form"
+      data-jobs-availability-form
+    >
+      <fieldset class="jobs-preferences-group">
+        <legend>Available days</legend>
+
+        <p>Select all days that generally work for you.</p>
+
+        <div class="jobs-preferences-options">
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="availableDays"
+              value="Monday"
+              data-availability-day
+            />
+            <span>Monday</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="availableDays"
+              value="Tuesday"
+              data-availability-day
+            />
+            <span>Tuesday</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="availableDays"
+              value="Wednesday"
+              data-availability-day
+            />
+            <span>Wednesday</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="availableDays"
+              value="Thursday"
+              data-availability-day
+            />
+            <span>Thursday</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="availableDays"
+              value="Friday"
+              data-availability-day
+            />
+            <span>Friday</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="availableDays"
+              value="Saturday"
+              data-availability-day
+            />
+            <span>Saturday</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="availableDays"
+              value="Sunday"
+              data-availability-day
+            />
+            <span>Sunday</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="jobs-preferences-group">
+        <legend>Preferred shifts</legend>
+
+        <p>Select all shift times that work for you.</p>
+
+        <div class="jobs-preferences-options">
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="preferredShifts"
+              value="Morning"
+              data-availability-shift
+            />
+            <span>Morning</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="preferredShifts"
+              value="Midday"
+              data-availability-shift
+            />
+            <span>Midday</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="preferredShifts"
+              value="Evening"
+              data-availability-shift
+            />
+            <span>Evening</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="preferredShifts"
+              value="Late night"
+              data-availability-shift
+            />
+            <span>Late night</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="preferredShifts"
+              value="Overnight"
+              data-availability-shift
+            />
+            <span>Overnight</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="jobs-form-field">
+        <label for="jobs-availability-hours">
+          Desired weekly hours
+        </label>
+
+        <select
+          id="jobs-availability-hours"
+          name="weeklyHours"
+          data-availability-hours
+          required
+        >
+          <option value="">Choose a range</option>
+          <option value="Under 15 hours">
+            Under 15 hours
+          </option>
+          <option value="15–24 hours">
+            15–24 hours
+          </option>
+          <option value="25–34 hours">
+            25–34 hours
+          </option>
+          <option value="35–40 hours">
+            35–40 hours
+          </option>
+          <option value="More than 40 hours">
+            More than 40 hours
+          </option>
+          <option value="Flexible">
+            Flexible
+          </option>
+        </select>
+      </div>
+
+      <div class="jobs-form-field">
+        <label for="jobs-availability-start">
+          When can you start?
+        </label>
+
+        <select
+          id="jobs-availability-start"
+          name="startAvailability"
+          data-availability-start
+          required
+        >
+          <option value="">Choose one</option>
+          <option value="Immediately">
+            Immediately
+          </option>
+          <option value="Within 2 weeks">
+            Within 2 weeks
+          </option>
+          <option value="Within 1 month">
+            Within 1 month
+          </option>
+          <option value="Flexible">
+            Flexible
+          </option>
+        </select>
+      </div>
+
+      <p
+        class="jobs-form-message"
+        data-availability-message
+        aria-live="polite"
+        hidden
+      ></p>
+
+      <button
+        class="jobs-profile-save"
+        type="submit"
+      >
+        Save my availability
+      </button>
+    </form>
+  </section>
+</div>
+
+<!-- JOBS VIEW: PREPARE AVAILABILITY - END -->
 
 
 <!-- ================================================
