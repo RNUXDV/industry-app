@@ -2839,6 +2839,15 @@ window.addEventListener("hashchange", applyHashSection);
     "[data-track-guidance]",
   );
 
+  /* Track application update timestamp */
+  const trackApplicationUpdatedRow = document.querySelector(
+    "[data-track-updated-row]",
+  );
+
+  const trackApplicationUpdated = document.querySelector(
+    "[data-track-application-updated]",
+  );
+
   /* ------------------------------------------------
    TRACK APPLICATION: DEV STATUS CONTROL
 
@@ -2867,6 +2876,7 @@ window.addEventListener("hashchange", applyHashSection);
     status: "Submitted",
     nextStep: "Waiting for employer response",
     guidance: "Your application has been submitted to Juniper House.",
+    updatedAt: null,
 
     message: "",
   };
@@ -2897,6 +2907,25 @@ window.addEventListener("hashchange", applyHashSection);
 
   /* This object becomes the current application data */
   const applicationState = loadApplicationState();
+
+  /* Convert the saved timestamp into readable text */
+  function formatApplicationUpdatedAt(timestamp) {
+    if (!timestamp) return "";
+
+    const updatedDate = new Date(timestamp);
+
+    if (Number.isNaN(updatedDate.getTime())) {
+      return "";
+    }
+
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(updatedDate);
+  }
 
   /* ----------------------------------------------
      STEP 3: UPDATE THE APPLICATION INTERFACE
@@ -2930,6 +2959,21 @@ window.addEventListener("hashchange", applyHashSection);
     /* Update the application card guidance */
     if (trackApplicationGuidance) {
       trackApplicationGuidance.textContent = applicationState.guidance;
+    }
+
+    /* Update the application timestamp */
+    const formattedUpdatedAt = formatApplicationUpdatedAt(
+      applicationState.updatedAt,
+    );
+
+    if (trackApplicationUpdatedRow) {
+      trackApplicationUpdatedRow.hidden =
+        !applicationIsSubmitted || !formattedUpdatedAt;
+    }
+
+    if (trackApplicationUpdated) {
+      trackApplicationUpdated.textContent =
+        formattedUpdatedAt || "Status date unavailable";
     }
 
     /* Keep the DEV dropdown synchronized with saved state */
@@ -3157,6 +3201,7 @@ window.addEventListener("hashchange", applyHashSection);
       /* Mark the application as submitted */
       applicationState.submitted = true;
       applicationState.draftSaved = true;
+      applicationState.updatedAt = new Date().toISOString();
 
       /* Save the submitted state in the browser */
       localStorage.setItem(
@@ -3221,6 +3266,7 @@ window.addEventListener("hashchange", applyHashSection);
       applicationState.status = selectedStatus.status;
       applicationState.nextStep = selectedStatus.nextStep;
       applicationState.guidance = selectedStatus.guidance;
+      applicationState.updatedAt = new Date().toISOString();
 
       /* Save the employer update in the browser */
       localStorage.setItem(
