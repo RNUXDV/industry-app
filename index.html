@@ -1289,7 +1289,7 @@
 
     <article class="jobs-track-card">
       <div class="jobs-track-card-top">
-        <span
+       <span
   class="jobs-track-status"
   data-profile-dashboard-status
 >
@@ -1323,7 +1323,9 @@
 
     <article class="jobs-track-card">
       <div class="jobs-track-card-top">
-        <span class="jobs-track-status">
+        <span class="jobs-track-status"
+          data-preferences-dashboard-status
+          >
           Not started
         </span>
 
@@ -1344,12 +1346,13 @@
       </div>
 
       <button
-        class="jobs-secondary-button"
-        type="button"
-        data-prepare-action="preferences"
-      >
-        Add preferences
-      </button>
+  class="jobs-secondary-button"
+  type="button"
+  data-open-jobs-view="prepare-preferences"
+  data-preferences-dashboard-action
+>
+  Add preferences
+</button>
     </article>
 
     <article class="jobs-track-card">
@@ -1537,6 +1540,259 @@
 </div>
 
 <!-- JOBS VIEW: PREPARE PROFILE - END -->
+
+<!-- =================================================
+| | | | JOBS VIEW: PREPARE PREFERENCES - START
+================================================== -->
+
+<div
+  class="jobs-view jobs-track-view"
+  data-jobs-view="prepare-preferences"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="prepare"
+  >
+    ← My Next Move
+  </button>
+
+  <section class="jobs-track-hero">
+    <span class="eyebrow">Your direction</span>
+
+    <h1>What I’m Looking For</h1>
+
+    <p>
+      Tell Industry which roles, workplaces, and opportunities match
+      the direction you want to take next.
+    </p>
+  </section>
+
+  <section class="jobs-profile-section">
+    <div class="jobs-profile-heading">
+      <span class="eyebrow">Job preferences</span>
+
+      <h2>Shape your search.</h2>
+
+      <p>
+        Industry can use these preferences to surface opportunities
+        that are more relevant to you.
+      </p>
+    </div>
+
+    <form
+      class="jobs-profile-form"
+      data-jobs-preferences-form
+    >
+      <fieldset class="jobs-preferences-group">
+        <legend>Desired roles</legend>
+
+        <p>Select all that apply.</p>
+
+        <div class="jobs-preferences-options">
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="desiredRoles"
+              value="Server"
+              data-preferences-role
+            />
+            <span>Server</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="desiredRoles"
+              value="Bartender"
+              data-preferences-role
+            />
+            <span>Bartender</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="desiredRoles"
+              value="Barista"
+              data-preferences-role
+            />
+            <span>Barista</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="desiredRoles"
+              value="Cook"
+              data-preferences-role
+            />
+            <span>Cook</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="desiredRoles"
+              value="Host"
+              data-preferences-role
+            />
+            <span>Host</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="desiredRoles"
+              value="Manager"
+              data-preferences-role
+            />
+            <span>Manager</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="jobs-preferences-group">
+        <legend>Preferred workplace types</legend>
+
+        <p>Select all that feel like a good fit.</p>
+
+        <div class="jobs-preferences-options">
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="workplaceTypes"
+              value="Restaurant"
+              data-preferences-workplace
+            />
+            <span>Restaurant</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="workplaceTypes"
+              value="Cafe"
+              data-preferences-workplace
+            />
+            <span>Café</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="workplaceTypes"
+              value="Bar or brewery"
+              data-preferences-workplace
+            />
+            <span>Bar or brewery</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="workplaceTypes"
+              value="Hotel"
+              data-preferences-workplace
+            />
+            <span>Hotel</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="workplaceTypes"
+              value="Catering or events"
+              data-preferences-workplace
+            />
+            <span>Catering or events</span>
+          </label>
+
+          <label class="jobs-choice">
+            <input
+              type="checkbox"
+              name="workplaceTypes"
+              value="Food cart"
+              data-preferences-workplace
+            />
+            <span>Food cart</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="jobs-form-field">
+        <label for="jobs-preferences-employment">
+          Employment preference
+        </label>
+
+        <select
+          id="jobs-preferences-employment"
+          name="employmentType"
+          data-preferences-employment
+          required
+        >
+          <option value="">Choose one</option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Either">Either full-time or part-time</option>
+        </select>
+      </div>
+
+      <div class="jobs-form-field">
+        <label for="jobs-preferences-location">
+          Preferred search location
+        </label>
+
+        <input
+          id="jobs-preferences-location"
+          name="searchLocation"
+          type="text"
+          autocomplete="address-level2"
+          placeholder="City, state"
+          data-preferences-location
+          required
+        />
+      </div>
+
+      <div class="jobs-form-field">
+        <label for="jobs-preferences-distance">
+          Search distance
+        </label>
+
+        <select
+          id="jobs-preferences-distance"
+          name="searchDistance"
+          data-preferences-distance
+          required
+        >
+          <option value="">Choose a distance</option>
+          <option value="5 miles">Within 5 miles</option>
+          <option value="10 miles">Within 10 miles</option>
+          <option value="20 miles">Within 20 miles</option>
+          <option value="50 miles">Within 50 miles</option>
+          <option value="No limit">No distance limit</option>
+        </select>
+      </div>
+
+      <p
+        class="jobs-form-message"
+        data-preferences-message
+        aria-live="polite"
+        hidden
+      ></p>
+
+      <button
+        class="jobs-profile-save"
+        type="submit"
+      >
+        Save my preferences
+      </button>
+    </form>
+  </section>
+</div>
+
+<!-- JOBS VIEW: PREPARE PREFERENCES - END -->
 
 
 <!-- ================================================

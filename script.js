@@ -3583,3 +3583,184 @@ window.addEventListener("hashchange", applyHashSection);
 
   updateProfileInterface();
 })();
+
+/* =================================================
+   JOBS: USER PREFERENCES
+================================================== */
+
+(() => {
+  const PREFERENCES_STORAGE_KEY = "industry-user-preferences";
+
+  const preferencesForm = document.querySelector(
+    "[data-jobs-preferences-form]",
+  );
+
+  const roleInputs = Array.from(
+    document.querySelectorAll("[data-preferences-role]"),
+  );
+
+  const workplaceInputs = Array.from(
+    document.querySelectorAll("[data-preferences-workplace]"),
+  );
+
+  const employmentInput = document.querySelector(
+    "[data-preferences-employment]",
+  );
+
+  const locationInput = document.querySelector("[data-preferences-location]");
+
+  const distanceInput = document.querySelector("[data-preferences-distance]");
+
+  const preferencesMessage = document.querySelector(
+    "[data-preferences-message]",
+  );
+
+  const dashboardStatus = document.querySelector(
+    "[data-preferences-dashboard-status]",
+  );
+
+  const dashboardAction = document.querySelector(
+    "[data-preferences-dashboard-action]",
+  );
+
+  if (
+    !preferencesForm ||
+    !employmentInput ||
+    !locationInput ||
+    !distanceInput
+  ) {
+    return;
+  }
+
+  const defaultPreferencesState = {
+    desiredRoles: [],
+    workplaceTypes: [],
+    employmentType: "",
+    searchLocation: "",
+    searchDistance: "",
+    completed: false,
+    updatedAt: null,
+  };
+
+  function loadPreferencesState() {
+    try {
+      const savedPreferences = localStorage.getItem(PREFERENCES_STORAGE_KEY);
+
+      if (!savedPreferences) {
+        return { ...defaultPreferencesState };
+      }
+
+      return {
+        ...defaultPreferencesState,
+        ...JSON.parse(savedPreferences),
+      };
+    } catch (error) {
+      console.warn("Unable to load Industry preferences.", error);
+
+      return { ...defaultPreferencesState };
+    }
+  }
+
+  let preferencesState = loadPreferencesState();
+
+  function preferencesAreComplete(preferences) {
+    return Boolean(
+      preferences.desiredRoles.length &&
+      preferences.workplaceTypes.length &&
+      preferences.employmentType &&
+      preferences.searchLocation.trim() &&
+      preferences.searchDistance,
+    );
+  }
+
+  function savePreferencesState() {
+    localStorage.setItem(
+      PREFERENCES_STORAGE_KEY,
+      JSON.stringify(preferencesState),
+    );
+  }
+
+  function updatePreferencesInterface() {
+    roleInputs.forEach((input) => {
+      input.checked = preferencesState.desiredRoles.includes(input.value);
+    });
+
+    workplaceInputs.forEach((input) => {
+      input.checked = preferencesState.workplaceTypes.includes(input.value);
+    });
+
+    employmentInput.value = preferencesState.employmentType;
+
+    locationInput.value = preferencesState.searchLocation;
+
+    distanceInput.value = preferencesState.searchDistance;
+
+    if (dashboardStatus) {
+      dashboardStatus.textContent = preferencesState.completed
+        ? "Complete"
+        : "Not started";
+
+      dashboardStatus.dataset.preferencesStatus = preferencesState.completed
+        ? "complete"
+        : "not-started";
+    }
+
+    if (dashboardAction) {
+      dashboardAction.textContent = preferencesState.completed
+        ? "Edit preferences"
+        : "Add preferences";
+    }
+  }
+
+  preferencesForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    if (!preferencesForm.checkValidity()) {
+      preferencesForm.reportValidity();
+      return;
+    }
+
+    const desiredRoles = roleInputs
+      .filter((input) => input.checked)
+      .map((input) => input.value);
+
+    const workplaceTypes = workplaceInputs
+      .filter((input) => input.checked)
+      .map((input) => input.value);
+
+    if (desiredRoles.length === 0 || workplaceTypes.length === 0) {
+      if (preferencesMessage) {
+        preferencesMessage.textContent =
+          "Choose at least one desired role and one workplace type.";
+
+        preferencesMessage.hidden = false;
+      }
+
+      return;
+    }
+
+    preferencesState = {
+      desiredRoles,
+      workplaceTypes,
+      employmentType: employmentInput.value,
+      searchLocation: locationInput.value.trim(),
+      searchDistance: distanceInput.value,
+      completed: false,
+      updatedAt: new Date().toISOString(),
+    };
+
+    preferencesState.completed = preferencesAreComplete(preferencesState);
+
+    savePreferencesState();
+    updatePreferencesInterface();
+
+    if (preferencesMessage) {
+      preferencesMessage.textContent =
+        "Preferences saved. Industry can now use them to personalize your job search.";
+
+      preferencesMessage.hidden = false;
+    }
+  });
+
+  updatePreferencesInterface();
+})();
