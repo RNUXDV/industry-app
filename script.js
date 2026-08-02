@@ -2842,6 +2842,10 @@ window.addEventListener("hashchange", applyHashSection);
     "[data-track-guidance]",
   );
 
+  const trackApplicationAction = document.querySelector(
+    "[data-track-application-action]",
+  );
+
   /* Track application update timestamp */
   const trackApplicationUpdatedRow = document.querySelector(
     "[data-track-updated-row]",
@@ -2936,6 +2940,14 @@ window.addEventListener("hashchange", applyHashSection);
      STEP 3: UPDATE THE APPLICATION INTERFACE
   ---------------------------------------------- */
 
+  const trackApplicationActionLabels = {
+    submitted: "View application",
+    viewed: "View application",
+    "interview-requested": "Review interview",
+    "offer-received": "Review offer",
+    "not-selected": "Explore opportunities",
+  };
+
   function updateApplicationInterface() {
     const resumeIsComplete = applicationState.resumeComplete;
     const applicationIsSubmitted = applicationState.submitted;
@@ -2964,6 +2976,13 @@ window.addEventListener("hashchange", applyHashSection);
     /* Update the application card guidance */
     if (trackApplicationGuidance) {
       trackApplicationGuidance.textContent = applicationState.guidance;
+    }
+
+    /* Update the Track application action */
+    if (trackApplicationAction) {
+      trackApplicationAction.textContent =
+        trackApplicationActionLabels[applicationState.statusKey] ||
+        "View application";
     }
 
     /* Update the application timestamp */
