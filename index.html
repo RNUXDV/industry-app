@@ -41,11 +41,9 @@
   </select>
 </aside>
 
-<div class="app-shell">
-    
-    
-    
-<div class="app-shell">
+
+
+  
      <header class="hero compact-hero">
   <div class="hero-top compact-hero-top">
     <div>
@@ -1175,69 +1173,964 @@
         </section>
         
 
-        <section class="app-section" data-section="jobs">
-          <div class="section-heading">
-            <p class="section-label">Jobs</p>
-            <h2>Jobs</h2>
-            <p>
-              Find new work, extra hours, event gigs, and service-industry
-              opportunities.
-            </p>
-          </div>
-          
+        <!-- ==================================================
+     JOBS PILLAR — START
+=================================================== -->
 
-          <section class="stack-list shift-list" aria-label="Job opportunities">
-            <article class="stack-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Opportunity</p>
-                <h3>Line Cook</h3>
-                <p>Pearl District - Full-time</p>
-              </div>
-              <button
-                class="action-button mock-preview-button"
-                type="button"
-                data-message="Job details preview coming soon."
-              >
-                View opportunity
-              </button>
-            </article>
+<section
+  class="app-section"
+  data-section="jobs"
+  id="jobs-pillar"
+>
 
-            <article class="stack-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Opportunity</p>
-                <h3>Bartender</h3>
-                <p>SE Portland - Weekend nights</p>
-              </div>
-              <button
-                class="action-button mock-preview-button"
-                type="button"
-                data-message="Job details preview coming soon."
-              >
-                View opportunity
-              </button>
-            </article>
+  <!-- ================================================
+       JOBS VIEW: HOME — START
+  ================================================= -->
 
-            <article class="stack-card">
-              <div class="stack-copy">
-                <p class="stack-kicker">Opportunity</p>
-                <h3>Event Server</h3>
-                <p>Portland Metro - Flexible gigs</p>
-              </div>
-              <button
-                class="action-button mock-preview-button"
-                type="button"
-                data-message="Job details preview coming soon."
-              >
-                View opportunity
-              </button>
-            </article>
-          </section>
+  <div
+    class="jobs-view is-active"
+    data-jobs-view="home"
+  >
 
-          <section class="today-panel" aria-label="Jobs placeholder status">
-            <p class="status-text" id="jobs-status-message">
-              Explore future opportunities here.
-            </p>
-          </section>
+  <div class="section-heading">
+    <p class="section-label">Jobs</p>
+
+    <h2>How can Industry help today?</h2>
+
+    <p>
+      Explore what's possible, prepare for your next move,
+      Jump when you're ready, or track your applications.
+    </p>
+  </div>
+
+  <section class="jobs-paths" aria-label="Jobs paths">
+  <button
+  class="jobs-path"
+  type="button"
+  data-open-jobs-view="explore-intro"
+>
+  <span class="jobs-path-label">Explore</span>
+
+  <strong>Explore Opportunities</strong>
+
+  <span class="jobs-path-description">
+    Browse workplaces and see what feels like a good fit.
+  </span>
+</button>
+
+  <button class="jobs-path" type="button" data-jobs-path="prepare">
+    <span class="jobs-path-label">Prepare</span>
+    <strong>Prepare for My Next Move</strong>
+    <span>
+      Build your worker profile, resume, cover letters, and preferences.
+    </span>
+  </button>
+
+  <button class="jobs-path" type="button" data-jobs-path="jump">
+    <span class="jobs-path-label">Jump</span>
+    <strong>I’m Ready to Jump</strong>
+    <span>
+      Move quickly toward current openings when you are ready.
+    </span>
+  </button>
+
+  <button
+  class="jobs-path"
+  type="button"
+  data-open-jobs-view="track"
+>
+    <span class="jobs-path-label">Track</span>
+    <strong>Track My Applications</strong>
+    <span>
+      Follow applications, interviews, offers, and next steps.
+    </span>
+  </button>
+</section>
+</div>
+
+<!-- JOBS VIEW: HOME — END -->
+
+
+<!-- ================================================
+     JOBS VIEW: EXPLORE INTRO — START
+================================================= -->
+
+<div
+  class="jobs-view jobs-explore-intro"
+  data-jobs-view="explore-intro"
+  hidden
+>
+  <button
+  class="jobs-back-button"
+  type="button"
+  data-open-jobs-view="home"
+>
+  ← Jobs
+</button>
+
+<div class="jobs-explore-panel">
+  <span class="eyebrow">Explore</span>
+
+  <h1>Explore Opportunities</h1>
+
+  <p class="lead">
+    Browse restaurants, cafés, hotels, breweries, food carts,
+    catering, and event spaces.
+  </p>
+
+  <button
+    class="primary-button"
+    type="button"
+    data-open-jobs-view="explore-categories"
+  >
+    Open Door <span aria-hidden="true">→</span>
+  </button>
+</div>
+</div>
+
+<!-- JOBS VIEW: EXPLORE INTRO — END -->
+
+
+<!-- ================================================
+     JOBS VIEW: EXPLORE CATEGORIES — START
+================================================= -->
+
+<div
+  class="jobs-view jobs-explore-categories"
+  data-jobs-view="explore-categories"
+  hidden
+>
+<button
+  class="jobs-back-button"
+  type="button"
+  data-open-jobs-view="explore-intro"
+>
+  ← Back
+</button>
+
+<span class="eyebrow">Explore</span>
+
+<h1>Where would you like to begin?</h1>
+
+<p class="lead">
+  Choose the kind of space you would like to explore.
+</p>
+
+<div class="jobs-space-list">
+  <button
+  class="jobs-space-option"
+  type="button"
+  data-open-jobs-view="restaurant-results"
+>
+  <span>Restaurants</span>
+  <span aria-hidden="true">→</span>
+</button>
+
+  <button class="jobs-space-option" type="button">
+    <span>Cafés</span>
+    <span aria-hidden="true">→</span>
+  </button>
+
+  <button class="jobs-space-option" type="button">
+    <span>Bars</span>
+    <span aria-hidden="true">→</span>
+  </button>
+
+  <button class="jobs-space-option" type="button">
+    <span>Breweries</span>
+    <span aria-hidden="true">→</span>
+  </button>
+
+  <button class="jobs-space-option" type="button">
+    <span>Hotels</span>
+    <span aria-hidden="true">→</span>
+  </button>
+
+  <button class="jobs-space-option" type="button">
+    <span>Food Carts</span>
+    <span aria-hidden="true">→</span>
+  </button>
+
+  <button class="jobs-space-option" type="button">
+    <span>Catering</span>
+    <span aria-hidden="true">→</span>
+  </button>
+
+  <button class="jobs-space-option" type="button">
+    <span>Event Spaces</span>
+    <span aria-hidden="true">→</span>
+  </button>
+</div>  
+</div>
+
+<!-- JOBS VIEW: EXPLORE CATEGORIES — END -->
+
+<!-- ==================================================
+     JOBS VIEW: RESTAURANT RESULTS — START
+=================================================== -->
+
+<div
+  class="jobs-view jobs-restaurant-results"
+  data-jobs-view="restaurant-results"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="explore-categories"
+  >
+    ← Explore spaces
+  </button>
+
+  <div class="jobs-results-heading">
+    <span class="eyebrow">Restaurants</span>
+
+    <h1>Picture yourself here.</h1>
+
+    <p class="lead">
+      Explore the place first. See available roles when one feels right.
+    </p>
+  </div>
+
+  <!-- ================================================
+       RESTAURANT CARDS — START
+  ================================================= -->
+
+  <div class="jobs-place-list">
+   <!-- ================================================
+     RESTAURANT CARD: JUNIPER HOUSE — START
+================================================= -->
+
+<article class="jobs-place-card">
+  <!-- Visual preview area -->
+  <div class="jobs-place-preview jobs-place-preview-juniper">
+    <span class="jobs-preview-label">
+      Dining room preview
+    </span>
+  </div>
+
+  <!-- Written information area -->
+  <div class="jobs-place-content">
+    <div class="jobs-place-title-row">
+      <div>
+        <span class="eyebrow">
+          Neighborhood Restaurant
+        </span>
+
+        <h2>Juniper House</h2>
+      </div>
+
+      <button
+        class="jobs-save-button"
+        type="button"
+        aria-label="Save Juniper House"
+      >
+        ♡
+      </button>
+    </div>
+
+    <p class="jobs-place-description">
+      Warm neighborhood dining with seasonal food, a close
+      team, and steady dinner service.
+    </p>
+
+    <div
+      class="jobs-place-tags"
+      aria-label="Juniper House workplace qualities"
+    >
+      <span>Warm</span>
+      <span>Small team</span>
+      <span>Dinner</span>
+    </div>
+
+    <button
+  class="jobs-explore-place-button"
+  type="button"
+  data-open-jobs-view="juniper-detail"
+>
+      Explore this place
+      <span aria-hidden="true">→</span>
+    </button>
+  </div>
+</article>
+
+<!-- RESTAURANT CARD: JUNIPER HOUSE — END --> 
+  <!-- ================================================
+     RESTAURANT CARD: NORTHLINE — START
+================================================= -->
+
+<article class="jobs-place-card">
+  <!-- Visual preview area -->
+  <div class="jobs-place-preview jobs-place-preview-northline">
+    <span class="jobs-preview-label">
+      Dining room preview
+    </span>
+  </div>
+
+  <!-- Written information area -->
+  <div class="jobs-place-content">
+    <div class="jobs-place-title-row">
+      <div>
+        <span class="eyebrow">
+          Modern Dining
+        </span>
+
+        <h2>Northline</h2>
+      </div>
+
+      <button
+        class="jobs-save-button"
+        type="button"
+        aria-label="Save Northline"
+      >
+        ♡
+      </button>
+    </div>
+
+    <p class="jobs-place-description">
+      Polished service, collaborative training, and a lively
+      dining room near downtown.
+    </p>
+
+    <div
+      class="jobs-place-tags"
+      aria-label="Northline workplace qualities"
+    >
+      <span>High energy</span>
+      <span>Training</span>
+      <span>Late nights</span>
+    </div>
+
+    <button
+      class="jobs-explore-place-button"
+      type="button"
+    >
+      Explore this place
+      <span aria-hidden="true">→</span>
+    </button>
+  </div>
+</article>
+
+<!-- RESTAURANT CARD: NORTHLINE — END -->
+  </div>
+
+  <!-- RESTAURANT CARDS — END -->
+</div>
+
+<!-- JOBS VIEW: RESTAURANT RESULTS — END -->
+
+<!-- ==================================================
+     JOBS VIEW: JUNIPER HOUSE DETAIL — START
+=================================================== -->
+
+<div
+  class="jobs-view jobs-place-detail"
+  data-jobs-view="juniper-detail"
+  hidden
+>
+  <!-- ================================================
+       JUNIPER DETAIL: BACK NAVIGATION
+  ================================================= -->
+
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="restaurant-results"
+  >
+    ← Restaurants
+  </button>
+
+
+  <!-- ================================================
+       JUNIPER DETAIL: HERO
+  ================================================= -->
+
+  <section class="jobs-detail-hero">
+    <div class="jobs-detail-preview jobs-detail-preview-juniper">
+      <span class="jobs-preview-label">
+        Juniper House
+      </span>
+    </div>
+
+    <div class="jobs-detail-heading">
+      <span class="eyebrow">
+        Neighborhood Restaurant
+      </span>
+
+      <div class="jobs-detail-title-row">
+        <h1>Juniper House</h1>
+
+        <button
+          class="jobs-save-button"
+          type="button"
+          aria-label="Save Juniper House"
+        >
+          ♡
+        </button>
+      </div>
+
+      <p class="lead">
+        Warm neighborhood dining with seasonal food,
+        a close team, and steady dinner service.
+      </p>
+
+      <div
+        class="jobs-place-tags"
+        aria-label="Juniper House workplace qualities"
+      >
+        <span>Warm</span>
+        <span>Small team</span>
+        <span>Dinner</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================
+       JUNIPER DETAIL: WORKPLACE OVERVIEW
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">The Place</span>
+
+    <h2>A neighborhood restaurant built around connection.</h2>
+
+    <p>
+      Juniper House serves seasonal food in a relaxed dining
+      room where regulars, coworkers, and thoughtful service
+      shape the experience.
+    </p>
+  </section>
+
+
+  <!-- ================================================
+       JUNIPER DETAIL: WORK EXPERIENCE
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">Working Here</span>
+
+    <h2>What the shift feels like</h2>
+
+    <div class="jobs-detail-facts">
+      <article>
+        <span>Team</span>
+        <strong>Small and close-knit</strong>
+      </article>
+
+      <article>
+        <span>Service</span>
+        <strong>Steady dinner pace</strong>
+      </article>
+
+      <article>
+        <span>Environment</span>
+        <strong>Warm and neighborhood-focused</strong>
+      </article>
+    </div>
+  </section>
+
+
+  <!-- ================================================
+       JUNIPER DETAIL: AVAILABLE ROLE
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">Available Role</span>
+
+    <article class="jobs-role-card">
+      <div>
+        <span class="jobs-role-status">Now hiring</span>
+
+        <h2>Server</h2>
+
+        <p>
+          Join the dinner team with consistent evening shifts,
+          seasonal menu training, and shared tip support.
+        </p>
+      </div>
+
+      <button
+  class="primary-button"
+  type="button"
+  data-open-jobs-view="juniper-server-role"
+>
+  View role
+  <span aria-hidden="true">→</span>
+</button>
+    </article>
+  </section>
+</div>
+
+<!-- JOBS VIEW: JUNIPER HOUSE DETAIL — END -->
+
+<!-- ==================================================
+     JOBS VIEW: JUNIPER SERVER ROLE — START
+=================================================== -->
+
+<div
+  class="jobs-view jobs-role-detail"
+  data-jobs-view="juniper-server-role"
+  hidden
+>
+  <!-- ================================================
+       SERVER ROLE: BACK NAVIGATION
+  ================================================= -->
+
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="juniper-detail"
+  >
+    ← Juniper House
+  </button>
+
+
+  <!-- ================================================
+       SERVER ROLE: HEADING
+  ================================================= -->
+
+  <section class="jobs-role-detail-hero">
+    <span class="eyebrow">Now Hiring</span>
+
+    <h1>Server</h1>
+
+    <p class="lead">
+      Join the Juniper House dinner team with consistent
+      evening shifts, seasonal menu training, and shared
+      tip support.
+    </p>
+
+    <div
+      class="jobs-place-tags"
+      aria-label="Server role details"
+    >
+      <span>Evenings</span>
+      <span>Part time</span>
+      <span>Tips</span>
+    </div>
+  </section>
+
+
+  <!-- ================================================
+       SERVER ROLE: QUICK DETAILS
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">Role Details</span>
+
+    <h2>What to know first</h2>
+
+    <div class="jobs-detail-facts">
+      <article>
+        <span>Schedule</span>
+        <strong>Three to four dinner shifts</strong>
+      </article>
+
+      <article>
+        <span>Experience</span>
+        <strong>One year preferred</strong>
+      </article>
+
+      <article>
+        <span>Compensation</span>
+        <strong>Hourly wage plus tips</strong>
+      </article>
+    </div>
+  </section>
+
+
+  <!-- ================================================
+       SERVER ROLE: RESPONSIBILITIES
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">The Work</span>
+
+    <h2>What you’ll be doing</h2>
+
+    <ul class="jobs-role-list">
+      <li>Guide guests through the seasonal menu.</li>
+      <li>Manage a steady dinner section.</li>
+      <li>Coordinate closely with the kitchen and bar.</li>
+      <li>Support opening and closing responsibilities.</li>
+    </ul>
+  </section>
+
+
+  <!-- ================================================
+       SERVER ROLE: APPLICATION ACTION
+  ================================================= -->
+
+  <section class="jobs-role-apply">
+    <span class="eyebrow">Interested?</span>
+
+    <h2>Take the next step.</h2>
+
+    <p>
+      Review your worker profile before sending your
+      application to Juniper House.
+    </p>
+
+    <button
+  class="primary-button"
+  type="button"
+  data-open-jobs-view="juniper-application-prep"
+>
+  Prepare to apply
+  <span aria-hidden="true">→</span>
+</button>
+  </section>
+</div>
+
+<!-- JOBS VIEW: JUNIPER SERVER ROLE — END -->
+
+<!-- ==================================================
+     JOBS VIEW: APPLICATION PREPARATION — START
+=================================================== -->
+
+<div
+  class="jobs-view jobs-application-prep"
+  data-jobs-view="juniper-application-prep"
+  hidden
+>
+  <!-- ================================================
+       APPLICATION PREP: BACK NAVIGATION
+  ================================================= -->
+
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="juniper-server-role"
+    data-application-back
+  >
+    ← Server role
+  </button>
+
+
+  <!-- ================================================
+       APPLICATION PREP: HEADING
+  ================================================= -->
+
+  <section class="jobs-application-hero">
+    <span
+  class="eyebrow"
+  data-application-hero-eyebrow
+>
+  Application Preparation
+</span>
+
+<h1 data-application-title>
+  Get ready to apply.
+</h1>
+
+    <p data-application-lead>
+  Review what Juniper House will receive and complete anything
+  that still needs attention.
+</p>
+
+    <div class="jobs-application-role">
+      <div>
+        <span>Applying for</span>
+        <strong>Server</strong>
+      </div>
+
+      <div>
+        <span>Workplace</span>
+        <strong>Juniper House</strong>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================
+       APPLICATION PREP: READINESS CHECKLIST
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">Application Readiness</span>
+
+    <h2>Your materials</h2>
+
+    <div class="jobs-readiness-list">
+
+      <!-- ================================================
+     READINESS ITEM: WORKER PROFILE
+================================================= -->
+
+<article class="jobs-readiness-item is-complete">
+  <div>
+    <span class="jobs-readiness-status">
+      Complete
+    </span>
+
+    <h3>Worker profile</h3>
+
+    <p>
+      Your experience, availability, and workplace
+      preferences are ready.
+    </p>
+  </div>
+
+  <button type="button">
+    Review
+  </button>
+</article>
+      <!-- ================================================
+     READINESS ITEM: RESUME
+================================================= -->
+
+<article
+  class="jobs-readiness-item"
+  data-readiness-item="resume"
+>
+  <div>
+    <span
+      class="jobs-readiness-status"
+      data-resume-status
+    >
+      Needs attention
+    </span>
+
+    <h3>Resume</h3>
+
+    <p>
+      Add or confirm the resume you want Juniper House
+      to receive.
+    </p>
+  </div>
+
+  <button
+    type="button"
+    data-action="add-resume"
+  >
+    Add resume
+  </button>
+</article>
+
+      <article class="jobs-readiness-item is-complete">
+        <div>
+          <span class="jobs-readiness-status">Complete</span>
+          <h3>Availability</h3>
+          <p>
+            Evening availability is included with your
+            application.
+          </p>
+        </div>
+
+        <button type="button">
+          Review
+        </button>
+      </article>
+    </div>
+  </section>
+
+
+  <!-- ================================================
+       APPLICATION PREP: MESSAGE
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">Introduction</span>
+
+    <h2>Say a little about yourself</h2>
+
+    <label
+      class="jobs-application-label"
+      for="juniper-application-message"
+    >
+      Optional message
+    </label>
+
+    <textarea
+      class="jobs-application-message"
+      id="juniper-application-message"
+      rows="6"
+      placeholder="Share why Juniper House feels like a good fit."
+    ></textarea>
+  </section>
+
+
+  <!-- ================================================
+     APPLICATION PREP: FINAL ACTION
+================================================= -->
+
+<section
+  class="jobs-application-submit"
+  aria-live="polite"
+>
+  <span
+  class="eyebrow"
+  data-application-eyebrow
+>
+  Almost Ready
+</span>
+  <h2 data-application-heading>
+    Complete your resume to continue.
+  </h2>
+
+  <p data-application-guidance>
+    Industry will keep this application here while you
+    finish preparing your materials.
+  </p>
+
+  <button
+    class="primary-button"
+    type="button"
+    data-action="submit-application"
+    disabled
+  >
+    Submit application
+    <span aria-hidden="true">→</span>
+  </button>
+
+  <button
+    class="jobs-secondary-button"
+    type="button"
+    data-action="save-application"
+  >
+    Save for later
+  </button>
+</section>
+</div>
+
+<!-- JOBS VIEW: APPLICATION PREPARATION — END -->
+
+<!-- =================================================
+     | | JOBS VIEW: TRACK APPLICATIONS - START
+================================================== -->
+
+<div
+  class="jobs-view jobs-track-view"
+  data-jobs-view="track"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="home"
+  >
+    ← Jobs
+  </button>
+
+  <!-- Track heading -->
+  <section class="jobs-track-hero">
+    <span class="eyebrow">Track</span>
+
+    <h1>My Applications</h1>
+
+    <p>
+      Follow submitted applications, current statuses, and next steps.
+    </p>
+  </section>
+
+  <!-- =============================================
+       | | TRACK: EMPTY STATE
+  ============================================== -->
+
+  <section
+    class="jobs-track-empty"
+    data-track-empty
+  >
+    <span class="eyebrow">No Applications Yet</span>
+
+    <h2>Your application activity will appear here.</h2>
+
+    <p>
+      Explore opportunities and prepare an application when a workplace
+      feels like a good fit.
+    </p>
+
+    <button
+      class="primary-button"
+      type="button"
+      data-open-jobs-view="explore-intro"
+    >
+      Explore opportunities
+      <span aria-hidden="true">→</span>
+    </button>
+  </section>
+
+  <!-- =============================================
+       | | TRACK: APPLICATION LIST
+  ============================================== -->
+
+  <section
+    class="jobs-track-list"
+    data-track-list
+    hidden
+  >
+    <div class="jobs-track-list-heading">
+      <span class="eyebrow">Active Applications</span>
+      <h2>Your application progress</h2>
+    </div>
+
+    <!-- ===========================================
+         | | TRACK CARD: JUNIPER HOUSE
+    ============================================ -->
+
+    <article
+      class="jobs-track-card"
+      data-track-application="juniper-house"
+      hidden
+    >
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-track-status
+        >
+          Submitted
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Neighborhood Restaurant
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Juniper House</span>
+
+        <h3>Server</h3>
+
+        <p data-track-guidance>
+          Your application has been submitted to Juniper House.
+        </p>
+      </div>
+
+      <div class="jobs-track-details">
+        <div>
+          <span>Status</span>
+          <strong data-track-status-detail>Submitted</strong>
+        </div>
+
+        <div>
+          <span>Next step</span>
+          <strong data-track-next-step>
+            Waiting for employer response
+          </strong>
+        </div>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-open-jobs-view="juniper-application-prep"
+      >
+        View application
+      </button>
+    </article>
+  </section>
+</div>
+
+<!-- JOBS VIEW: TRACK APPLICATIONS - END -->
+
+
+</section>
+<!-- JOBS PILLAR — END -->
+
+  
+
+</section>
         </section>
 
         <section class="app-section" data-section="people" id="people-top">
@@ -1335,7 +2228,7 @@
           People
         </button>
       </nav>
-    </div>
+    
 
     <script src="script.js"></script>
   </body>

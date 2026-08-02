@@ -2656,3 +2656,575 @@ crewActionStatus.textContent =
 
 applyHashSection();
 window.addEventListener("hashchange", applyHashSection);
+
+/* ==================================================
+   JOBS PILLAR — SCREEN NAVIGATION
+   Connects the Jobs Home, Explore Intro,
+   and Explore Categories screens.
+================================================== */
+
+(() => {
+  /* ----------------------------------------------
+     STEP 1: FIND THE JOBS PILLAR
+  ---------------------------------------------- */
+
+  const jobsSection = document.querySelector(
+    '.app-section[data-section="jobs"]',
+  );
+
+  /* Stop if the Jobs pillar does not exist */
+  if (!jobsSection) return;
+
+  /* ----------------------------------------------
+     STEP 2: FIND ALL JOBS SCREENS
+  ---------------------------------------------- */
+
+  const jobsViews = jobsSection.querySelectorAll("[data-jobs-view]");
+
+  /* ----------------------------------------------
+     STEP 3: CREATE THE SCREEN-SWITCHING FUNCTION
+  ---------------------------------------------- */
+
+  function showJobsView(viewName) {
+    jobsViews.forEach((view) => {
+      const isSelectedView = view.dataset.jobsView === viewName;
+
+      /* Show the selected screen */
+      view.hidden = !isSelectedView;
+
+      /* Add animation class to selected screen */
+      view.classList.toggle("is-active", isSelectedView);
+    });
+
+    /* Return the user to the top of Jobs */
+    jobsSection.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
+  /* ----------------------------------------------
+     STEP 4: LISTEN FOR JOBS BUTTON CLICKS
+  ---------------------------------------------- */
+
+  jobsSection.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-open-jobs-view]");
+
+    /* Ignore clicks that are not navigation buttons */
+    if (!trigger) return;
+
+    /* Read the destination from the HTML */
+    const destination = trigger.dataset.openJobsView;
+
+    /* Open the requested Jobs screen */
+    showJobsView(destination);
+  });
+
+  /* ----------------------------------------------
+     STEP 5: RESET JOBS WHEN BOTTOM NAV IS CLICKED
+  ---------------------------------------------- */
+
+  const jobsNavButton = document.querySelector('.nav-item[data-target="jobs"]');
+
+  if (jobsNavButton) {
+    jobsNavButton.addEventListener("click", () => {
+      showJobsView("home");
+    });
+  }
+})();
+
+/* ==================================================
+   JOBS APPLICATION — STATE MANAGEMENT
+
+   Controls:
+   - Resume readiness
+   - Submit button availability
+   - Application heading and guidance
+   - Saving the application draft
+================================================== */
+
+(() => {
+  /* ----------------------------------------------
+     STEP 1: FIND THE APPLICATION CONTROLS
+  ---------------------------------------------- */
+
+  const applicationPrepView = document.querySelector(
+    '[data-jobs-view="juniper-application-prep"]',
+  );
+
+  /* Stop if the Application Preparation screen is missing */
+  if (!applicationPrepView) return;
+
+  /* Resume readiness elements */
+  const resumeItem = applicationPrepView.querySelector(
+    '[data-readiness-item="resume"]',
+  );
+
+  const resumeStatus = applicationPrepView.querySelector(
+    "[data-resume-status]",
+  );
+
+  const addResumeButton = applicationPrepView.querySelector(
+    '[data-action="add-resume"]',
+  );
+
+  /* Final application elements */
+  const applicationHeading = applicationPrepView.querySelector(
+    "[data-application-heading]",
+  );
+
+  const applicationGuidance = applicationPrepView.querySelector(
+    "[data-application-guidance]",
+  );
+
+  const applicationEyebrow = applicationPrepView.querySelector(
+    "[data-application-eyebrow]",
+  );
+
+  const submitApplicationButton = applicationPrepView.querySelector(
+    '[data-action="submit-application"]',
+  );
+
+  const saveApplicationButton = applicationPrepView.querySelector(
+    '[data-action="save-application"]',
+  );
+
+  /* Optional application message */
+  const applicationMessage = applicationPrepView.querySelector(
+    "#juniper-application-message",
+  );
+
+  /* Application Preparation hero and navigation */
+  const applicationBackButton = applicationPrepView.querySelector(
+    "[data-application-back]",
+  );
+
+  const applicationHeroEyebrow = applicationPrepView.querySelector(
+    "[data-application-hero-eyebrow]",
+  );
+
+  const applicationTitle = applicationPrepView.querySelector(
+    "[data-application-title]",
+  );
+
+  const applicationLead = applicationPrepView.querySelector(
+    "[data-application-lead]",
+  );
+
+  /* Buttons inside the Application Readiness cards */
+const applicationReadinessButtons = applicationPrepView
+  ? applicationPrepView.querySelectorAll(
+      ".jobs-readiness-item button",
+    )
+  : [];
+
+  /* ----------------------------------------------
+     STEP 2: CREATE THE APPLICATION STATE
+  ---------------------------------------------- */
+
+  const APPLICATION_STORAGE_KEY = "industry-juniper-application";
+
+  /* Starting state used when no saved application exists */
+  const defaultApplicationState = {
+    resumeComplete: false,
+    draftSaved: false,
+    submitted: false,
+    message: "",
+  };
+
+  /* Look for an existing application saved in the browser */
+  function loadApplicationState() {
+    const savedState = localStorage.getItem(APPLICATION_STORAGE_KEY);
+
+    /* Use the starting state when nothing has been saved */
+    if (!savedState) {
+      return { ...defaultApplicationState };
+    }
+
+    try {
+      const parsedState = JSON.parse(savedState);
+
+      /* Combine saved information with the default structure */
+      return {
+        ...defaultApplicationState,
+        ...parsedState,
+      };
+    } catch (error) {
+      console.warn("Industry could not load the saved application.", error);
+
+      return { ...defaultApplicationState };
+    }
+  }
+
+  /* This object becomes the current application data */
+  const applicationState = loadApplicationState();
+
+  /* ----------------------------------------------
+     STEP 3: UPDATE THE APPLICATION INTERFACE
+  ---------------------------------------------- */
+
+  function updateApplicationInterface() {
+    const resumeIsComplete = applicationState.resumeComplete;
+    const applicationIsSubmitted = applicationState.submitted;
+
+    /* ------------------------------------------------
+     APPLICATION SCREEN MODE
+
+     Before submission:
+     - Returns to Server role
+     - Shows preparation language
+
+     After submission:
+     - Returns to My Applications
+     - Shows application-detail language
+  ------------------------------------------------ */
+
+    if (applicationBackButton) {
+      applicationBackButton.textContent = applicationIsSubmitted
+        ? "← My Applications"
+        : "← Server role";
+
+      applicationBackButton.dataset.openJobsView = applicationIsSubmitted
+        ? "track"
+        : "juniper-server-role";
+
+      applicationBackButton.setAttribute(
+        "aria-label",
+        applicationIsSubmitted
+          ? "Return to My Applications"
+          : "Return to Server role",
+      );
+    }
+
+    if (applicationHeroEyebrow) {
+      applicationHeroEyebrow.textContent = applicationIsSubmitted
+        ? "Application Details"
+        : "Application Preparation";
+    }
+
+    if (applicationTitle) {
+      applicationTitle.textContent = applicationIsSubmitted
+        ? "Your submitted application."
+        : "Get ready to apply.";
+    }
+
+    if (applicationLead) {
+      applicationLead.textContent = applicationIsSubmitted
+        ? "Review the materials sent to Juniper House and follow its current status in My Applications."
+        : "Review what Juniper House will receive and complete anything that still needs attention.";
+    }
+
+    /* ------------------------------------------------
+   SUBMITTED APPLICATION: READ-ONLY MODE
+------------------------------------------------ */
+
+if (applicationPrepView) {
+  applicationPrepView.classList.toggle(
+    "is-submitted",
+    applicationIsSubmitted,
+  );
+}
+
+applicationReadinessButtons.forEach((button) => {
+  button.hidden = applicationIsSubmitted;
+  button.disabled = applicationIsSubmitted;
+});
+
+    /* Update the Resume readiness card */
+    if (resumeItem) {
+      resumeItem.classList.toggle("is-complete", resumeIsComplete);
+    }
+
+    /* Update the Resume status label */
+    if (resumeStatus) {
+      resumeStatus.textContent = resumeIsComplete
+        ? "Complete"
+        : "Needs attention";
+    }
+
+    /* Update the Resume action button */
+    if (addResumeButton) {
+      addResumeButton.textContent = resumeIsComplete ? "Review" : "Add resume";
+    }
+
+    /* Update the final application heading */
+    if (applicationHeading) {
+      if (applicationIsSubmitted) {
+        applicationHeading.textContent = "Application submitted.";
+      } else {
+        applicationHeading.textContent = resumeIsComplete
+          ? "Your application is ready."
+          : "Complete your resume to continue.";
+      }
+    }
+
+    /* Update the final application guidance */
+    if (applicationGuidance) {
+      if (applicationIsSubmitted) {
+        applicationGuidance.textContent =
+          "Juniper House has received your application.";
+      } else {
+        applicationGuidance.textContent = resumeIsComplete
+          ? "Review your materials and submit when you are ready."
+          : "Industry will keep this application here while you finish preparing your materials.";
+      }
+    }
+    /* Update the final application eyebrow */
+    if (applicationEyebrow) {
+      if (applicationIsSubmitted) {
+        applicationEyebrow.textContent = "Application Sent";
+      } else {
+        applicationEyebrow.textContent = resumeIsComplete
+          ? "Ready to Apply"
+          : "Almost Ready";
+      }
+    }
+
+    /* Control the Submit button */
+    if (submitApplicationButton) {
+      submitApplicationButton.disabled =
+        !resumeIsComplete || applicationIsSubmitted;
+
+      submitApplicationButton.textContent = applicationIsSubmitted
+        ? "Application submitted"
+        : "Submit application →";
+    }
+    /* Hide Save for later after submission */
+    if (saveApplicationButton) {
+      saveApplicationButton.hidden = applicationIsSubmitted;
+    }
+    /* Restore and control the introduction message */
+if (applicationMessage) {
+  applicationMessage.value = applicationState.message;
+  applicationMessage.readOnly = applicationIsSubmitted;
+
+  applicationMessage.setAttribute(
+    "aria-readonly",
+    String(applicationIsSubmitted),
+  );
+}
+
+} // closes updateApplicationInterface()
+
+/* Draw the current state when the page loads */
+updateApplicationInterface();
+
+  /* ----------------------------------------------
+     STEP 4: COMPLETE THE RESUME REQUIREMENT
+  ---------------------------------------------- */
+
+  if (addResumeButton) {
+    addResumeButton.addEventListener("click", () => {
+      /* Simulate adding a resume */
+      applicationState.resumeComplete = true;
+
+      /* Save the updated state in the browser */
+      localStorage.setItem(
+        APPLICATION_STORAGE_KEY,
+        JSON.stringify(applicationState),
+      );
+
+      /* Redraw the interface with the new state */
+      updateApplicationInterface();
+    });
+  }
+
+  /* ----------------------------------------------
+   STEP 5: SAVE THE APPLICATION DRAFT
+---------------------------------------------- */
+
+  /* Keep the message in the current state while typing */
+  if (applicationMessage) {
+    applicationMessage.addEventListener("input", () => {
+      applicationState.message = applicationMessage.value;
+
+      /* New typing means the latest version is not saved yet */
+      applicationState.draftSaved = false;
+    });
+  }
+
+  /* Save the application when Save for later is clicked */
+  if (saveApplicationButton) {
+    saveApplicationButton.addEventListener("click", () => {
+      /* Capture the latest introduction message */
+      if (applicationMessage) {
+        applicationState.message = applicationMessage.value.trim();
+      }
+
+      applicationState.draftSaved = true;
+
+      /* Store the complete application state */
+      localStorage.setItem(
+        APPLICATION_STORAGE_KEY,
+        JSON.stringify(applicationState),
+      );
+
+      /* Give the user visible confirmation */
+      saveApplicationButton.textContent = "Saved";
+
+      window.setTimeout(() => {
+        saveApplicationButton.textContent = "Save for later";
+      }, 1600);
+    });
+  }
+
+  /* ------------------------------------------------
+   | | STEP 6: SUBMIT THE APPLICATION
+   ------------------------------------------------ */
+
+  if (submitApplicationButton) {
+    submitApplicationButton.addEventListener("click", () => {
+      /* Stop submission if the Resume is incomplete */
+      if (!applicationState.resumeComplete) return;
+
+      /* Prevent the same application from being submitted twice */
+      if (applicationState.submitted) return;
+
+      /* Capture the latest optional message */
+      if (applicationMessage) {
+        applicationState.message = applicationMessage.value.trim();
+      }
+
+      /* Mark the application as submitted */
+      applicationState.submitted = true;
+      applicationState.draftSaved = true;
+
+      /* Save the submitted state in the browser */
+      localStorage.setItem(
+        APPLICATION_STORAGE_KEY,
+        JSON.stringify(applicationState),
+      );
+
+      /* Redraw the screen as a confirmation state */
+      updateApplicationInterface();
+    });
+  }
+})();
+
+/* ==================================================
+   | | JOBS TRACK APPLICATIONS — STATE SYNC
+
+   Reads submitted application data from localStorage
+   and controls the Track Applications screen.
+================================================== */
+
+(() => {
+  /* ------------------------------------------------
+     | | STEP 1: FIND THE TRACK APPLICATIONS SCREEN
+  ------------------------------------------------ */
+
+  const jobsSection = document.querySelector(
+    '.app-section[data-section="jobs"]',
+  );
+
+  if (!jobsSection) return;
+
+  const trackView = jobsSection.querySelector('[data-jobs-view="track"]');
+
+  if (!trackView) return;
+
+  /* ------------------------------------------------
+     | | STEP 2: FIND THE TRACK SCREEN ELEMENTS
+  ------------------------------------------------ */
+
+  const trackEmptyState = trackView.querySelector("[data-track-empty]");
+
+  const trackApplicationList = trackView.querySelector("[data-track-list]");
+
+  const juniperApplicationCard = trackView.querySelector(
+    '[data-track-application="juniper-house"]',
+  );
+
+  const trackStatusElements = trackView.querySelectorAll(
+    "[data-track-status], [data-track-status-detail]",
+  );
+
+  const trackGuidance = trackView.querySelector("[data-track-guidance]");
+
+  const trackNextStep = trackView.querySelector("[data-track-next-step]");
+
+  /* ------------------------------------------------
+     | | STEP 3: CONNECT TO THE SAVED APPLICATION
+  ------------------------------------------------ */
+
+  const TRACK_APPLICATION_STORAGE_KEY = "industry-juniper-application";
+
+  function loadTrackedApplication() {
+    const savedApplication = localStorage.getItem(
+      TRACK_APPLICATION_STORAGE_KEY,
+    );
+
+    if (!savedApplication) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(savedApplication);
+    } catch (error) {
+      console.warn("Industry could not load the tracked application.", error);
+
+      return null;
+    }
+  }
+
+  /* ------------------------------------------------
+     | | STEP 4: UPDATE THE TRACK SCREEN
+  ------------------------------------------------ */
+
+  function updateTrackApplications() {
+    const savedApplication = loadTrackedApplication();
+
+    const applicationWasSubmitted = Boolean(
+      savedApplication && savedApplication.submitted,
+    );
+
+    /* Show the empty state when no application was submitted */
+    if (trackEmptyState) {
+      trackEmptyState.hidden = applicationWasSubmitted;
+    }
+
+    /* Show the application list after submission */
+    if (trackApplicationList) {
+      trackApplicationList.hidden = !applicationWasSubmitted;
+    }
+
+    /* Show the Juniper House card after submission */
+    if (juniperApplicationCard) {
+      juniperApplicationCard.hidden = !applicationWasSubmitted;
+    }
+
+    if (!applicationWasSubmitted) return;
+
+    /* Update every status label */
+    trackStatusElements.forEach((statusElement) => {
+      statusElement.textContent = "Submitted";
+    });
+
+    if (trackGuidance) {
+      trackGuidance.textContent =
+        "Your application has been submitted to Juniper House.";
+    }
+
+    if (trackNextStep) {
+      trackNextStep.textContent = "Waiting for employer response";
+    }
+  }
+
+  /* ------------------------------------------------
+     | | STEP 5: DRAW THE INITIAL TRACK STATE
+  ------------------------------------------------ */
+
+  updateTrackApplications();
+
+  /* ------------------------------------------------
+     | | STEP 6: REFRESH WHEN TRACK IS OPENED
+  ------------------------------------------------ */
+
+  jobsSection.addEventListener("click", (event) => {
+    const trackTrigger = event.target.closest('[data-open-jobs-view="track"]');
+
+    if (!trackTrigger) return;
+
+    updateTrackApplications();
+  });
+})();
