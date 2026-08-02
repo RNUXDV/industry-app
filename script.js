@@ -2831,6 +2831,14 @@ window.addEventListener("hashchange", applyHashSection);
     "[data-track-application-next-step]",
   );
 
+  const trackApplicationBadge = document.querySelector(
+    "[data-track-application-badge]",
+  );
+
+  const trackApplicationGuidance = document.querySelector(
+    "[data-track-guidance]",
+  );
+
   /* ------------------------------------------------
    TRACK APPLICATION: DEV STATUS CONTROL
 
@@ -2858,6 +2866,7 @@ window.addEventListener("hashchange", applyHashSection);
     statusKey: "submitted",
     status: "Submitted",
     nextStep: "Waiting for employer response",
+    guidance: "Your application has been submitted to Juniper House.",
 
     message: "",
   };
@@ -2910,6 +2919,17 @@ window.addEventListener("hashchange", applyHashSection);
 
     if (trackApplicationNextStep) {
       trackApplicationNextStep.textContent = applicationState.nextStep;
+    }
+
+    /* Update the application card badge */
+    if (trackApplicationBadge) {
+      trackApplicationBadge.textContent = applicationState.status;
+      trackApplicationBadge.dataset.trackStatus = applicationState.statusKey;
+    }
+
+    /* Update the application card guidance */
+    if (trackApplicationGuidance) {
+      trackApplicationGuidance.textContent = applicationState.guidance;
     }
 
     /* Keep the DEV dropdown synchronized with saved state */
@@ -3156,56 +3176,62 @@ window.addEventListener("hashchange", applyHashSection);
    application status without requiring a backend.
 ------------------------------------------------ */
 
-const trackStatusOptions = {
-  submitted: {
-    status: "Submitted",
-    nextStep: "Waiting for employer response",
-  },
+  const trackStatusOptions = {
+    submitted: {
+      status: "Submitted",
+      nextStep: "Waiting for employer response",
+      guidance: "Your application has been submitted to Juniper House.",
+    },
 
-  viewed: {
-    status: "Viewed",
-    nextStep: "Employer is reviewing your application",
-  },
+    viewed: {
+      status: "Viewed",
+      nextStep: "Employer is reviewing your application",
+      guidance: "Juniper House has viewed your application.",
+    },
 
-  "interview-requested": {
-    status: "Interview requested",
-    nextStep: "Review the interview details and respond",
-  },
+    "interview-requested": {
+      status: "Interview requested",
+      nextStep: "Review the interview details and respond",
+      guidance: "Juniper House would like to schedule an interview.",
+    },
 
-  "offer-received": {
-    status: "Offer received",
-    nextStep: "Review the offer and decide your next step",
-  },
+    "offer-received": {
+      status: "Offer received",
+      nextStep: "Review the offer and decide your next step",
+      guidance: "Juniper House has sent you an employment offer.",
+    },
 
-  "not-selected": {
-    status: "Not selected",
-    nextStep: "Continue exploring other opportunities",
-  },
-};
+    "not-selected": {
+      status: "Not selected",
+      nextStep: "Continue exploring other opportunities",
+      guidance:
+        "Juniper House has completed its review and selected another candidate.",
+    },
+  };
+  if (trackStatusControl) {
+    trackStatusControl.addEventListener("change", () => {
+      const selectedStatusKey = trackStatusControl.value;
+      const selectedStatus = trackStatusOptions[selectedStatusKey];
 
-if (trackStatusControl) {
-  trackStatusControl.addEventListener("change", () => {
-    const selectedStatusKey = trackStatusControl.value;
-    const selectedStatus = trackStatusOptions[selectedStatusKey];
+      /* Stop if the selected option is not recognized */
+      if (!selectedStatus) return;
 
-    /* Stop if the selected option is not recognized */
-    if (!selectedStatus) return;
+      /* Update the current application state */
+      applicationState.statusKey = selectedStatusKey;
+      applicationState.status = selectedStatus.status;
+      applicationState.nextStep = selectedStatus.nextStep;
+      applicationState.guidance = selectedStatus.guidance;
 
-    /* Update the current application state */
-    applicationState.statusKey = selectedStatusKey;
-    applicationState.status = selectedStatus.status;
-    applicationState.nextStep = selectedStatus.nextStep;
+      /* Save the employer update in the browser */
+      localStorage.setItem(
+        APPLICATION_STORAGE_KEY,
+        JSON.stringify(applicationState),
+      );
 
-    /* Save the employer update in the browser */
-    localStorage.setItem(
-      APPLICATION_STORAGE_KEY,
-      JSON.stringify(applicationState),
-    );
-
-    /* Redraw the Track application card */
-    updateApplicationInterface();
-  });
-}
+      /* Redraw the Track application card */
+      updateApplicationInterface();
+    });
+  }
 })();
 
 /* ==================================================
@@ -3241,14 +3267,6 @@ if (trackStatusControl) {
   const juniperApplicationCard = trackView.querySelector(
     '[data-track-application="juniper-house"]',
   );
-
-  const trackStatusElements = trackView.querySelectorAll(
-    "[data-track-status], [data-track-status-detail]",
-  );
-
-  const trackGuidance = trackView.querySelector("[data-track-guidance]");
-
-  const trackNextStep = trackView.querySelector("[data-track-next-step]");
 
   /* ------------------------------------------------
      | | STEP 3: CONNECT TO THE SAVED APPLICATION
@@ -3298,22 +3316,6 @@ if (trackStatusControl) {
     /* Show the Juniper House card after submission */
     if (juniperApplicationCard) {
       juniperApplicationCard.hidden = !applicationWasSubmitted;
-    }
-
-    if (!applicationWasSubmitted) return;
-
-    /* Update every status label */
-    trackStatusElements.forEach((statusElement) => {
-      statusElement.textContent = "Submitted";
-    });
-
-    if (trackGuidance) {
-      trackGuidance.textContent =
-        "Your application has been submitted to Juniper House.";
-    }
-
-    if (trackNextStep) {
-      trackNextStep.textContent = "Waiting for employer response";
     }
   }
 

@@ -3252,14 +3252,13 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   /* remaining small-screen rules */
 }
 
- /* ==================================================
+/* ==================================================
    JOBS VIEW: APPLICATION PREPARATION
 ================================================== */
 
 .jobs-application-prep {
   padding-bottom: 11rem;
 }
-
 
 /* ==================================================
    APPLICATION PREP: HERO
@@ -3272,11 +3271,7 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   border-radius: 2rem;
 
   background:
-    linear-gradient(
-      145deg,
-      var(--jobs-accent-soft),
-      transparent 48%
-    ),
+    linear-gradient(145deg, var(--jobs-accent-soft), transparent 48%),
     var(--panel-background);
 
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.12);
@@ -3323,7 +3318,6 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   line-height: 1.35;
 }
 
-
 /* ==================================================
    APPLICATION PREP: READINESS LIST
 ================================================== */
@@ -3350,11 +3344,7 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   border-color: var(--jobs-accent-border);
 
   background:
-    linear-gradient(
-      145deg,
-      var(--jobs-accent-soft),
-      transparent 58%
-    ),
+    linear-gradient(145deg, var(--jobs-accent-soft), transparent 58%),
     rgba(255, 255, 255, 0.015);
 }
 
@@ -3374,8 +3364,7 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   text-transform: uppercase;
 }
 
-.jobs-readiness-item.is-complete
-  .jobs-readiness-status {
+.jobs-readiness-item.is-complete .jobs-readiness-status {
   background: var(--jobs-accent-soft);
   color: var(--jobs-accent);
 }
@@ -3426,7 +3415,6 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   outline-offset: 4px;
 }
 
-
 /* ==================================================
    APPLICATION PREP: MESSAGE
 ================================================== */
@@ -3473,19 +3461,16 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
    SUBMITTED APPLICATION: READ-ONLY MODE
 ================================================== */
 
-.jobs-application-prep.is-submitted
-  .jobs-application-message {
+.jobs-application-prep.is-submitted .jobs-application-message {
   resize: none;
   cursor: default;
   border-color: var(--jobs-accent-border);
   background: var(--panel-background);
 }
 
-.jobs-application-prep.is-submitted
-  .jobs-readiness-item {
+.jobs-application-prep.is-submitted .jobs-readiness-item {
   padding-bottom: clamp(1.75rem, 7vw, 2.25rem);
 }
-
 
 /* ==================================================
    APPLICATION PREP: FINAL ACTION
@@ -3571,7 +3556,6 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   outline-offset: 4px;
 }
 
-
 /* ==================================================
    APPLICATION PREPARATION: SMALL SCREENS
 ================================================== */
@@ -3653,11 +3637,7 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   border-radius: 2rem;
 
   background:
-    linear-gradient(
-      145deg,
-      var(--jobs-accent-soft),
-      transparent 48%
-    ),
+    linear-gradient(145deg, var(--jobs-accent-soft), transparent 48%),
     var(--panel-background);
 }
 
@@ -3773,6 +3753,77 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   font-weight: 850;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+/* ==================================================
+   JOBS TRACK: APPLICATION STATUS STATES
+================================================== */
+
+/* Submitted */
+.jobs-track-status[data-track-status="submitted"] {
+  color: #8fe0cf;
+  background: rgba(131, 216, 197, 0.14);
+  border-color: rgba(131, 216, 197, 0.32);
+}
+
+/* Viewed */
+.jobs-track-status[data-track-status="viewed"] {
+  color: #a9c9ff;
+  background: rgba(122, 171, 255, 0.14);
+  border-color: rgba(122, 171, 255, 0.34);
+}
+
+/* Interview requested */
+.jobs-track-status[data-track-status="interview-requested"] {
+  color: #ffd08f;
+  background: rgba(255, 188, 94, 0.15);
+  border-color: rgba(255, 188, 94, 0.38);
+}
+
+/* Offer received */
+.jobs-track-status[data-track-status="offer-received"] {
+  color: #9debb3;
+  background: rgba(103, 211, 135, 0.15);
+  border-color: rgba(103, 211, 135, 0.36);
+}
+
+/* Not selected */
+.jobs-track-status[data-track-status="not-selected"] {
+  color: #e3a6b0;
+  background: rgba(207, 112, 128, 0.13);
+  border-color: rgba(207, 112, 128, 0.32);
+}
+
+/* Light-theme status contrast */
+[data-theme="light"] .jobs-track-status[data-track-status="submitted"] {
+  color: #256d60;
+  background: rgba(55, 151, 132, 0.13);
+  border-color: rgba(55, 151, 132, 0.3);
+}
+
+[data-theme="light"] .jobs-track-status[data-track-status="viewed"] {
+  color: #315f9f;
+  background: rgba(74, 128, 199, 0.13);
+  border-color: rgba(74, 128, 199, 0.3);
+}
+
+[data-theme="light"]
+  .jobs-track-status[data-track-status="interview-requested"] {
+  color: #875800;
+  background: rgba(210, 145, 28, 0.14);
+  border-color: rgba(210, 145, 28, 0.34);
+}
+
+[data-theme="light"] .jobs-track-status[data-track-status="offer-received"] {
+  color: #286c3e;
+  background: rgba(59, 157, 87, 0.13);
+  border-color: rgba(59, 157, 87, 0.31);
+}
+
+[data-theme="light"] .jobs-track-status[data-track-status="not-selected"] {
+  color: #874150;
+  background: rgba(183, 87, 105, 0.12);
+  border-color: rgba(183, 87, 105, 0.28);
 }
 
 .jobs-track-workplace-type {
