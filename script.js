@@ -2871,8 +2871,8 @@ window.addEventListener("hashchange", applyHashSection);
   /* ----------------------------------------------
      STEP 2: CREATE THE APPLICATION STATE
   ---------------------------------------------- */
-
   const APPLICATION_STORAGE_KEY = "industry-juniper-application";
+  const READINESS_STORAGE_KEY = "industry-user-readiness";
 
   /* Starting state used when no saved application exists */
   const defaultApplicationState = {
@@ -2948,10 +2948,75 @@ window.addEventListener("hashchange", applyHashSection);
     "not-selected": "Explore opportunities",
   };
 
-  function updateApplicationInterface() {
-    const resumeIsComplete = applicationState.resumeComplete;
-    const applicationIsSubmitted = applicationState.submitted;
+  function loadGlobalResumeReadiness() {
+    try {
+      const savedReadiness = localStorage.getItem(READINESS_STORAGE_KEY);
 
+      if (!savedReadiness) {
+        return null;
+      }
+
+      const parsedReadiness = JSON.parse(savedReadiness);
+
+      return Boolean(parsedReadiness.resumeReady);
+    } catch (error) {
+      console.warn("Unable to load global resume readiness.", error);
+
+      return null;
+    }
+  }
+
+  function saveGlobalResumeReadiness(resumeReady) {
+    let existingReadiness = {};
+
+    try {
+      existingReadiness =
+        JSON.parse(localStorage.getItem(READINESS_STORAGE_KEY)) || {};
+    } catch (error) {
+      console.warn("Unable to read existing resume readiness.", error);
+    }
+
+    localStorage.setItem(
+      READINESS_STORAGE_KEY,
+      JSON.stringify({
+        ...existingReadiness,
+        resumeReady,
+        updatedAt: new Date().toISOString(),
+      }),
+    );
+  }
+
+  function syncApplicationResumeFromReadiness() {
+    /* Do not rewrite the history of a submitted application. */
+    if (applicationState.submitted) {
+      return;
+    }
+
+    const globalResumeReady = loadGlobalResumeReadiness();
+
+    /* Preserve older application data when no reusable setting exists. */
+    if (globalResumeReady === null) {
+      return;
+    }
+
+    if (applicationState.resumeComplete === globalResumeReady) {
+      return;
+    }
+
+    applicationState.resumeComplete = globalResumeReady;
+
+    localStorage.setItem(
+      APPLICATION_STORAGE_KEY,
+      JSON.stringify(applicationState),
+    );
+  }
+
+  function updateApplicationInterface() {
+    syncApplicationResumeFromReadiness();
+
+    const resumeIsComplete = applicationState.resumeComplete;
+
+    const applicationIsSubmitted = applicationState.submitted;
     /* ------------------------------------------------
    TRACK APPLICATION: RENDER CURRENT PROGRESS
 
@@ -3181,6 +3246,9 @@ window.addEventListener("hashchange", applyHashSection);
       /* Simulate adding a resume */
       applicationState.resumeComplete = true;
 
+      /* Reuse this readiness across future applications */
+      saveGlobalResumeReadiness(true);
+
       /* Save the updated state in the browser */
       localStorage.setItem(
         APPLICATION_STORAGE_KEY,
@@ -3239,7 +3307,6 @@ window.addEventListener("hashchange", applyHashSection);
     submitApplicationButton.addEventListener("click", () => {
       /* Stop submission if the Resume is incomplete */
       if (!applicationState.resumeComplete) return;
-
       /* Prevent the same application from being submitted twice */
       if (applicationState.submitted) return;
 
@@ -3328,6 +3395,18 @@ window.addEventListener("hashchange", applyHashSection);
       updateApplicationInterface();
     });
   }
+
+  document.addEventListener("click", (event) => {
+    const applicationTrigger = event.target.closest(
+      '[data-open-jobs-view="juniper-application-prep"]',
+    );
+
+    if (!applicationTrigger) {
+      return;
+    }
+
+    setTimeout(updateApplicationInterface, 0);
+  });
 })();
 
 /* ==================================================
@@ -3770,8 +3849,7 @@ window.addEventListener("hashchange", applyHashSection);
 ================================================== */
 
 (() => {
-  const AVAILABILITY_STORAGE_KEY =
-    "industry-user-availability";
+  const AVAILABILITY_STORAGE_KEY = "industry-user-availability";
 
   const availabilityForm = document.querySelector(
     "[data-jobs-availability-form]",
@@ -3785,13 +3863,9 @@ window.addEventListener("hashchange", applyHashSection);
     document.querySelectorAll("[data-availability-shift]"),
   );
 
-  const hoursInput = document.querySelector(
-    "[data-availability-hours]",
-  );
+  const hoursInput = document.querySelector("[data-availability-hours]");
 
-  const startInput = document.querySelector(
-    "[data-availability-start]",
-  );
+  const startInput = document.querySelector("[data-availability-start]");
 
   const availabilityMessage = document.querySelector(
     "[data-availability-message]",
@@ -3820,9 +3894,7 @@ window.addEventListener("hashchange", applyHashSection);
 
   function loadAvailabilityState() {
     try {
-      const savedAvailability = localStorage.getItem(
-        AVAILABILITY_STORAGE_KEY,
-      );
+      const savedAvailability = localStorage.getItem(AVAILABILITY_STORAGE_KEY);
 
       if (!savedAvailability) {
         return { ...defaultAvailabilityState };
@@ -3833,10 +3905,7 @@ window.addEventListener("hashchange", applyHashSection);
         ...JSON.parse(savedAvailability),
       };
     } catch (error) {
-      console.warn(
-        "Unable to load Industry availability.",
-        error,
-      );
+      console.warn("Unable to load Industry availability.", error);
 
       return { ...defaultAvailabilityState };
     }
@@ -3847,9 +3916,9 @@ window.addEventListener("hashchange", applyHashSection);
   function availabilityIsComplete(availability) {
     return Boolean(
       availability.availableDays.length &&
-        availability.preferredShifts.length &&
-        availability.weeklyHours &&
-        availability.startAvailability,
+      availability.preferredShifts.length &&
+      availability.weeklyHours &&
+      availability.startAvailability,
     );
   }
 
@@ -3862,99 +3931,82 @@ window.addEventListener("hashchange", applyHashSection);
 
   function updateAvailabilityInterface() {
     dayInputs.forEach((input) => {
-      input.checked =
-        availabilityState.availableDays.includes(
-          input.value,
-        );
+      input.checked = availabilityState.availableDays.includes(input.value);
     });
 
     shiftInputs.forEach((input) => {
-      input.checked =
-        availabilityState.preferredShifts.includes(
-          input.value,
-        );
+      input.checked = availabilityState.preferredShifts.includes(input.value);
     });
 
     hoursInput.value = availabilityState.weeklyHours;
 
-    startInput.value =
-      availabilityState.startAvailability;
+    startInput.value = availabilityState.startAvailability;
 
     if (dashboardStatus) {
-      dashboardStatus.textContent =
-        availabilityState.completed
-          ? "Complete"
-          : "Not started";
+      dashboardStatus.textContent = availabilityState.completed
+        ? "Complete"
+        : "Not started";
 
-      dashboardStatus.dataset.availabilityStatus =
-        availabilityState.completed
-          ? "complete"
-          : "not-started";
+      dashboardStatus.dataset.availabilityStatus = availabilityState.completed
+        ? "complete"
+        : "not-started";
     }
 
     if (dashboardAction) {
-      dashboardAction.textContent =
-        availabilityState.completed
-          ? "Edit availability"
-          : "Set availability";
+      dashboardAction.textContent = availabilityState.completed
+        ? "Edit availability"
+        : "Set availability";
     }
   }
 
-  availabilityForm.addEventListener(
-    "submit",
-    (event) => {
-      event.preventDefault();
+  availabilityForm.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-      if (!availabilityForm.checkValidity()) {
-        availabilityForm.reportValidity();
-        return;
-      }
+    if (!availabilityForm.checkValidity()) {
+      availabilityForm.reportValidity();
+      return;
+    }
 
-      const availableDays = dayInputs
-        .filter((input) => input.checked)
-        .map((input) => input.value);
+    const availableDays = dayInputs
+      .filter((input) => input.checked)
+      .map((input) => input.value);
 
-      const preferredShifts = shiftInputs
-        .filter((input) => input.checked)
-        .map((input) => input.value);
+    const preferredShifts = shiftInputs
+      .filter((input) => input.checked)
+      .map((input) => input.value);
 
-      if (
-        availableDays.length === 0 ||
-        preferredShifts.length === 0
-      ) {
-        if (availabilityMessage) {
-          availabilityMessage.textContent =
-            "Choose at least one available day and one preferred shift.";
-
-          availabilityMessage.hidden = false;
-        }
-
-        return;
-      }
-
-      availabilityState = {
-        availableDays,
-        preferredShifts,
-        weeklyHours: hoursInput.value,
-        startAvailability: startInput.value,
-        completed: false,
-        updatedAt: new Date().toISOString(),
-      };
-
-      availabilityState.completed =
-        availabilityIsComplete(availabilityState);
-
-      saveAvailabilityState();
-      updateAvailabilityInterface();
-
+    if (availableDays.length === 0 || preferredShifts.length === 0) {
       if (availabilityMessage) {
         availabilityMessage.textContent =
-          "Availability saved. Industry can now use your schedule preferences when matching opportunities.";
+          "Choose at least one available day and one preferred shift.";
 
         availabilityMessage.hidden = false;
       }
-    },
-  );
+
+      return;
+    }
+
+    availabilityState = {
+      availableDays,
+      preferredShifts,
+      weeklyHours: hoursInput.value,
+      startAvailability: startInput.value,
+      completed: false,
+      updatedAt: new Date().toISOString(),
+    };
+
+    availabilityState.completed = availabilityIsComplete(availabilityState);
+
+    saveAvailabilityState();
+    updateAvailabilityInterface();
+
+    if (availabilityMessage) {
+      availabilityMessage.textContent =
+        "Availability saved. Industry can now use your schedule preferences when matching opportunities.";
+
+      availabilityMessage.hidden = false;
+    }
+  });
 
   updateAvailabilityInterface();
 })();
@@ -3965,12 +4017,11 @@ window.addEventListener("hashchange", applyHashSection);
 
 (() => {
   const PROFILE_STORAGE_KEY = "industry-user-profile";
-  const PREFERENCES_STORAGE_KEY =
-    "industry-user-preferences";
-  const AVAILABILITY_STORAGE_KEY =
-    "industry-user-availability";
-  const READINESS_STORAGE_KEY =
-    "industry-user-readiness";
+  const PREFERENCES_STORAGE_KEY = "industry-user-preferences";
+  const AVAILABILITY_STORAGE_KEY = "industry-user-availability";
+  const READINESS_STORAGE_KEY = "industry-user-readiness";
+
+  const APPLICATION_STORAGE_KEY = "industry-juniper-application";
 
   const dashboardStatus = document.querySelector(
     "[data-readiness-dashboard-status]",
@@ -4016,13 +4067,13 @@ window.addEventListener("hashchange", applyHashSection);
     "[data-readiness-availability-action]",
   );
 
-  const resumeStatus = document.querySelector(
-    "[data-readiness-resume-status]",
+  const applicationAction = document.querySelector(
+    "[data-readiness-application-action]",
   );
 
-  const resumeToggle = document.querySelector(
-    "[data-readiness-resume-toggle]",
-  );
+  const resumeStatus = document.querySelector("[data-readiness-resume-status]");
+
+  const resumeToggle = document.querySelector("[data-readiness-resume-toggle]");
 
   if (!overallStatus || !resumeToggle) {
     return;
@@ -4039,10 +4090,7 @@ window.addEventListener("hashchange", applyHashSection);
 
       return savedValue ? JSON.parse(savedValue) : null;
     } catch (error) {
-      console.warn(
-        `Unable to load ${storageKey}.`,
-        error,
-      );
+      console.warn(`Unable to load ${storageKey}.`, error);
 
       return null;
     }
@@ -4055,9 +4103,7 @@ window.addEventListener("hashchange", applyHashSection);
   }
 
   function loadReadinessState() {
-    const savedReadiness = loadStorageObject(
-      READINESS_STORAGE_KEY,
-    );
+    const savedReadiness = loadStorageObject(READINESS_STORAGE_KEY);
 
     return {
       ...defaultReadinessState,
@@ -4068,22 +4114,13 @@ window.addEventListener("hashchange", applyHashSection);
   let readinessState = loadReadinessState();
 
   function saveReadinessState() {
-    localStorage.setItem(
-      READINESS_STORAGE_KEY,
-      JSON.stringify(readinessState),
-    );
+    localStorage.setItem(READINESS_STORAGE_KEY, JSON.stringify(readinessState));
   }
 
-  function updateStatus(
-    statusElement,
-    isComplete,
-    completeText = "Complete",
-  ) {
+  function updateStatus(statusElement, isComplete, completeText = "Complete") {
     if (!statusElement) return;
 
-    statusElement.textContent = isComplete
-      ? completeText
-      : "Needs attention";
+    statusElement.textContent = isComplete ? completeText : "Needs attention";
 
     statusElement.dataset.readinessStatus = isComplete
       ? "complete"
@@ -4091,17 +4128,11 @@ window.addEventListener("hashchange", applyHashSection);
   }
 
   function updateReadinessInterface() {
-    const profileComplete = sectionIsComplete(
-      PROFILE_STORAGE_KEY,
-    );
+    const profileComplete = sectionIsComplete(PROFILE_STORAGE_KEY);
 
-    const preferencesComplete = sectionIsComplete(
-      PREFERENCES_STORAGE_KEY,
-    );
+    const preferencesComplete = sectionIsComplete(PREFERENCES_STORAGE_KEY);
 
-    const availabilityComplete = sectionIsComplete(
-      AVAILABILITY_STORAGE_KEY,
-    );
+    const availabilityComplete = sectionIsComplete(AVAILABILITY_STORAGE_KEY);
 
     const resumeReady = readinessState.resumeReady;
 
@@ -4116,24 +4147,30 @@ window.addEventListener("hashchange", applyHashSection);
       preferencesComplete,
       availabilityComplete,
       resumeReady,
-    ].filter((sectionComplete) => !sectionComplete)
-      .length;
+    ].filter((sectionComplete) => !sectionComplete).length;
+
+    /* Read the current Juniper application */
+    const juniperApplication = loadStorageObject(APPLICATION_STORAGE_KEY);
+
+    const hasJuniperApplication = Boolean(juniperApplication);
+
+    const applicationWasSubmitted = Boolean(juniperApplication?.submitted);
+
+    if (applicationAction) {
+      applicationAction.hidden = !hasJuniperApplication;
+
+      applicationAction.textContent = applicationWasSubmitted
+        ? "View submitted application"
+        : "Continue Juniper application";
+
+      applicationAction.dataset.openJobsView = "juniper-application-prep";
+    }
 
     updateStatus(profileStatus, profileComplete);
-    updateStatus(
-      preferencesStatus,
-      preferencesComplete,
-    );
-    updateStatus(
-      availabilityStatus,
-      availabilityComplete,
-    );
+    updateStatus(preferencesStatus, preferencesComplete);
+    updateStatus(availabilityStatus, availabilityComplete);
     updateStatus(resumeStatus, resumeReady, "Ready");
-    updateStatus(
-      overallStatus,
-      allSectionsReady,
-      "Ready to apply",
-    );
+    updateStatus(overallStatus, allSectionsReady, "Ready to apply");
     updateStatus(dashboardStatus, allSectionsReady);
 
     if (profileAction) {
@@ -4143,17 +4180,15 @@ window.addEventListener("hashchange", applyHashSection);
     }
 
     if (preferencesAction) {
-      preferencesAction.textContent =
-        preferencesComplete
-          ? "Edit preferences"
-          : "Add preferences";
+      preferencesAction.textContent = preferencesComplete
+        ? "Edit preferences"
+        : "Add preferences";
     }
 
     if (availabilityAction) {
-      availabilityAction.textContent =
-        availabilityComplete
-          ? "Edit availability"
-          : "Set availability";
+      availabilityAction.textContent = availabilityComplete
+        ? "Edit availability"
+        : "Set availability";
     }
 
     resumeToggle.textContent = resumeReady
@@ -4192,27 +4227,18 @@ window.addEventListener("hashchange", applyHashSection);
   });
 
   document.addEventListener("click", (event) => {
-    const navigationTrigger = event.target.closest(
-      "[data-open-jobs-view]",
-    );
+    const navigationTrigger = event.target.closest("[data-open-jobs-view]");
 
     if (!navigationTrigger) return;
 
-    const destination =
-      navigationTrigger.dataset.openJobsView;
+    const destination = navigationTrigger.dataset.openJobsView;
 
-    if (
-      destination === "prepare" ||
-      destination === "prepare-readiness"
-    ) {
+    if (destination === "prepare" || destination === "prepare-readiness") {
       setTimeout(updateReadinessInterface, 0);
     }
   });
 
-  window.addEventListener(
-    "storage",
-    updateReadinessInterface,
-  );
+  window.addEventListener("storage", updateReadinessInterface);
 
   updateReadinessInterface();
 })();
