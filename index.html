@@ -1228,7 +1228,7 @@
     </span>
   </button>
 
-  <button class="jobs-path" type="button" data-jobs-path="jump">
+  <button class="jobs-path" type="button" data-open-jobs-view="jump">
     <span class="jobs-path-label">Jump</span>
     <strong>I’m Ready to Jump</strong>
     <span>
@@ -1251,6 +1251,145 @@
 </div>
 
 <!-- JOBS VIEW: HOME — END -->
+
+<!-- =================================================
+| | | | JOBS VIEW: JUMP - START
+================================================== -->
+
+<div
+  class="jobs-view jobs-track-view"
+  data-jobs-view="jump"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="home"
+  >
+    ← Jobs
+  </button>
+
+  <section class="jobs-track-hero">
+    <span class="eyebrow">Jump</span>
+
+    <h1 data-jump-heading>
+      Ready for your next move?
+    </h1>
+
+    <p data-jump-intro>
+      Industry can use your saved profile, preferences, and
+      availability to help you move toward relevant opportunities.
+    </p>
+  </section>
+
+  <section class="jobs-track-list">
+    <span class="eyebrow">Your direction</span>
+
+    <h2>Before you jump</h2>
+
+    <!-- Readiness card -->
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-jump-readiness-status
+        >
+          Checking readiness
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Application tools
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Your preparation</span>
+
+        <h3 data-jump-readiness-heading>
+          Let’s see what is ready.
+        </h3>
+
+        <p data-jump-readiness-message>
+          Industry is reviewing your saved preparation.
+        </p>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-open-jobs-view="prepare-readiness"
+        data-jump-readiness-action
+      >
+        Review readiness
+      </button>
+    </article>
+
+    <!-- Search summary card -->
+    <article
+      class="jobs-track-card"
+      data-jump-search-card
+      hidden
+    >
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-readiness-status="complete"
+        >
+          Ready
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Personalized search
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">What you’re looking for</span>
+
+        <h3 data-jump-search-heading>
+          Your next opportunity
+        </h3>
+
+        <p data-jump-search-message>
+          Your saved preferences will shape the opportunities you see.
+        </p>
+      </div>
+
+      <div class="jobs-track-details">
+        <div>
+          <span>Roles</span>
+          <strong data-jump-roles>
+            Not selected
+          </strong>
+        </div>
+
+        <div>
+          <span>Location</span>
+          <strong data-jump-location>
+            Not selected
+          </strong>
+        </div>
+
+        <div>
+          <span>Availability</span>
+          <strong data-jump-availability>
+            Not selected
+          </strong>
+        </div>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-open-jobs-view="explore-intro"
+      >
+        Explore matching opportunities
+      </button>
+    </article>
+  </section>
+</div>
+
+<!-- JOBS VIEW: JUMP - END -->
 
 <!-- =================================================
 | | | | JOBS VIEW: PREPARE - START

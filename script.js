@@ -4242,3 +4242,200 @@ window.addEventListener("hashchange", applyHashSection);
 
   updateReadinessInterface();
 })();
+
+/* =================================================
+   JOBS: READY TO JUMP
+================================================== */
+
+(() => {
+  const PROFILE_STORAGE_KEY = "industry-user-profile";
+  const PREFERENCES_STORAGE_KEY = "industry-user-preferences";
+  const AVAILABILITY_STORAGE_KEY = "industry-user-availability";
+  const READINESS_STORAGE_KEY = "industry-user-readiness";
+
+  const jumpHeading = document.querySelector("[data-jump-heading]");
+
+  const jumpIntro = document.querySelector("[data-jump-intro]");
+
+  const jumpReadinessStatus = document.querySelector(
+    "[data-jump-readiness-status]",
+  );
+
+  const jumpReadinessHeading = document.querySelector(
+    "[data-jump-readiness-heading]",
+  );
+
+  const jumpReadinessMessage = document.querySelector(
+    "[data-jump-readiness-message]",
+  );
+
+  const jumpReadinessAction = document.querySelector(
+    "[data-jump-readiness-action]",
+  );
+
+  const jumpSearchCard = document.querySelector("[data-jump-search-card]");
+
+  const jumpSearchHeading = document.querySelector(
+    "[data-jump-search-heading]",
+  );
+
+  const jumpSearchMessage = document.querySelector(
+    "[data-jump-search-message]",
+  );
+
+  const jumpRoles = document.querySelector("[data-jump-roles]");
+
+  const jumpLocation = document.querySelector("[data-jump-location]");
+
+  const jumpAvailability = document.querySelector("[data-jump-availability]");
+
+  if (!jumpReadinessStatus || !jumpReadinessHeading || !jumpSearchCard) {
+    return;
+  }
+
+  function loadJumpStorageObject(storageKey) {
+    try {
+      const savedValue = localStorage.getItem(storageKey);
+
+      return savedValue ? JSON.parse(savedValue) : null;
+    } catch (error) {
+      console.warn(`Unable to load ${storageKey}.`, error);
+
+      return null;
+    }
+  }
+
+  function updateJumpInterface() {
+    const profile = loadJumpStorageObject(PROFILE_STORAGE_KEY);
+
+    const preferences = loadJumpStorageObject(PREFERENCES_STORAGE_KEY);
+
+    const availability = loadJumpStorageObject(AVAILABILITY_STORAGE_KEY);
+
+    const readiness = loadJumpStorageObject(READINESS_STORAGE_KEY);
+
+    const profileComplete = Boolean(profile?.completed);
+
+    const preferencesComplete = Boolean(preferences?.completed);
+
+    const availabilityComplete = Boolean(availability?.completed);
+
+    const resumeReady = Boolean(readiness?.resumeReady);
+
+    const allSectionsReady =
+      profileComplete &&
+      preferencesComplete &&
+      availabilityComplete &&
+      resumeReady;
+
+    const incompleteCount = [
+      profileComplete,
+      preferencesComplete,
+      availabilityComplete,
+      resumeReady,
+    ].filter((itemIsComplete) => !itemIsComplete).length;
+
+    const preferredName = profile?.preferredName?.trim() || "";
+
+    if (jumpHeading) {
+      jumpHeading.textContent = preferredName
+        ? `Ready for your next move, ${preferredName}?`
+        : "Ready for your next move?";
+    }
+
+    if (jumpIntro) {
+      jumpIntro.textContent = allSectionsReady
+        ? "Your saved profile, preferences, availability, and resume are ready to shape your search."
+        : "Finish your application tools so Industry can use them to shape more relevant opportunities.";
+    }
+
+    jumpReadinessStatus.textContent = allSectionsReady
+      ? "Ready to jump"
+      : "Needs attention";
+
+    jumpReadinessStatus.dataset.readinessStatus = allSectionsReady
+      ? "complete"
+      : "needs-attention";
+
+    jumpReadinessHeading.textContent = allSectionsReady
+      ? "Your preparation is ready."
+      : "Your preparation needs attention.";
+
+    if (jumpReadinessMessage) {
+      jumpReadinessMessage.textContent = allSectionsReady
+        ? "Industry can now use your saved information to support your search and future applications."
+        : `${incompleteCount} ${
+            incompleteCount === 1 ? "item needs" : "items need"
+          } attention before you are ready to jump.`;
+    }
+
+    if (jumpReadinessAction) {
+      jumpReadinessAction.textContent = allSectionsReady
+        ? "View readiness"
+        : "Complete my readiness";
+    }
+
+    jumpSearchCard.hidden = !allSectionsReady;
+
+    if (!allSectionsReady) {
+      return;
+    }
+
+    const desiredRoles = preferences?.desiredRoles || [];
+
+    const preferredShifts = availability?.preferredShifts || [];
+
+    if (jumpSearchHeading) {
+      jumpSearchHeading.textContent =
+        desiredRoles.length === 1
+          ? `${desiredRoles[0]} opportunities`
+          : "Your matching opportunities";
+    }
+
+    if (jumpSearchMessage) {
+      jumpSearchMessage.textContent =
+        "Industry will use your saved direction to prioritize opportunities that better fit your goals.";
+    }
+
+    if (jumpRoles) {
+      jumpRoles.textContent =
+        desiredRoles.length > 0 ? desiredRoles.join(", ") : "Not selected";
+    }
+
+    if (jumpLocation) {
+      jumpLocation.textContent =
+        preferences?.searchLocation || profile?.location || "Not selected";
+    }
+
+    if (jumpAvailability) {
+      const availabilityParts = [];
+
+      if (preferredShifts.length > 0) {
+        availabilityParts.push(preferredShifts.join(", "));
+      }
+
+      if (availability?.weeklyHours) {
+        availabilityParts.push(availability.weeklyHours);
+      }
+
+      jumpAvailability.textContent =
+        availabilityParts.length > 0
+          ? availabilityParts.join(" · ")
+          : "Not selected";
+    }
+  }
+
+  document.addEventListener("click", (event) => {
+    const jumpTrigger = event.target.closest('[data-open-jobs-view="jump"]');
+
+    if (!jumpTrigger) {
+      return;
+    }
+
+    setTimeout(updateJumpInterface, 0);
+  });
+
+  window.addEventListener("storage", updateJumpInterface);
+
+  updateJumpInterface();
+})();
