@@ -2812,11 +2812,35 @@ window.addEventListener("hashchange", applyHashSection);
   );
 
   /* Buttons inside the Application Readiness cards */
-const applicationReadinessButtons = applicationPrepView
-  ? applicationPrepView.querySelectorAll(
-      ".jobs-readiness-item button",
-    )
-  : [];
+  const applicationReadinessButtons = applicationPrepView
+    ? applicationPrepView.querySelectorAll(".jobs-readiness-item button")
+    : [];
+
+  /* ------------------------------------------------
+   TRACK APPLICATION: STATUS OUTPUTS
+
+   These elements live on the My Applications screen,
+   so they are searched from the full document.
+------------------------------------------------ */
+
+  const trackApplicationStatus = document.querySelector(
+    "[data-track-application-status]",
+  );
+
+  const trackApplicationNextStep = document.querySelector(
+    "[data-track-application-next-step]",
+  );
+
+  /* ------------------------------------------------
+   TRACK APPLICATION: DEV STATUS CONTROL
+
+   Finds the temporary dropdown used to simulate
+   employer updates during development.
+------------------------------------------------ */
+
+  const trackStatusControl = document.querySelector(
+    "[data-track-status-control]",
+  );
 
   /* ----------------------------------------------
      STEP 2: CREATE THE APPLICATION STATE
@@ -2829,6 +2853,12 @@ const applicationReadinessButtons = applicationPrepView
     resumeComplete: false,
     draftSaved: false,
     submitted: false,
+
+    /* Application tracking information */
+    statusKey: "submitted",
+    status: "Submitted",
+    nextStep: "Waiting for employer response",
+
     message: "",
   };
 
@@ -2866,6 +2896,26 @@ const applicationReadinessButtons = applicationPrepView
   function updateApplicationInterface() {
     const resumeIsComplete = applicationState.resumeComplete;
     const applicationIsSubmitted = applicationState.submitted;
+
+    /* ------------------------------------------------
+   TRACK APPLICATION: RENDER CURRENT PROGRESS
+
+   Reads the application tracking state and places
+   it into the My Applications status card.
+------------------------------------------------ */
+
+    if (trackApplicationStatus) {
+      trackApplicationStatus.textContent = applicationState.status;
+    }
+
+    if (trackApplicationNextStep) {
+      trackApplicationNextStep.textContent = applicationState.nextStep;
+    }
+
+    /* Keep the DEV dropdown synchronized with saved state */
+    if (trackStatusControl) {
+      trackStatusControl.value = applicationState.statusKey;
+    }
 
     /* ------------------------------------------------
      APPLICATION SCREEN MODE
@@ -2918,17 +2968,17 @@ const applicationReadinessButtons = applicationPrepView
    SUBMITTED APPLICATION: READ-ONLY MODE
 ------------------------------------------------ */
 
-if (applicationPrepView) {
-  applicationPrepView.classList.toggle(
-    "is-submitted",
-    applicationIsSubmitted,
-  );
-}
+    if (applicationPrepView) {
+      applicationPrepView.classList.toggle(
+        "is-submitted",
+        applicationIsSubmitted,
+      );
+    }
 
-applicationReadinessButtons.forEach((button) => {
-  button.hidden = applicationIsSubmitted;
-  button.disabled = applicationIsSubmitted;
-});
+    applicationReadinessButtons.forEach((button) => {
+      button.hidden = applicationIsSubmitted;
+      button.disabled = applicationIsSubmitted;
+    });
 
     /* Update the Resume readiness card */
     if (resumeItem) {
@@ -2994,20 +3044,19 @@ applicationReadinessButtons.forEach((button) => {
       saveApplicationButton.hidden = applicationIsSubmitted;
     }
     /* Restore and control the introduction message */
-if (applicationMessage) {
-  applicationMessage.value = applicationState.message;
-  applicationMessage.readOnly = applicationIsSubmitted;
+    if (applicationMessage) {
+      applicationMessage.value = applicationState.message;
+      applicationMessage.readOnly = applicationIsSubmitted;
 
-  applicationMessage.setAttribute(
-    "aria-readonly",
-    String(applicationIsSubmitted),
-  );
-}
+      applicationMessage.setAttribute(
+        "aria-readonly",
+        String(applicationIsSubmitted),
+      );
+    }
+  } // closes updateApplicationInterface()
 
-} // closes updateApplicationInterface()
-
-/* Draw the current state when the page loads */
-updateApplicationInterface();
+  /* Draw the current state when the page loads */
+  updateApplicationInterface();
 
   /* ----------------------------------------------
      STEP 4: COMPLETE THE RESUME REQUIREMENT
@@ -3099,6 +3148,64 @@ updateApplicationInterface();
       updateApplicationInterface();
     });
   }
+
+  /* ------------------------------------------------
+   STEP 7: SIMULATE EMPLOYER STATUS UPDATES
+
+   Temporary development logic that updates the
+   application status without requiring a backend.
+------------------------------------------------ */
+
+const trackStatusOptions = {
+  submitted: {
+    status: "Submitted",
+    nextStep: "Waiting for employer response",
+  },
+
+  viewed: {
+    status: "Viewed",
+    nextStep: "Employer is reviewing your application",
+  },
+
+  "interview-requested": {
+    status: "Interview requested",
+    nextStep: "Review the interview details and respond",
+  },
+
+  "offer-received": {
+    status: "Offer received",
+    nextStep: "Review the offer and decide your next step",
+  },
+
+  "not-selected": {
+    status: "Not selected",
+    nextStep: "Continue exploring other opportunities",
+  },
+};
+
+if (trackStatusControl) {
+  trackStatusControl.addEventListener("change", () => {
+    const selectedStatusKey = trackStatusControl.value;
+    const selectedStatus = trackStatusOptions[selectedStatusKey];
+
+    /* Stop if the selected option is not recognized */
+    if (!selectedStatus) return;
+
+    /* Update the current application state */
+    applicationState.statusKey = selectedStatusKey;
+    applicationState.status = selectedStatus.status;
+    applicationState.nextStep = selectedStatus.nextStep;
+
+    /* Save the employer update in the browser */
+    localStorage.setItem(
+      APPLICATION_STORAGE_KEY,
+      JSON.stringify(applicationState),
+    );
+
+    /* Redraw the Track application card */
+    updateApplicationInterface();
+  });
+}
 })();
 
 /* ==================================================

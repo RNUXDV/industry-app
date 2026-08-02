@@ -2098,19 +2098,69 @@
       </div>
 
       <div class="jobs-track-details">
-        <div>
-          <span>Status</span>
-          <strong data-track-status-detail>Submitted</strong>
-        </div>
+        <!-- ================================================
+     TRACK APPLICATION: CURRENT STATUS
+================================================ -->
 
-        <div>
-          <span>Next step</span>
-          <strong data-track-next-step>
-            Waiting for employer response
-          </strong>
-        </div>
-      </div>
+<div>
+  <span>Status</span>
 
+  <strong data-track-application-status>
+    Submitted
+  </strong>
+</div>
+
+<!-- ================================================
+     TRACK APPLICATION: NEXT STEP
+================================================ -->
+
+<div>
+  <span>Next Step</span>
+
+  <strong data-track-application-next-step>
+    Waiting for employer response
+  </strong>
+</div>
+</div>
+<!-- ================================================
+     TRACK APPLICATION: DEV STATUS CONTROL
+
+     Temporary control used to simulate updates
+     that would eventually come from an employer.
+================================================ -->
+
+<div class="jobs-track-dev-control">
+  <span class="eyebrow">Dev Status</span>
+
+  <label for="juniper-track-status">
+    Simulate employer update
+  </label>
+
+  <select
+    id="juniper-track-status"
+    data-track-status-control
+  >
+    <option value="submitted">
+      Submitted
+    </option>
+
+    <option value="viewed">
+      Viewed
+    </option>
+
+    <option value="interview-requested">
+      Interview requested
+    </option>
+
+    <option value="offer-received">
+      Offer received
+    </option>
+
+    <option value="not-selected">
+      Not selected
+    </option>
+  </select>
+</div>
       <button
         class="jobs-secondary-button"
         type="button"
