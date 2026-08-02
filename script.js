@@ -2755,6 +2755,9 @@ window.addEventListener("hashchange", applyHashSection);
   /* Stop if the Application Preparation screen is missing */
   if (!applicationPrepView) return;
 
+  /* Temporary controls used while building Industry */
+  const INDUSTRY_TRACK_DEV_MODE = true;
+
   /* Resume readiness elements */
   const resumeItem = applicationPrepView.querySelector(
     '[data-readiness-item="resume"]',
@@ -2858,6 +2861,8 @@ window.addEventListener("hashchange", applyHashSection);
   const trackStatusControl = document.querySelector(
     "[data-track-status-control]",
   );
+
+  const trackDevControl = document.querySelector("[data-track-dev-control]");
 
   /* ----------------------------------------------
      STEP 2: CREATE THE APPLICATION STATE
@@ -2974,6 +2979,15 @@ window.addEventListener("hashchange", applyHashSection);
     if (trackApplicationUpdated) {
       trackApplicationUpdated.textContent =
         formattedUpdatedAt || "Status date unavailable";
+    }
+
+    /* Show temporary employer controls only in development mode */
+    if (trackDevControl) {
+      trackDevControl.hidden = !INDUSTRY_TRACK_DEV_MODE;
+    }
+
+    if (trackStatusControl) {
+      trackStatusControl.disabled = !INDUSTRY_TRACK_DEV_MODE;
     }
 
     /* Keep the DEV dropdown synchronized with saved state */
