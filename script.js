@@ -2980,9 +2980,22 @@ window.addEventListener("hashchange", applyHashSection);
 
     /* Update the Track application action */
     if (trackApplicationAction) {
-      trackApplicationAction.textContent =
+      const actionLabel =
         trackApplicationActionLabels[applicationState.statusKey] ||
         "View application";
+
+      let actionDestination = "juniper-application-prep";
+
+      if (applicationState.statusKey === "interview-requested") {
+        actionDestination = "juniper-interview";
+      }
+
+      if (applicationState.statusKey === "offer-received") {
+        actionDestination = "juniper-offer";
+      }
+
+      trackApplicationAction.textContent = actionLabel;
+      trackApplicationAction.dataset.openJobsView = actionDestination;
     }
 
     /* Update the application timestamp */
