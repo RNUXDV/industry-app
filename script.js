@@ -2756,7 +2756,7 @@ window.addEventListener("hashchange", applyHashSection);
   if (!applicationPrepView) return;
 
   /* Temporary controls used while building Industry */
-  const INDUSTRY_TRACK_DEV_MODE = true;
+  const INDUSTRY_TRACK_DEV_MODE = false;
 
   /* Resume readiness elements */
   const resumeItem = applicationPrepView.querySelector(
@@ -2992,6 +2992,10 @@ window.addEventListener("hashchange", applyHashSection);
 
       if (applicationState.statusKey === "offer-received") {
         actionDestination = "juniper-offer";
+      }
+
+      if (applicationState.statusKey === "not-selected") {
+        actionDestination = "explore-intro";
       }
 
       trackApplicationAction.textContent = actionLabel;
