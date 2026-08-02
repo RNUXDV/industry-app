@@ -4063,6 +4063,31 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   border-color: rgba(103, 211, 135, 0.36);
 }
 
+.jobs-track-status[data-readiness-status="complete"] {
+  color: #9debb3;
+  background: rgba(103, 211, 135, 0.15);
+  border-color: rgba(103, 211, 135, 0.36);
+}
+
+.jobs-track-status[data-readiness-status="needs-attention"] {
+  color: #f1cf83;
+  background: rgba(218, 169, 73, 0.13);
+  border-color: rgba(218, 169, 73, 0.3);
+}
+
+[data-theme="light"] .jobs-track-status[data-readiness-status="complete"] {
+  color: #256d4b;
+  background: rgba(55, 151, 104, 0.13);
+  border-color: rgba(55, 151, 104, 0.3);
+}
+
+[data-theme="light"]
+  .jobs-track-status[data-readiness-status="needs-attention"] {
+  color: #76560d;
+  background: rgba(190, 137, 35, 0.13);
+  border-color: rgba(190, 137, 35, 0.3);
+}
+
 /* Light-theme status contrast */
 [data-theme="light"] .jobs-track-status[data-track-status="submitted"] {
   color: #256d60;

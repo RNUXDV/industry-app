@@ -3958,3 +3958,261 @@ window.addEventListener("hashchange", applyHashSection);
 
   updateAvailabilityInterface();
 })();
+
+/* =================================================
+   JOBS: APPLICATION READINESS
+================================================== */
+
+(() => {
+  const PROFILE_STORAGE_KEY = "industry-user-profile";
+  const PREFERENCES_STORAGE_KEY =
+    "industry-user-preferences";
+  const AVAILABILITY_STORAGE_KEY =
+    "industry-user-availability";
+  const READINESS_STORAGE_KEY =
+    "industry-user-readiness";
+
+  const dashboardStatus = document.querySelector(
+    "[data-readiness-dashboard-status]",
+  );
+
+  const dashboardAction = document.querySelector(
+    "[data-readiness-dashboard-action]",
+  );
+
+  const overallStatus = document.querySelector(
+    "[data-readiness-overall-status]",
+  );
+
+  const overallHeading = document.querySelector(
+    "[data-readiness-overall-heading]",
+  );
+
+  const overallMessage = document.querySelector(
+    "[data-readiness-overall-message]",
+  );
+
+  const profileStatus = document.querySelector(
+    "[data-readiness-profile-status]",
+  );
+
+  const profileAction = document.querySelector(
+    "[data-readiness-profile-action]",
+  );
+
+  const preferencesStatus = document.querySelector(
+    "[data-readiness-preferences-status]",
+  );
+
+  const preferencesAction = document.querySelector(
+    "[data-readiness-preferences-action]",
+  );
+
+  const availabilityStatus = document.querySelector(
+    "[data-readiness-availability-status]",
+  );
+
+  const availabilityAction = document.querySelector(
+    "[data-readiness-availability-action]",
+  );
+
+  const resumeStatus = document.querySelector(
+    "[data-readiness-resume-status]",
+  );
+
+  const resumeToggle = document.querySelector(
+    "[data-readiness-resume-toggle]",
+  );
+
+  if (!overallStatus || !resumeToggle) {
+    return;
+  }
+
+  const defaultReadinessState = {
+    resumeReady: false,
+    updatedAt: null,
+  };
+
+  function loadStorageObject(storageKey) {
+    try {
+      const savedValue = localStorage.getItem(storageKey);
+
+      return savedValue ? JSON.parse(savedValue) : null;
+    } catch (error) {
+      console.warn(
+        `Unable to load ${storageKey}.`,
+        error,
+      );
+
+      return null;
+    }
+  }
+
+  function sectionIsComplete(storageKey) {
+    const savedSection = loadStorageObject(storageKey);
+
+    return Boolean(savedSection?.completed);
+  }
+
+  function loadReadinessState() {
+    const savedReadiness = loadStorageObject(
+      READINESS_STORAGE_KEY,
+    );
+
+    return {
+      ...defaultReadinessState,
+      ...(savedReadiness || {}),
+    };
+  }
+
+  let readinessState = loadReadinessState();
+
+  function saveReadinessState() {
+    localStorage.setItem(
+      READINESS_STORAGE_KEY,
+      JSON.stringify(readinessState),
+    );
+  }
+
+  function updateStatus(
+    statusElement,
+    isComplete,
+    completeText = "Complete",
+  ) {
+    if (!statusElement) return;
+
+    statusElement.textContent = isComplete
+      ? completeText
+      : "Needs attention";
+
+    statusElement.dataset.readinessStatus = isComplete
+      ? "complete"
+      : "needs-attention";
+  }
+
+  function updateReadinessInterface() {
+    const profileComplete = sectionIsComplete(
+      PROFILE_STORAGE_KEY,
+    );
+
+    const preferencesComplete = sectionIsComplete(
+      PREFERENCES_STORAGE_KEY,
+    );
+
+    const availabilityComplete = sectionIsComplete(
+      AVAILABILITY_STORAGE_KEY,
+    );
+
+    const resumeReady = readinessState.resumeReady;
+
+    const allSectionsReady =
+      profileComplete &&
+      preferencesComplete &&
+      availabilityComplete &&
+      resumeReady;
+
+    const incompleteCount = [
+      profileComplete,
+      preferencesComplete,
+      availabilityComplete,
+      resumeReady,
+    ].filter((sectionComplete) => !sectionComplete)
+      .length;
+
+    updateStatus(profileStatus, profileComplete);
+    updateStatus(
+      preferencesStatus,
+      preferencesComplete,
+    );
+    updateStatus(
+      availabilityStatus,
+      availabilityComplete,
+    );
+    updateStatus(resumeStatus, resumeReady, "Ready");
+    updateStatus(
+      overallStatus,
+      allSectionsReady,
+      "Ready to apply",
+    );
+    updateStatus(dashboardStatus, allSectionsReady);
+
+    if (profileAction) {
+      profileAction.textContent = profileComplete
+        ? "Edit my profile"
+        : "Complete my profile";
+    }
+
+    if (preferencesAction) {
+      preferencesAction.textContent =
+        preferencesComplete
+          ? "Edit preferences"
+          : "Add preferences";
+    }
+
+    if (availabilityAction) {
+      availabilityAction.textContent =
+        availabilityComplete
+          ? "Edit availability"
+          : "Set availability";
+    }
+
+    resumeToggle.textContent = resumeReady
+      ? "Mark resume not ready"
+      : "Mark my resume ready";
+
+    if (dashboardAction) {
+      dashboardAction.textContent = allSectionsReady
+        ? "View readiness"
+        : "Review readiness";
+    }
+
+    if (overallHeading) {
+      overallHeading.textContent = allSectionsReady
+        ? "You’re ready to apply."
+        : "Your application tools are taking shape.";
+    }
+
+    if (overallMessage) {
+      overallMessage.textContent = allSectionsReady
+        ? "Your profile, preferences, availability, and resume are ready to support future applications."
+        : `${incompleteCount} ${
+            incompleteCount === 1 ? "item needs" : "items need"
+          } attention before your application tools are complete.`;
+    }
+  }
+
+  resumeToggle.addEventListener("click", () => {
+    readinessState = {
+      resumeReady: !readinessState.resumeReady,
+      updatedAt: new Date().toISOString(),
+    };
+
+    saveReadinessState();
+    updateReadinessInterface();
+  });
+
+  document.addEventListener("click", (event) => {
+    const navigationTrigger = event.target.closest(
+      "[data-open-jobs-view]",
+    );
+
+    if (!navigationTrigger) return;
+
+    const destination =
+      navigationTrigger.dataset.openJobsView;
+
+    if (
+      destination === "prepare" ||
+      destination === "prepare-readiness"
+    ) {
+      setTimeout(updateReadinessInterface, 0);
+    }
+  });
+
+  window.addEventListener(
+    "storage",
+    updateReadinessInterface,
+  );
+
+  updateReadinessInterface();
+})();

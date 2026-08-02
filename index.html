@@ -1392,9 +1392,12 @@
 
     <article class="jobs-track-card">
       <div class="jobs-track-card-top">
-        <span class="jobs-track-status">
-          Needs attention
-        </span>
+        <span
+  class="jobs-track-status"
+  data-readiness-dashboard-status
+>
+  Needs attention
+</span>
 
         <span class="jobs-track-workplace-type">
           Readiness
@@ -1415,7 +1418,8 @@
       <button
         class="jobs-secondary-button"
         type="button"
-        data-prepare-action="readiness"
+        data-open-jobs-view="prepare-readiness"
+        data-readiness-dashboard-action
       >
         Review readiness
       </button>
@@ -2056,6 +2060,213 @@
 </div>
 
 <!-- JOBS VIEW: PREPARE AVAILABILITY - END -->
+
+<!-- =================================================
+| | | | JOBS VIEW: PREPARE READINESS - START
+================================================== -->
+
+<div
+  class="jobs-view jobs-track-view"
+  data-jobs-view="prepare-readiness"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="prepare"
+  >
+    ← My Next Move
+  </button>
+
+  <section class="jobs-track-hero">
+    <span class="eyebrow">Application tools</span>
+
+    <h1>Application Readiness</h1>
+
+    <p>
+      Review the information Industry can use to help you move toward
+      an opportunity with less repeated work.
+    </p>
+  </section>
+
+  <section class="jobs-track-list">
+    <span class="eyebrow">Readiness overview</span>
+
+    <h2>Are you ready to apply?</h2>
+
+    <!-- Overall readiness -->
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-readiness-overall-status
+        >
+          Needs attention
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Overall
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Your progress</span>
+
+        <h3 data-readiness-overall-heading>
+          Your application tools are taking shape.
+        </h3>
+
+        <p data-readiness-overall-message>
+          Complete each section below so Industry can help prepare
+          future applications.
+        </p>
+      </div>
+    </article>
+
+    <!-- Profile readiness -->
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-readiness-profile-status
+        >
+          Needs attention
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Profile
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Professional identity</span>
+
+        <h3>My Profile</h3>
+
+        <p>
+          Your preferred name, current role, experience, and location.
+        </p>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-open-jobs-view="prepare-profile"
+        data-readiness-profile-action
+      >
+        Complete my profile
+      </button>
+    </article>
+
+    <!-- Preferences readiness -->
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-readiness-preferences-status
+        >
+          Needs attention
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Preferences
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Your direction</span>
+
+        <h3>What I’m Looking For</h3>
+
+        <p>
+          Your desired roles, workplace types, and search preferences.
+        </p>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-open-jobs-view="prepare-preferences"
+        data-readiness-preferences-action
+      >
+        Add preferences
+      </button>
+    </article>
+
+    <!-- Availability readiness -->
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-readiness-availability-status
+        >
+          Needs attention
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Availability
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Your time</span>
+
+        <h3>Availability</h3>
+
+        <p>
+          Your available days, preferred shifts, weekly hours, and
+          possible start time.
+        </p>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-open-jobs-view="prepare-availability"
+        data-readiness-availability-action
+      >
+        Set availability
+      </button>
+    </article>
+
+    <!-- Resume readiness -->
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-readiness-resume-status
+        >
+          Needs attention
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Resume
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Application document</span>
+
+        <h3>Resume Readiness</h3>
+
+        <p>
+          Confirm whether your current resume is ready to use for job
+          applications.
+        </p>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-readiness-resume-toggle
+      >
+        Mark my resume ready
+      </button>
+    </article>
+  </section>
+</div>
+
+<!-- JOBS VIEW: PREPARE READINESS - END -->
 
 
 <!-- ================================================
