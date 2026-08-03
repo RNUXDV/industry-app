@@ -2810,6 +2810,10 @@ window.addEventListener("hashchange", applyHashSection);
     "[data-application-workplace-name]",
   );
 
+  const applicationResumeCopy = applicationPrepView.querySelector(
+    "[data-application-resume-copy]",
+  );
+
   const applicationContexts = {
     "juniper-house-server": {
       role: "Server",
@@ -2900,6 +2904,8 @@ window.addEventListener("hashchange", applyHashSection);
 
   /* Starting state used when no saved application exists */
   const defaultApplicationState = {
+    role: "",
+    workplace: "",
     resumeComplete: false,
     draftSaved: false,
     submitted: false,
@@ -3080,20 +3086,22 @@ window.addEventListener("hashchange", applyHashSection);
         trackApplicationActionLabels[applicationState.statusKey] ||
         "View application";
 
+      const workplaceViewPrefix =
+        applicationState.workplace === "Northline" ? "northline" : "juniper";
+
+      /*
+  Juniper and Northline currently share the same reusable
+  application-preparation screen.
+*/
       let actionDestination = "juniper-application-prep";
 
       if (applicationState.statusKey === "interview-requested") {
-        actionDestination = "juniper-interview";
-      }
-
-      if (applicationState.statusKey === "offer-received") {
-        actionDestination = "juniper-offer";
-      }
-
-      if (applicationState.statusKey === "not-selected") {
+        actionDestination = `${workplaceViewPrefix}-interview`;
+      } else if (applicationState.statusKey === "offer-received") {
+        actionDestination = `${workplaceViewPrefix}-offer`;
+      } else if (applicationState.statusKey === "not-selected") {
         actionDestination = "explore-intro";
       }
-
       trackApplicationAction.textContent = actionLabel;
       trackApplicationAction.dataset.openJobsView = actionDestination;
     }
@@ -3233,8 +3241,7 @@ window.addEventListener("hashchange", applyHashSection);
     /* Update the final application guidance */
     if (applicationGuidance) {
       if (applicationIsSubmitted) {
-        applicationGuidance.textContent =
-          "Juniper House has received your application.";
+        applicationGuidance.textContent = `${applicationState.workplace} has received your application.`;
       } else {
         applicationGuidance.textContent = resumeIsComplete
           ? "Review your materials and submit when you are ready."
@@ -3443,14 +3450,26 @@ window.addEventListener("hashchange", applyHashSection);
 
     if (applicationContext) {
       activeApplicationContext = applicationContext;
-
       applicationState = loadApplicationState(activeApplicationContext);
+
+      applicationState.role = applicationContext.role;
+      applicationState.workplace = applicationContext.workplace;
+
+      saveApplicationState();
       if (applicationRoleName) {
         applicationRoleName.textContent = applicationContext.role;
       }
 
       if (applicationWorkplaceName) {
         applicationWorkplaceName.textContent = applicationContext.workplace;
+      }
+
+      if (applicationResumeCopy) {
+        applicationResumeCopy.textContent = `Add or confirm the resume you want ${applicationContext.workplace} to receive.`;
+      }
+
+      if (applicationMessage) {
+        applicationMessage.placeholder = `Share why ${applicationContext.workplace} feels like a good fit.`;
       }
 
       if (applicationBackButton) {
@@ -3471,10 +3490,6 @@ window.addEventListener("hashchange", applyHashSection);
 ================================================== */
 
 (() => {
-  /* ------------------------------------------------
-     | | STEP 1: FIND THE TRACK APPLICATIONS SCREEN
-  ------------------------------------------------ */
-
   const jobsSection = document.querySelector(
     '.app-section[data-section="jobs"]',
   );
@@ -3485,10 +3500,6 @@ window.addEventListener("hashchange", applyHashSection);
 
   if (!trackView) return;
 
-  /* ------------------------------------------------
-     | | STEP 2: FIND THE TRACK SCREEN ELEMENTS
-  ------------------------------------------------ */
-
   const trackEmptyState = trackView.querySelector("[data-track-empty]");
 
   const trackApplicationList = trackView.querySelector("[data-track-list]");
@@ -3497,16 +3508,17 @@ window.addEventListener("hashchange", applyHashSection);
     '[data-track-application="juniper-house"]',
   );
 
-  /* ------------------------------------------------
-     | | STEP 3: CONNECT TO THE SAVED APPLICATION
-  ------------------------------------------------ */
+  const northlineApplicationCard = trackView.querySelector(
+    '[data-track-application="northline"]',
+  );
 
-  const TRACK_APPLICATION_STORAGE_KEY = "industry-juniper-application";
+  const TRACK_APPLICATION_STORAGE_KEYS = {
+    juniper: "industry-juniper-application",
+    northline: "industry-northline-application",
+  };
 
-  function loadTrackedApplication() {
-    const savedApplication = localStorage.getItem(
-      TRACK_APPLICATION_STORAGE_KEY,
-    );
+  function loadTrackedApplication(storageKey) {
+    const savedApplication = localStorage.getItem(storageKey);
 
     if (!savedApplication) {
       return null;
@@ -3515,48 +3527,46 @@ window.addEventListener("hashchange", applyHashSection);
     try {
       return JSON.parse(savedApplication);
     } catch (error) {
-      console.warn("Industry could not load the tracked application.", error);
+      console.warn("Industry could not load a tracked application.", error);
 
       return null;
     }
   }
 
-  /* ------------------------------------------------
-     | | STEP 4: UPDATE THE TRACK SCREEN
-  ------------------------------------------------ */
-
   function updateTrackApplications() {
-    const savedApplication = loadTrackedApplication();
-
-    const applicationWasSubmitted = Boolean(
-      savedApplication && savedApplication.submitted,
+    const juniperApplication = loadTrackedApplication(
+      TRACK_APPLICATION_STORAGE_KEYS.juniper,
     );
 
-    /* Show the empty state when no application was submitted */
+    const northlineApplication = loadTrackedApplication(
+      TRACK_APPLICATION_STORAGE_KEYS.northline,
+    );
+
+    const juniperWasSubmitted = Boolean(juniperApplication?.submitted);
+
+    const northlineWasSubmitted = Boolean(northlineApplication?.submitted);
+
+    const hasSubmittedApplications =
+      juniperWasSubmitted || northlineWasSubmitted;
+
     if (trackEmptyState) {
-      trackEmptyState.hidden = applicationWasSubmitted;
+      trackEmptyState.hidden = hasSubmittedApplications;
     }
 
-    /* Show the application list after submission */
     if (trackApplicationList) {
-      trackApplicationList.hidden = !applicationWasSubmitted;
+      trackApplicationList.hidden = !hasSubmittedApplications;
     }
 
-    /* Show the Juniper House card after submission */
     if (juniperApplicationCard) {
-      juniperApplicationCard.hidden = !applicationWasSubmitted;
+      juniperApplicationCard.hidden = !juniperWasSubmitted;
+    }
+
+    if (northlineApplicationCard) {
+      northlineApplicationCard.hidden = !northlineWasSubmitted;
     }
   }
 
-  /* ------------------------------------------------
-     | | STEP 5: DRAW THE INITIAL TRACK STATE
-  ------------------------------------------------ */
-
   updateTrackApplications();
-
-  /* ------------------------------------------------
-     | | STEP 6: REFRESH WHEN TRACK IS OPENED
-  ------------------------------------------------ */
 
   jobsSection.addEventListener("click", (event) => {
     const trackTrigger = event.target.closest('[data-open-jobs-view="track"]');
@@ -3565,8 +3575,9 @@ window.addEventListener("hashchange", applyHashSection);
 
     updateTrackApplications();
   });
-})();
 
+  window.addEventListener("storage", updateTrackApplications);
+})();
 /* =================================================
    JOBS: USER PROFILE
 ================================================== */
@@ -4075,8 +4086,12 @@ window.addEventListener("hashchange", applyHashSection);
   const AVAILABILITY_STORAGE_KEY = "industry-user-availability";
   const READINESS_STORAGE_KEY = "industry-user-readiness";
 
-  const APPLICATION_STORAGE_KEY = "industry-juniper-application";
+  const APPLICATION_STORAGE_KEYS = {
+    "Juniper House": "industry-juniper-application",
+    Northline: "industry-northline-application",
+  };
 
+  const APPLICATION_STORAGE_KEY = APPLICATION_STORAGE_KEYS["Juniper House"];
   const dashboardStatus = document.querySelector(
     "[data-readiness-dashboard-status]",
   );

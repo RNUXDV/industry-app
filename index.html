@@ -3460,10 +3460,10 @@
 
     <h3>Resume</h3>
 
-    <p>
-      Add or confirm the resume you want Juniper House
-      to receive.
-    </p>
+   <p data-application-resume-copy>
+  Add or confirm the resume you want Juniper House
+  to receive.
+</p>
   </div>
 
   <button
@@ -3755,6 +3755,127 @@
   View application
 </button>
     </article>
+    <article
+      class="jobs-track-card"
+      data-track-application="northline"
+      hidden
+    >
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-track-application-badge
+          data-track-status
+        >
+          Submitted
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Neighborhood Restaurant
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Northline</span>
+
+        <h3>Server</h3>
+
+        <p data-track-guidance>
+          Your application has been submitted to Northline.
+        </p>
+      </div>
+
+      <div class="jobs-track-details">
+        <!-- ================================================
+     TRACK APPLICATION: CURRENT STATUS
+================================================ -->
+
+<div>
+  <span>Status</span>
+
+  <strong data-track-application-status>
+    Submitted
+  </strong>
+</div>
+
+
+
+<!-- ================================================
+     TRACK APPLICATION: NEXT STEP
+================================================ -->
+
+<div>
+  <span>Next Step</span>
+
+  <strong data-track-application-next-step>
+    Waiting for employer response
+  </strong>
+</div>
+<!-- ==========================================
+     TRACK APPLICATION: LAST UPDATED
+=========================================== -->
+
+<div data-track-updated-row hidden>
+  <span>Last updated</span>
+
+  <strong data-track-application-updated>
+    Status date unavailable
+  </strong>
+</div>
+</div>
+
+
+<!-- ================================================
+     TRACK APPLICATION: DEV STATUS CONTROL
+
+     Temporary control used to simulate updates
+     that would eventually come from an employer.
+================================================ -->
+
+<div
+  class="jobs-track-dev-control"
+  data-track-dev-control
+>
+  <span class="eyebrow">Dev Status</span>
+
+  <label for="northline-track-status">
+    Simulate employer update
+  </label>
+
+  <select
+    id="northline-track-status"
+    data-track-status-control
+  >
+    <option value="submitted">
+      Submitted
+    </option>
+
+    <option value="viewed">
+      Viewed
+    </option>
+
+    <option value="interview-requested">
+      Interview requested
+    </option>
+
+    <option value="offer-received">
+      Offer received
+    </option>
+
+    <option value="not-selected">
+      Not selected
+    </option>
+  </select>
+</div>
+      <button
+  class="jobs-secondary-button"
+  type="button"
+  data-open-jobs-view="juniper-application-prep"
+  data-application-context="northline-server"
+  data-track-application-action
+>
+  View application
+</button>
+    </article>
   </section>
 </div>
 
@@ -3766,7 +3887,7 @@
 
 <div
   class="jobs-view jobs-track-view"
-  data-jobs-view="juniper-interview"
+ data-jobs-view="northline-interview"
   hidden
 >
   <button
@@ -3784,8 +3905,90 @@
     <h1>Interview requested</h1>
 
     <p>
-      Juniper House would like to schedule an interview for the
-      Server position.
+      Northline would like to schedule an interview for the Server position.
+    </p>
+  </section>
+
+  <!-- Interview details -->
+  <section class="jobs-track-list">
+    <span class="eyebrow">Next step</span>
+
+    <h2>Your interview details</h2>
+
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-track-status="interview-requested"
+        >
+          Interview requested
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Neighborhood Restaurant
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+        <span class="eyebrow">Northline</span>
+
+        <h3>Server interview</h3>
+
+        <p>
+          Review the invitation and respond when the employer provides
+          the final interview details.
+        </p>
+      </div>
+
+      <div class="jobs-track-details">
+        <div>
+          <span>Date</span>
+          <strong>To be confirmed</strong>
+        </div>
+
+        <div>
+          <span>Time</span>
+          <strong>To be confirmed</strong>
+        </div>
+
+        <div>
+          <span>Location</span>
+          <strong>Northline</strong>
+        </div>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-open-jobs-view="track"
+      >
+        Back to My Applications
+      </button>
+    </article>
+  </section>
+</div>
+
+<div
+  class="jobs-view jobs-track-view"
+ data-jobs-view="juniper-interview"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="track"
+  >
+    ← My Applications
+  </button>
+
+  <!-- Interview heading -->
+  <section class="jobs-track-hero">
+    <span class="eyebrow">Interview</span>
+
+    <h1>Interview requested</h1>
+
+    <p>
+      Juniper House would like to schedule an interview for the Server position.
     </p>
   </section>
 
@@ -3901,6 +4104,93 @@
       <div class="jobs-track-card-content">
         <span class="eyebrow">Juniper House</span>
 
+        <h3>Server</h3>
+
+        <p>
+          Review the offer information before deciding how you would
+          like to respond.
+        </p>
+      </div>
+
+      <div class="jobs-track-details">
+        <div>
+          <span>Position</span>
+          <strong>Server</strong>
+        </div>
+
+        <div>
+          <span>Schedule</span>
+          <strong>Evening shifts</strong>
+        </div>
+
+        <div>
+          <span>Start date</span>
+          <strong>To be confirmed</strong>
+        </div>
+
+        <div>
+          <span>Response</span>
+          <strong>Awaiting your decision</strong>
+        </div>
+      </div>
+
+      <button
+        class="jobs-secondary-button"
+        type="button"
+        data-open-jobs-view="track"
+      >
+        Back to My Applications
+      </button>
+    </article>
+  </section>
+</div>
+
+<div
+  class="jobs-view jobs-track-view"
+  data-jobs-view="northline-offer"
+  hidden
+>
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="track"
+  >
+    ← My Applications
+  </button>
+
+  <!-- Offer heading -->
+  <section class="jobs-track-hero">
+    <span class="eyebrow">Offer</span>
+
+    <h1>You received an offer.</h1>
+
+    <p>
+      Northline would like you to join the team as a Server.
+    </p>
+  </section>
+
+  <!-- Offer details -->
+  <section class="jobs-track-list">
+    <span class="eyebrow">Next step</span>
+
+    <h2>Review your offer</h2>
+
+    <article class="jobs-track-card">
+      <div class="jobs-track-card-top">
+        <span
+          class="jobs-track-status"
+          data-track-status="offer-received"
+        >
+          Offer received
+        </span>
+
+        <span class="jobs-track-workplace-type">
+          Neighborhood Restaurant
+        </span>
+      </div>
+
+      <div class="jobs-track-card-content">
+       <span class="eyebrow">Northline</span>
         <h3>Server</h3>
 
         <p>
