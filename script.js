@@ -2802,6 +2802,30 @@ window.addEventListener("hashchange", applyHashSection);
     "[data-application-back]",
   );
 
+  const applicationRoleName = applicationPrepView.querySelector(
+    "[data-application-role-name]",
+  );
+
+  const applicationWorkplaceName = applicationPrepView.querySelector(
+    "[data-application-workplace-name]",
+  );
+
+  const applicationContexts = {
+    "juniper-house-server": {
+      role: "Server",
+      workplace: "Juniper House",
+      backView: "juniper-server-role",
+      storageKey: "industry-juniper-application",
+    },
+
+    "northline-server": {
+      role: "Server",
+      workplace: "Northline",
+      backView: "northline-server-role",
+      storageKey: "industry-northline-application",
+    },
+  };
+
   const applicationHeroEyebrow = applicationPrepView.querySelector(
     "[data-application-hero-eyebrow]",
   );
@@ -2871,7 +2895,7 @@ window.addEventListener("hashchange", applyHashSection);
   /* ----------------------------------------------
      STEP 2: CREATE THE APPLICATION STATE
   ---------------------------------------------- */
-  const APPLICATION_STORAGE_KEY = "industry-juniper-application";
+  let activeApplicationContext = applicationContexts["juniper-house-server"];
   const READINESS_STORAGE_KEY = "industry-user-readiness";
 
   /* Starting state used when no saved application exists */
@@ -2891,31 +2915,41 @@ window.addEventListener("hashchange", applyHashSection);
   };
 
   /* Look for an existing application saved in the browser */
-  function loadApplicationState() {
-    const savedState = localStorage.getItem(APPLICATION_STORAGE_KEY);
+  function loadApplicationState(applicationContext = activeApplicationContext) {
+    const contextualDefaultState = {
+      ...defaultApplicationState,
+      guidance: `Your application has been submitted to ${applicationContext.workplace}.`,
+    };
 
-    /* Use the starting state when nothing has been saved */
+    const savedState = localStorage.getItem(applicationContext.storageKey);
+
     if (!savedState) {
-      return { ...defaultApplicationState };
+      return { ...contextualDefaultState };
     }
 
     try {
       const parsedState = JSON.parse(savedState);
 
-      /* Combine saved information with the default structure */
       return {
-        ...defaultApplicationState,
+        ...contextualDefaultState,
         ...parsedState,
       };
     } catch (error) {
       console.warn("Industry could not load the saved application.", error);
 
-      return { ...defaultApplicationState };
+      return { ...contextualDefaultState };
     }
   }
 
   /* This object becomes the current application data */
-  const applicationState = loadApplicationState();
+  let applicationState = loadApplicationState();
+
+  function saveApplicationState() {
+    localStorage.setItem(
+      activeApplicationContext.storageKey,
+      JSON.stringify(applicationState),
+    );
+  }
 
   /* Convert the saved timestamp into readable text */
   function formatApplicationUpdatedAt(timestamp) {
@@ -3005,10 +3039,7 @@ window.addEventListener("hashchange", applyHashSection);
 
     applicationState.resumeComplete = globalResumeReady;
 
-    localStorage.setItem(
-      APPLICATION_STORAGE_KEY,
-      JSON.stringify(applicationState),
-    );
+    saveApplicationState();
   }
 
   function updateApplicationInterface() {
@@ -3138,9 +3169,21 @@ window.addEventListener("hashchange", applyHashSection);
     }
 
     if (applicationLead) {
+      const workplaceName = activeApplicationContext.workplace;
+
       applicationLead.textContent = applicationIsSubmitted
-        ? "Review the materials sent to Juniper House and follow its current status in My Applications."
-        : "Review what Juniper House will receive and complete anything that still needs attention.";
+        ? `Review the materials sent to ${workplaceName} and follow its current status in My Applications.`
+        : `Review what ${workplaceName} will receive and complete anything that still needs attention.`;
+    }
+
+    if (applicationBackButton) {
+      applicationBackButton.dataset.openJobsView = applicationIsSubmitted
+        ? "track"
+        : activeApplicationContext.backView;
+
+      applicationBackButton.textContent = applicationIsSubmitted
+        ? "← My Applications"
+        : "← Server role";
     }
 
     /* ------------------------------------------------
@@ -3250,10 +3293,7 @@ window.addEventListener("hashchange", applyHashSection);
       saveGlobalResumeReadiness(true);
 
       /* Save the updated state in the browser */
-      localStorage.setItem(
-        APPLICATION_STORAGE_KEY,
-        JSON.stringify(applicationState),
-      );
+      saveApplicationState();
 
       /* Redraw the interface with the new state */
       updateApplicationInterface();
@@ -3285,10 +3325,7 @@ window.addEventListener("hashchange", applyHashSection);
       applicationState.draftSaved = true;
 
       /* Store the complete application state */
-      localStorage.setItem(
-        APPLICATION_STORAGE_KEY,
-        JSON.stringify(applicationState),
-      );
+      saveApplicationState();
 
       /* Give the user visible confirmation */
       saveApplicationButton.textContent = "Saved";
@@ -3321,10 +3358,7 @@ window.addEventListener("hashchange", applyHashSection);
       applicationState.updatedAt = new Date().toISOString();
 
       /* Save the submitted state in the browser */
-      localStorage.setItem(
-        APPLICATION_STORAGE_KEY,
-        JSON.stringify(applicationState),
-      );
+      saveApplicationState();
 
       /* Redraw the screen as a confirmation state */
       updateApplicationInterface();
@@ -3386,10 +3420,7 @@ window.addEventListener("hashchange", applyHashSection);
       applicationState.updatedAt = new Date().toISOString();
 
       /* Save the employer update in the browser */
-      localStorage.setItem(
-        APPLICATION_STORAGE_KEY,
-        JSON.stringify(applicationState),
-      );
+      saveApplicationState();
 
       /* Redraw the Track application card */
       updateApplicationInterface();
@@ -3403,6 +3434,29 @@ window.addEventListener("hashchange", applyHashSection);
 
     if (!applicationTrigger) {
       return;
+    }
+
+    const contextKey =
+      applicationTrigger.dataset.applicationContext || "juniper-house-server";
+
+    const applicationContext = applicationContexts[contextKey];
+
+    if (applicationContext) {
+      activeApplicationContext = applicationContext;
+
+      applicationState = loadApplicationState(activeApplicationContext);
+      if (applicationRoleName) {
+        applicationRoleName.textContent = applicationContext.role;
+      }
+
+      if (applicationWorkplaceName) {
+        applicationWorkplaceName.textContent = applicationContext.workplace;
+      }
+
+      if (applicationBackButton) {
+        applicationBackButton.dataset.openJobsView =
+          applicationContext.backView;
+      }
     }
 
     setTimeout(updateApplicationInterface, 0);

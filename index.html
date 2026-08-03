@@ -2720,6 +2720,7 @@
     <button
       class="jobs-explore-place-button"
       type="button"
+      data-open-jobs-view="northline-detail"
     >
       Explore this place
       <span aria-hidden="true">→</span>
@@ -2961,6 +2962,149 @@
 </div>
 
 <!-- JOBS VIEW: JUNIPER HOUSE DETAIL — END -->
+<!-- ==================================================
+   JOBS VIEW: NORTHLINE DETAIL – START  
+=================================================== -->
+
+<div
+  class="jobs-view jobs-place-detail"
+  data-jobs-view="northline-detail"
+  hidden
+>
+  <!-- ================================================
+       NORTHLINE DETAIL: BACK NAVIGATION
+  ================================================= -->
+
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="restaurant-results"
+  >
+    ← Restaurants
+  </button>
+
+
+  <!-- ================================================
+       NORTHLINE DETAIL: HERO
+  ================================================= -->
+
+  <section class="jobs-detail-hero">
+    <div class="jobs-detail-preview jobs-detail-preview-northline">
+      <span class="jobs-preview-label">
+        Northline
+      </span>
+    </div>
+
+    <div class="jobs-detail-heading">
+      <span class="eyebrow">
+        Modern Dining
+      </span>
+
+      <div class="jobs-detail-title-row">
+        <h1>Northline</h1>
+
+        <button
+          class="jobs-save-button"
+          type="button"
+          aria-label="Save Northline"
+        >
+          ♡
+        </button>
+      </div>
+
+      <p class="lead">
+  Polished service, collaborative training, and a lively dining room near
+  downtown.
+</p>
+
+      <div
+        class="jobs-place-tags"
+        aria-label="Northline workplace qualities"
+      >
+        <span>High energy</span>
+<span>Collaborative training</span>
+<span>Polished service</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================
+       Northline: WORKPLACE OVERVIEW
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">The Place</span>
+
+    <h2>A modern restaurant built around polished service.</h2>
+
+    <p>
+  Northline combines a lively downtown dining room with collaborative
+  training, clear standards, and opportunities to grow.
+</p>
+  </section>
+
+
+  <!-- ================================================
+       Northline DETAIL: WORK EXPERIENCE
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">Working Here</span>
+
+    <h2>What the shift feels like</h2>
+
+    <div class="jobs-detail-facts">
+      <article>
+  <span>Team</span>
+  <strong>Collaborative and training-focused</strong>
+</article>
+
+<article>
+  <span>Service</span>
+  <strong>Polished, high-energy dinner pace</strong>
+</article>
+
+<article>
+  <span>Environment</span>
+  <strong>Modern and growth-oriented</strong>
+</article>
+    </div>
+  </section>
+
+
+  <!-- ================================================
+       Northline DETAIL: AVAILABLE ROLE
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">Available Role</span>
+
+    <article class="jobs-role-card">
+      <div>
+        <span class="jobs-role-status">Now hiring</span>
+
+        <h2>Server</h2>
+
+       <p>
+  Join Northline's dinner team with consistent evening shifts,
+  structured training, and opportunities to grow.
+</p>
+      </div>
+
+      <button
+  class="primary-button"
+  type="button"
+  data-open-jobs-view="northline-server-role"
+>
+  View role
+  <span aria-hidden="true">→</span>
+</button>
+    </article>
+  </section>
+</div>
+
+<!-- JOBS VIEW: Northline DETAIL — END -->
 
 <!-- ==================================================
      JOBS VIEW: JUNIPER SERVER ROLE — START
@@ -3074,6 +3218,7 @@
   class="primary-button"
   type="button"
   data-open-jobs-view="juniper-application-prep"
+  data-application-context="juniper-house-server"
 >
   Prepare to apply
   <span aria-hidden="true">→</span>
@@ -3082,6 +3227,130 @@
 </div>
 
 <!-- JOBS VIEW: JUNIPER SERVER ROLE — END -->
+
+<!-- ====================================================
+  | | JOBS VIEW: NORTHLINE SERVER ROLE – START
+==================================================== -->
+
+<div
+  class="jobs-view jobs-role-detail"
+  data-jobs-view="northline-server-role"
+  hidden
+>
+  <!-- ====================================================
+    | | | NORTHLINE SERVER ROLE: BACK NAVIGATION
+  ==================================================== -->
+
+  <button
+    class="jobs-back-button"
+    type="button"
+    data-open-jobs-view="northline-detail"
+  >
+    ← Northline
+  </button>
+
+
+  <!-- ================================================
+       NORTHLINE SERVER ROLE: HEADING
+  ================================================= -->
+
+  <section class="jobs-role-detail-hero">
+    <span class="eyebrow">Now Hiring</span>
+
+    <h1>Server</h1>
+
+    <p class="lead">
+  Join the Northline dinner team with polished evening service,
+  structured training, and opportunities to grow.
+</p>
+
+    <div
+  class="jobs-place-tags"
+  aria-label="Northline Server role details"
+>
+  <span>Evenings</span>
+  <span>Part-time</span>
+  <span>Training</span>
+</div>
+      
+    
+  </section>
+
+
+  <!-- ================================================
+       NORTHLINE SERVER ROLE: QUICK DETAILS
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">Role Details</span>
+
+    <h2>What to know first</h2>
+
+    <div class="jobs-detail-facts">
+     <article>
+  <span>Schedule</span>
+  <strong>Three evening shifts</strong>
+</article>
+
+<article>
+  <span>Training</span>
+  <strong>Structured onboarding</strong>
+</article>
+
+<article>
+  <span>Compensation</span>
+  <strong>Hourly wage plus tips</strong>
+</article>
+    </div>
+  </section>
+
+
+  <!-- ================================================
+       NORTHLINE SERVER ROLE: RESPONSIBILITIES
+  ================================================= -->
+
+  <section class="jobs-detail-section">
+    <span class="eyebrow">The Work</span>
+
+    <h2>What you’ll be doing</h2>
+
+    <ul class="jobs-role-list">
+  <li>Deliver polished and attentive dinner service.</li>
+  <li>Learn seasonal menu items and beverage pairings.</li>
+  <li>Coordinate closely with the kitchen and bar teams.</li>
+  <li>Support opening, closing, and side-work standards.</li>
+</ul>
+  </section>
+
+
+  <!-- ================================================
+       NORTHLINE SERVER ROLE: APPLICATION ACTION
+  ================================================= -->
+
+  <section class="jobs-role-apply">
+    <span class="eyebrow">Interested?</span>
+
+    <h2>Take the next step.</h2>
+
+    <p>
+      Review your worker profile before sending your
+      application to Northline.
+    </p>
+
+    <button
+  class="primary-button"
+  type="button"
+  data-open-jobs-view="juniper-application-prep"
+  data-application-context="northline-server"
+>
+  Prepare to apply
+  <span aria-hidden="true">→</span>
+</button>
+  </section>
+</div>
+
+<!-- JOBS VIEW: NORTHLINE SERVER ROLE — END -->
+
 
 <!-- ==================================================
      JOBS VIEW: APPLICATION PREPARATION — START
@@ -3130,13 +3399,12 @@
     <div class="jobs-application-role">
       <div>
         <span>Applying for</span>
-        <strong>Server</strong>
+        <strong data-application-role-name>Server</strong>
       </div>
 
       <div>
         <span>Workplace</span>
-        <strong>Juniper House</strong>
-      </div>
+       <strong data-application-workplace-name>Juniper House</strong>
     </div>
   </section>
 
