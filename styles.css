@@ -4335,3 +4335,44 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ================================================
+   JOBS: OPPORTUNITY MATCH BADGE
+================================================ */
+
+.jobs-opportunity-match {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--jobs-accent, #78d7c8) 45%,
+      transparent
+    );
+  border-radius: 999px;
+  background: color-mix(
+    in srgb,
+    var(--jobs-accent, #78d7c8) 14%,
+    transparent
+  );
+  color: var(--jobs-accent, #78d7c8);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.jobs-opportunity-match[hidden] {
+  display: none;
+}
+
+[data-theme="light"] .jobs-opportunity-match {
+  color: #256d60;
+  background: rgba(55, 151, 132, 0.13);
+  border-color: rgba(55, 151, 132, 0.3);
+}

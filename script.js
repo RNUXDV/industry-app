@@ -4439,3 +4439,208 @@ window.addEventListener("hashchange", applyHashSection);
 
   updateJumpInterface();
 })();
+
+/* =================================================
+   JOBS: PERSONALIZED OPPORTUNITY MATCHES
+================================================== */
+
+(() => {
+  const PREFERENCES_STORAGE_KEY = "industry-user-preferences";
+
+  const AVAILABILITY_STORAGE_KEY = "industry-user-availability";
+
+  const opportunityCards = Array.from(
+    document.querySelectorAll("[data-opportunity-card]"),
+  );
+
+  if (opportunityCards.length === 0) {
+    return;
+  }
+
+  function loadOpportunityStorage(storageKey) {
+    try {
+      const savedValue = localStorage.getItem(storageKey);
+
+      return savedValue ? JSON.parse(savedValue) : null;
+    } catch (error) {
+      console.warn(`Unable to load ${storageKey}.`, error);
+
+      return null;
+    }
+  }
+
+  function normalizeMatchValue(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "");
+  }
+
+  function splitOpportunityValues(value) {
+    return String(value || "")
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  function valuesMatch(userValues, opportunityValues) {
+    return userValues.some((userValue) =>
+      opportunityValues.some(
+        (opportunityValue) =>
+          normalizeMatchValue(userValue) ===
+          normalizeMatchValue(opportunityValue),
+      ),
+    );
+  }
+
+  function updateOpportunityMatches() {
+    const preferences = loadOpportunityStorage(PREFERENCES_STORAGE_KEY);
+
+    const availability = loadOpportunityStorage(AVAILABILITY_STORAGE_KEY);
+
+    opportunityCards.forEach((card) => {
+      const matchBadge = card.querySelector("[data-opportunity-match-badge]");
+      const matchReason = card.querySelector("[data-opportunity-match-reason]");
+
+      if (!matchBadge) {
+        return;
+      }
+
+      matchBadge.hidden = true;
+      matchBadge.removeAttribute("data-match-level");
+      if (matchReason) {
+        matchReason.hidden = true;
+        matchReason.textContent = "";
+      }
+
+      if (!preferences?.completed) {
+        return;
+      }
+
+      const desiredRoles = preferences.desiredRoles || [];
+
+      const workplaceTypes = preferences.workplaceTypes || [];
+
+      const preferredShifts = availability?.preferredShifts || [];
+
+      const opportunityRoles = splitOpportunityValues(
+        card.dataset.opportunityRoles,
+      );
+
+      const opportunityWorkplaces = splitOpportunityValues(
+        card.dataset.opportunityWorkplace,
+      );
+
+      const opportunityShifts = splitOpportunityValues(
+        card.dataset.opportunityShifts,
+      );
+
+      const roleMatches = valuesMatch(desiredRoles, opportunityRoles);
+
+      const workplaceMatches = valuesMatch(
+        workplaceTypes,
+        opportunityWorkplaces,
+      );
+
+      const employmentMatches =
+        Boolean(preferences.employmentType) &&
+        normalizeMatchValue(preferences.employmentType) ===
+          normalizeMatchValue(card.dataset.opportunityEmployment);
+
+      const shiftMatches = valuesMatch(preferredShifts, opportunityShifts);
+
+      const locationMatches =
+        Boolean(preferences.searchLocation) &&
+        normalizeMatchValue(preferences.searchLocation) ===
+          normalizeMatchValue(card.dataset.opportunityLocation);
+
+      const matchScore = [
+        roleMatches,
+        workplaceMatches,
+        employmentMatches,
+        shiftMatches,
+        locationMatches,
+      ].filter(Boolean).length;
+
+      let matchLabel = "";
+      let matchLevel = "";
+
+      if (roleMatches && workplaceMatches && matchScore >= 4) {
+        matchLabel = "Strong match";
+        matchLevel = "strong";
+      } else if (roleMatches && workplaceMatches && matchScore >= 3) {
+        matchLabel = "Good match";
+        matchLevel = "good";
+      } else if (roleMatches) {
+        matchLabel = "Role match";
+        matchLevel = "role";
+      } else if (workplaceMatches && locationMatches) {
+        matchLabel = "Potential match";
+        matchLevel = "workplace";
+      }
+
+      if (!matchLabel) {
+        return;
+      }
+
+      matchBadge.textContent = matchLabel;
+      matchBadge.dataset.matchLevel = matchLevel;
+      matchBadge.hidden = false;
+
+      if (matchReason) {
+        const matchedDetails = [];
+
+        if (roleMatches) {
+          matchedDetails.push(`${opportunityRoles[0]} role`);
+        }
+
+        if (workplaceMatches) {
+          matchedDetails.push(`${opportunityWorkplaces[0]} preference`);
+        }
+
+        if (employmentMatches) {
+          matchedDetails.push(
+            `${card.dataset.opportunityEmployment} preference`,
+          );
+        }
+
+        if (shiftMatches) {
+          matchedDetails.push(`${opportunityShifts[0]} availability`);
+        }
+
+        if (locationMatches) {
+          const opportunityCity = card.dataset.opportunityLocation
+            .split(",")[0]
+            .trim();
+
+          matchedDetails.push(`${opportunityCity} search`);
+        }
+
+        const finalDetail = matchedDetails.pop();
+
+        const formattedDetails =
+          matchedDetails.length > 0
+            ? `${matchedDetails.join(", ")}, and ${finalDetail}`
+            : finalDetail;
+
+        matchReason.textContent = `Matches your ${formattedDetails}.`;
+
+        matchReason.hidden = false;
+      }
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    const jobsViewTrigger = event.target.closest("[data-open-jobs-view]");
+
+    if (!jobsViewTrigger) {
+      return;
+    }
+
+    setTimeout(updateOpportunityMatches, 0);
+  });
+
+  window.addEventListener("storage", updateOpportunityMatches);
+
+  updateOpportunityMatches();
+})();
