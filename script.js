@@ -4453,7 +4453,9 @@ window.addEventListener("hashchange", applyHashSection);
     document.querySelectorAll("[data-opportunity-card]"),
   );
 
-  if (opportunityCards.length === 0) {
+  const opportunityList = document.querySelector(".jobs-place-list");
+
+  if (opportunityCards.length === 0 || !opportunityList) {
     return;
   }
 
@@ -4508,6 +4510,7 @@ window.addEventListener("hashchange", applyHashSection);
 
       matchBadge.hidden = true;
       matchBadge.removeAttribute("data-match-level");
+      card.dataset.matchScore = "0";
       if (matchReason) {
         matchReason.hidden = true;
         matchReason.textContent = "";
@@ -4586,6 +4589,7 @@ window.addEventListener("hashchange", applyHashSection);
       matchBadge.textContent = matchLabel;
       matchBadge.dataset.matchLevel = matchLevel;
       matchBadge.hidden = false;
+      card.dataset.matchScore = String(matchScore);
 
       if (matchReason) {
         const matchedDetails = [];
@@ -4627,6 +4631,15 @@ window.addEventListener("hashchange", applyHashSection);
 
         matchReason.hidden = false;
       }
+    });
+    const sortedOpportunityCards = [...opportunityCards].sort(
+      (firstCard, secondCard) =>
+        Number(secondCard.dataset.matchScore) -
+        Number(firstCard.dataset.matchScore),
+    );
+
+    sortedOpportunityCards.forEach((card) => {
+      opportunityList.appendChild(card);
     });
   }
 
