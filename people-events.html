@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,7 +6,10 @@
     <title>Industry - Events</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-theme="dark">
@@ -14,82 +17,658 @@
       <header class="hero">
         <div class="hero-top">
           <p class="eyebrow">People lane</p>
-          <button class="theme-toggle" id="theme-toggle-button" type="button">Light / Dark: Dark</button>
+          <button class="theme-toggle" id="theme-toggle-button" type="button">
+            Light / Dark: Dark
+          </button>
         </div>
         <h1>Industry</h1>
         <p class="tagline">The network behind the service.</p>
-        <p class="intro">A grounded connection layer for service workers across shifts, crews, neighborhoods, and opportunities.</p>
+        <p class="intro">
+          A grounded connection layer for service workers across shifts, crews,
+          neighborhoods, and opportunities.
+        </p>
       </header>
 
       <main>
-        <section class="app-section active">
-          <button class="back-button" type="button" onclick="window.location.href='index.html#people'">Back to People</button>
-          <div class="section-heading">
+        <!-- =========================================================
+       PEOPLE VIEW: EVENTS — START
+  ========================================================== -->
+
+        <section
+          class="app-section active people-events-view"
+          aria-labelledby="people-events-title"
+        >
+          <!-- =====================================================
+         EVENTS: BACK NAVIGATION
+    ====================================================== -->
+
+          <button
+            class="back-button"
+            type="button"
+            onclick="window.location.href = 'index.html#people'"
+          >
+            ← Back to People
+          </button>
+
+          <!-- =====================================================
+         EVENTS: INTRO
+    ====================================================== -->
+
+          <header class="people-events-header">
             <p class="section-label">People</p>
-            <h2>Events</h2>
-            <p>Find industry nights, sober meetups, pop-ups, workshops, and community events.</p>
-          </div>
 
-          <div class="mood-row" role="group" aria-label="Event filters">
-            <button class="filter-button page-filter-button active" type="button" data-filter-group="events" data-filter-value="all">All</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="industry-night">Industry night</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="sober">Sober</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="pop-up">Pop-up</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="workshop">Workshop</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="hiring-mixer">Hiring mixer</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="events" data-filter-value="support">Support</button>
-          </div>
+            <h2 id="people-events-title">Events</h2>
 
-          <section class="stack-list shift-list" aria-label="Industry events">
-            <article class="stack-card people-event-card" data-event-tags="industry-night">
-              <div class="stack-copy">
-                <p class="stack-kicker">Event</p>
+            <p class="people-events-intro">
+              Find somewhere to go, gather, learn, celebrate, or decompress with
+              people from the Industry.
+            </p>
+          </header>
+
+          <!-- =====================================================
+         EVENTS: FEATURED THIS WEEK
+    ====================================================== -->
+
+          <section
+            class="people-events-featured"
+            data-events-featured
+            data-event-state="none"
+            aria-labelledby="featured-event-title"
+          >
+            <!-- =================================================
+           FEATURED EVENT: COPY
+      ================================================== -->
+
+            <div class="people-events-featured-copy">
+              <span class="people-events-label"> Featured This Week </span>
+
+              <div class="people-events-featured-date">
+                <strong>10</strong>
+                <span>Aug</span>
+              </div>
+
+              <h3 id="featured-event-title">Industry Night at The Get Down</h3>
+
+              <p class="people-events-featured-description">
+                Music, drinks, dancing, and room to let the week go. Come alone
+                or meet people already in your Loop.
+              </p>
+
+              <div
+                class="people-events-detail-list"
+                aria-label="Featured event details"
+              >
+                <span>Monday · 8:00 PM</span>
+                <span>The Get Down · SE Portland</span>
+                <span>Free entry</span>
+              </div>
+
+              <div class="people-events-featured-actions">
+                <button
+                  class="people-events-going-button"
+                  type="button"
+                  data-events-featured-going
+                  aria-pressed="false"
+                >
+                  I’m going
+                </button>
+
+                <button
+                  class="people-events-interested-button"
+                  type="button"
+                  data-events-featured-interested
+                  aria-pressed="false"
+                >
+                  Interested
+                </button>
+              </div>
+            </div>
+
+            <!-- =================================================
+           FEATURED EVENT: LOOP ATTENDANCE
+      ================================================== -->
+
+            <aside class="people-events-loop-attendance">
+              <p class="section-label">Your Loop Is Going</p>
+
+              <div
+                class="people-events-attendee-orbit"
+                aria-label="People from your Loop attending"
+              >
+                <span
+                  class="people-events-attendee people-events-attendee-red"
+                  aria-label="Maya Chen"
+                >
+                  MC
+                </span>
+
+                <span
+                  class="people-events-attendee people-events-attendee-blue"
+                  aria-label="Jordan Reed"
+                >
+                  JR
+                </span>
+
+                <span
+                  class="people-events-attendee people-events-attendee-violet"
+                  aria-label="Alex Kim"
+                >
+                  AK
+                </span>
+
+                <span
+                  class="people-events-attendee people-events-attendee-indigo"
+                  aria-label="Sam Rivera"
+                >
+                  SR
+                </span>
+              </div>
+
+              <p class="people-events-attendance-copy">
+                Maya, Jordan, and 2 others from your Loop are interested.
+              </p>
+
+              <button
+                class="people-events-invite-button"
+                type="button"
+                data-events-invite-loop
+              >
+                Invite someone
+              </button>
+              <!-- =================================================
+     FEATURED EVENT: INVITE FROM MY LOOP
+================================================== -->
+
+<section
+  class="people-events-invite-panel"
+  data-events-invite-panel
+  aria-labelledby="invite-from-loop-title"
+  hidden
+>
+  <div class="people-events-invite-heading">
+    <div>
+      <p class="section-label">
+        Invite from My Loop
+      </p>
+
+      <h4 id="invite-from-loop-title">
+        Who would you like to invite?
+      </h4>
+    </div>
+
+    <button
+      class="people-events-invite-close"
+      type="button"
+      data-events-invite-close
+      aria-label="Close invitation panel"
+    >
+      ×
+    </button>
+  </div>
+
+  <div
+    class="people-events-invite-list"
+    aria-label="People available to invite"
+  >
+    <!-- =============================================
+         INVITE PERSON: MAYA CHEN
+    ============================================== -->
+
+    <button
+      class="people-events-invite-person"
+      type="button"
+      data-events-invite-person="maya-chen"
+      aria-pressed="false"
+    >
+      <span
+        class="people-events-invite-avatar people-events-mini-avatar-red"
+        aria-hidden="true"
+      >
+        MC
+      </span>
+
+      <span class="people-events-invite-person-copy">
+        <strong>Maya Chen</strong>
+        <small>Bartender · Northline</small>
+      </span>
+
+      <span class="people-events-invite-state">
+        Invite
+      </span>
+    </button>
+
+    <!-- =============================================
+         INVITE PERSON: JORDAN REED
+    ============================================== -->
+
+    <button
+      class="people-events-invite-person"
+      type="button"
+      data-events-invite-person="jordan-reed"
+      aria-pressed="false"
+    >
+      <span
+        class="people-events-invite-avatar people-events-mini-avatar-blue"
+        aria-hidden="true"
+      >
+        JR
+      </span>
+
+      <span class="people-events-invite-person-copy">
+        <strong>Jordan Reed</strong>
+        <small>Line Cook · Café Luna</small>
+      </span>
+
+      <span class="people-events-invite-state">
+        Invite
+      </span>
+    </button>
+
+    <!-- =============================================
+         INVITE PERSON: ALEX KIM
+    ============================================== -->
+
+    <button
+      class="people-events-invite-person"
+      type="button"
+      data-events-invite-person="alex-kim"
+      aria-pressed="false"
+    >
+      <span
+        class="people-events-invite-avatar people-events-mini-avatar-violet"
+        aria-hidden="true"
+      >
+        AK
+      </span>
+
+      <span class="people-events-invite-person-copy">
+        <strong>Alex Kim</strong>
+        <small>Server · Juniper House</small>
+      </span>
+
+      <span class="people-events-invite-state">
+        Invite
+      </span>
+    </button>
+  </div>
+</section>
+            </aside>
+          </section>
+
+          <!-- =====================================================
+         EVENTS: EXPLORE + FILTERS
+    ====================================================== -->
+
+          <section
+            class="people-events-explore"
+            aria-labelledby="explore-events-title"
+          >
+            <div class="people-events-section-heading">
+              <p class="section-label">Explore</p>
+
+              <h2 id="explore-events-title">Find Your Kind of Night</h2>
+            </div>
+
+            <div
+              class="people-events-filters"
+              role="group"
+              aria-label="Filter events"
+            >
+              <button
+                class="people-events-filter-button active"
+                type="button"
+                data-events-filter="all"
+                aria-pressed="true"
+              >
+                All
+              </button>
+
+              <button
+                class="people-events-filter-button"
+                type="button"
+                data-events-filter="social"
+                aria-pressed="false"
+              >
+                Social
+              </button>
+
+              <button
+                class="people-events-filter-button"
+                type="button"
+                data-events-filter="sober"
+                aria-pressed="false"
+              >
+                Sober
+              </button>
+
+              <button
+                class="people-events-filter-button"
+                type="button"
+                data-events-filter="learning"
+                aria-pressed="false"
+              >
+                Learning
+              </button>
+
+              <button
+                class="people-events-filter-button"
+                type="button"
+                data-events-filter="support"
+                aria-pressed="false"
+              >
+                Support
+              </button>
+            </div>
+          </section>
+
+          <!-- =====================================================
+         EVENTS: EVENT GRID
+    ====================================================== -->
+
+          <section class="people-events-grid" aria-label="Industry events">
+            <!-- =================================================
+           EVENT CARD: INDUSTRY NIGHT
+      ================================================== -->
+
+            <article
+              class="people-events-card people-events-card-social"
+              data-events-card
+              data-event-id="industry-night"
+              data-event-category="social"
+              data-event-state="none"
+            >
+              <div class="people-events-card-date">
+                <strong>10</strong>
+                <span>Aug</span>
+              </div>
+
+              <div class="people-events-card-copy">
+                <span class="people-events-card-type"> Social Night </span>
+
                 <h3>Industry Night Meetup</h3>
-                <p>Monday, 8 PM - SE Portland - Social meetup</p>
+
+                <p class="people-events-card-time">Monday · 8:00 PM</p>
+
+                <p class="people-events-card-location">
+                  The Get Down · SE Portland
+                </p>
+
+                <div class="people-events-tags">
+                  <span>Music</span>
+                  <span>Drinks</span>
+                  <span>Dancing</span>
+                </div>
+
+                <div class="people-events-mini-loop">
+                  <span
+                    class="people-events-mini-avatar people-events-mini-avatar-red"
+                    aria-hidden="true"
+                  >
+                    MC
+                  </span>
+
+                  <span
+                    class="people-events-mini-avatar people-events-mini-avatar-blue"
+                    aria-hidden="true"
+                  >
+                    JR
+                  </span>
+
+                  <p>2 people from your Loop</p>
+                </div>
               </div>
-              <button class="action-button event-interest-button" type="button">I'm interested</button>
+
+              <div class="people-events-card-actions">
+                <button
+                  class="people-events-going-button"
+                  type="button"
+                  data-events-going
+                  aria-pressed="false"
+                >
+                  I’m going
+                </button>
+
+                <button
+                  class="people-events-interested-button"
+                  type="button"
+                  data-events-interested
+                  aria-pressed="false"
+                >
+                  Interested
+                </button>
+              </div>
             </article>
 
-            <article class="stack-card people-event-card" data-event-tags="sober support">
-              <div class="stack-copy">
-                <p class="stack-kicker">Event</p>
+            <!-- =================================================
+           EVENT CARD: SOBER INDUSTRY COFFEE
+      ================================================== -->
+
+            <article
+              class="people-events-card people-events-card-sober"
+              data-events-card
+              data-event-id="sober-industry-coffee"
+              data-event-category="sober support"
+              data-event-state="none"
+            >
+              <div class="people-events-card-date">
+                <strong>16</strong>
+                <span>Aug</span>
+              </div>
+
+              <div class="people-events-card-copy">
+                <span class="people-events-card-type"> Sober Gathering </span>
+
                 <h3>Sober Industry Coffee</h3>
-                <p>Sunday, 10 AM - Pearl District - Supportive meetup</p>
+
+                <p class="people-events-card-time">Sunday · 10:00 AM</p>
+
+                <p class="people-events-card-location">
+                  Upper Left Roasters · Pearl District
+                </p>
+
+                <div class="people-events-tags">
+                  <span>Coffee</span>
+                  <span>Conversation</span>
+                  <span>Alcohol-free</span>
+                </div>
+
+                <div class="people-events-mini-loop">
+                  <span
+                    class="people-events-mini-avatar people-events-mini-avatar-violet"
+                    aria-hidden="true"
+                  >
+                    AK
+                  </span>
+
+                  <p>Alex is interested</p>
+                </div>
               </div>
-              <button class="action-button event-interest-button" type="button">I'm interested</button>
+
+              <div class="people-events-card-actions">
+                <button
+                  class="people-events-going-button"
+                  type="button"
+                  data-events-going
+                  aria-pressed="false"
+                >
+                  I’m going
+                </button>
+
+                <button
+                  class="people-events-interested-button"
+                  type="button"
+                  data-events-interested
+                  aria-pressed="false"
+                >
+                  Interested
+                </button>
+              </div>
             </article>
 
-            <article class="stack-card people-event-card" data-event-tags="pop-up hiring-mixer">
-              <div class="stack-copy">
-                <p class="stack-kicker">Event</p>
-                <h3>Pop-up Shift Mixer</h3>
-                <p>Thursday, 6 PM - Portland Metro - Work + networking</p>
+            <!-- =================================================
+           EVENT CARD: AFTER-SHIFT PATIO MIXER
+      ================================================== -->
+
+            <article
+              class="people-events-card people-events-card-mixer"
+              data-events-card
+              data-event-id="after-shift-patio-mixer"
+              data-event-category="social"
+              data-event-state="none"
+            >
+              <div class="people-events-card-date">
+                <strong>20</strong>
+                <span>Aug</span>
               </div>
-              <button class="action-button event-interest-button" type="button">I'm interested</button>
+
+              <div class="people-events-card-copy">
+                <span class="people-events-card-type"> Pop-up Mixer </span>
+
+                <h3>After-Shift Patio Mixer</h3>
+
+                <p class="people-events-card-time">Thursday · 6:00 PM</p>
+
+                <p class="people-events-card-location">
+                  Produce Row · Central Eastside
+                </p>
+
+                <div class="people-events-tags">
+                  <span>Patio</span>
+                  <span>Food</span>
+                  <span>Casual</span>
+                </div>
+
+                <div class="people-events-mini-loop">
+                  <span
+                    class="people-events-mini-avatar people-events-mini-avatar-indigo"
+                    aria-hidden="true"
+                  >
+                    SR
+                  </span>
+
+                  <p>Sam saved this event</p>
+                </div>
+              </div>
+
+              <div class="people-events-card-actions">
+                <button
+                  class="people-events-going-button"
+                  type="button"
+                  data-events-going
+                  aria-pressed="false"
+                >
+                  I’m going
+                </button>
+
+                <button
+                  class="people-events-interested-button"
+                  type="button"
+                  data-events-interested
+                  aria-pressed="false"
+                >
+                  Interested
+                </button>
+              </div>
             </article>
 
-            <article class="stack-card people-event-card" data-event-tags="workshop support">
-              <div class="stack-copy">
-                <p class="stack-kicker">Event</p>
+            <!-- =================================================
+           EVENT CARD: CONFLICT AT WORK WORKSHOP
+      ================================================== -->
+
+            <article
+              class="people-events-card people-events-card-learning"
+              data-events-card
+              data-event-id="conflict-at-work-workshop"
+              data-event-category="learning support"
+              data-event-state="none"
+            >
+              <div class="people-events-card-date">
+                <strong>25</strong>
+                <span>Aug</span>
+              </div>
+
+              <div class="people-events-card-copy">
+                <span class="people-events-card-type"> Workshop </span>
+
                 <h3>Conflict at Work Workshop</h3>
-                <p>Tuesday, 4 PM - Online / Portland - Educational support</p>
+
+                <p class="people-events-card-time">Tuesday · 4:00 PM</p>
+
+                <p class="people-events-card-location">Online and Portland</p>
+
+                <div class="people-events-tags">
+                  <span>Communication</span>
+                  <span>Support</span>
+                  <span>Free</span>
+                </div>
+
+                <div class="people-events-mini-loop">
+                  <span
+                    class="people-events-mini-avatar people-events-mini-avatar-gold"
+                    aria-hidden="true"
+                  >
+                    TD
+                  </span>
+
+                  <p>Taylor is interested</p>
+                </div>
               </div>
-              <button class="action-button event-interest-button" type="button">I'm interested</button>
+
+              <div class="people-events-card-actions">
+                <button
+                  class="people-events-going-button"
+                  type="button"
+                  data-events-going
+                  aria-pressed="false"
+                >
+                  I’m going
+                </button>
+
+                <button
+                  class="people-events-interested-button"
+                  type="button"
+                  data-events-interested
+                  aria-pressed="false"
+                >
+                  Interested
+                </button>
+              </div>
             </article>
           </section>
 
-          <section class="today-panel" aria-label="Events status">
-            <p class="status-text" id="events-status-message">Choose an event to save your interest.</p>
+          <!-- =====================================================
+         EVENTS: ACTIVITY STATUS
+    ====================================================== -->
+
+          <section
+            class="people-events-status"
+            data-events-status
+            aria-live="polite"
+          >
+            Choose an event when something feels right.
           </section>
         </section>
+
+        <!-- =========================================================
+       PEOPLE VIEW: EVENTS — END
+  ========================================================== -->
       </main>
 
-      <a class="home-logo-button home-logo-link" href="index.html" aria-label="Go to Industry home">i</a>
+      <a
+        class="home-logo-button home-logo-link"
+        href="index.html"
+        aria-label="Go to Industry home"
+        >i</a
+      >
 
       <nav class="bottom-nav" aria-label="Bottom navigation">
-        <a class="nav-item nav-link-item" href="index.html#schedule">Schedule</a>
+        <a class="nav-item nav-link-item" href="index.html#schedule"
+          >Schedule</a
+        >
         <a class="nav-item nav-link-item" href="index.html#jobs">Jobs</a>
-        <a class="nav-item nav-link-item active" href="index.html#people">People</a>
+        <a class="nav-item nav-link-item active" href="index.html#people"
+          >People</a
+        >
       </nav>
     </div>
 

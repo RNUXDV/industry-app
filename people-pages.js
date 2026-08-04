@@ -460,3 +460,503 @@ renderLoopState();
 /* =========================================================
    PEOPLE VIEW: MY LOOP — END
 ========================================================= */
+
+/* =========================================================
+   PEOPLE VIEW: EVENTS — START
+========================================================= */
+
+{
+  /* =======================================================
+     EVENTS: PAGE + STORAGE
+  ======================================================= */
+
+  const peopleEventsView = document.querySelector(".people-events-view");
+
+  const peopleEventsStorageKey = "industry-v2-people-events-state";
+
+  const validPeopleEventStates = ["none", "interested", "going"];
+
+  const defaultPeopleEventsState = {
+    selectedFilter: "all",
+    inviteReady: false,
+
+    invitedPeople: {
+      "maya-chen": false,
+      "jordan-reed": false,
+      "alex-kim": false,
+    },
+
+    eventStates: {
+      "industry-night": "none",
+      "sober-industry-coffee": "none",
+      "after-shift-patio-mixer": "none",
+      "conflict-at-work-workshop": "none",
+    },
+  };
+
+  if (peopleEventsView) {
+    /* =====================================================
+       EVENTS: SELECTORS
+    ===================================================== */
+
+    const peopleEventsFeatured = document.querySelector(
+      "[data-events-featured]",
+    );
+
+    const peopleEventsFeaturedGoingButton = document.querySelector(
+      "[data-events-featured-going]",
+    );
+
+    const peopleEventsFeaturedInterestedButton = document.querySelector(
+      "[data-events-featured-interested]",
+    );
+
+    const peopleEventsInviteButton = document.querySelector(
+      "[data-events-invite-loop]",
+    );
+
+    const peopleEventsInvitePanel = document.querySelector(
+      "[data-events-invite-panel]",
+    );
+
+    const peopleEventsInviteCloseButton = document.querySelector(
+      "[data-events-invite-close]",
+    );
+
+    const peopleEventsInvitePersonButtons = document.querySelectorAll(
+      "[data-events-invite-person]",
+    );
+
+    const peopleEventsFilterButtons = document.querySelectorAll(
+      "[data-events-filter]",
+    );
+
+    const peopleEventsCards = document.querySelectorAll("[data-events-card]");
+
+    const peopleEventsStatus = document.querySelector("[data-events-status]");
+
+    /* =====================================================
+       EVENTS: LOAD STATE
+    ===================================================== */
+
+    function loadPeopleEventsState() {
+      const savedState = localStorage.getItem(peopleEventsStorageKey);
+
+      if (!savedState) {
+        return {
+          ...defaultPeopleEventsState,
+
+          eventStates: {
+            ...defaultPeopleEventsState.eventStates,
+          },
+        };
+      }
+
+      try {
+        const parsedState = JSON.parse(savedState);
+
+        const loadedEventStates = {
+          ...defaultPeopleEventsState.eventStates,
+        };
+
+        Object.keys(loadedEventStates).forEach((eventId) => {
+          const savedEventState = parsedState.eventStates?.[eventId];
+
+          loadedEventStates[eventId] = validPeopleEventStates.includes(
+            savedEventState,
+          )
+            ? savedEventState
+            : "none";
+        });
+
+        const validFilters = ["all", "social", "sober", "learning", "support"];
+
+        const loadedInvitedPeople = {
+          "maya-chen": parsedState.invitedPeople?.["maya-chen"] === true,
+
+          "jordan-reed": parsedState.invitedPeople?.["jordan-reed"] === true,
+
+          "alex-kim": parsedState.invitedPeople?.["alex-kim"] === true,
+        };
+
+        return {
+          selectedFilter: validFilters.includes(parsedState.selectedFilter)
+            ? parsedState.selectedFilter
+            : "all",
+
+          inviteReady: parsedState.inviteReady === true,
+
+          invitedPeople: loadedInvitedPeople,
+
+          eventStates: loadedEventStates,
+        };
+      } catch (error) {
+        console.warn("Unable to load the saved Events state.", error);
+
+        return {
+          ...defaultPeopleEventsState,
+
+          invitedPeople: {
+            ...defaultPeopleEventsState.invitedPeople,
+          },
+
+          eventStates: {
+            ...defaultPeopleEventsState.eventStates,
+          },
+        };
+      }
+    }
+
+    /* =====================================================
+       EVENTS: SAVE STATE
+    ===================================================== */
+
+    function savePeopleEventsState() {
+      localStorage.setItem(
+        peopleEventsStorageKey,
+        JSON.stringify(peopleEventsState),
+      );
+    }
+
+    /* =====================================================
+       EVENTS: STATUS MESSAGE
+    ===================================================== */
+
+    function updatePeopleEventsStatus(message) {
+      if (!peopleEventsStatus) return;
+
+      peopleEventsStatus.textContent = message;
+    }
+
+    /* =====================================================
+       EVENTS: BUTTON PAIR
+    ===================================================== */
+
+    function renderPeopleEventButtons(
+      goingButton,
+      interestedButton,
+      eventState,
+    ) {
+      const isGoing = eventState === "going";
+      const isInterested = eventState === "interested";
+
+      if (goingButton) {
+        goingButton.classList.toggle("is-selected", isGoing);
+
+        goingButton.setAttribute("aria-pressed", String(isGoing));
+
+        goingButton.textContent = isGoing ? "Going" : "I’m going";
+      }
+
+      if (interestedButton) {
+        interestedButton.classList.toggle("is-selected", isInterested);
+
+        interestedButton.setAttribute("aria-pressed", String(isInterested));
+
+        interestedButton.textContent = isInterested
+          ? "Interested ✓"
+          : "Interested";
+      }
+    }
+
+    /* =====================================================
+       EVENTS: FEATURED EVENT
+    ===================================================== */
+
+    function renderPeopleEventsFeatured() {
+      if (!peopleEventsFeatured) return;
+
+      const eventState = peopleEventsState.eventStates["industry-night"];
+
+      peopleEventsFeatured.dataset.eventState = eventState;
+
+      renderPeopleEventButtons(
+        peopleEventsFeaturedGoingButton,
+        peopleEventsFeaturedInterestedButton,
+        eventState,
+      );
+    }
+
+    /* =====================================================
+       EVENTS: EVENT CARDS
+    ===================================================== */
+
+    function renderPeopleEventsCards() {
+      peopleEventsCards.forEach((eventCard) => {
+        const eventId = eventCard.dataset.eventId;
+
+        const eventState = peopleEventsState.eventStates[eventId] || "none";
+
+        const goingButton = eventCard.querySelector("[data-events-going]");
+
+        const interestedButton = eventCard.querySelector(
+          "[data-events-interested]",
+        );
+
+        eventCard.dataset.eventState = eventState;
+
+        renderPeopleEventButtons(goingButton, interestedButton, eventState);
+      });
+    }
+
+    /* =====================================================
+       EVENTS: FILTERS
+    ===================================================== */
+
+    function renderPeopleEventsFilter() {
+      const selectedFilter = peopleEventsState.selectedFilter;
+
+      peopleEventsFilterButtons.forEach((filterButton) => {
+        const isActive = filterButton.dataset.eventsFilter === selectedFilter;
+
+        filterButton.classList.toggle("active", isActive);
+
+        filterButton.setAttribute("aria-pressed", String(isActive));
+      });
+
+      peopleEventsCards.forEach((eventCard) => {
+        const categories = eventCard.dataset.eventCategory
+          .split(" ")
+          .filter(Boolean);
+
+        const shouldShow =
+          selectedFilter === "all" || categories.includes(selectedFilter);
+
+        eventCard.hidden = !shouldShow;
+      });
+    }
+
+    /* =====================================================
+       EVENTS: LOOP INVITATION
+    ===================================================== */
+
+    function renderPeopleEventsInvitation() {
+      if (peopleEventsInviteButton) {
+        peopleEventsInviteButton.classList.toggle(
+          "is-selected",
+          peopleEventsState.inviteReady,
+        );
+
+        peopleEventsInviteButton.setAttribute(
+          "aria-pressed",
+          String(peopleEventsState.inviteReady),
+        );
+
+        peopleEventsInviteButton.setAttribute(
+          "aria-expanded",
+          String(peopleEventsState.inviteReady),
+        );
+
+        peopleEventsInviteButton.textContent = peopleEventsState.inviteReady
+          ? "Close invitations"
+          : "Invite someone";
+      }
+
+      if (peopleEventsInvitePanel) {
+        peopleEventsInvitePanel.hidden = !peopleEventsState.inviteReady;
+      }
+
+      peopleEventsInvitePersonButtons.forEach((personButton) => {
+        const personId = personButton.dataset.eventsInvitePerson;
+
+        const isInvited = peopleEventsState.invitedPeople[personId] === true;
+
+        const invitationState = personButton.querySelector(
+          ".people-events-invite-state",
+        );
+
+        personButton.classList.toggle("is-invited", isInvited);
+
+        personButton.setAttribute("aria-pressed", String(isInvited));
+
+        if (invitationState) {
+          invitationState.textContent = isInvited ? "Invited" : "Invite";
+        }
+      });
+    }
+
+    /* =====================================================
+       EVENTS: COMPLETE RENDER
+    ===================================================== */
+
+    function renderPeopleEventsState() {
+      renderPeopleEventsFeatured();
+      renderPeopleEventsCards();
+      renderPeopleEventsFilter();
+      renderPeopleEventsInvitation();
+    }
+
+    /* =====================================================
+       EVENTS: CHANGE ATTENDANCE STATE
+    ===================================================== */
+
+    function setPeopleEventState(eventId, nextState, eventName) {
+      const currentState = peopleEventsState.eventStates[eventId] || "none";
+
+      const finalState = currentState === nextState ? "none" : nextState;
+
+      peopleEventsState.eventStates[eventId] = finalState;
+
+      savePeopleEventsState();
+      renderPeopleEventsState();
+
+      if (finalState === "going") {
+        updatePeopleEventsStatus(`You’re going to ${eventName}.`);
+
+        return;
+      }
+
+      if (finalState === "interested") {
+        updatePeopleEventsStatus(
+          `${eventName} was saved to your interested events.`,
+        );
+
+        return;
+      }
+
+      updatePeopleEventsStatus(`${eventName} was removed from your events.`);
+    }
+
+    /* =====================================================
+       EVENTS: FEATURED ACTIONS
+    ===================================================== */
+
+    peopleEventsFeaturedGoingButton?.addEventListener("click", () => {
+      setPeopleEventState(
+        "industry-night",
+        "going",
+        "Industry Night at The Get Down",
+      );
+    });
+
+    peopleEventsFeaturedInterestedButton?.addEventListener("click", () => {
+      setPeopleEventState(
+        "industry-night",
+        "interested",
+        "Industry Night at The Get Down",
+      );
+    });
+
+    /* =====================================================
+       EVENTS: CARD ACTIONS
+    ===================================================== */
+
+    peopleEventsCards.forEach((eventCard) => {
+      const eventId = eventCard.dataset.eventId;
+
+      const eventName =
+        eventCard.querySelector("h3")?.textContent.trim() || "This event";
+
+      const goingButton = eventCard.querySelector("[data-events-going]");
+
+      const interestedButton = eventCard.querySelector(
+        "[data-events-interested]",
+      );
+
+      goingButton?.addEventListener("click", () => {
+        setPeopleEventState(eventId, "going", eventName);
+      });
+
+      interestedButton?.addEventListener("click", () => {
+        setPeopleEventState(eventId, "interested", eventName);
+      });
+    });
+
+    /* =====================================================
+       EVENTS: FILTER ACTIONS
+    ===================================================== */
+
+    peopleEventsFilterButtons.forEach((filterButton) => {
+      filterButton.addEventListener("click", () => {
+        const selectedFilter = filterButton.dataset.eventsFilter;
+
+        peopleEventsState.selectedFilter = selectedFilter;
+
+        savePeopleEventsState();
+        renderPeopleEventsFilter();
+
+        const visibleEventCount = [...peopleEventsCards].filter(
+          (eventCard) => !eventCard.hidden,
+        ).length;
+
+        updatePeopleEventsStatus(
+          selectedFilter === "all"
+            ? "Showing all events."
+            : `Showing ${visibleEventCount} ${selectedFilter} event${
+                visibleEventCount === 1 ? "" : "s"
+              }.`,
+        );
+      });
+    });
+
+    /* =====================================================
+       EVENTS: INVITE ACTION
+    ===================================================== */
+
+    peopleEventsInviteButton?.addEventListener("click", () => {
+      peopleEventsState.inviteReady = !peopleEventsState.inviteReady;
+
+      savePeopleEventsState();
+      renderPeopleEventsInvitation();
+
+      updatePeopleEventsStatus(
+        peopleEventsState.inviteReady
+          ? "Choose someone from your Loop to invite to Industry Night."
+          : "The Loop invitation was closed.",
+      );
+    });
+
+    /* =====================================================
+   EVENTS: CLOSE INVITATION PANEL
+===================================================== */
+
+    peopleEventsInviteCloseButton?.addEventListener("click", () => {
+      peopleEventsState.inviteReady = false;
+
+      savePeopleEventsState();
+      renderPeopleEventsInvitation();
+
+      updatePeopleEventsStatus("The invitation panel was closed.");
+    });
+
+    /* =====================================================
+   EVENTS: INVITE PEOPLE FROM MY LOOP
+===================================================== */
+
+    peopleEventsInvitePersonButtons.forEach((personButton) => {
+      personButton.addEventListener("click", () => {
+        const personId = personButton.dataset.eventsInvitePerson;
+
+        const personName =
+          personButton.querySelector("strong")?.textContent.trim() ||
+          "This person";
+
+        const isCurrentlyInvited =
+          peopleEventsState.invitedPeople[personId] === true;
+
+        peopleEventsState.invitedPeople[personId] = !isCurrentlyInvited;
+
+        savePeopleEventsState();
+        renderPeopleEventsInvitation();
+
+        updatePeopleEventsStatus(
+          isCurrentlyInvited
+            ? `${personName} was removed from the invitation.`
+            : `${personName} was invited to Industry Night.`,
+        );
+      });
+    });
+
+    /* =====================================================
+       EVENTS: INITIALIZE
+    ===================================================== */
+
+    const peopleEventsState = loadPeopleEventsState();
+
+    renderPeopleEventsState();
+  }
+}
+
+/* =========================================================
+   PEOPLE VIEW: EVENTS — END
+========================================================= */
