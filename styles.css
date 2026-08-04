@@ -1258,6 +1258,1140 @@ h1 {
   text-transform: uppercase;
 }
 
+/* =========================================================
+   PEOPLE PILLAR: COLOR SYSTEM
+========================================================= */
+
+:root {
+  /* Shared People atmosphere */
+
+  --people-purple: #7839c9;
+  --people-purple-bright: #a66cff;
+  --people-purple-deep: #321550;
+  --people-indigo: #43389c;
+
+  /* Rich Loop connection colors */
+
+  --loop-user-red: #b83a31;
+  --loop-user-red-deep: #641f1c;
+
+  --loop-user-blue: #285fcf;
+  --loop-user-blue-deep: #173579;
+
+  --loop-user-violet: #7138bd;
+  --loop-user-indigo: #303b9b;
+
+  --loop-user-gold: #b97719;
+  --loop-user-teal: #18787d;
+
+  --people-border: rgba(166, 108, 255, 0.38);
+  --people-ring: rgba(166, 108, 255, 0.28);
+  --people-surface: rgba(28, 18, 39, 0.88);
+}
+
+/* =========================================================
+   PEOPLE PILLAR: LOCAL BRAND VARIABLES
+========================================================= */
+
+[data-section="people"] {
+  --brand: var(--people-purple);
+  --brand-deep: var(--people-indigo);
+  --brand-ring: var(--people-ring);
+}
+
+/* =========================================================
+   PEOPLE PILLAR: PURPOSE PANELS
+========================================================= */
+
+[data-section="people"] .today-panel {
+  border-color: rgba(166, 108, 255, 0.24);
+
+  background:
+    radial-gradient(
+      circle at 8% 12%,
+      rgba(120, 57, 201, 0.11),
+      transparent 38%
+    ),
+    var(--panel-bg);
+
+  box-shadow:
+    0 14px 30px rgba(25, 10, 39, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+[data-section="people"] .section-label {
+  color: var(--people-purple-bright);
+}
+
+/* =========================================================
+   PEOPLE PILLAR: HUB CARDS
+========================================================= */
+
+[data-section="people"] .people-hub-card {
+  position: relative;
+  overflow: hidden;
+
+  border-color: rgba(166, 108, 255, 0.2);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(120, 57, 201, 0.08),
+      transparent 52%
+    ),
+    var(--surface);
+
+  box-shadow: 0 14px 28px rgba(24, 10, 38, 0.1);
+}
+
+/* My Loop: red and blue meeting inside purple */
+
+[data-section="people"]
+  .people-hub-card-list
+  > .people-hub-card:nth-child(1) {
+  background:
+    radial-gradient(
+      circle at 12% 15%,
+      rgba(184, 58, 49, 0.13),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 88% 82%,
+      rgba(40, 95, 207, 0.14),
+      transparent 42%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(120, 57, 201, 0.12),
+      transparent 58%
+    ),
+    var(--surface);
+}
+
+/* Events: warmer social energy */
+
+[data-section="people"]
+  .people-hub-card-list
+  > .people-hub-card:nth-child(2) {
+  background:
+    radial-gradient(
+      circle at 88% 14%,
+      rgba(184, 58, 49, 0.14),
+      transparent 42%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(120, 57, 201, 0.1),
+      transparent 58%
+    ),
+    var(--surface);
+}
+
+/* Nearby: trust and discovery */
+
+[data-section="people"]
+  .people-hub-card-list
+  > .people-hub-card:nth-child(3) {
+  background:
+    radial-gradient(
+      circle at 15% 85%,
+      rgba(40, 95, 207, 0.15),
+      transparent 44%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(67, 56, 156, 0.1),
+      transparent 58%
+    ),
+    var(--surface);
+}
+
+/* Resources: quieter violet support */
+
+[data-section="people"]
+  .people-hub-card-list
+  > .people-hub-card:nth-child(4) {
+  background:
+    radial-gradient(
+      circle at 88% 82%,
+      rgba(113, 56, 189, 0.14),
+      transparent 44%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(48, 59, 155, 0.08),
+      transparent 58%
+    ),
+    var(--surface);
+}
+
+/* =========================================================
+   PEOPLE PILLAR: CARD LABELS
+========================================================= */
+
+[data-section="people"] .feature-pill {
+  border-color: rgba(166, 108, 255, 0.52);
+  color: var(--people-purple-bright);
+  background: rgba(120, 57, 201, 0.11);
+}
+
+[data-section="people"]
+  .people-hub-card:nth-child(2)
+  .feature-pill {
+  border-color: rgba(184, 58, 49, 0.55);
+  color: #e46d61;
+  background: rgba(184, 58, 49, 0.1);
+}
+
+[data-section="people"]
+  .people-hub-card:nth-child(3)
+  .feature-pill {
+  border-color: rgba(40, 95, 207, 0.58);
+  color: #6f9bf1;
+  background: rgba(40, 95, 207, 0.11);
+}
+
+[data-section="people"]
+  .people-hub-card:nth-child(4)
+  .feature-pill {
+  border-color: rgba(144, 83, 220, 0.55);
+  color: #b681f3;
+  background: rgba(113, 56, 189, 0.11);
+}
+
+/* =========================================================
+   PEOPLE PILLAR: HOVER + ACTIVE STATES
+========================================================= */
+
+[data-section="people"] .people-hub-card:hover,
+[data-section="people"] .people-hub-card:focus-visible {
+  transform: translateY(-2px);
+
+  border-color: rgba(166, 108, 255, 0.52);
+
+  box-shadow:
+    0 18px 34px rgba(43, 18, 68, 0.18),
+    0 0 0 1px rgba(166, 108, 255, 0.08);
+}
+
+[data-section="people"] .people-hub-card.active {
+  border-color: rgba(166, 108, 255, 0.62);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(120, 57, 201, 0.15),
+      transparent 58%
+    ),
+    var(--surface-strong);
+
+  box-shadow:
+    0 18px 32px rgba(43, 18, 68, 0.2),
+    0 0 0 3px rgba(166, 108, 255, 0.08);
+}
+
+/* =========================================================
+   PEOPLE PILLAR: BOTTOM NAVIGATION
+========================================================= */
+
+.nav-item[data-target="people"].active {
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--people-purple),
+      var(--people-indigo) 58%,
+      var(--loop-user-blue-deep)
+    );
+
+  box-shadow:
+    0 0 0 4px var(--people-ring),
+    0 14px 28px rgba(47, 26, 93, 0.28);
+}
+
+/* =========================================================
+   PEOPLE PILLAR: FLOATING INFORMATION BUTTON
+========================================================= */
+
+body:has(.nav-item[data-target="people"].active)
+  .home-logo-button.active {
+  border-color: rgba(166, 108, 255, 0.62);
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--people-purple),
+      var(--people-indigo)
+    );
+
+  box-shadow:
+    0 0 0 4px var(--people-ring),
+    0 14px 28px rgba(47, 26, 93, 0.28);
+}
+
+/* =========================================================
+   PEOPLE VIEW: MY LOOP — START
+========================================================= */
+
+/* =========================================================
+   MY LOOP: LOCAL COLOR SYSTEM
+========================================================= */
+
+.people-loop-view {
+  --loop-purple: #7839c9;
+  --loop-purple-bright: #a66cff;
+  --loop-purple-deep: #321550;
+
+  --loop-red: #b83a31;
+  --loop-red-deep: #641f1c;
+
+  --loop-blue: #285fcf;
+  --loop-blue-deep: #173579;
+
+  --loop-violet: #7138bd;
+  --loop-indigo: #303b9b;
+
+  --loop-gold: #b97719;
+  --loop-teal: #18787d;
+
+  --loop-border: rgba(166, 108, 255, 0.26);
+  --loop-border-strong: rgba(166, 108, 255, 0.56);
+
+  --loop-surface: rgba(25, 18, 34, 0.88);
+  --loop-surface-soft: rgba(255, 255, 255, 0.035);
+
+  padding-bottom: 3rem;
+}
+
+/* =========================================================
+   MY LOOP: HERO
+========================================================= */
+
+.people-loop-hero {
+  position: relative;
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(280px, 0.9fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 5rem);
+
+  min-height: 32rem;
+  margin-top: 1.5rem;
+  padding: clamp(2rem, 6vw, 4rem);
+
+  border: 1px solid var(--loop-border);
+  border-radius: var(--radius-lg);
+
+  background:
+    radial-gradient(
+      circle at 84% 18%,
+      rgba(184, 58, 49, 0.14),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 72% 84%,
+      rgba(40, 95, 207, 0.13),
+      transparent 38%
+    ),
+    linear-gradient(
+      125deg,
+      rgba(120, 57, 201, 0.18),
+      transparent 46%
+    ),
+    var(--loop-surface);
+
+  box-shadow:
+    0 24px 54px rgba(24, 8, 38, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  overflow: hidden;
+}
+
+.people-loop-hero::after {
+  content: "";
+
+  position: absolute;
+  right: -10rem;
+  bottom: -15rem;
+
+  width: 27rem;
+  height: 27rem;
+
+  border: 1px solid rgba(166, 108, 255, 0.18);
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 0 3rem rgba(120, 57, 201, 0.03),
+    0 0 0 7rem rgba(40, 95, 207, 0.018);
+
+  pointer-events: none;
+}
+
+.people-loop-hero-copy {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.people-loop-hero-copy .section-label {
+  margin-bottom: 0.85rem;
+  color: var(--loop-purple-bright);
+}
+
+.people-loop-hero-copy h2 {
+  margin: 0;
+
+  font-size: clamp(3rem, 8vw, 5.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.people-loop-tagline {
+  max-width: 34rem;
+  margin: 1.5rem 0 0;
+
+  color: var(--text-main);
+
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.people-loop-intro {
+  max-width: 38rem;
+  margin: 1rem 0 0;
+
+  color: var(--muted);
+
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+/* =========================================================
+   MY LOOP: CONNECTION VISUAL
+========================================================= */
+
+.people-loop-visual {
+  position: relative;
+  z-index: 2;
+
+  width: min(100%, 24rem);
+  aspect-ratio: 1;
+  margin-inline: auto;
+
+  border: 1px solid rgba(166, 108, 255, 0.18);
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(166, 108, 255, 0.17),
+      rgba(184, 58, 49, 0.06) 38%,
+      rgba(40, 95, 207, 0.06) 58%,
+      transparent 72%
+    );
+
+  box-shadow:
+    inset 0 0 4rem rgba(120, 57, 201, 0.15),
+    0 0 6rem rgba(84, 43, 155, 0.14),
+    0 2rem 5rem rgba(0, 0, 0, 0.28);
+}
+
+.people-loop-visual::before,
+.people-loop-visual::after {
+  content: "";
+
+  position: absolute;
+  border-radius: 50%;
+
+  pointer-events: none;
+}
+
+.people-loop-visual::before {
+  inset: 13%;
+
+  border: 1px solid rgba(184, 58, 49, 0.25);
+}
+
+.people-loop-visual::after {
+  inset: 31%;
+
+  border: 1px solid rgba(40, 95, 207, 0.3);
+  background: rgba(120, 57, 201, 0.055);
+}
+
+/* =========================================================
+   MY LOOP: INDIVIDUAL DOTS
+========================================================= */
+
+.people-loop-dot {
+  position: absolute;
+  z-index: 4;
+
+  width: 4.25rem;
+  height: 4.25rem;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+
+  color: white;
+
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+
+  box-shadow:
+    0 1rem 2.5rem rgba(0, 0, 0, 0.34),
+    0 0 0 0.45rem rgba(255, 255, 255, 0.025);
+}
+
+.people-loop-dot-red {
+  top: 6%;
+  left: 41%;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.26),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      var(--loop-red),
+      var(--loop-red-deep)
+    );
+}
+
+.people-loop-dot-blue {
+  top: 43%;
+  right: 3%;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.25),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      var(--loop-blue),
+      var(--loop-blue-deep)
+    );
+}
+
+.people-loop-dot-violet {
+  bottom: 5%;
+  left: 39%;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.24),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      var(--loop-violet),
+      var(--loop-purple-deep)
+    );
+}
+
+.people-loop-dot-indigo {
+  top: 43%;
+  left: 3%;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.24),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      #4856c7,
+      var(--loop-indigo)
+    );
+}
+
+/* =========================================================
+   MY LOOP: CONNECTION LINES
+========================================================= */
+
+.people-loop-line {
+  position: absolute;
+  z-index: 2;
+
+  height: 1px;
+  transform-origin: left center;
+
+  background: linear-gradient(
+    90deg,
+    rgba(184, 58, 49, 0.34),
+    rgba(166, 108, 255, 0.88),
+    rgba(40, 95, 207, 0.38)
+  );
+
+  box-shadow:
+    0 0 0.9rem rgba(113, 56, 189, 0.46);
+}
+
+.people-loop-line-one {
+  width: 42%;
+  top: 27%;
+  left: 49%;
+
+  transform: rotate(48deg);
+}
+
+.people-loop-line-two {
+  width: 44%;
+  top: 52%;
+  left: 17%;
+
+  transform: rotate(-3deg);
+}
+
+.people-loop-line-three {
+  width: 41%;
+  top: 72%;
+  left: 43%;
+
+  transform: rotate(-51deg);
+}
+
+/* =========================================================
+   MY LOOP: OVERVIEW
+========================================================= */
+
+.people-loop-overview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+
+  margin: 1rem 0 4rem;
+}
+
+.people-loop-overview-card {
+  min-width: 0;
+  min-height: 7.5rem;
+  padding: 1.5rem 1.75rem;
+
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+
+  border: 1px solid var(--loop-border);
+  border-radius: var(--radius-md);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(120, 57, 201, 0.09),
+      transparent 56%
+    ),
+    var(--loop-surface-soft);
+}
+
+.people-loop-overview-card strong {
+  color: var(--loop-purple-bright);
+
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.people-loop-overview-card span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* =========================================================
+   MY LOOP: SECTION HEADINGS
+========================================================= */
+
+.people-loop-section {
+  margin-top: 4rem;
+}
+
+.people-loop-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+
+  margin-bottom: 1.25rem;
+}
+
+.people-loop-section-heading .section-label {
+  margin-bottom: 0.6rem;
+  color: var(--loop-purple-bright);
+}
+
+.people-loop-section-heading h2 {
+  margin: 0;
+}
+
+.people-loop-text-button {
+  padding: 0.65rem 0;
+
+  border: 0;
+
+  color: var(--muted);
+  background: transparent;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.people-loop-text-button:hover {
+  color: var(--loop-purple-bright);
+}
+
+/* =========================================================
+   MY LOOP: LARGE PERSON CARDS
+========================================================= */
+
+.people-loop-person-card {
+  min-width: 0;
+  padding: clamp(1.25rem, 4vw, 2rem);
+
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.35rem;
+
+  border: 1px solid var(--loop-border);
+  border-radius: var(--radius-md);
+
+  background:
+    radial-gradient(
+      circle at 7% 10%,
+      rgba(120, 57, 201, 0.1),
+      transparent 34%
+    ),
+    var(--loop-surface);
+
+  box-shadow:
+    0 18px 36px rgba(22, 8, 34, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.people-loop-person-copy {
+  min-width: 0;
+}
+
+.people-loop-person-copy h3 {
+  margin: 0 0 0.35rem;
+}
+
+.people-loop-relationship-label {
+  display: inline-block;
+  margin-bottom: 0.7rem;
+
+  color: var(--loop-purple-bright);
+
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.people-loop-person-role {
+  margin: 0;
+
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.people-loop-connection-context {
+  margin: 0.45rem 0 0;
+
+  color: var(--muted);
+}
+
+/* =========================================================
+   MY LOOP: AVATARS
+========================================================= */
+
+.people-loop-avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 auto;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+
+  color: white;
+
+  font-weight: 800;
+  letter-spacing: 0.05em;
+
+  box-shadow:
+    0 1rem 2rem rgba(0, 0, 0, 0.26),
+    0 0 0 0.35rem rgba(255, 255, 255, 0.02);
+}
+
+.people-loop-avatar-red {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.25),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      var(--loop-red),
+      var(--loop-red-deep)
+    );
+}
+
+.people-loop-avatar-blue {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.25),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      var(--loop-blue),
+      var(--loop-blue-deep)
+    );
+}
+
+.people-loop-avatar-violet {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.25),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      var(--loop-violet),
+      var(--loop-purple-deep)
+    );
+}
+
+.people-loop-avatar-indigo {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.25),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      #4856c7,
+      var(--loop-indigo)
+    );
+}
+
+.people-loop-avatar-gold {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.25),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      #d08b23,
+      #74420d
+    );
+}
+
+/* =========================================================
+   MY LOOP: REQUEST ACTIONS
+========================================================= */
+
+.people-loop-request-actions {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.people-loop-primary-button,
+.people-loop-secondary-button,
+.people-loop-message-button {
+  min-height: 2.9rem;
+  padding: 0.75rem 1.15rem;
+
+  border-radius: 999px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.people-loop-primary-button {
+  border: 1px solid var(--loop-purple);
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--loop-purple),
+      var(--loop-indigo)
+    );
+}
+
+.people-loop-primary-button:hover {
+  transform: translateY(-2px);
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--loop-purple-bright),
+      var(--loop-purple)
+    );
+}
+
+.people-loop-secondary-button {
+  border: 1px solid var(--loop-border);
+  color: var(--text-main);
+  background: transparent;
+}
+
+.people-loop-secondary-button:hover,
+.people-loop-message-button:hover {
+  transform: translateY(-2px);
+  border-color: var(--loop-border-strong);
+}
+
+/* =========================================================
+   MY LOOP: CONNECTION GRID
+========================================================= */
+
+.people-loop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.people-loop-connection-card {
+  min-width: 0;
+  padding: 1.5rem;
+
+  border: 1px solid var(--loop-border);
+  border-radius: var(--radius-md);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.035),
+      transparent 56%
+    ),
+    var(--loop-surface);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+
+.people-loop-connection-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--loop-border-strong);
+}
+
+.people-loop-connection-card .people-loop-avatar {
+  margin-bottom: 1.2rem;
+}
+
+.people-loop-connection-card h3 {
+  margin: 0 0 0.35rem;
+}
+
+.people-loop-connection-card p {
+  margin: 0 0 0.2rem;
+
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.people-loop-connection-card > span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.people-loop-message-button {
+  width: 100%;
+  margin-top: 1rem;
+
+  border: 1px solid var(--loop-border);
+  color: var(--text-main);
+
+  background: rgba(255, 255, 255, 0.025);
+}
+
+/* =========================================================
+   MY LOOP: STANDALONE PAGE SHELL
+========================================================= */
+
+body:has(.people-loop-view) .bottom-nav .nav-item.active {
+  border-color: transparent;
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--people-purple),
+      var(--people-indigo) 58%,
+      var(--loop-user-blue-deep)
+    );
+
+  box-shadow:
+    0 0 0 4px rgba(166, 108, 255, 0.28),
+    0 14px 28px rgba(47, 26, 93, 0.3);
+}
+
+body:has(.people-loop-view) .home-logo-button {
+  border-color: rgba(166, 108, 255, 0.62);
+  color: white;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--people-purple),
+      var(--people-indigo)
+    );
+
+  box-shadow:
+    0 0 0 4px rgba(166, 108, 255, 0.24),
+    0 14px 28px rgba(47, 26, 93, 0.3);
+}
+
+/* =========================================================
+   MY LOOP: FOCUS STATES
+========================================================= */
+
+.people-loop-view button:focus-visible {
+  outline: 3px solid rgba(166, 108, 255, 0.72);
+  outline-offset: 4px;
+}
+
+/* =========================================================
+   MY LOOP: TABLET
+========================================================= */
+
+@media (max-width: 820px) {
+  .people-loop-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .people-loop-visual {
+    width: min(100%, 22rem);
+  }
+
+  .people-loop-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .people-loop-person-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .people-loop-request-actions,
+  .people-loop-suggestion-card
+    > .people-loop-primary-button {
+    grid-column: 1 / -1;
+  }
+
+  .people-loop-request-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* =========================================================
+   MY LOOP: MOBILE
+========================================================= */
+
+@media (max-width: 560px) {
+  .people-loop-hero {
+    min-height: auto;
+    padding: 1.5rem;
+
+    border-radius: 1.6rem;
+  }
+
+  .people-loop-hero-copy h2 {
+    font-size: clamp(2.75rem, 15vw, 4rem);
+  }
+
+  .people-loop-visual {
+    width: min(100%, 18rem);
+  }
+
+  .people-loop-dot {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .people-loop-overview {
+    grid-template-columns: 1fr;
+
+    margin-bottom: 3rem;
+  }
+
+  .people-loop-section-heading {
+    align-items: flex-start;
+  }
+
+  .people-loop-section-heading
+    .people-loop-text-button {
+    white-space: nowrap;
+  }
+
+  .people-loop-person-card {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .people-loop-avatar {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .people-loop-request-actions {
+    width: 100%;
+  }
+
+  .people-loop-request-actions button {
+    flex: 1;
+  }
+
+  .people-loop-suggestion-card
+    > .people-loop-primary-button {
+    width: 100%;
+  }
+
+  .people-loop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .people-loop-section {
+    margin-top: 3.25rem;
+  }
+}
+
+/* =========================================================
+   PEOPLE VIEW: MY LOOP — END
+========================================================= */
+
 .people-link-card:hover,
 .people-link-card:focus-visible {
   transform: translateY(-2px);
@@ -4396,3 +5530,386 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   background: rgba(55, 151, 132, 0.13);
   border-color: rgba(55, 151, 132, 0.3);
 }
+/* =========================================================
+   PEOPLE PILLAR: REMOVE GLOBAL ORANGE ACTIVE STATES
+========================================================= */
+
+body:has(.nav-item[data-target="people"].active)
+  .nav-item[data-target="people"] {
+  border-color: transparent;
+
+  box-shadow:
+    0 0 0 4px rgba(166, 108, 255, 0.32),
+    0 14px 28px rgba(47, 26, 93, 0.3);
+}
+
+body:has(.nav-item[data-target="people"].active)
+  .home-logo-button {
+  border-color: rgba(166, 108, 255, 0.66);
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--people-purple),
+      var(--people-indigo)
+    );
+
+  box-shadow:
+    0 0 0 4px rgba(166, 108, 255, 0.28),
+    0 14px 28px rgba(47, 26, 93, 0.3);
+}
+
+/* =========================================================
+   MY LOOP: PAGE ATMOSPHERE + COMPACT INDUSTRY HEADER
+========================================================= */
+
+/* Replace the shared orange page glow with People purple */
+
+body:has(.people-loop-view) {
+  background:
+    radial-gradient(
+      circle at 14% 8%,
+      rgba(120, 57, 201, 0.3),
+      transparent 29rem
+    ),
+    radial-gradient(
+      circle at 88% 28%,
+      rgba(40, 95, 207, 0.14),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 46% 88%,
+      rgba(184, 58, 49, 0.08),
+      transparent 34rem
+    ),
+    linear-gradient(
+      180deg,
+      #130d1b,
+      #0c0912
+    );
+}
+
+/* Reduce the visual weight of the shared Industry header */
+
+body:has(.people-loop-view) .hero {
+  margin-bottom: 1.25rem;
+  padding: 1.15rem 1.4rem;
+
+  border: 1px solid rgba(166, 108, 255, 0.2);
+  border-radius: 1.4rem;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(120, 57, 201, 0.08),
+      transparent 55%
+    ),
+    rgba(19, 20, 22, 0.74);
+
+  box-shadow:
+    0 12px 30px rgba(19, 7, 31, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+/* Tighten the top row */
+
+body:has(.people-loop-view) .hero-top {
+  align-items: center;
+  margin-bottom: 0.55rem;
+}
+
+/* Make the pillar label feel connected to People */
+
+body:has(.people-loop-view) .hero .eyebrow {
+  color: var(--people-purple-bright);
+}
+
+/* Keep Industry present without letting it dominate */
+
+body:has(.people-loop-view) .hero h1 {
+  margin: 0.35rem 0 0.25rem;
+
+  font-size: clamp(2.2rem, 6vw, 3.25rem);
+  line-height: 1;
+}
+
+/* Preserve the product reminder */
+
+body:has(.people-loop-view) .hero .tagline {
+  margin: 0;
+
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Remove repeated explanatory copy from the shell */
+
+body:has(.people-loop-view) .hero .intro {
+  display: none;
+}
+
+/* Slim the theme control */
+
+body:has(.people-loop-view) .theme-toggle {
+  min-height: 0;
+  padding: 0.65rem 1rem;
+
+  border-color: rgba(166, 108, 255, 0.18);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.025);
+}
+
+/* Give the back control a subtle People treatment */
+
+body:has(.people-loop-view) .back-button {
+  border-color: rgba(166, 108, 255, 0.24);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(120, 57, 201, 0.1),
+      transparent
+    ),
+    var(--surface);
+}
+
+/* =========================================================
+   PEOPLE VIEW: MY LOOP — LIGHT MODE
+========================================================= */
+
+/* =========================================================
+   MY LOOP LIGHT MODE: PAGE ATMOSPHERE
+========================================================= */
+
+body[data-theme="light"]:has(.people-loop-view) {
+  color: #211927;
+
+  background:
+    radial-gradient(
+      circle at 12% 8%,
+      rgba(133, 72, 207, 0.18),
+      transparent 29rem
+    ),
+    radial-gradient(
+      circle at 88% 28%,
+      rgba(40, 95, 207, 0.1),
+      transparent 31rem
+    ),
+    radial-gradient(
+      circle at 48% 88%,
+      rgba(184, 58, 49, 0.07),
+      transparent 34rem
+    ),
+    linear-gradient(
+      180deg,
+      #f5f0fb,
+      #eee8f6
+    );
+}
+
+/* =========================================================
+   MY LOOP LIGHT MODE: LOCAL VARIABLES
+========================================================= */
+
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-view {
+  --loop-border: rgba(105, 55, 170, 0.23);
+  --loop-border-strong: rgba(105, 55, 170, 0.52);
+
+  --loop-surface: rgba(255, 255, 255, 0.84);
+  --loop-surface-soft: rgba(255, 255, 255, 0.62);
+}
+
+/* =========================================================
+   MY LOOP LIGHT MODE: COMPACT INDUSTRY HEADER
+========================================================= */
+
+body[data-theme="light"]:has(.people-loop-view)
+  .hero {
+  border-color: rgba(105, 55, 170, 0.2);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(120, 57, 201, 0.07),
+      transparent 58%
+    ),
+    rgba(255, 255, 255, 0.76);
+
+  box-shadow:
+    0 14px 32px rgba(62, 39, 82, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+body[data-theme="light"]:has(.people-loop-view)
+  .hero h1,
+body[data-theme="light"]:has(.people-loop-view)
+  .hero .tagline {
+  color: #211927;
+}
+
+body[data-theme="light"]:has(.people-loop-view)
+  .theme-toggle {
+  border-color: rgba(105, 55, 170, 0.2);
+  color: #211927;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  box-shadow: none;
+}
+
+body[data-theme="light"]:has(.people-loop-view)
+  .theme-toggle:focus-visible {
+  outline: 3px solid rgba(120, 57, 201, 0.55);
+  outline-offset: 4px;
+
+  border-color: rgba(120, 57, 201, 0.48);
+}
+
+/* =========================================================
+   MY LOOP LIGHT MODE: BACK BUTTON
+========================================================= */
+
+body[data-theme="light"]:has(.people-loop-view)
+  .back-button {
+  border-color: rgba(105, 55, 170, 0.22);
+  color: #2b2132;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(120, 57, 201, 0.08),
+      transparent
+    ),
+    rgba(255, 255, 255, 0.82);
+
+  box-shadow: 0 10px 22px rgba(62, 39, 82, 0.09);
+}
+
+/* =========================================================
+   MY LOOP LIGHT MODE: HERO
+========================================================= */
+
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-hero {
+  border-color: rgba(105, 55, 170, 0.27);
+
+  background:
+    radial-gradient(
+      circle at 84% 18%,
+      rgba(184, 58, 49, 0.09),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 72% 84%,
+      rgba(40, 95, 207, 0.09),
+      transparent 40%
+    ),
+    linear-gradient(
+      125deg,
+      rgba(120, 57, 201, 0.1),
+      transparent 48%
+    ),
+    rgba(255, 255, 255, 0.86);
+
+  box-shadow:
+    0 24px 54px rgba(67, 40, 91, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-hero-copy h2,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-tagline {
+  color: #211927;
+}
+
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-intro {
+  color: #665c6c;
+}
+
+/* Keep the connection visualization rich in light mode */
+
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-visual {
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(166, 108, 255, 0.2),
+      rgba(184, 58, 49, 0.08) 38%,
+      rgba(40, 95, 207, 0.08) 58%,
+      transparent 72%
+    ),
+    linear-gradient(
+      145deg,
+      #2d173d,
+      #171626
+    );
+
+  box-shadow:
+    inset 0 0 4rem rgba(120, 57, 201, 0.2),
+    0 0 5rem rgba(84, 43, 155, 0.14),
+    0 2rem 4rem rgba(55, 35, 70, 0.18);
+}
+
+/* =========================================================
+   MY LOOP LIGHT MODE: TEXT
+========================================================= */
+
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-section-heading h2,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-person-copy h3,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-connection-card h3,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-person-role,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-connection-card p {
+  color: #211927;
+}
+
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-connection-context,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-connection-card > span,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-overview-card span,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-text-button {
+  color: #6b6171;
+}
+
+/* =========================================================
+   MY LOOP LIGHT MODE: CARDS
+========================================================= */
+
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-overview-card,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-person-card,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-connection-card {
+  border-color: rgba(105, 55, 170, 0.22);
+
+  box-shadow:
+    0 16px 34px rgba(66, 42, 84, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+/* =========================================================
+   MY LOOP LIGHT MODE: SECONDARY BUTTONS
+========================================================= */
+
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-secondary-button,
+body[data-theme="light"]:has(.people-loop-view)
+  .people-loop-message-button {
+  border-color: rgba(105, 55, 170, 0.24);
+  color: #2b2132;
+
+  background: rgba(120, 57, 201, 0.045);
+}
+

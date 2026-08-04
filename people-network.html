@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Industry - Network</title>
+    <title>Industry — My Loop</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
@@ -22,87 +22,375 @@
       </header>
 
       <main>
-        <section class="app-section active">
-          <button class="back-button" type="button" onclick="window.location.href='index.html#people'">Back to People</button>
-          <div class="section-heading">
-            <p class="section-label">People</p>
-            <h2>Network</h2>
-            <p>Find workers across restaurants, bars, lounges, events, neighborhoods, and roles.</p>
+  <!-- =========================================================
+       PEOPLE VIEW: MY LOOP — START
+  ========================================================== -->
+
+  <section
+    class="app-section active people-loop-view"
+    aria-labelledby="my-loop-title"
+  >
+    <!-- =====================================================
+         MY LOOP: BACK NAVIGATION
+    ====================================================== -->
+
+    <button
+      class="back-button"
+      type="button"
+      onclick="window.location.href='index.html#people'"
+    >
+      ← Back to People
+    </button>
+
+    <!-- =====================================================
+         MY LOOP: HERO
+    ====================================================== -->
+
+    <section
+      class="people-loop-hero"
+      aria-labelledby="my-loop-title"
+    >
+      <div class="people-loop-hero-copy">
+        <p class="section-label">People</p>
+
+        <h2 id="my-loop-title">My Loop</h2>
+
+        <p class="people-loop-tagline">
+          Stay in the Loop with people in and from the Industry.
+        </p>
+
+        <p class="people-loop-intro">
+          Keep meaningful connections with coworkers,
+          former coworkers, industry friends, and people
+          you meet along the way.
+        </p>
+      </div>
+
+      <!-- =================================================
+           MY LOOP: CONNECTION VISUAL
+      ================================================== -->
+
+      <div
+        class="people-loop-visual"
+        aria-label="People connected within your Loop"
+      >
+        <span
+          class="people-loop-dot people-loop-dot-red"
+          aria-label="Maya Chen"
+        >
+          MC
+        </span>
+
+        <span
+          class="people-loop-dot people-loop-dot-blue"
+          aria-label="Jordan Reed"
+        >
+          JR
+        </span>
+
+        <span
+          class="people-loop-dot people-loop-dot-violet"
+          aria-label="Alex Kim"
+        >
+          AK
+        </span>
+
+        <span
+          class="people-loop-dot people-loop-dot-indigo"
+          aria-label="Sam Rivera"
+        >
+          SR
+        </span>
+
+        <span
+          class="people-loop-line people-loop-line-one"
+          aria-hidden="true"
+        ></span>
+
+        <span
+          class="people-loop-line people-loop-line-two"
+          aria-hidden="true"
+        ></span>
+
+        <span
+          class="people-loop-line people-loop-line-three"
+          aria-hidden="true"
+        ></span>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         MY LOOP: OVERVIEW
+    ====================================================== -->
+
+    <section
+      class="people-loop-overview"
+      aria-label="My Loop overview"
+    >
+      <article class="people-loop-overview-card">
+        <strong data-loop-request-count>2</strong>
+
+        <span>New requests</span>
+      </article>
+
+      <article class="people-loop-overview-card">
+        <strong data-loop-person-count>12</strong>
+
+        <span>People in your Loop</span>
+      </article>
+    </section>
+
+    <!-- =====================================================
+         MY LOOP: INCOMING REQUESTS
+    ====================================================== -->
+
+    <section
+      class="people-loop-section"
+      aria-labelledby="loop-requests-title"
+    >
+      <div class="people-loop-section-heading">
+        <div>
+          <p class="section-label">Waiting for You</p>
+
+          <h2 id="loop-requests-title">
+            Loop Requests
+          </h2>
+        </div>
+
+        <button
+          class="people-loop-text-button"
+          type="button"
+        >
+          View all
+        </button>
+      </div>
+
+      <!-- =================================================
+           MY LOOP REQUEST: MAYA CHEN
+      ================================================== -->
+
+      <article
+        class="people-loop-person-card people-loop-request-card"
+        data-loop-request-card
+        aria-live="polite"
+      >
+        <div
+          class="people-loop-avatar people-loop-avatar-red"
+          aria-hidden="true"
+        >
+          MC
+        </div>
+
+        <div class="people-loop-person-copy">
+          <span class="people-loop-relationship-label">
+            Former coworker
+          </span>
+
+          <h3>Maya Chen</h3>
+
+          <p class="people-loop-person-role">
+            Bartender · Northline
+          </p>
+
+          <p class="people-loop-connection-context">
+            You worked together at Café Luna.
+          </p>
+        </div>
+
+        <div class="people-loop-request-actions">
+          <button
+            class="people-loop-primary-button"
+            type="button"
+            data-accept-loop-request
+          >
+            Accept
+          </button>
+
+          <button
+            class="people-loop-secondary-button"
+            type="button"
+            data-decline-loop-request
+          >
+            Decline
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <!-- =====================================================
+         MY LOOP: EXISTING CONNECTIONS
+    ====================================================== -->
+
+    <section
+      class="people-loop-section"
+      aria-labelledby="in-your-loop-title"
+    >
+      <div class="people-loop-section-heading">
+        <div>
+          <p class="section-label">Your People</p>
+
+          <h2 id="in-your-loop-title">
+            In Your Loop
+          </h2>
+        </div>
+
+        <button
+          class="people-loop-text-button"
+          type="button"
+        >
+          See everyone
+        </button>
+      </div>
+
+      <div
+        class="people-loop-grid"
+        data-loop-people-grid
+      >
+        <!-- =============================================
+             LOOP CONNECTION: JORDAN REED
+        ============================================== -->
+
+        <article class="people-loop-connection-card">
+          <div
+            class="people-loop-avatar people-loop-avatar-blue"
+            aria-hidden="true"
+          >
+            JR
           </div>
 
-          <div class="mood-row" role="group" aria-label="Network filters">
-            <button class="filter-button page-filter-button active" type="button" data-filter-group="network" data-filter-value="all">All</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="network" data-filter-value="front-of-house">Front of House</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="network" data-filter-value="back-of-house">Back of House</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="network" data-filter-value="managers">Managers</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="network" data-filter-value="open-to-swaps">Open to swaps</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="network" data-filter-value="open-to-referrals">Open to referrals</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="network" data-filter-value="extra-hours">Extra hours</button>
+          <h3>Jordan Reed</h3>
+
+          <p>Line Cook</p>
+
+          <span>Café Luna</span>
+
+          <button
+            class="people-loop-message-button"
+            type="button"
+          >
+            Message
+          </button>
+        </article>
+
+        <!-- =============================================
+             LOOP CONNECTION: ALEX KIM
+        ============================================== -->
+
+        <article class="people-loop-connection-card">
+          <div
+            class="people-loop-avatar people-loop-avatar-violet"
+            aria-hidden="true"
+          >
+            AK
           </div>
 
-          <section class="stack-list shift-list" aria-label="Network workers">
-            <article class="stack-card network-worker-card" data-network-tags="front-of-house open-to-swaps">
-              <div class="stack-copy">
-                <p class="stack-kicker">Worker</p>
-                <h3>Jordan</h3>
-                <p>Bartender - Departure Lounge - Pearl District</p>
-                <p>Open to shift swaps and meetups</p>
-                <p>Verified workplace worker</p>
-              </div>
-              <div class="shift-action-row">
-                <button class="action-button worker-preview-button" type="button">View profile</button>
-                <button class="action-button secondary-action worker-save-button" type="button">Save connection</button>
-              </div>
-            </article>
+          <h3>Alex Kim</h3>
 
-            <article class="stack-card network-worker-card" data-network-tags="front-of-house open-to-referrals">
-              <div class="stack-copy">
-                <p class="stack-kicker">Worker</p>
-                <h3>Maya</h3>
-                <p>Server - Cafe Luna - SE Portland</p>
-                <p>Open to referrals and brunch shifts</p>
-                <p>Verified workplace worker</p>
-              </div>
-              <div class="shift-action-row">
-                <button class="action-button worker-preview-button" type="button">View profile</button>
-                <button class="action-button secondary-action worker-save-button" type="button">Save connection</button>
-              </div>
-            </article>
+          <p>Server</p>
 
-            <article class="stack-card network-worker-card" data-network-tags="back-of-house extra-hours">
-              <div class="stack-copy">
-                <p class="stack-kicker">Worker</p>
-                <h3>Luis</h3>
-                <p>Line Cook - Northside Kitchen - NE Portland</p>
-                <p>Looking for pop-ups and extra hours</p>
-                <p>Verified workplace worker</p>
-              </div>
-              <div class="shift-action-row">
-                <button class="action-button worker-preview-button" type="button">View profile</button>
-                <button class="action-button secondary-action worker-save-button" type="button">Save connection</button>
-              </div>
-            </article>
+          <span>Juniper House</span>
 
-            <article class="stack-card network-worker-card" data-network-tags="managers open-to-referrals">
-              <div class="stack-copy">
-                <p class="stack-kicker">Worker</p>
-                <h3>Dana</h3>
-                <p>Floor Manager - Event Pool - Portland Metro</p>
-                <p>Can refer reliable workers</p>
-                <p>Manager contact</p>
-              </div>
-              <div class="shift-action-row">
-                <button class="action-button worker-preview-button" type="button">View profile</button>
-                <button class="action-button secondary-action worker-save-button" type="button">Save connection</button>
-              </div>
-            </article>
-          </section>
+          <button
+            class="people-loop-message-button"
+            type="button"
+          >
+            Message
+          </button>
+        </article>
 
-          <section class="today-panel" aria-label="Network status">
-            <p class="status-text" id="network-status-message">Choose a worker to preview profile details or save the connection.</p>
-          </section>
-        </section>
-      </main>
+        <!-- =============================================
+             LOOP CONNECTION: TAYLOR DIAZ
+        ============================================== -->
+
+        <article class="people-loop-connection-card">
+          <div
+            class="people-loop-avatar people-loop-avatar-gold"
+            aria-hidden="true"
+          >
+            TD
+          </div>
+
+          <h3>Taylor Diaz</h3>
+
+          <p>Barista</p>
+
+          <span>Common Ground</span>
+
+          <button
+            class="people-loop-message-button"
+            type="button"
+          >
+            Message
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         MY LOOP: SUGGESTED CONNECTIONS
+    ====================================================== -->
+
+    <section
+      class="people-loop-section"
+      aria-labelledby="loop-suggestions-title"
+    >
+      <div class="people-loop-section-heading">
+        <div>
+          <p class="section-label">Shared Industry</p>
+
+          <h2 id="loop-suggestions-title">
+            People You May Know
+          </h2>
+        </div>
+      </div>
+
+      <!-- =================================================
+           LOOP SUGGESTION: SAM RIVERA
+      ================================================== -->
+
+      <article
+        class="people-loop-person-card people-loop-suggestion-card"
+        data-loop-suggestion-card
+        aria-live="polite"
+      >
+        <div
+          class="people-loop-avatar people-loop-avatar-indigo"
+          aria-hidden="true"
+        >
+          SR
+        </div>
+
+        <div class="people-loop-person-copy">
+          <span class="people-loop-relationship-label">
+            Suggested connection
+          </span>
+
+          <h3>Sam Rivera</h3>
+
+          <p class="people-loop-person-role">
+            Barista · Eastside Coffee
+          </p>
+
+          <p class="people-loop-connection-context">
+            Connected to Maya and Jordan.
+          </p>
+        </div>
+
+        <button
+          class="people-loop-primary-button"
+          type="button"
+          data-send-loop-request
+        >
+          Send request
+        </button>
+      </article>
+    </section>
+  </section>
+
+  <!-- =========================================================
+       PEOPLE VIEW: MY LOOP — END
+  ========================================================== -->
+</main>
 
       <a class="home-logo-button home-logo-link" href="index.html" aria-label="Go to Industry home">i</a>
 
