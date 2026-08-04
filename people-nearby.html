@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,7 +6,10 @@
     <title>Industry - Nearby</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-theme="dark">
@@ -14,98 +17,610 @@
       <header class="hero">
         <div class="hero-top">
           <p class="eyebrow">People lane</p>
-          <button class="theme-toggle" id="theme-toggle-button" type="button">Light / Dark: Dark</button>
+          <button class="theme-toggle" id="theme-toggle-button" type="button">
+            Light / Dark: Dark
+          </button>
         </div>
         <h1>Industry</h1>
         <p class="tagline">The network behind the service.</p>
-        <p class="intro">A grounded connection layer for service workers across shifts, crews, neighborhoods, and opportunities.</p>
+        <p class="intro">
+          A grounded connection layer for service workers across shifts, crews,
+          neighborhoods, and opportunities.
+        </p>
       </header>
 
-      <main>
-        <section class="app-section active">
-          <button class="back-button" type="button" onclick="window.location.href='index.html#people'">Back to People</button>
-          <div class="section-heading">
-            <p class="section-label">People</p>
-            <h2>Nearby</h2>
-            <p>Opt in to see nearby workers, crews, open shifts, and meetups.</p>
+      <!-- =========================================================
+     PEOPLE VIEW: NEARBY — START
+========================================================== -->
+
+      <main class="nearby-app people-nearby-view">
+        <!-- =====================================================
+     NEARBY: BACK NAVIGATION
+====================================================== -->
+
+        <button
+          class="back-button"
+          type="button"
+          onclick="window.location.href = 'index.html#people'"
+        >
+          ← Back to People
+        </button>
+        <!-- =====================================================
+           NEARBY: HEADER
+      ====================================================== -->
+
+        <header class="nearby-header">
+          <div>
+            <span class="eyebrow">People</span>
+
+            <h1>Nearby</h1>
+
+            <p>
+              See who and what is around you—only when everyone chooses to
+              share.
+            </p>
           </div>
 
-          <section class="today-panel" aria-label="Nearby privacy state">
-            <div class="panel-heading">
-              <p class="section-label">Privacy</p>
-              <h3>Location sharing is off</h3>
-              <p>This is a mock nearby layer only. No real maps or location tracking are active in this prototype.</p>
+          <button
+            class="profile-button"
+            type="button"
+            aria-label="Open your profile"
+          >
+            RN
+          </button>
+        </header>
+
+        <!-- =====================================================
+           NEARBY: PRIVACY PROMISE
+      ====================================================== -->
+
+        <section
+          class="privacy-promise"
+          aria-labelledby="privacy-promise-title"
+        >
+          <div class="privacy-icon" aria-hidden="true">◌</div>
+
+          <div>
+            <span class="eyebrow">Privacy First</span>
+
+            <h2 id="privacy-promise-title">Presence without tracking</h2>
+
+            <p>
+              Nearby uses an approximate neighborhood, expires automatically,
+              and never creates a location history.
+            </p>
+          </div>
+        </section>
+
+        <!-- =====================================================
+           NEARBY STATE: OFF — START
+      ====================================================== -->
+
+        <section class="nearby-state nearby-state-off" data-nearby-off-state>
+          <!-- =================================================
+             NEARBY OFF: STATUS
+        ================================================== -->
+
+          <header class="nearby-state-header">
+            <span class="status-dot status-dot-off"></span>
+
+            <div>
+              <span class="eyebrow">Your Visibility</span>
+
+              <h2>Nearby is off</h2>
+
+              <p>
+                Nothing is shared until you choose an audience, activity, and
+                expiration time.
+              </p>
+            </div>
+          </header>
+
+          <!-- =================================================
+             NEARBY OFF: AUDIENCE
+        ================================================== -->
+
+          <section
+            class="nearby-control-group"
+            aria-labelledby="nearby-audience-title"
+          >
+            <div class="control-heading">
+              <span>1</span>
+
+              <div>
+                <h3 id="nearby-audience-title">Who can see you?</h3>
+
+                <p>
+                  Only mutually opted-in people will see your approximate
+                  neighborhood.
+                </p>
+              </div>
             </div>
 
-            <div class="mood-row" role="group" aria-label="Nearby visibility">
-              <button class="filter-button nearby-visibility-button active" type="button" data-visibility="Hidden">Hidden</button>
-              <button class="filter-button nearby-visibility-button" type="button" data-visibility="Visible to my crews">Visible to my crews</button>
-              <button class="filter-button nearby-visibility-button" type="button" data-visibility="Visible to nearby industry workers">Visible to nearby industry workers</button>
-            </div>
+            <div
+              class="choice-grid choice-grid-audience"
+              role="group"
+              aria-label="Choose a Nearby audience"
+            >
+              <button
+                class="choice-button active"
+                type="button"
+                data-nearby-audience="hidden"
+                aria-pressed="true"
+              >
+                <strong>Hidden</strong>
+                <small>No one can see you</small>
+              </button>
 
-            <button class="action-button" id="mock-nearby-button" type="button">Turn on mock nearby</button>
-            <p class="status-text" id="nearby-status-message">Nearby is off until you opt in.</p>
+              <button
+                class="choice-button"
+                type="button"
+                data-nearby-audience="my-loop"
+                aria-pressed="false"
+              >
+                <strong>Visible to My Loop</strong>
+                <small>Mutual connections only</small>
+              </button>
+
+              <button
+                class="choice-button"
+                type="button"
+                data-nearby-audience="same-event"
+                aria-pressed="false"
+              >
+                <strong>Same event</strong>
+                <small>People attending with you</small>
+              </button>
+            </div>
           </section>
 
-          <section class="today-panel hidden-panel" id="nearby-results-panel" aria-label="Nearby results">
-            <div class="panel-heading">
-              <p class="section-label">Mock nearby enabled</p>
-              <h3>Nearby preview</h3>
+          <!-- =================================================
+             NEARBY OFF: SOCIAL STATUS
+        ================================================== -->
+
+          <section
+            class="nearby-control-group"
+            aria-labelledby="nearby-status-title"
+          >
+            <div class="control-heading">
+              <span>2</span>
+
+              <div>
+                <h3 id="nearby-status-title">What are you open to?</h3>
+
+                <p>Share an intention rather than your exact location.</p>
+              </div>
             </div>
 
-            <ul class="shift-meta">
-              <li>3 workers nearby</li>
-              <li>2 meetups nearby</li>
-              <li>1 open shift nearby</li>
-              <li>1 crew nearby</li>
-            </ul>
-            <p class="status-text" id="nearby-visibility-status">Visibility: Hidden</p>
+            <div
+              class="status-choice-list"
+              role="group"
+              aria-label="Choose your Nearby status"
+            >
+              <button
+                class="status-choice-button"
+                type="button"
+                data-nearby-social-status="coffee"
+                aria-pressed="false"
+              >
+                <span aria-hidden="true">☕</span>
+                Open to coffee
+              </button>
 
-            <section class="stack-list shift-list" aria-label="Nearby items">
-              <article class="stack-card">
-                <div class="stack-copy">
-                  <p class="stack-kicker">Nearby worker</p>
-                  <h3>Jordan</h3>
-                  <p>Bartender - 0.7 mi - Open to meetup</p>
-                </div>
-              </article>
+              <button
+                class="status-choice-button"
+                type="button"
+                data-nearby-social-status="heading-out"
+                aria-pressed="false"
+              >
+                <span aria-hidden="true">✦</span>
+                Heading out after work
+              </button>
 
-              <article class="stack-card">
-                <div class="stack-copy">
-                  <p class="stack-kicker">Nearby meetup</p>
-                  <h3>Sober Industry Coffee</h3>
-                  <p>Sunday - Pearl District</p>
-                </div>
-              </article>
+              <button
+                class="status-choice-button"
+                type="button"
+                data-nearby-social-status="industry-event"
+                aria-pressed="false"
+              >
+                <span aria-hidden="true">◎</span>
+                At an Industry event
+              </button>
 
-              <article class="stack-card">
-                <div class="stack-copy">
-                  <p class="stack-kicker">Nearby open shift</p>
-                  <h3>Server release request</h3>
-                  <p>Tonight - Cafe Luna</p>
-                </div>
-              </article>
+              <button
+                class="status-choice-button"
+                type="button"
+                data-nearby-social-status="meeting-people"
+                aria-pressed="false"
+              >
+                <span aria-hidden="true">◉</span>
+                Open to meeting people
+              </button>
 
-              <article class="stack-card">
-                <div class="stack-copy">
-                  <p class="stack-kicker">Nearby crew</p>
-                  <h3>Departure Lounge Crew</h3>
-                  <p>Pearl District</p>
-                </div>
-              </article>
-            </section>
-
-            <p class="status-text">Nearby should always be opt-in, time-limited, and approximate.</p>
+              <button
+                class="status-choice-button"
+                type="button"
+                data-nearby-social-status="browsing"
+                aria-pressed="false"
+              >
+                <span aria-hidden="true">○</span>
+                Just browsing
+              </button>
+            </div>
           </section>
+
+          <!-- =================================================
+             NEARBY OFF: EXPIRATION
+        ================================================== -->
+
+          <section
+            class="nearby-control-group"
+            aria-labelledby="nearby-duration-title"
+          >
+            <div class="control-heading">
+              <span>3</span>
+
+              <div>
+                <h3 id="nearby-duration-title">How long should it last?</h3>
+
+                <p>Nearby turns itself off when the selected time ends.</p>
+              </div>
+            </div>
+
+            <div
+              class="duration-choice-list"
+              role="group"
+              aria-label="Choose a sharing duration"
+            >
+              <button
+                class="duration-button"
+                type="button"
+                data-nearby-duration="30-minutes"
+                aria-pressed="false"
+              >
+                30 minutes
+              </button>
+
+              <button
+                class="duration-button"
+                type="button"
+                data-nearby-duration="1-hour"
+                aria-pressed="false"
+              >
+                1 hour
+              </button>
+
+              <button
+                class="duration-button"
+                type="button"
+                data-nearby-duration="this-evening"
+                aria-pressed="false"
+              >
+                This evening
+              </button>
+
+              <button
+                class="duration-button"
+                type="button"
+                data-nearby-duration="until-stopped"
+                aria-pressed="false"
+              >
+                Until I turn it off
+              </button>
+            </div>
+          </section>
+
+          <!-- =================================================
+             NEARBY OFF: START SHARING
+        ================================================== -->
+
+          <div class="nearby-start-panel">
+            <div>
+              <span class="eyebrow">Nothing Shared Yet</span>
+
+              <p data-nearby-setup-summary>
+                Choose an audience, activity, and expiration time.
+              </p>
+            </div>
+
+            <button
+              class="start-sharing-button"
+              type="button"
+              data-start-nearby
+              disabled
+            >
+              Start sharing
+            </button>
+          </div>
+        </section>
+
+        <!-- =====================================================
+           NEARBY STATE: OFF — END
+      ====================================================== -->
+
+        <!-- =====================================================
+           NEARBY STATE: ACTIVE — START
+      ====================================================== -->
+
+        <section
+          class="nearby-state nearby-state-active"
+          data-nearby-active-state
+          hidden
+        >
+          <!-- =================================================
+             NEARBY ACTIVE: SHARING SUMMARY
+        ================================================== -->
+
+          <section
+            class="sharing-active-panel"
+            aria-labelledby="sharing-active-title"
+          >
+            <div class="sharing-active-heading">
+              <div class="sharing-active-status">
+                <span class="status-dot status-dot-active"></span>
+
+                <div>
+                  <span class="eyebrow"> Sharing Is Active </span>
+
+                  <h2 id="sharing-active-title">You are visible nearby</h2>
+                </div>
+              </div>
+
+              <button
+                class="stop-sharing-button"
+                type="button"
+                data-stop-nearby
+              >
+                Stop sharing
+              </button>
+            </div>
+
+            <div class="sharing-summary-grid">
+              <div>
+                <span>Audience</span>
+                <strong data-active-audience> My Loop </strong>
+              </div>
+
+              <div>
+                <span>Status</span>
+                <strong data-active-status> Open to coffee </strong>
+              </div>
+
+              <div>
+                <span>Approximate area</span>
+                <strong>SE Portland</strong>
+              </div>
+
+              <div>
+                <span>Ends</span>
+                <strong data-active-expiration> In 1 hour </strong>
+              </div>
+            </div>
+
+            <p class="sharing-reminder">
+              Your exact location is never displayed.
+            </p>
+          </section>
+
+          <!-- =================================================
+             NEARBY ACTIVE: PEOPLE FROM MY LOOP
+        ================================================== -->
+
+          <section
+            class="nearby-results-section"
+            aria-labelledby="nearby-people-title"
+          >
+            <div class="nearby-section-heading">
+              <div>
+                <span class="eyebrow"> People From My Loop </span>
+
+                <h2 id="nearby-people-title">Around you now</h2>
+              </div>
+
+              <span class="result-count">2 visible</span>
+            </div>
+
+            <div class="nearby-people-grid">
+              <!-- =========================================
+                 NEARBY PERSON: JORDAN
+            ========================================== -->
+
+              <article class="nearby-person-card">
+                <div
+                  class="nearby-avatar nearby-avatar-blue"
+                  aria-hidden="true"
+                >
+                  JR
+                </div>
+
+                <div class="nearby-person-copy">
+                  <span class="relationship-label"> In Your Loop </span>
+
+                  <h3>Jordan Reed</h3>
+
+                  <p class="nearby-person-role">Line Cook · Café Luna</p>
+
+                  <p class="nearby-person-area">Around SE Portland</p>
+
+                  <div class="nearby-person-status">
+                    <span aria-hidden="true">☕</span>
+                    Open to coffee until 4:30 PM
+                  </div>
+                </div>
+
+                <button
+                  class="message-button"
+                  type="button"
+                  data-nearby-message="jordan-reed"
+                >
+                  Message
+                </button>
+              </article>
+
+              <!-- =========================================
+                 NEARBY PERSON: MAYA
+            ========================================== -->
+
+              <article class="nearby-person-card">
+                <div class="nearby-avatar nearby-avatar-red" aria-hidden="true">
+                  MC
+                </div>
+
+                <div class="nearby-person-copy">
+                  <span class="relationship-label"> In Your Loop </span>
+
+                  <h3>Maya Chen</h3>
+
+                  <p class="nearby-person-role">Bartender · Northline</p>
+
+                  <p class="nearby-person-area">Around the Central Eastside</p>
+
+                  <div class="nearby-person-status">
+                    <span aria-hidden="true">✦</span>
+                    Heading out after work
+                  </div>
+                </div>
+
+                <button
+                  class="message-button"
+                  type="button"
+                  data-nearby-message="maya-chen"
+                >
+                  Message
+                </button>
+              </article>
+            </div>
+          </section>
+
+          <!-- =================================================
+             NEARBY ACTIVE: HAPPENING NEARBY
+        ================================================== -->
+
+          <section
+            class="nearby-results-section"
+            aria-labelledby="happening-nearby-title"
+          >
+            <div class="nearby-section-heading">
+              <div>
+                <span class="eyebrow"> Happening Nearby </span>
+
+                <h2 id="happening-nearby-title">Places to gather</h2>
+              </div>
+            </div>
+
+            <article class="nearby-event-card">
+              <div class="nearby-event-date">
+                <strong>16</strong>
+                <span>Aug</span>
+              </div>
+
+              <div class="nearby-event-copy">
+                <span class="relationship-label"> Sober Gathering </span>
+
+                <h3>Sober Industry Coffee</h3>
+
+                <p>Sunday · 10:00 AM</p>
+
+                <p>Pearl District · Approximate area</p>
+
+                <div class="nearby-event-loop">
+                  <span
+                    class="nearby-mini-avatar nearby-avatar-violet"
+                    aria-hidden="true"
+                  >
+                    AK
+                  </span>
+
+                  <p>Alex is interested</p>
+                </div>
+              </div>
+
+              <button
+                class="view-event-button"
+                type="button"
+                data-view-nearby-event
+              >
+                View event
+              </button>
+            </article>
+          </section>
+
+          <!-- =================================================
+             NEARBY ACTIVE: NEIGHBORHOOD PULSE
+        ================================================== -->
+
+          <section
+            class="neighborhood-pulse"
+            aria-labelledby="neighborhood-pulse-title"
+          >
+            <div class="pulse-orbit" aria-hidden="true">
+              <span class="pulse-dot pulse-dot-blue"></span>
+              <span class="pulse-dot pulse-dot-red"></span>
+              <span class="pulse-dot pulse-dot-violet"></span>
+            </div>
+
+            <div>
+              <span class="eyebrow"> Neighborhood Pulse </span>
+
+              <h2 id="neighborhood-pulse-title">A few people are around</h2>
+
+              <p>
+                Three people from your Loop are active in the Central Eastside.
+                Exact locations are hidden.
+              </p>
+            </div>
+          </section>
+        </section>
+
+        <!-- =====================================================
+           NEARBY STATE: ACTIVE — END
+      ====================================================== -->
+
+        <!-- =====================================================
+           NEARBY: PRIVACY REMINDER
+      ====================================================== -->
+
+        <footer class="nearby-privacy-footer">
+          <span aria-hidden="true">◌</span>
+
+          <p>
+            Nearby is always optional, approximate, time-limited, and controlled
+            by you.
+          </p>
+        </footer>
+
+        <!-- =====================================================
+           NEARBY: ACTIVITY MESSAGE
+      ====================================================== -->
+
+        <section
+          class="nearby-status-message"
+          data-nearby-status-message
+          aria-live="polite"
+        >
+          Nearby is off. Nothing is being shared.
         </section>
       </main>
 
-      <a class="home-logo-button home-logo-link" href="index.html" aria-label="Go to Industry home">i</a>
+      <!-- =========================================================
+     PEOPLE VIEW: NEARBY — END
+========================================================== -->
+      <a
+        class="home-logo-button home-logo-link"
+        href="index.html"
+        aria-label="Go to Industry home"
+      >
+        i
+      </a>
 
       <nav class="bottom-nav" aria-label="Bottom navigation">
-        <a class="nav-item nav-link-item" href="index.html#schedule">Schedule</a>
+        <a class="nav-item nav-link-item" href="index.html#schedule"
+          >Schedule</a
+        >
         <a class="nav-item nav-link-item" href="index.html#jobs">Jobs</a>
-        <a class="nav-item nav-link-item active" href="index.html#people">People</a>
+        <a class="nav-item nav-link-item active" href="index.html#people"
+          >People</a
+        >
       </nav>
     </div>
 

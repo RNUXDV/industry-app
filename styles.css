@@ -1334,11 +1334,7 @@ h1 {
   border-color: rgba(166, 108, 255, 0.2);
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.08),
-      transparent 52%
-    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.08), transparent 52%),
     var(--surface);
 
   box-shadow: 0 14px 28px rgba(24, 10, 38, 0.1);
@@ -1346,9 +1342,7 @@ h1 {
 
 /* My Loop: red and blue meeting inside purple */
 
-[data-section="people"]
-  .people-hub-card-list
-  > .people-hub-card:nth-child(1) {
+[data-section="people"] .people-hub-card-list > .people-hub-card:nth-child(1) {
   background:
     radial-gradient(
       circle at 12% 15%,
@@ -1360,68 +1354,46 @@ h1 {
       rgba(40, 95, 207, 0.14),
       transparent 42%
     ),
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.12),
-      transparent 58%
-    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.12), transparent 58%),
     var(--surface);
 }
 
 /* Events: warmer social energy */
 
-[data-section="people"]
-  .people-hub-card-list
-  > .people-hub-card:nth-child(2) {
+[data-section="people"] .people-hub-card-list > .people-hub-card:nth-child(2) {
   background:
     radial-gradient(
       circle at 88% 14%,
       rgba(184, 58, 49, 0.14),
       transparent 42%
     ),
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.1),
-      transparent 58%
-    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.1), transparent 58%),
     var(--surface);
 }
 
 /* Nearby: trust and discovery */
 
-[data-section="people"]
-  .people-hub-card-list
-  > .people-hub-card:nth-child(3) {
+[data-section="people"] .people-hub-card-list > .people-hub-card:nth-child(3) {
   background:
     radial-gradient(
       circle at 15% 85%,
       rgba(40, 95, 207, 0.15),
       transparent 44%
     ),
-    linear-gradient(
-      145deg,
-      rgba(67, 56, 156, 0.1),
-      transparent 58%
-    ),
+    linear-gradient(145deg, rgba(67, 56, 156, 0.1), transparent 58%),
     var(--surface);
 }
 
 /* Resources: quieter violet support */
 
-[data-section="people"]
-  .people-hub-card-list
-  > .people-hub-card:nth-child(4) {
+[data-section="people"] .people-hub-card-list > .people-hub-card:nth-child(4) {
   background:
     radial-gradient(
       circle at 88% 82%,
       rgba(113, 56, 189, 0.14),
       transparent 44%
     ),
-    linear-gradient(
-      145deg,
-      rgba(48, 59, 155, 0.08),
-      transparent 58%
-    ),
+    linear-gradient(145deg, rgba(48, 59, 155, 0.08), transparent 58%),
     var(--surface);
 }
 
@@ -1435,25 +1407,19 @@ h1 {
   background: rgba(120, 57, 201, 0.11);
 }
 
-[data-section="people"]
-  .people-hub-card:nth-child(2)
-  .feature-pill {
+[data-section="people"] .people-hub-card:nth-child(2) .feature-pill {
   border-color: rgba(184, 58, 49, 0.55);
   color: #e46d61;
   background: rgba(184, 58, 49, 0.1);
 }
 
-[data-section="people"]
-  .people-hub-card:nth-child(3)
-  .feature-pill {
+[data-section="people"] .people-hub-card:nth-child(3) .feature-pill {
   border-color: rgba(40, 95, 207, 0.58);
   color: #6f9bf1;
   background: rgba(40, 95, 207, 0.11);
 }
 
-[data-section="people"]
-  .people-hub-card:nth-child(4)
-  .feature-pill {
+[data-section="people"] .people-hub-card:nth-child(4) .feature-pill {
   border-color: rgba(144, 83, 220, 0.55);
   color: #b681f3;
   background: rgba(113, 56, 189, 0.11);
@@ -1478,11 +1444,7 @@ h1 {
   border-color: rgba(166, 108, 255, 0.62);
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.15),
-      transparent 58%
-    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.15), transparent 58%),
     var(--surface-strong);
 
   box-shadow:
@@ -1497,13 +1459,12 @@ h1 {
 .nav-item[data-target="people"].active {
   color: white;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--people-purple),
-      var(--people-indigo) 58%,
-      var(--loop-user-blue-deep)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--people-purple),
+    var(--people-indigo) 58%,
+    var(--loop-user-blue-deep)
+  );
 
   box-shadow:
     0 0 0 4px var(--people-ring),
@@ -1514,16 +1475,14 @@ h1 {
    PEOPLE PILLAR: FLOATING INFORMATION BUTTON
 ========================================================= */
 
-body:has(.nav-item[data-target="people"].active)
-  .home-logo-button.active {
+body:has(.nav-item[data-target="people"].active) .home-logo-button.active {
   border-color: rgba(166, 108, 255, 0.62);
 
-  background:
-    linear-gradient(
-      145deg,
-      var(--people-purple),
-      var(--people-indigo)
-    );
+  background: linear-gradient(
+    145deg,
+    var(--people-purple),
+    var(--people-indigo)
+  );
 
   box-shadow:
     0 0 0 4px var(--people-ring),
@@ -1596,11 +1555,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(40, 95, 207, 0.13),
       transparent 38%
     ),
-    linear-gradient(
-      125deg,
-      rgba(120, 57, 201, 0.18),
-      transparent 46%
-    ),
+    linear-gradient(125deg, rgba(120, 57, 201, 0.18), transparent 46%),
     var(--loop-surface);
 
   box-shadow:
@@ -1685,14 +1640,13 @@ body:has(.nav-item[data-target="people"].active)
   border: 1px solid rgba(166, 108, 255, 0.18);
   border-radius: 50%;
 
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(166, 108, 255, 0.17),
-      rgba(184, 58, 49, 0.06) 38%,
-      rgba(40, 95, 207, 0.06) 58%,
-      transparent 72%
-    );
+  background: radial-gradient(
+    circle at center,
+    rgba(166, 108, 255, 0.17),
+    rgba(184, 58, 49, 0.06) 38%,
+    rgba(40, 95, 207, 0.06) 58%,
+    transparent 72%
+  );
 
   box-shadow:
     inset 0 0 4rem rgba(120, 57, 201, 0.15),
@@ -1761,11 +1715,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(255, 255, 255, 0.26),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      var(--loop-red),
-      var(--loop-red-deep)
-    );
+    linear-gradient(145deg, var(--loop-red), var(--loop-red-deep));
 }
 
 .people-loop-dot-blue {
@@ -1778,11 +1728,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(255, 255, 255, 0.25),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      var(--loop-blue),
-      var(--loop-blue-deep)
-    );
+    linear-gradient(145deg, var(--loop-blue), var(--loop-blue-deep));
 }
 
 .people-loop-dot-violet {
@@ -1795,11 +1741,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(255, 255, 255, 0.24),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      var(--loop-violet),
-      var(--loop-purple-deep)
-    );
+    linear-gradient(145deg, var(--loop-violet), var(--loop-purple-deep));
 }
 
 .people-loop-dot-indigo {
@@ -1812,11 +1754,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(255, 255, 255, 0.24),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      #4856c7,
-      var(--loop-indigo)
-    );
+    linear-gradient(145deg, #4856c7, var(--loop-indigo));
 }
 
 /* =========================================================
@@ -1837,8 +1775,7 @@ body:has(.nav-item[data-target="people"].active)
     rgba(40, 95, 207, 0.38)
   );
 
-  box-shadow:
-    0 0 0.9rem rgba(113, 56, 189, 0.46);
+  box-shadow: 0 0 0.9rem rgba(113, 56, 189, 0.46);
 }
 
 .people-loop-line-one {
@@ -1890,11 +1827,7 @@ body:has(.nav-item[data-target="people"].active)
   border-radius: var(--radius-md);
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(120, 57, 201, 0.09),
-      transparent 56%
-    ),
+    linear-gradient(135deg, rgba(120, 57, 201, 0.09), transparent 56%),
     var(--loop-surface-soft);
 }
 
@@ -1970,11 +1903,7 @@ body:has(.nav-item[data-target="people"].active)
   border-radius: var(--radius-md);
 
   background:
-    radial-gradient(
-      circle at 7% 10%,
-      rgba(120, 57, 201, 0.1),
-      transparent 34%
-    ),
+    radial-gradient(circle at 7% 10%, rgba(120, 57, 201, 0.1), transparent 34%),
     var(--loop-surface);
 
   box-shadow:
@@ -2048,11 +1977,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(255, 255, 255, 0.25),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      var(--loop-red),
-      var(--loop-red-deep)
-    );
+    linear-gradient(145deg, var(--loop-red), var(--loop-red-deep));
 }
 
 .people-loop-avatar-blue {
@@ -2062,11 +1987,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(255, 255, 255, 0.25),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      var(--loop-blue),
-      var(--loop-blue-deep)
-    );
+    linear-gradient(145deg, var(--loop-blue), var(--loop-blue-deep));
 }
 
 .people-loop-avatar-violet {
@@ -2076,11 +1997,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(255, 255, 255, 0.25),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      var(--loop-violet),
-      var(--loop-purple-deep)
-    );
+    linear-gradient(145deg, var(--loop-violet), var(--loop-purple-deep));
 }
 
 .people-loop-avatar-indigo {
@@ -2090,11 +2007,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(255, 255, 255, 0.25),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      #4856c7,
-      var(--loop-indigo)
-    );
+    linear-gradient(145deg, #4856c7, var(--loop-indigo));
 }
 
 .people-loop-avatar-gold {
@@ -2104,11 +2017,7 @@ body:has(.nav-item[data-target="people"].active)
       rgba(255, 255, 255, 0.25),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      #d08b23,
-      #74420d
-    );
+    linear-gradient(145deg, #d08b23, #74420d);
 }
 
 /* =========================================================
@@ -2142,23 +2051,17 @@ body:has(.nav-item[data-target="people"].active)
   border: 1px solid var(--loop-purple);
   color: white;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--loop-purple),
-      var(--loop-indigo)
-    );
+  background: linear-gradient(135deg, var(--loop-purple), var(--loop-indigo));
 }
 
 .people-loop-primary-button:hover {
   transform: translateY(-2px);
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--loop-purple-bright),
-      var(--loop-purple)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--loop-purple-bright),
+    var(--loop-purple)
+  );
 }
 
 .people-loop-secondary-button {
@@ -2191,11 +2094,7 @@ body:has(.nav-item[data-target="people"].active)
   border-radius: var(--radius-md);
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.035),
-      transparent 56%
-    ),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 56%),
     var(--loop-surface);
 
   transition:
@@ -2246,13 +2145,12 @@ body:has(.people-loop-view) .bottom-nav .nav-item.active {
   border-color: transparent;
   color: white;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--people-purple),
-      var(--people-indigo) 58%,
-      var(--loop-user-blue-deep)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--people-purple),
+    var(--people-indigo) 58%,
+    var(--loop-user-blue-deep)
+  );
 
   box-shadow:
     0 0 0 4px rgba(166, 108, 255, 0.28),
@@ -2263,12 +2161,11 @@ body:has(.people-loop-view) .home-logo-button {
   border-color: rgba(166, 108, 255, 0.62);
   color: white;
 
-  background:
-    linear-gradient(
-      145deg,
-      var(--people-purple),
-      var(--people-indigo)
-    );
+  background: linear-gradient(
+    145deg,
+    var(--people-purple),
+    var(--people-indigo)
+  );
 
   box-shadow:
     0 0 0 4px rgba(166, 108, 255, 0.24),
@@ -2306,8 +2203,7 @@ body:has(.people-loop-view) .home-logo-button {
   }
 
   .people-loop-request-actions,
-  .people-loop-suggestion-card
-    > .people-loop-primary-button {
+  .people-loop-suggestion-card > .people-loop-primary-button {
     grid-column: 1 / -1;
   }
 
@@ -2351,8 +2247,7 @@ body:has(.people-loop-view) .home-logo-button {
     align-items: flex-start;
   }
 
-  .people-loop-section-heading
-    .people-loop-text-button {
+  .people-loop-section-heading .people-loop-text-button {
     white-space: nowrap;
   }
 
@@ -2374,8 +2269,7 @@ body:has(.people-loop-view) .home-logo-button {
     flex: 1;
   }
 
-  .people-loop-suggestion-card
-    > .people-loop-primary-button {
+  .people-loop-suggestion-card > .people-loop-primary-button {
     width: 100%;
   }
 
@@ -3989,17 +3883,8 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
       rgba(116, 214, 198, 0.4),
       transparent 32%
     ),
-    linear-gradient(
-      115deg,
-      rgba(255, 255, 255, 0.05),
-      transparent 42%
-    ),
-    linear-gradient(
-      135deg,
-      #28524d,
-      #173833 58%,
-      #091b18
-    );
+    linear-gradient(115deg, rgba(255, 255, 255, 0.05), transparent 42%),
+    linear-gradient(135deg, #28524d, #173833 58%, #091b18);
 }
 
 .jobs-detail-heading {
@@ -5501,17 +5386,9 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   flex: 0 0 auto;
   padding: 0.45rem 0.75rem;
   border: 1px solid
-    color-mix(
-      in srgb,
-      var(--jobs-accent, #78d7c8) 45%,
-      transparent
-    );
+    color-mix(in srgb, var(--jobs-accent, #78d7c8) 45%, transparent);
   border-radius: 999px;
-  background: color-mix(
-    in srgb,
-    var(--jobs-accent, #78d7c8) 14%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--jobs-accent, #78d7c8) 14%, transparent);
   color: var(--jobs-accent, #78d7c8);
   font-size: 0.72rem;
   font-weight: 800;
@@ -5543,16 +5420,14 @@ body:has(.nav-item[data-target="people"].active)
     0 14px 28px rgba(47, 26, 93, 0.3);
 }
 
-body:has(.nav-item[data-target="people"].active)
-  .home-logo-button {
+body:has(.nav-item[data-target="people"].active) .home-logo-button {
   border-color: rgba(166, 108, 255, 0.66);
 
-  background:
-    linear-gradient(
-      145deg,
-      var(--people-purple),
-      var(--people-indigo)
-    );
+  background: linear-gradient(
+    145deg,
+    var(--people-purple),
+    var(--people-indigo)
+  );
 
   box-shadow:
     0 0 0 4px rgba(166, 108, 255, 0.28),
@@ -5582,11 +5457,7 @@ body:has(.people-loop-view) {
       rgba(184, 58, 49, 0.08),
       transparent 34rem
     ),
-    linear-gradient(
-      180deg,
-      #130d1b,
-      #0c0912
-    );
+    linear-gradient(180deg, #130d1b, #0c0912);
 }
 
 /* Reduce the visual weight of the shared Industry header */
@@ -5599,11 +5470,7 @@ body:has(.people-loop-view) .hero {
   border-radius: 1.4rem;
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.08),
-      transparent 55%
-    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.08), transparent 55%),
     rgba(19, 20, 22, 0.74);
 
   box-shadow:
@@ -5666,11 +5533,7 @@ body:has(.people-loop-view) .back-button {
   border-color: rgba(166, 108, 255, 0.24);
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(120, 57, 201, 0.1),
-      transparent
-    ),
+    linear-gradient(135deg, rgba(120, 57, 201, 0.1), transparent),
     var(--surface);
 }
 
@@ -5701,19 +5564,14 @@ body[data-theme="light"]:has(.people-loop-view) {
       rgba(184, 58, 49, 0.07),
       transparent 34rem
     ),
-    linear-gradient(
-      180deg,
-      #f5f0fb,
-      #eee8f6
-    );
+    linear-gradient(180deg, #f5f0fb, #eee8f6);
 }
 
 /* =========================================================
    MY LOOP LIGHT MODE: LOCAL VARIABLES
 ========================================================= */
 
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-view {
+body[data-theme="light"]:has(.people-loop-view) .people-loop-view {
   --loop-border: rgba(105, 55, 170, 0.23);
   --loop-border-strong: rgba(105, 55, 170, 0.52);
 
@@ -5725,16 +5583,11 @@ body[data-theme="light"]:has(.people-loop-view)
    MY LOOP LIGHT MODE: COMPACT INDUSTRY HEADER
 ========================================================= */
 
-body[data-theme="light"]:has(.people-loop-view)
-  .hero {
+body[data-theme="light"]:has(.people-loop-view) .hero {
   border-color: rgba(105, 55, 170, 0.2);
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.07),
-      transparent 58%
-    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.07), transparent 58%),
     rgba(255, 255, 255, 0.76);
 
   box-shadow:
@@ -5742,15 +5595,12 @@ body[data-theme="light"]:has(.people-loop-view)
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
-body[data-theme="light"]:has(.people-loop-view)
-  .hero h1,
-body[data-theme="light"]:has(.people-loop-view)
-  .hero .tagline {
+body[data-theme="light"]:has(.people-loop-view) .hero h1,
+body[data-theme="light"]:has(.people-loop-view) .hero .tagline {
   color: #211927;
 }
 
-body[data-theme="light"]:has(.people-loop-view)
-  .theme-toggle {
+body[data-theme="light"]:has(.people-loop-view) .theme-toggle {
   border-color: rgba(105, 55, 170, 0.2);
   color: #211927;
 
@@ -5759,8 +5609,7 @@ body[data-theme="light"]:has(.people-loop-view)
   box-shadow: none;
 }
 
-body[data-theme="light"]:has(.people-loop-view)
-  .theme-toggle:focus-visible {
+body[data-theme="light"]:has(.people-loop-view) .theme-toggle:focus-visible {
   outline: 3px solid rgba(120, 57, 201, 0.55);
   outline-offset: 4px;
 
@@ -5771,17 +5620,12 @@ body[data-theme="light"]:has(.people-loop-view)
    MY LOOP LIGHT MODE: BACK BUTTON
 ========================================================= */
 
-body[data-theme="light"]:has(.people-loop-view)
-  .back-button {
+body[data-theme="light"]:has(.people-loop-view) .back-button {
   border-color: rgba(105, 55, 170, 0.22);
   color: #2b2132;
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(120, 57, 201, 0.08),
-      transparent
-    ),
+    linear-gradient(135deg, rgba(120, 57, 201, 0.08), transparent),
     rgba(255, 255, 255, 0.82);
 
   box-shadow: 0 10px 22px rgba(62, 39, 82, 0.09);
@@ -5791,8 +5635,7 @@ body[data-theme="light"]:has(.people-loop-view)
    MY LOOP LIGHT MODE: HERO
 ========================================================= */
 
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-hero {
+body[data-theme="light"]:has(.people-loop-view) .people-loop-hero {
   border-color: rgba(105, 55, 170, 0.27);
 
   background:
@@ -5806,11 +5649,7 @@ body[data-theme="light"]:has(.people-loop-view)
       rgba(40, 95, 207, 0.09),
       transparent 40%
     ),
-    linear-gradient(
-      125deg,
-      rgba(120, 57, 201, 0.1),
-      transparent 48%
-    ),
+    linear-gradient(125deg, rgba(120, 57, 201, 0.1), transparent 48%),
     rgba(255, 255, 255, 0.86);
 
   box-shadow:
@@ -5818,22 +5657,18 @@ body[data-theme="light"]:has(.people-loop-view)
     inset 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-hero-copy h2,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-tagline {
+body[data-theme="light"]:has(.people-loop-view) .people-loop-hero-copy h2,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-tagline {
   color: #211927;
 }
 
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-intro {
+body[data-theme="light"]:has(.people-loop-view) .people-loop-intro {
   color: #665c6c;
 }
 
 /* Keep the connection visualization rich in light mode */
 
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-visual {
+body[data-theme="light"]:has(.people-loop-view) .people-loop-visual {
   background:
     radial-gradient(
       circle at center,
@@ -5842,11 +5677,7 @@ body[data-theme="light"]:has(.people-loop-view)
       rgba(40, 95, 207, 0.08) 58%,
       transparent 72%
     ),
-    linear-gradient(
-      145deg,
-      #2d173d,
-      #171626
-    );
+    linear-gradient(145deg, #2d173d, #171626);
 
   box-shadow:
     inset 0 0 4rem rgba(120, 57, 201, 0.2),
@@ -5858,27 +5689,20 @@ body[data-theme="light"]:has(.people-loop-view)
    MY LOOP LIGHT MODE: TEXT
 ========================================================= */
 
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-section-heading h2,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-person-copy h3,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-connection-card h3,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-person-role,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-connection-card p {
+body[data-theme="light"]:has(.people-loop-view) .people-loop-section-heading h2,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-person-copy h3,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-connection-card h3,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-person-role,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-connection-card p {
   color: #211927;
 }
 
+body[data-theme="light"]:has(.people-loop-view) .people-loop-connection-context,
 body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-connection-context,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-connection-card > span,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-overview-card span,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-text-button {
+  .people-loop-connection-card
+  > span,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-overview-card span,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-text-button {
   color: #6b6171;
 }
 
@@ -5886,12 +5710,9 @@ body[data-theme="light"]:has(.people-loop-view)
    MY LOOP LIGHT MODE: CARDS
 ========================================================= */
 
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-overview-card,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-person-card,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-connection-card {
+body[data-theme="light"]:has(.people-loop-view) .people-loop-overview-card,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-person-card,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-connection-card {
   border-color: rgba(105, 55, 170, 0.22);
 
   box-shadow:
@@ -5903,10 +5724,8 @@ body[data-theme="light"]:has(.people-loop-view)
    MY LOOP LIGHT MODE: SECONDARY BUTTONS
 ========================================================= */
 
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-secondary-button,
-body[data-theme="light"]:has(.people-loop-view)
-  .people-loop-message-button {
+body[data-theme="light"]:has(.people-loop-view) .people-loop-secondary-button,
+body[data-theme="light"]:has(.people-loop-view) .people-loop-message-button {
   border-color: rgba(105, 55, 170, 0.24);
   color: #2b2132;
 
@@ -5979,11 +5798,7 @@ body:has(.people-events-view) {
       rgba(48, 59, 155, 0.11),
       transparent 35rem
     ),
-    linear-gradient(
-      180deg,
-      #140d1d,
-      #0b0911
-    );
+    linear-gradient(180deg, #140d1d, #0b0911);
 }
 
 /* =========================================================
@@ -5998,11 +5813,7 @@ body:has(.people-events-view) .hero {
   border-radius: 1.4rem;
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.08),
-      transparent 58%
-    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.08), transparent 58%),
     rgba(19, 20, 22, 0.76);
 
   box-shadow:
@@ -6051,11 +5862,7 @@ body:has(.people-events-view) .back-button {
   border-color: rgba(166, 108, 255, 0.24);
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(120, 57, 201, 0.1),
-      transparent
-    ),
+    linear-gradient(135deg, rgba(120, 57, 201, 0.1), transparent),
     var(--surface);
 }
 
@@ -6122,11 +5929,7 @@ body:has(.people-events-view) .back-button {
       rgba(48, 59, 155, 0.12),
       transparent 40%
     ),
-    linear-gradient(
-      125deg,
-      rgba(120, 57, 201, 0.23),
-      transparent 48%
-    ),
+    linear-gradient(125deg, rgba(120, 57, 201, 0.23), transparent 48%),
     var(--events-surface);
 
   box-shadow:
@@ -6288,26 +6091,23 @@ body:has(.people-events-view) .back-button {
   border: 1px solid var(--events-blue-bright);
   color: white;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--events-blue),
-      var(--events-blue-deep)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--events-blue),
+    var(--events-blue-deep)
+  );
 
-  box-shadow:
-    0 0.8rem 1.8rem rgba(18, 45, 110, 0.28);
+  box-shadow: 0 0.8rem 1.8rem rgba(18, 45, 110, 0.28);
 }
 
 .people-events-going-button:hover {
   transform: translateY(-2px);
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--events-blue-bright),
-      var(--events-blue)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--events-blue-bright),
+    var(--events-blue)
+  );
 }
 
 /* Interested remains purple */
@@ -6333,18 +6133,16 @@ body:has(.people-events-view) .back-button {
 ========================================================= */
 
 .people-events-going-button.is-selected,
-[data-event-state="going"]
-  .people-events-going-button {
+[data-event-state="going"] .people-events-going-button {
   border-color: var(--events-green-bright);
 
   color: white;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--events-green-bright),
-      var(--events-green-deep)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--events-green-bright),
+    var(--events-green-deep)
+  );
 
   box-shadow:
     0 0 0 4px rgba(47, 155, 104, 0.15),
@@ -6367,22 +6165,19 @@ body:has(.people-events-view) .back-button {
 ========================================================= */
 
 .people-events-interested-button.is-selected,
-[data-event-state="interested"]
-  .people-events-interested-button,
+[data-event-state="interested"] .people-events-interested-button,
 .people-events-invite-button.is-selected {
   border-color: var(--events-purple-bright);
 
   color: white;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--events-purple),
-      var(--events-indigo)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--events-purple),
+    var(--events-indigo)
+  );
 
-  box-shadow:
-    0 0 0 4px rgba(166, 108, 255, 0.12);
+  box-shadow: 0 0 0 4px rgba(166, 108, 255, 0.12);
 }
 
 .people-events-card[data-event-state="interested"],
@@ -6403,11 +6198,7 @@ body:has(.people-events-view) .back-button {
   border-radius: var(--radius-md);
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.12),
-      transparent 58%
-    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.12), transparent 58%),
     rgba(13, 10, 20, 0.52);
 }
 
@@ -6427,16 +6218,14 @@ body:has(.people-events-view) .back-button {
   border: 1px solid rgba(166, 108, 255, 0.2);
   border-radius: 50%;
 
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(166, 108, 255, 0.14),
-      rgba(47, 99, 216, 0.06) 56%,
-      transparent 72%
-    );
+  background: radial-gradient(
+    circle at center,
+    rgba(166, 108, 255, 0.14),
+    rgba(47, 99, 216, 0.06) 56%,
+    transparent 72%
+  );
 
-  box-shadow:
-    inset 0 0 3rem rgba(120, 57, 201, 0.14);
+  box-shadow: inset 0 0 3rem rgba(120, 57, 201, 0.14);
 }
 
 .people-events-attendee-orbit::before,
@@ -6497,47 +6286,36 @@ body:has(.people-events-view) .back-button {
       rgba(255, 255, 255, 0.25),
       transparent 35%
     ),
-    linear-gradient(
-      145deg,
-      var(--events-user-red),
-      var(--events-user-red-deep)
-    );
+    linear-gradient(145deg, var(--events-user-red), var(--events-user-red-deep));
 }
 
 .people-events-attendee-blue {
   top: 42%;
   right: 3%;
 
-  background:
-    linear-gradient(
-      145deg,
-      var(--events-blue-bright),
-      var(--events-blue-deep)
-    );
+  background: linear-gradient(
+    145deg,
+    var(--events-blue-bright),
+    var(--events-blue-deep)
+  );
 }
 
 .people-events-attendee-violet {
   bottom: 4%;
   left: 39%;
 
-  background:
-    linear-gradient(
-      145deg,
-      var(--events-purple-bright),
-      var(--events-purple-deep)
-    );
+  background: linear-gradient(
+    145deg,
+    var(--events-purple-bright),
+    var(--events-purple-deep)
+  );
 }
 
 .people-events-attendee-indigo {
   top: 42%;
   left: 3%;
 
-  background:
-    linear-gradient(
-      145deg,
-      #5368da,
-      var(--events-indigo)
-    );
+  background: linear-gradient(145deg, #5368da, var(--events-indigo));
 }
 
 .people-events-attendance-copy {
@@ -6620,15 +6398,13 @@ body:has(.people-events-view) .back-button {
 
   color: white;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--events-purple),
-      var(--events-indigo)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--events-purple),
+    var(--events-indigo)
+  );
 
-  box-shadow:
-    0 0 0 3px rgba(166, 108, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(166, 108, 255, 0.1);
 }
 
 /* =========================================================
@@ -6655,15 +6431,10 @@ body:has(.people-events-view) .back-button {
   border-radius: var(--radius-md);
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.035),
-      transparent 56%
-    ),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 56%),
     var(--events-surface);
 
-  box-shadow:
-    0 18px 38px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.2);
 
   transition:
     transform 180ms ease,
@@ -6734,12 +6505,11 @@ body:has(.people-events-view) .back-button {
   border: 1px solid var(--events-border-strong);
   border-radius: 1.1rem;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.16),
-      rgba(47, 99, 216, 0.08)
-    );
+  background: linear-gradient(
+    145deg,
+    rgba(120, 57, 201, 0.16),
+    rgba(47, 99, 216, 0.08)
+  );
 }
 
 .people-events-card-date strong {
@@ -6779,10 +6549,8 @@ body:has(.people-events-view) .back-button {
   text-transform: uppercase;
 }
 
-.people-events-card-sober
-  .people-events-card-type,
-.people-events-card-learning
-  .people-events-card-type {
+.people-events-card-sober .people-events-card-type,
+.people-events-card-learning .people-events-card-type {
   color: #76a1f2;
 }
 
@@ -6843,8 +6611,7 @@ body:has(.people-events-view) .back-button {
   font-weight: 850;
 }
 
-.people-events-mini-avatar
-  + .people-events-mini-avatar {
+.people-events-mini-avatar + .people-events-mini-avatar {
   margin-left: -0.55rem;
 }
 
@@ -6904,11 +6671,7 @@ body:has(.people-events-view) .back-button {
   color: var(--muted);
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(120, 57, 201, 0.1),
-      transparent 58%
-    ),
+    linear-gradient(135deg, rgba(120, 57, 201, 0.1), transparent 58%),
     var(--events-surface-soft);
 
   font-weight: 700;
@@ -6926,36 +6689,31 @@ body:has(.people-events-view) .back-button {
    EVENTS: STANDALONE PAGE SHELL
 ========================================================= */
 
-body:has(.people-events-view)
-  .bottom-nav
-  .nav-item.active {
+body:has(.people-events-view) .bottom-nav .nav-item.active {
   border-color: transparent;
   color: white;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--people-purple),
-      var(--people-indigo) 58%,
-      var(--loop-user-blue-deep)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--people-purple),
+    var(--people-indigo) 58%,
+    var(--loop-user-blue-deep)
+  );
 
   box-shadow:
     0 0 0 4px rgba(166, 108, 255, 0.28),
     0 14px 28px rgba(47, 26, 93, 0.3);
 }
 
-body:has(.people-events-view)
-  .home-logo-button {
+body:has(.people-events-view) .home-logo-button {
   border-color: rgba(166, 108, 255, 0.62);
   color: white;
 
-  background:
-    linear-gradient(
-      145deg,
-      var(--people-purple),
-      var(--people-indigo)
-    );
+  background: linear-gradient(
+    145deg,
+    var(--people-purple),
+    var(--people-indigo)
+  );
 
   box-shadow:
     0 0 0 4px rgba(166, 108, 255, 0.24),
@@ -7080,11 +6838,7 @@ body:has(.people-events-view)
       rgba(47, 99, 216, 0.12),
       transparent 42%
     ),
-    linear-gradient(
-      145deg,
-      rgba(120, 57, 201, 0.16),
-      transparent 58%
-    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.16), transparent 58%),
     rgba(13, 10, 20, 0.72);
 
   box-shadow:
@@ -7139,12 +6893,11 @@ body:has(.people-events-view)
 
   color: white;
 
-  background:
-    linear-gradient(
-      145deg,
-      var(--events-purple),
-      var(--events-indigo)
-    );
+  background: linear-gradient(
+    145deg,
+    var(--events-purple),
+    var(--events-indigo)
+  );
 
   font-size: 1.35rem;
   font-weight: 800;
@@ -7179,11 +6932,7 @@ body:has(.people-events-view)
   text-align: left;
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.035),
-      transparent 60%
-    ),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.035), transparent 60%),
     rgba(255, 255, 255, 0.025);
 
   cursor: pointer;
@@ -7201,11 +6950,7 @@ body:has(.people-events-view)
   border-color: var(--events-border-strong);
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(120, 57, 201, 0.12),
-      transparent 62%
-    ),
+    linear-gradient(135deg, rgba(120, 57, 201, 0.12), transparent 62%),
     rgba(255, 255, 255, 0.035);
 }
 
@@ -7228,8 +6973,7 @@ body:has(.people-events-view)
   font-size: 0.72rem;
   font-weight: 850;
 
-  box-shadow:
-    0 0.65rem 1.2rem rgba(0, 0, 0, 0.24);
+  box-shadow: 0 0.65rem 1.2rem rgba(0, 0, 0, 0.24);
 }
 
 /* =========================================================
@@ -7289,29 +7033,22 @@ body:has(.people-events-view)
   border-color: var(--events-purple-bright);
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(120, 57, 201, 0.2),
-      rgba(48, 59, 155, 0.12)
-    ),
+    linear-gradient(135deg, rgba(120, 57, 201, 0.2), rgba(48, 59, 155, 0.12)),
     rgba(255, 255, 255, 0.035);
 
-  box-shadow:
-    0 0 0 3px rgba(166, 108, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(166, 108, 255, 0.08);
 }
 
-.people-events-invite-person.is-invited
-  .people-events-invite-state {
+.people-events-invite-person.is-invited .people-events-invite-state {
   border-color: var(--events-purple-bright);
 
   color: white;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--events-purple),
-      var(--events-indigo)
-    );
+  background: linear-gradient(
+    135deg,
+    var(--events-purple),
+    var(--events-indigo)
+  );
 }
 
 /* =========================================================
@@ -7343,3 +7080,1555 @@ body:has(.people-events-view)
    PEOPLE VIEW: EVENTS — END
 ========================================================= */
 
+/* =========================================================
+   PEOPLE VIEW: NEARBY — START
+========================================================= */
+
+/* =========================================================
+   NEARBY: LOCAL COLOR SYSTEM
+========================================================= */
+
+.people-nearby-view {
+  --nearby-surface: rgba(23, 20, 31, 0.9);
+  --nearby-surface-soft: rgba(255, 255, 255, 0.035);
+  --nearby-surface-strong: rgba(31, 27, 42, 0.94);
+
+  --nearby-text: var(--text-main, #f7f2fa);
+  --nearby-muted: var(--muted, #b9b0bf);
+  --nearby-quiet: #877f8c;
+
+  --nearby-line: rgba(241, 232, 255, 0.14);
+  --nearby-purple-line: rgba(166, 108, 255, 0.42);
+
+  --nearby-purple: #7839c9;
+  --nearby-purple-bright: #a66cff;
+  --nearby-purple-deep: #321550;
+
+  --nearby-blue: #2f63d8;
+  --nearby-blue-bright: #5688f2;
+  --nearby-blue-deep: #173a86;
+
+  --nearby-teal: #208c8a;
+  --nearby-teal-bright: #42b7ae;
+  --nearby-teal-deep: #145957;
+
+  --nearby-green: #2f9b68;
+  --nearby-green-bright: #49bd83;
+  --nearby-green-deep: #155d3e;
+
+  width: min(100% - 2rem, 1120px);
+  margin-inline: auto;
+  padding: 1.5rem 0 8rem;
+}
+
+/* =========================================================
+   NEARBY: PAGE ATMOSPHERE
+========================================================= */
+
+body:has(.people-nearby-view) .app-shell {
+  background:
+    radial-gradient(
+      circle at 8% 18%,
+      rgba(120, 57, 201, 0.22),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 92% 38%,
+      rgba(47, 99, 216, 0.11),
+      transparent 32rem
+    ),
+    radial-gradient(
+      circle at 50% 90%,
+      rgba(32, 140, 138, 0.09),
+      transparent 34rem
+    ),
+    var(--page-bg);
+}
+
+/* =========================================================
+   NEARBY: BACK NAVIGATION
+========================================================= */
+
+.people-nearby-view > .back-button {
+  margin-bottom: 1.5rem;
+}
+
+/* =========================================================
+   NEARBY: HEADER
+========================================================= */
+
+.people-nearby-view .nearby-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+
+  padding: 1rem 0 2rem;
+}
+
+.people-nearby-view .nearby-header .eyebrow {
+  display: inline-block;
+  margin-bottom: 0.8rem;
+
+  color: var(--nearby-purple-bright);
+}
+
+.people-nearby-view .nearby-header h1 {
+  margin: 0;
+
+  color: var(--nearby-text);
+
+  font-size: clamp(3.4rem, 9vw, 6.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.065em;
+}
+
+.people-nearby-view .nearby-header p {
+  max-width: 44rem;
+  margin: 1.25rem 0 0;
+
+  color: var(--nearby-muted);
+
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.65;
+}
+
+.people-nearby-view .profile-button {
+  flex: 0 0 auto;
+
+  width: 3.8rem;
+  height: 3.8rem;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid var(--nearby-purple-line);
+  border-radius: 50%;
+
+  color: white;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.2),
+      transparent 35%
+    ),
+    linear-gradient(145deg, var(--nearby-purple), #303b9b);
+
+  font-weight: 850;
+
+  box-shadow:
+    0 0 0 0.4rem rgba(166, 108, 255, 0.06),
+    0 1rem 2rem rgba(0, 0, 0, 0.28);
+
+  cursor: pointer;
+}
+
+/* =========================================================
+   NEARBY: PRIVACY PROMISE
+========================================================= */
+
+.people-nearby-view .privacy-promise {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1.25rem;
+
+  margin-bottom: 1.25rem;
+  padding: clamp(1.4rem, 4vw, 2rem);
+
+  border: 1px solid rgba(66, 183, 174, 0.38);
+  border-radius: 1.5rem;
+
+  background:
+    radial-gradient(circle at 6% 50%, rgba(32, 140, 138, 0.2), transparent 28%),
+    linear-gradient(135deg, rgba(32, 140, 138, 0.09), transparent 58%),
+    var(--nearby-surface);
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+}
+
+.people-nearby-view .privacy-icon {
+  width: 4.4rem;
+  height: 4.4rem;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(66, 183, 174, 0.52);
+  border-radius: 50%;
+
+  color: var(--nearby-teal-bright);
+
+  background: radial-gradient(
+    circle,
+    rgba(66, 183, 174, 0.18),
+    rgba(20, 89, 87, 0.08)
+  );
+
+  font-size: 2rem;
+  font-weight: 800;
+
+  box-shadow: 0 0 0 0.5rem rgba(32, 140, 138, 0.05);
+}
+
+.people-nearby-view .privacy-promise .eyebrow {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+
+  color: var(--nearby-teal-bright);
+}
+
+.people-nearby-view .privacy-promise h2 {
+  margin: 0;
+
+  color: var(--nearby-text);
+
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.people-nearby-view .privacy-promise p {
+  max-width: 47rem;
+  margin: 0.8rem 0 0;
+
+  color: var(--nearby-muted);
+  line-height: 1.65;
+}
+
+/* =========================================================
+   NEARBY: STATE SHELL
+========================================================= */
+
+.people-nearby-view .nearby-state {
+  border: 1px solid var(--nearby-purple-line);
+  border-radius: 2rem;
+
+  background:
+    linear-gradient(145deg, rgba(120, 57, 201, 0.09), transparent 52%),
+    var(--nearby-surface);
+
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  overflow: hidden;
+}
+
+.people-nearby-view .nearby-state[hidden] {
+  display: none;
+}
+
+/* =========================================================
+   NEARBY OFF: HEADER
+========================================================= */
+
+.people-nearby-view .nearby-state-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+
+  border-bottom: 1px solid var(--nearby-line);
+}
+
+.people-nearby-view .status-dot {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.3rem;
+
+  border-radius: 50%;
+}
+
+.people-nearby-view .status-dot-off {
+  border: 2px solid var(--nearby-quiet);
+
+  background: transparent;
+
+  box-shadow: 0 0 0 0.35rem rgba(135, 127, 140, 0.08);
+}
+
+.people-nearby-view .status-dot-active {
+  background: var(--nearby-green-bright);
+
+  box-shadow:
+    0 0 0 0.4rem rgba(73, 189, 131, 0.12),
+    0 0 1.5rem rgba(73, 189, 131, 0.35);
+}
+
+.people-nearby-view .nearby-state-header .eyebrow {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+
+  color: var(--nearby-teal-bright);
+}
+
+.people-nearby-view .nearby-state-header h2 {
+  margin: 0;
+
+  color: var(--nearby-text);
+
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.people-nearby-view .nearby-state-header p {
+  max-width: 45rem;
+  margin: 0.9rem 0 0;
+
+  color: var(--nearby-muted);
+  line-height: 1.65;
+}
+
+/* =========================================================
+   NEARBY OFF: CONTROL GROUPS
+========================================================= */
+
+.people-nearby-view .nearby-control-group {
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+
+  border-bottom: 1px solid var(--nearby-line);
+}
+
+.people-nearby-view .control-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+
+  margin-bottom: 1.3rem;
+}
+
+.people-nearby-view .control-heading > span {
+  width: 2.4rem;
+  height: 2.4rem;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(86, 136, 242, 0.52);
+  border-radius: 50%;
+
+  color: var(--nearby-blue-bright);
+  background: rgba(47, 99, 216, 0.09);
+
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+
+.people-nearby-view .control-heading h3 {
+  margin: 0;
+
+  color: var(--nearby-text);
+
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.people-nearby-view .control-heading p {
+  max-width: 43rem;
+  margin: 0.55rem 0 0;
+
+  color: var(--nearby-muted);
+  line-height: 1.6;
+}
+
+/* =========================================================
+   NEARBY OFF: AUDIENCE CHOICES
+========================================================= */
+
+.people-nearby-view .choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.people-nearby-view .choice-button {
+  min-width: 0;
+  min-height: 7.5rem;
+  padding: 1.1rem;
+
+  display: grid;
+  align-content: center;
+  gap: 0.4rem;
+
+  border: 1px solid var(--nearby-line);
+  border-radius: 1rem;
+
+  color: var(--nearby-text);
+  text-align: left;
+
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 60%),
+    var(--nearby-surface-soft);
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.people-nearby-view .choice-button:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(86, 136, 242, 0.52);
+}
+
+.people-nearby-view .choice-button strong {
+  color: var(--nearby-text);
+
+  font-size: 0.98rem;
+}
+
+.people-nearby-view .choice-button small {
+  color: var(--nearby-muted);
+
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.people-nearby-view .choice-button.active {
+  border-color: var(--nearby-blue-bright);
+
+  background:
+    linear-gradient(145deg, rgba(47, 99, 216, 0.22), rgba(48, 59, 155, 0.12)),
+    var(--nearby-surface-soft);
+
+  box-shadow: 0 0 0 3px rgba(86, 136, 242, 0.09);
+}
+
+.people-nearby-view .choice-button[data-nearby-audience="hidden"].active {
+  border-color: rgba(185, 176, 191, 0.4);
+
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), transparent),
+    var(--nearby-surface-soft);
+
+  box-shadow: 0 0 0 3px rgba(185, 176, 191, 0.04);
+}
+
+/* =========================================================
+   NEARBY OFF: ACTIVITY + DURATION
+========================================================= */
+
+.people-nearby-view .status-choice-list,
+.people-nearby-view .duration-choice-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.people-nearby-view .status-choice-button,
+.people-nearby-view .duration-button {
+  min-height: 3.2rem;
+  padding: 0.75rem 1rem;
+
+  border: 1px solid var(--nearby-line);
+  border-radius: 999px;
+
+  color: var(--nearby-muted);
+  background: rgba(255, 255, 255, 0.025);
+
+  font-weight: 720;
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.people-nearby-view .status-choice-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.people-nearby-view .status-choice-button span {
+  color: var(--nearby-blue-bright);
+}
+
+.people-nearby-view .status-choice-button:hover,
+.people-nearby-view .duration-button:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(86, 136, 242, 0.5);
+  color: var(--nearby-text);
+}
+
+.people-nearby-view .status-choice-button.active,
+.people-nearby-view .duration-button.active {
+  border-color: var(--nearby-blue-bright);
+
+  color: white;
+
+  background: linear-gradient(
+    135deg,
+    var(--nearby-blue),
+    var(--nearby-blue-deep)
+  );
+
+  box-shadow: 0 0 0 3px rgba(86, 136, 242, 0.1);
+}
+
+.people-nearby-view .status-choice-button.active span {
+  color: white;
+}
+
+/* =========================================================
+   NEARBY OFF: START SHARING
+========================================================= */
+
+.people-nearby-view .nearby-start-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+
+  background:
+    radial-gradient(
+      circle at 90% 50%,
+      rgba(32, 140, 138, 0.13),
+      transparent 35%
+    ),
+    rgba(255, 255, 255, 0.015);
+}
+
+.people-nearby-view .nearby-start-panel .eyebrow {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+
+  color: var(--nearby-teal-bright);
+}
+
+.people-nearby-view .nearby-start-panel p {
+  margin: 0;
+
+  color: var(--nearby-muted);
+  line-height: 1.6;
+}
+
+.people-nearby-view .start-sharing-button,
+.people-nearby-view .stop-sharing-button,
+.people-nearby-view .message-button,
+.people-nearby-view .view-event-button {
+  min-height: 3.2rem;
+  padding: 0.78rem 1.2rem;
+
+  border-radius: 999px;
+
+  color: white;
+
+  font-weight: 820;
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.people-nearby-view .start-sharing-button {
+  flex: 0 0 auto;
+
+  border: 1px solid var(--nearby-teal-bright);
+
+  background: linear-gradient(
+    135deg,
+    var(--nearby-teal-bright),
+    var(--nearby-teal-deep)
+  );
+
+  box-shadow: 0 0.8rem 1.8rem rgba(14, 77, 75, 0.27);
+}
+
+.people-nearby-view .start-sharing-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.people-nearby-view .start-sharing-button:disabled {
+  border-color: rgba(255, 255, 255, 0.1);
+
+  color: var(--nearby-quiet);
+  background: rgba(255, 255, 255, 0.035);
+
+  box-shadow: none;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   NEARBY: PRIVACY FOOTER
+========================================================= */
+
+.people-nearby-view .nearby-privacy-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  margin-top: 1rem;
+  padding: 1.15rem 1.35rem;
+
+  border: 1px solid rgba(66, 183, 174, 0.34);
+  border-radius: 1.35rem;
+
+  background:
+    linear-gradient(135deg, rgba(32, 140, 138, 0.1), transparent 60%),
+    var(--nearby-surface-soft);
+}
+
+.people-nearby-view .nearby-privacy-footer > span {
+  color: var(--nearby-teal-bright);
+
+  font-size: 1.4rem;
+}
+
+.people-nearby-view .nearby-privacy-footer p {
+  margin: 0;
+
+  color: var(--nearby-muted);
+
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   NEARBY: ACTIVITY MESSAGE
+========================================================= */
+
+.people-nearby-view .nearby-status-message {
+  margin-top: 1rem;
+  padding: 1.15rem 1.35rem;
+
+  border: 1px solid var(--nearby-purple-line);
+  border-radius: 1.35rem;
+
+  color: var(--nearby-muted);
+
+  background:
+    linear-gradient(135deg, rgba(120, 57, 201, 0.09), transparent 58%),
+    var(--nearby-surface-soft);
+
+  font-weight: 700;
+}
+
+/* =========================================================
+   NEARBY OFF: RESPONSIVE
+========================================================= */
+
+@media (max-width: 820px) {
+  .people-nearby-view .choice-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .people-nearby-view {
+    width: min(100% - 1.25rem, 1120px);
+    padding-top: 1rem;
+  }
+
+  .people-nearby-view .nearby-header {
+    align-items: center;
+  }
+
+  .people-nearby-view .profile-button {
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+
+  .people-nearby-view .privacy-promise {
+    grid-template-columns: 1fr;
+  }
+
+  .people-nearby-view .privacy-icon {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+
+  .people-nearby-view .nearby-state {
+    border-radius: 1.6rem;
+  }
+
+  .people-nearby-view .nearby-start-panel {
+    display: grid;
+  }
+
+  .people-nearby-view .start-sharing-button {
+    width: 100%;
+  }
+
+  .people-nearby-view .status-choice-list,
+  .people-nearby-view .duration-choice-list {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .people-nearby-view .status-choice-button,
+  .people-nearby-view .duration-button {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   NEARBY ACTIVE: SHARING SUMMARY
+========================================================= */
+
+.people-nearby-view .sharing-active-panel {
+  padding: clamp(1.5rem, 5vw, 2.75rem);
+
+  border-bottom: 1px solid rgba(73, 189, 131, 0.25);
+
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(73, 189, 131, 0.17),
+      transparent 32%
+    ),
+    linear-gradient(145deg, rgba(47, 155, 104, 0.13), transparent 58%);
+}
+
+.people-nearby-view .sharing-active-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.people-nearby-view .sharing-active-status {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.people-nearby-view .sharing-active-status .eyebrow {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+
+  color: var(--nearby-green-bright);
+}
+
+.people-nearby-view .sharing-active-status h2 {
+  margin: 0;
+
+  color: var(--nearby-text);
+
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+/* =========================================================
+   NEARBY ACTIVE: STOP SHARING
+========================================================= */
+
+.people-nearby-view .stop-sharing-button {
+  flex: 0 0 auto;
+
+  border: 1px solid rgba(73, 189, 131, 0.48);
+
+  color: var(--nearby-green-bright);
+
+  background: linear-gradient(
+    135deg,
+    rgba(47, 155, 104, 0.15),
+    rgba(21, 93, 62, 0.1)
+  );
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  cursor: pointer;
+}
+
+.people-nearby-view .stop-sharing-button:hover {
+  transform: translateY(-2px);
+
+  border-color: var(--nearby-green-bright);
+
+  color: white;
+
+  background: linear-gradient(
+    135deg,
+    var(--nearby-green),
+    var(--nearby-green-deep)
+  );
+
+  box-shadow: 0 0 0 3px rgba(73, 189, 131, 0.1);
+}
+
+/* =========================================================
+   NEARBY ACTIVE: SUMMARY GRID
+========================================================= */
+
+.people-nearby-view .sharing-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+
+  margin-top: 2rem;
+}
+
+.people-nearby-view .sharing-summary-grid > div {
+  min-width: 0;
+  padding: 1rem;
+
+  border: 1px solid rgba(73, 189, 131, 0.2);
+  border-radius: 1rem;
+
+  background:
+    linear-gradient(145deg, rgba(73, 189, 131, 0.08), transparent 65%),
+    rgba(13, 25, 20, 0.38);
+}
+
+.people-nearby-view .sharing-summary-grid span {
+  display: block;
+  margin-bottom: 0.35rem;
+
+  color: var(--nearby-muted);
+
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.people-nearby-view .sharing-summary-grid strong {
+  display: block;
+
+  color: var(--nearby-text);
+
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.people-nearby-view .sharing-reminder {
+  margin: 1rem 0 0;
+
+  color: var(--nearby-green-bright);
+
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+/* =========================================================
+   NEARBY ACTIVE: RESULTS SECTIONS
+========================================================= */
+
+.people-nearby-view .nearby-results-section {
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+
+  border-bottom: 1px solid var(--nearby-line);
+}
+
+.people-nearby-view .nearby-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-bottom: 1.25rem;
+}
+
+.people-nearby-view .nearby-section-heading .eyebrow {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+
+  color: var(--nearby-purple-bright);
+}
+
+.people-nearby-view .nearby-section-heading h2 {
+  margin: 0;
+
+  color: var(--nearby-text);
+
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.people-nearby-view .result-count {
+  flex: 0 0 auto;
+
+  padding: 0.5rem 0.75rem;
+
+  border: 1px solid rgba(86, 136, 242, 0.42);
+  border-radius: 999px;
+
+  color: var(--nearby-blue-bright);
+
+  background: rgba(47, 99, 216, 0.08);
+
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+/* =========================================================
+   NEARBY ACTIVE: PEOPLE GRID
+========================================================= */
+
+.people-nearby-view .nearby-people-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.people-nearby-view .nearby-person-card {
+  min-width: 0;
+  padding: 1.25rem;
+
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+
+  border: 1px solid var(--nearby-purple-line);
+  border-radius: 1.35rem;
+
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(47, 99, 216, 0.13),
+      transparent 38%
+    ),
+    linear-gradient(145deg, rgba(120, 57, 201, 0.08), transparent 60%),
+    var(--nearby-surface-strong);
+
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+}
+
+/* =========================================================
+   NEARBY ACTIVE: USER AVATARS
+========================================================= */
+
+.people-nearby-view .nearby-avatar,
+.people-nearby-view .nearby-mini-avatar {
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+
+  color: white;
+
+  font-weight: 850;
+
+  box-shadow: 0 0.8rem 1.4rem rgba(0, 0, 0, 0.25);
+}
+
+.people-nearby-view .nearby-avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+
+  font-size: 0.78rem;
+}
+
+.people-nearby-view .nearby-mini-avatar {
+  width: 2.4rem;
+  height: 2.4rem;
+
+  font-size: 0.65rem;
+}
+
+.people-nearby-view .nearby-avatar-blue {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.2),
+      transparent 34%
+    ),
+    linear-gradient(145deg, var(--nearby-blue-bright), var(--nearby-blue-deep));
+}
+
+.people-nearby-view .nearby-avatar-red {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.18),
+      transparent 34%
+    ),
+    linear-gradient(145deg, #b93b31, #641f1b);
+}
+
+.people-nearby-view .nearby-avatar-violet {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.2),
+      transparent 34%
+    ),
+    linear-gradient(
+      145deg,
+      var(--nearby-purple-bright),
+      var(--nearby-purple-deep)
+    );
+}
+
+/* =========================================================
+   NEARBY ACTIVE: PERSON COPY
+========================================================= */
+
+.people-nearby-view .nearby-person-copy {
+  min-width: 0;
+}
+
+.people-nearby-view .relationship-label {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+
+  color: var(--nearby-blue-bright);
+
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.people-nearby-view .nearby-person-card h3 {
+  margin: 0 0 0.45rem;
+
+  color: var(--nearby-text);
+
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.people-nearby-view .nearby-person-role,
+.people-nearby-view .nearby-person-area {
+  margin: 0 0 0.2rem;
+
+  color: var(--nearby-muted);
+
+  line-height: 1.5;
+}
+
+.people-nearby-view .nearby-person-area {
+  color: var(--nearby-blue-bright);
+}
+
+.people-nearby-view .nearby-person-status {
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 0.8rem;
+  padding: 0.55rem 0.75rem;
+
+  border: 1px solid rgba(86, 136, 242, 0.3);
+  border-radius: 999px;
+
+  color: var(--nearby-text);
+
+  background: rgba(47, 99, 216, 0.08);
+
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* =========================================================
+   NEARBY ACTIVE: MESSAGE BUTTONS
+========================================================= */
+
+.people-nearby-view .message-button {
+  grid-column: 1 / -1;
+
+  border: 1px solid var(--nearby-blue-bright);
+
+  color: white;
+
+  background: linear-gradient(
+    135deg,
+    var(--nearby-blue),
+    var(--nearby-blue-deep)
+  );
+
+  box-shadow: 0 0.8rem 1.8rem rgba(23, 58, 134, 0.2);
+}
+
+.people-nearby-view .message-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 0 3px rgba(86, 136, 242, 0.1),
+    0 0.8rem 1.8rem rgba(23, 58, 134, 0.24);
+}
+
+.people-nearby-view .message-button.active {
+  border-color: var(--nearby-green-bright);
+
+  background: linear-gradient(
+    135deg,
+    var(--nearby-green),
+    var(--nearby-green-deep)
+  );
+}
+
+/* =========================================================
+   NEARBY ACTIVE: EVENT CARD
+========================================================= */
+
+.people-nearby-view .nearby-event-card {
+  padding: 1.3rem;
+
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+
+  border: 1px solid var(--nearby-purple-line);
+  border-radius: 1.35rem;
+
+  background:
+    radial-gradient(
+      circle at 92% 12%,
+      rgba(120, 57, 201, 0.16),
+      transparent 40%
+    ),
+    linear-gradient(145deg, rgba(47, 99, 216, 0.08), transparent 65%),
+    var(--nearby-surface-strong);
+
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+}
+
+.people-nearby-view .nearby-event-date {
+  width: 4.7rem;
+  height: 5.1rem;
+
+  display: grid;
+  align-content: center;
+  justify-items: center;
+
+  border: 1px solid var(--nearby-purple-line);
+  border-radius: 1rem;
+
+  background: linear-gradient(
+    145deg,
+    rgba(120, 57, 201, 0.16),
+    rgba(47, 99, 216, 0.08)
+  );
+}
+
+.people-nearby-view .nearby-event-date strong {
+  color: var(--nearby-text);
+
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.people-nearby-view .nearby-event-date span {
+  margin-top: 0.2rem;
+
+  color: var(--nearby-purple-bright);
+
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.people-nearby-view .nearby-event-copy {
+  min-width: 0;
+}
+
+.people-nearby-view .nearby-event-copy .relationship-label {
+  color: var(--nearby-purple-bright);
+}
+
+.people-nearby-view .nearby-event-copy h3 {
+  margin: 0 0 0.45rem;
+
+  color: var(--nearby-text);
+
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.people-nearby-view .nearby-event-copy > p {
+  margin: 0 0 0.2rem;
+
+  color: var(--nearby-muted);
+  line-height: 1.5;
+}
+
+.people-nearby-view .nearby-event-loop {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+
+  margin-top: 0.8rem;
+}
+
+.people-nearby-view .nearby-event-loop p {
+  margin: 0;
+
+  color: var(--nearby-muted);
+
+  font-size: 0.83rem;
+}
+
+/* =========================================================
+   NEARBY ACTIVE: VIEW EVENT
+========================================================= */
+
+.people-nearby-view .view-event-button {
+  border: 1px solid var(--nearby-purple-bright);
+
+  color: white;
+
+  background: linear-gradient(135deg, var(--nearby-purple), #303b9b);
+
+  box-shadow: 0 0.8rem 1.8rem rgba(50, 21, 80, 0.24);
+}
+
+.people-nearby-view .view-event-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 0 3px rgba(166, 108, 255, 0.1),
+    0 0.8rem 1.8rem rgba(50, 21, 80, 0.28);
+}
+
+/* =========================================================
+   NEARBY ACTIVE: NEIGHBORHOOD PULSE
+========================================================= */
+
+.people-nearby-view .neighborhood-pulse {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1.5rem;
+
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+
+  background:
+    radial-gradient(circle at 8% 50%, rgba(47, 99, 216, 0.15), transparent 30%),
+    rgba(255, 255, 255, 0.012);
+}
+
+.people-nearby-view .pulse-orbit {
+  position: relative;
+
+  width: 8rem;
+  height: 8rem;
+
+  border: 1px solid rgba(166, 108, 255, 0.24);
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(166, 108, 255, 0.15),
+    transparent 68%
+  );
+
+  box-shadow: inset 0 0 2rem rgba(120, 57, 201, 0.15);
+}
+
+.people-nearby-view .pulse-orbit::before {
+  content: "";
+
+  position: absolute;
+  inset: 25%;
+
+  border: 1px solid rgba(86, 136, 242, 0.3);
+  border-radius: 50%;
+}
+
+.people-nearby-view .pulse-dot {
+  position: absolute;
+
+  width: 1.15rem;
+  height: 1.15rem;
+
+  border-radius: 50%;
+
+  box-shadow: 0 0 0 0.35rem rgba(255, 255, 255, 0.035);
+}
+
+.people-nearby-view .pulse-dot-blue {
+  top: 20%;
+  right: 16%;
+
+  background: var(--nearby-blue-bright);
+}
+
+.people-nearby-view .pulse-dot-red {
+  bottom: 17%;
+  left: 25%;
+
+  background: #b93b31;
+}
+
+.people-nearby-view .pulse-dot-violet {
+  top: 43%;
+  left: 12%;
+
+  background: var(--nearby-purple-bright);
+}
+
+.people-nearby-view .neighborhood-pulse .eyebrow {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+
+  color: var(--nearby-purple-bright);
+}
+
+.people-nearby-view .neighborhood-pulse h2 {
+  margin: 0;
+
+  color: var(--nearby-text);
+
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.people-nearby-view .neighborhood-pulse p {
+  max-width: 42rem;
+  margin: 0.8rem 0 0;
+
+  color: var(--nearby-muted);
+  line-height: 1.6;
+}
+
+/* =========================================================
+   NEARBY ACTIVE: TABLET
+========================================================= */
+
+@media (max-width: 820px) {
+  .people-nearby-view .sharing-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .people-nearby-view .nearby-people-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .people-nearby-view .nearby-event-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .people-nearby-view .view-event-button {
+    grid-column: 1 / -1;
+  }
+}
+
+/* =========================================================
+   NEARBY ACTIVE: MOBILE
+========================================================= */
+
+@media (max-width: 560px) {
+  .people-nearby-view .sharing-active-heading {
+    display: grid;
+  }
+
+  .people-nearby-view .stop-sharing-button {
+    width: 100%;
+  }
+
+  .people-nearby-view .sharing-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .people-nearby-view .nearby-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .people-nearby-view .nearby-event-card {
+    grid-template-columns: 1fr;
+  }
+
+  .people-nearby-view .nearby-event-date {
+    width: 4.4rem;
+    height: 4.8rem;
+  }
+
+  .people-nearby-view .neighborhood-pulse {
+    grid-template-columns: 1fr;
+  }
+
+  .people-nearby-view .pulse-orbit {
+    width: 7rem;
+    height: 7rem;
+  }
+}
+
+/* =========================================================
+   NEARBY: FIXED NAVIGATION CLEARANCE
+========================================================= */
+
+@media (max-width: 560px) {
+  .people-nearby-view {
+    padding-bottom: 13rem;
+  }
+
+  .people-nearby-view .nearby-state-active {
+    padding-bottom: 2rem;
+  }
+}
+
+/* =========================================================
+   NEARBY: PEOPLE PILLAR CONTINUITY
+========================================================= */
+
+body:has(.people-nearby-view) {
+  --nearby-page-purple: #7839c9;
+  --nearby-page-purple-bright: #a66cff;
+  --nearby-page-indigo: #303b9b;
+  --nearby-page-deep: #170d24;
+
+  background:
+    radial-gradient(
+      circle at 10% 18%,
+      rgba(120, 57, 201, 0.34),
+      transparent 34rem
+    ),
+    radial-gradient(
+      circle at 88% 48%,
+      rgba(48, 59, 155, 0.2),
+      transparent 38rem
+    ),
+    linear-gradient(180deg, #170d24 0%, #0d0b15 58%, #0b1018 100%);
+}
+
+/* =========================================================
+   NEARBY: FULL PAGE BACKGROUND
+========================================================= */
+
+body:has(.people-nearby-view) .app-shell {
+  background:
+    radial-gradient(
+      circle at 8% 22%,
+      rgba(120, 57, 201, 0.36),
+      transparent 32rem
+    ),
+    radial-gradient(
+      circle at 92% 55%,
+      rgba(48, 59, 155, 0.2),
+      transparent 40rem
+    ),
+    radial-gradient(
+      circle at 48% 92%,
+      rgba(32, 140, 138, 0.08),
+      transparent 36rem
+    ),
+    linear-gradient(180deg, #180f25, #0d0b15 58%, #0b1118);
+}
+
+/* =========================================================
+   NEARBY: INDUSTRY HEADER
+========================================================= */
+
+body:has(.people-nearby-view) .hero {
+  border-color: rgba(166, 108, 255, 0.28);
+
+  background:
+    radial-gradient(
+      circle at 12% 10%,
+      rgba(120, 57, 201, 0.15),
+      transparent 23rem
+    ),
+    linear-gradient(145deg, rgba(23, 20, 31, 0.97), rgba(12, 12, 18, 0.97));
+
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+/* People Lane becomes part of the People identity */
+
+body:has(.people-nearby-view) .hero .eyebrow,
+body:has(.people-nearby-view) .hero-top .eyebrow {
+  color: var(--nearby-page-purple-bright);
+}
+
+/* =========================================================
+   NEARBY: INFORMATION / HOME BUTTON
+========================================================= */
+
+body:has(.people-nearby-view) .home-logo-button,
+body:has(.people-nearby-view) .home-logo-button.active {
+  border-color: rgba(166, 108, 255, 0.68);
+
+  color: white;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.16),
+      transparent 34%
+    ),
+    linear-gradient(
+      145deg,
+      var(--nearby-page-purple),
+      var(--nearby-page-indigo)
+    );
+
+  box-shadow:
+    0 0 0 5px rgba(166, 108, 255, 0.14),
+    0 14px 28px rgba(47, 26, 93, 0.28);
+}
+
+body:has(.people-nearby-view) .home-logo-button:hover,
+body:has(.people-nearby-view) .home-logo-button:focus-visible {
+  border-color: var(--nearby-page-purple-bright);
+
+  box-shadow:
+    0 0 0 6px rgba(166, 108, 255, 0.18),
+    0 16px 32px rgba(47, 26, 93, 0.34);
+}
+
+/* =========================================================
+   NEARBY: BOTTOM NAVIGATION
+========================================================= */
+
+body:has(.people-nearby-view) .bottom-nav {
+  border-color: rgba(166, 108, 255, 0.2);
+
+  background: linear-gradient(
+    145deg,
+    rgba(19, 21, 24, 0.97),
+    rgba(14, 13, 21, 0.97)
+  );
+
+  box-shadow:
+    0 20px 42px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+/* Active People destination */
+
+body:has(.people-nearby-view) .bottom-nav .nav-item.active,
+body:has(.people-nearby-view) .bottom-nav .nav-link-item.active {
+  border-color: rgba(166, 108, 255, 0.64);
+
+  color: white;
+
+  background: linear-gradient(
+    135deg,
+    var(--nearby-page-purple),
+    var(--nearby-page-indigo)
+  );
+
+  box-shadow:
+    0 0 0 5px rgba(166, 108, 255, 0.13),
+    0 14px 28px rgba(47, 26, 93, 0.28);
+}
+
+/* =========================================================
+   PEOPLE VIEW: NEARBY — END
+========================================================= */

@@ -960,3 +960,461 @@ renderLoopState();
 /* =========================================================
    PEOPLE VIEW: EVENTS — END
 ========================================================= */
+
+/* =========================================================
+   INDUSTRY — NEARBY EXPLORATION
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  /* =======================================================
+     NEARBY: SELECTORS
+  ======================================================= */
+
+  const nearbyOffState = document.querySelector(
+    "[data-nearby-off-state]",
+  );
+
+  const nearbyActiveState = document.querySelector(
+    "[data-nearby-active-state]",
+  );
+
+  const audienceButtons = document.querySelectorAll(
+    "[data-nearby-audience]",
+  );
+
+  const socialStatusButtons = document.querySelectorAll(
+    "[data-nearby-social-status]",
+  );
+
+  const durationButtons = document.querySelectorAll(
+    "[data-nearby-duration]",
+  );
+
+  const startNearbyButton = document.querySelector(
+    "[data-start-nearby]",
+  );
+
+  const stopNearbyButton = document.querySelector(
+    "[data-stop-nearby]",
+  );
+
+  const setupSummary = document.querySelector(
+    "[data-nearby-setup-summary]",
+  );
+
+  const activeAudience = document.querySelector(
+    "[data-active-audience]",
+  );
+
+  const activeStatus = document.querySelector(
+    "[data-active-status]",
+  );
+
+  const activeExpiration = document.querySelector(
+    "[data-active-expiration]",
+  );
+
+  const nearbyStatusMessage = document.querySelector(
+    "[data-nearby-status-message]",
+  );
+
+  const messageButtons = document.querySelectorAll(
+    "[data-nearby-message]",
+  );
+
+  const viewNearbyEventButton = document.querySelector(
+    "[data-view-nearby-event]",
+  );
+
+  /* =======================================================
+     NEARBY: LABELS
+  ======================================================= */
+
+  const audienceLabels = {
+    hidden: "Hidden",
+    "my-loop": "My Loop",
+    "same-event": "People attending the same event",
+  };
+
+  const statusLabels = {
+    coffee: "Open to coffee",
+    "heading-out": "Heading out after work",
+    "industry-event": "At an Industry event",
+    "meeting-people": "Open to meeting people",
+    browsing: "Just browsing",
+  };
+
+  const durationLabels = {
+    "30-minutes": "30 minutes",
+    "1-hour": "1 hour",
+    "this-evening": "This evening",
+    "until-stopped": "Until you turn it off",
+  };
+
+  const expirationLabels = {
+    "30-minutes": "In 30 minutes",
+    "1-hour": "In 1 hour",
+    "this-evening": "At the end of this evening",
+    "until-stopped": "When you turn it off",
+  };
+
+  const nearbyPeopleNames = {
+    "jordan-reed": "Jordan Reed",
+    "maya-chen": "Maya Chen",
+  };
+
+  /* =======================================================
+     NEARBY: LOCAL STATE
+  ======================================================= */
+
+  const nearbyState = {
+    audience: "hidden",
+    socialStatus: null,
+    duration: null,
+    isSharing: false,
+  };
+
+  /* =======================================================
+     NEARBY: STATUS MESSAGE
+  ======================================================= */
+
+  function updateNearbyStatus(message) {
+    if (!nearbyStatusMessage) return;
+
+    nearbyStatusMessage.textContent = message;
+  }
+
+  /* =======================================================
+     NEARBY: BUTTON GROUP RENDERER
+  ======================================================= */
+
+  function renderSelectedButtons(
+    buttons,
+    selectedValue,
+    datasetKey,
+  ) {
+    buttons.forEach((button) => {
+      const isSelected =
+        button.dataset[datasetKey] === selectedValue;
+
+      button.classList.toggle("active", isSelected);
+
+      button.setAttribute(
+        "aria-pressed",
+        String(isSelected),
+      );
+    });
+  }
+
+  /* =======================================================
+     NEARBY: SETUP COMPLETION
+  ======================================================= */
+
+  function isNearbySetupComplete() {
+    return (
+      nearbyState.audience !== "hidden" &&
+      nearbyState.socialStatus !== null &&
+      nearbyState.duration !== null
+    );
+  }
+
+  /* =======================================================
+     NEARBY: SETUP SUMMARY
+  ======================================================= */
+
+  function renderNearbySetupSummary() {
+    const hasAudience =
+      nearbyState.audience !== "hidden";
+
+    const hasStatus =
+      nearbyState.socialStatus !== null;
+
+    const hasDuration =
+      nearbyState.duration !== null;
+
+    if (startNearbyButton) {
+      startNearbyButton.disabled =
+        !isNearbySetupComplete();
+    }
+
+    if (!setupSummary) return;
+
+    if (!hasAudience) {
+      setupSummary.textContent =
+        "Choose who can see you.";
+
+      return;
+    }
+
+    if (!hasStatus) {
+      setupSummary.textContent =
+        `${audienceLabels[nearbyState.audience]} selected. Choose what you are open to.`;
+
+      return;
+    }
+
+    if (!hasDuration) {
+      setupSummary.textContent =
+        `${statusLabels[nearbyState.socialStatus]} selected. Choose how long sharing should last.`;
+
+      return;
+    }
+
+    setupSummary.textContent =
+      `${audienceLabels[nearbyState.audience]} · ` +
+      `${statusLabels[nearbyState.socialStatus]} · ` +
+      `${durationLabels[nearbyState.duration]}`;
+  }
+
+  /* =======================================================
+     NEARBY: ACTIVE SUMMARY
+  ======================================================= */
+
+  function renderNearbyActiveSummary() {
+    if (activeAudience) {
+      activeAudience.textContent =
+        audienceLabels[nearbyState.audience];
+    }
+
+    if (activeStatus) {
+      activeStatus.textContent =
+        statusLabels[nearbyState.socialStatus];
+    }
+
+    if (activeExpiration) {
+      activeExpiration.textContent =
+        expirationLabels[nearbyState.duration];
+    }
+  }
+
+  /* =======================================================
+     NEARBY: COMPLETE OFF-STATE RENDER
+  ======================================================= */
+
+  function renderNearbySetup() {
+    renderSelectedButtons(
+      audienceButtons,
+      nearbyState.audience,
+      "nearbyAudience",
+    );
+
+    renderSelectedButtons(
+      socialStatusButtons,
+      nearbyState.socialStatus,
+      "nearbySocialStatus",
+    );
+
+    renderSelectedButtons(
+      durationButtons,
+      nearbyState.duration,
+      "nearbyDuration",
+    );
+
+    renderNearbySetupSummary();
+  }
+
+  /* =======================================================
+     NEARBY: AUDIENCE ACTIONS
+  ======================================================= */
+
+  audienceButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      nearbyState.audience =
+        button.dataset.nearbyAudience;
+
+      renderNearbySetup();
+
+      if (nearbyState.audience === "hidden") {
+        updateNearbyStatus(
+          "You remain hidden. Nothing is being shared.",
+        );
+
+        return;
+      }
+
+      updateNearbyStatus(
+        `${audienceLabels[nearbyState.audience]} can see your approximate area once sharing begins.`,
+      );
+    });
+  });
+
+  /* =======================================================
+     NEARBY: SOCIAL STATUS ACTIONS
+  ======================================================= */
+
+  socialStatusButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const selectedStatus =
+        button.dataset.nearbySocialStatus;
+
+      nearbyState.socialStatus =
+        nearbyState.socialStatus === selectedStatus
+          ? null
+          : selectedStatus;
+
+      renderNearbySetup();
+
+      if (!nearbyState.socialStatus) {
+        updateNearbyStatus(
+          "Your Nearby activity was cleared.",
+        );
+
+        return;
+      }
+
+      updateNearbyStatus(
+        `${statusLabels[nearbyState.socialStatus]} selected.`,
+      );
+    });
+  });
+
+  /* =======================================================
+     NEARBY: DURATION ACTIONS
+  ======================================================= */
+
+  durationButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const selectedDuration =
+        button.dataset.nearbyDuration;
+
+      nearbyState.duration =
+        nearbyState.duration === selectedDuration
+          ? null
+          : selectedDuration;
+
+      renderNearbySetup();
+
+      if (!nearbyState.duration) {
+        updateNearbyStatus(
+          "The sharing duration was cleared.",
+        );
+
+        return;
+      }
+
+      updateNearbyStatus(
+        `${durationLabels[nearbyState.duration]} selected.`,
+      );
+    });
+  });
+
+  /* =======================================================
+     NEARBY: START SHARING
+  ======================================================= */
+
+  startNearbyButton?.addEventListener(
+    "click",
+    () => {
+      if (!isNearbySetupComplete()) return;
+
+      nearbyState.isSharing = true;
+
+      renderNearbyActiveSummary();
+
+      if (nearbyOffState) {
+        nearbyOffState.hidden = true;
+      }
+
+      if (nearbyActiveState) {
+        nearbyActiveState.hidden = false;
+
+        nearbyActiveState.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+
+      updateNearbyStatus(
+        `Nearby is active. You are visible to ${
+          audienceLabels[nearbyState.audience]
+        } until ${
+          expirationLabels[
+            nearbyState.duration
+          ].toLowerCase()
+        }.`,
+      );
+    },
+  );
+
+  /* =======================================================
+     NEARBY: STOP SHARING
+  ======================================================= */
+
+  stopNearbyButton?.addEventListener(
+    "click",
+    () => {
+      nearbyState.audience = "hidden";
+      nearbyState.socialStatus = null;
+      nearbyState.duration = null;
+      nearbyState.isSharing = false;
+
+      if (nearbyActiveState) {
+        nearbyActiveState.hidden = true;
+      }
+
+      if (nearbyOffState) {
+        nearbyOffState.hidden = false;
+
+        nearbyOffState.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+
+      renderNearbySetup();
+
+      updateNearbyStatus(
+        "Nearby is off. Nothing is being shared.",
+      );
+    },
+  );
+
+  /* =======================================================
+     NEARBY: MESSAGE ACTIONS
+  ======================================================= */
+
+  messageButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const personId =
+        button.dataset.nearbyMessage;
+
+      const personName =
+        nearbyPeopleNames[personId] ||
+        "This person";
+
+      button.textContent = "Message ready";
+      button.classList.add("active");
+
+      updateNearbyStatus(
+        `A message to ${personName} is ready to begin.`,
+      );
+    });
+  });
+
+  /* =======================================================
+     NEARBY: VIEW EVENT ACTION
+  ======================================================= */
+
+  viewNearbyEventButton?.addEventListener(
+    "click",
+    () => {
+      viewNearbyEventButton.textContent =
+        "Opening event…";
+
+      updateNearbyStatus(
+        "Opening Sober Industry Coffee in Events.",
+      );
+
+      window.setTimeout(() => {
+        viewNearbyEventButton.textContent =
+          "View event";
+      }, 900);
+    },
+  );
+
+  /* =======================================================
+     NEARBY: INITIALIZE
+  ======================================================= */
+
+  renderNearbySetup();
+});
