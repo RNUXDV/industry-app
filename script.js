@@ -3412,35 +3412,36 @@ window.addEventListener("hashchange", applyHashSection);
     submitted: {
       status: "Submitted",
       nextStep: "Waiting for employer response",
-      guidance: "Your application has been submitted to Juniper House.",
+      guidance: (workplace) =>
+        `Your application has been submitted to ${workplace}.`,
     },
 
     viewed: {
       status: "Viewed",
       nextStep: "Employer is reviewing your application",
-      guidance: "Juniper House has viewed your application.",
+      guidance: (workplace) => `${workplace} has viewed your application.`,
     },
 
     "interview-requested": {
       status: "Interview requested",
       nextStep: "Review the interview details and respond",
-      guidance: "Juniper House would like to schedule an interview.",
+      guidance: (workplace) =>
+        `${workplace} would like to schedule an interview.`,
     },
 
     "offer-received": {
       status: "Offer received",
       nextStep: "Review the offer and decide your next step",
-      guidance: "Juniper House has sent you an employment offer.",
+      guidance: (workplace) => `${workplace} has sent you an employment offer.`,
     },
 
     "not-selected": {
       status: "Not selected",
       nextStep: "Continue exploring other opportunities",
-      guidance:
-        "Juniper House has completed its review and selected another candidate.",
+      guidance: (workplace) =>
+        `${workplace} has completed its review and selected another candidate.`,
     },
   };
-
   trackStatusControls.forEach((trackStatusControl) => {
     trackStatusControl.addEventListener("change", () => {
       const applicationCard = trackStatusControl.closest(
@@ -3470,8 +3471,7 @@ window.addEventListener("hashchange", applyHashSection);
       savedApplication.statusKey = selectedStatusKey;
       savedApplication.status = selectedStatus.status;
       savedApplication.nextStep = selectedStatus.nextStep;
-      savedApplication.guidance = selectedStatus.guidance.replace(
-        "Juniper House",
+      savedApplication.guidance = selectedStatus.guidance(
         applicationContext.workplace,
       );
       savedApplication.updatedAt = new Date().toISOString();
