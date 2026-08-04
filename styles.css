@@ -2848,6 +2848,26 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
     linear-gradient(135deg, #6c6252, #253d34 58%, #0b1713);
 }
 
+.jobs-detail-preview-northline {
+  background:
+    radial-gradient(
+      circle at 72% 22%,
+      rgba(116, 214, 198, 0.4),
+      transparent 32%
+    ),
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.05),
+      transparent 42%
+    ),
+    linear-gradient(
+      135deg,
+      #28524d,
+      #173833 58%,
+      #091b18
+    );
+}
+
 .jobs-detail-heading {
   padding: clamp(1.5rem, 6vw, 2.25rem);
 }
