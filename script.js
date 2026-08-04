@@ -2756,8 +2756,7 @@ window.addEventListener("hashchange", applyHashSection);
   if (!applicationPrepView) return;
 
   /* Temporary controls used while building Industry */
-  const INDUSTRY_TRACK_DEV_MODE = false;
-
+  const INDUSTRY_TRACK_DEV_MODE = true;
   /* Resume readiness elements */
   const resumeItem = applicationPrepView.querySelector(
     '[data-readiness-item="resume"]',
@@ -2890,7 +2889,7 @@ window.addEventListener("hashchange", applyHashSection);
    employer updates during development.
 ------------------------------------------------ */
 
-  const trackStatusControl = document.querySelector(
+  const trackStatusControls = document.querySelectorAll(
     "[data-track-status-control]",
   );
 
@@ -3126,14 +3125,29 @@ window.addEventListener("hashchange", applyHashSection);
       trackDevControl.hidden = !INDUSTRY_TRACK_DEV_MODE;
     }
 
-    if (trackStatusControl) {
+    /* Keep every workplace DEV control synchronized */
+    trackStatusControls.forEach((trackStatusControl) => {
       trackStatusControl.disabled = !INDUSTRY_TRACK_DEV_MODE;
-    }
 
-    /* Keep the DEV dropdown synchronized with saved state */
-    if (trackStatusControl) {
-      trackStatusControl.value = applicationState.statusKey;
-    }
+      const applicationCard = trackStatusControl.closest(
+        "[data-track-application]",
+      );
+
+      if (!applicationCard) return;
+
+      const contextKey =
+        applicationCard.dataset.trackApplication === "northline"
+          ? "northline-server"
+          : "juniper-house-server";
+
+      const applicationContext = applicationContexts[contextKey];
+
+      if (!applicationContext) return;
+
+      const savedApplication = loadApplicationState(applicationContext);
+
+      trackStatusControl.value = savedApplication.statusKey || "submitted";
+    });
 
     /* ------------------------------------------------
      APPLICATION SCREEN MODE
@@ -3411,28 +3425,129 @@ window.addEventListener("hashchange", applyHashSection);
         "Juniper House has completed its review and selected another candidate.",
     },
   };
-  if (trackStatusControl) {
+
+  trackStatusControls.forEach((trackStatusControl) => {
     trackStatusControl.addEventListener("change", () => {
+      const applicationCard = trackStatusControl.closest(
+        "[data-track-application]",
+      );
+
+      if (!applicationCard) return;
+
+      const contextKey =
+        applicationCard.dataset.trackApplication === "northline"
+          ? "northline-server"
+          : "juniper-house-server";
+
+      const applicationContext = applicationContexts[contextKey];
+
+      if (!applicationContext) return;
+
       const selectedStatusKey = trackStatusControl.value;
       const selectedStatus = trackStatusOptions[selectedStatusKey];
 
-      /* Stop if the selected option is not recognized */
       if (!selectedStatus) return;
 
-      /* Update the current application state */
-      applicationState.statusKey = selectedStatusKey;
-      applicationState.status = selectedStatus.status;
-      applicationState.nextStep = selectedStatus.nextStep;
-      applicationState.guidance = selectedStatus.guidance;
-      applicationState.updatedAt = new Date().toISOString();
+      const savedApplication = loadApplicationState(applicationContext);
 
-      /* Save the employer update in the browser */
-      saveApplicationState();
+      savedApplication.role = applicationContext.role;
+      savedApplication.workplace = applicationContext.workplace;
+      savedApplication.statusKey = selectedStatusKey;
+      savedApplication.status = selectedStatus.status;
+      savedApplication.nextStep = selectedStatus.nextStep;
+      savedApplication.guidance = selectedStatus.guidance.replace(
+        "Juniper House",
+        applicationContext.workplace,
+      );
+      savedApplication.updatedAt = new Date().toISOString();
 
-      /* Redraw the Track application card */
-      updateApplicationInterface();
+      localStorage.setItem(
+        applicationContext.storageKey,
+        JSON.stringify(savedApplication),
+      );
+
+      const statusText = applicationCard.querySelector(
+        "[data-track-application-status]",
+      );
+
+      const nextStepText = applicationCard.querySelector(
+        "[data-track-application-next-step]",
+      );
+
+      const guidanceText = applicationCard.querySelector(
+        "[data-track-guidance]",
+      );
+
+      const statusBadge = applicationCard.querySelector(
+        "[data-track-application-badge]",
+      );
+
+      const updatedRow = applicationCard.querySelector(
+        "[data-track-updated-row]",
+      );
+
+      const updatedText = applicationCard.querySelector(
+        "[data-track-application-updated]",
+      );
+
+      const actionButton = applicationCard.querySelector(
+        "[data-track-application-action]",
+      );
+
+      if (statusText) {
+        statusText.textContent = savedApplication.status;
+      }
+
+      if (nextStepText) {
+        nextStepText.textContent = savedApplication.nextStep;
+      }
+
+      if (guidanceText) {
+        guidanceText.textContent = savedApplication.guidance;
+      }
+
+      if (statusBadge) {
+        statusBadge.textContent = savedApplication.status;
+        statusBadge.dataset.trackStatus = savedApplication.statusKey;
+      }
+
+      const formattedUpdatedAt = formatApplicationUpdatedAt(
+        savedApplication.updatedAt,
+      );
+
+      if (updatedRow) {
+        updatedRow.hidden = !formattedUpdatedAt;
+      }
+
+      if (updatedText) {
+        updatedText.textContent =
+          formattedUpdatedAt || "Status date unavailable";
+      }
+
+      if (actionButton) {
+        const workplaceViewPrefix =
+          applicationContext.workplace === "Northline"
+            ? "northline"
+            : "juniper";
+
+        let actionDestination = "juniper-application-prep";
+
+        if (selectedStatusKey === "interview-requested") {
+          actionDestination = `${workplaceViewPrefix}-interview`;
+        } else if (selectedStatusKey === "offer-received") {
+          actionDestination = `${workplaceViewPrefix}-offer`;
+        } else if (selectedStatusKey === "not-selected") {
+          actionDestination = "explore-intro";
+        }
+
+        actionButton.textContent =
+          trackApplicationActionLabels[selectedStatusKey] || "View application";
+
+        actionButton.dataset.openJobsView = actionDestination;
+        actionButton.dataset.applicationContext = contextKey;
+      }
     });
-  }
+  });
 
   document.addEventListener("click", (event) => {
     const applicationTrigger = event.target.closest(
