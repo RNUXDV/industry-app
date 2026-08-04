@@ -2756,7 +2756,7 @@ window.addEventListener("hashchange", applyHashSection);
   if (!applicationPrepView) return;
 
   /* Temporary controls used while building Industry */
-  const INDUSTRY_TRACK_DEV_MODE = true;
+  const INDUSTRY_TRACK_DEV_MODE = false;
   /* Resume readiness elements */
   const resumeItem = applicationPrepView.querySelector(
     '[data-readiness-item="resume"]',
@@ -2893,7 +2893,9 @@ window.addEventListener("hashchange", applyHashSection);
     "[data-track-status-control]",
   );
 
-  const trackDevControl = document.querySelector("[data-track-dev-control]");
+  const trackDevControls = document.querySelectorAll(
+    "[data-track-dev-control]",
+  );
 
   /* ----------------------------------------------
      STEP 2: CREATE THE APPLICATION STATE
@@ -3121,9 +3123,9 @@ window.addEventListener("hashchange", applyHashSection);
     }
 
     /* Show temporary employer controls only in development mode */
-    if (trackDevControl) {
+    trackDevControls.forEach((trackDevControl) => {
       trackDevControl.hidden = !INDUSTRY_TRACK_DEV_MODE;
-    }
+    });
 
     /* Keep every workplace DEV control synchronized */
     trackStatusControls.forEach((trackStatusControl) => {
@@ -3648,6 +3650,154 @@ window.addEventListener("hashchange", applyHashSection);
     }
   }
 
+  const trackApplicationActionLabels = {
+  submitted: "View application",
+  viewed: "View application",
+  "interview-requested": "Review interview",
+  "offer-received": "Review offer",
+  "not-selected": "Explore opportunities",
+};
+
+function formatTrackedApplicationUpdatedAt(timestamp) {
+  if (!timestamp) return "";
+
+  const updatedDate = new Date(timestamp);
+
+  if (Number.isNaN(updatedDate.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(updatedDate);
+}
+
+function renderTrackedApplicationCard(
+  applicationCard,
+  savedApplication,
+  contextKey,
+) {
+  if (!applicationCard || !savedApplication) return;
+
+  const workplace =
+    savedApplication.workplace ||
+    (contextKey === "northline-server" ? "Northline" : "Juniper House");
+
+  const statusKey = savedApplication.statusKey || "submitted";
+
+  const fallbackGuidance = {
+    submitted: `Your application has been submitted to ${workplace}.`,
+    viewed: `${workplace} has viewed your application.`,
+    "interview-requested": `${workplace} would like to schedule an interview.`,
+    "offer-received": `${workplace} has sent you an employment offer.`,
+    "not-selected": `${workplace} has completed its review and selected another candidate.`,
+  };
+
+  const fallbackNextSteps = {
+    submitted: "Waiting for employer response",
+    viewed: "Employer is reviewing your application",
+    "interview-requested": "Review the interview details and respond",
+    "offer-received": "Review the offer and decide your next step",
+    "not-selected": "Continue exploring other opportunities",
+  };
+
+  const statusText = applicationCard.querySelector(
+    "[data-track-application-status]",
+  );
+
+  const nextStepText = applicationCard.querySelector(
+    "[data-track-application-next-step]",
+  );
+
+  const guidanceText = applicationCard.querySelector(
+    "[data-track-guidance]",
+  );
+
+  const statusBadge = applicationCard.querySelector(
+    "[data-track-application-badge]",
+  );
+
+  const updatedRow = applicationCard.querySelector(
+    "[data-track-updated-row]",
+  );
+
+  const updatedText = applicationCard.querySelector(
+    "[data-track-application-updated]",
+  );
+
+  const statusControl = applicationCard.querySelector(
+    "[data-track-status-control]",
+  );
+
+  const actionButton = applicationCard.querySelector(
+    "[data-track-application-action]",
+  );
+
+  if (statusText) {
+    statusText.textContent = savedApplication.status || "Submitted";
+  }
+
+  if (nextStepText) {
+    nextStepText.textContent =
+      savedApplication.nextStep ||
+      fallbackNextSteps[statusKey] ||
+      fallbackNextSteps.submitted;
+  }
+
+  if (guidanceText) {
+    guidanceText.textContent = savedApplication.guidance
+      ? savedApplication.guidance.replace("Juniper House", workplace)
+      : fallbackGuidance[statusKey] || fallbackGuidance.submitted;
+  }
+
+  if (statusBadge) {
+    statusBadge.textContent = savedApplication.status || "Submitted";
+    statusBadge.dataset.trackStatus = statusKey;
+  }
+
+  if (statusControl) {
+    statusControl.value = statusKey;
+  }
+
+  const formattedUpdatedAt = formatTrackedApplicationUpdatedAt(
+    savedApplication.updatedAt,
+  );
+
+  if (updatedRow) {
+    updatedRow.hidden = !formattedUpdatedAt;
+  }
+
+  if (updatedText) {
+    updatedText.textContent =
+      formattedUpdatedAt || "Status date unavailable";
+  }
+
+  if (actionButton) {
+    const workplaceViewPrefix =
+      contextKey === "northline-server" ? "northline" : "juniper";
+
+    let actionDestination = "juniper-application-prep";
+
+    if (statusKey === "interview-requested") {
+      actionDestination = `${workplaceViewPrefix}-interview`;
+    } else if (statusKey === "offer-received") {
+      actionDestination = `${workplaceViewPrefix}-offer`;
+    } else if (statusKey === "not-selected") {
+      actionDestination = "explore-intro";
+    }
+
+    actionButton.textContent =
+      trackApplicationActionLabels[statusKey] || "View application";
+
+    actionButton.dataset.openJobsView = actionDestination;
+    actionButton.dataset.applicationContext = contextKey;
+  }
+}
+
   function updateTrackApplications() {
     const juniperApplication = loadTrackedApplication(
       TRACK_APPLICATION_STORAGE_KEYS.juniper,
@@ -3674,13 +3824,28 @@ window.addEventListener("hashchange", applyHashSection);
 
     if (juniperApplicationCard) {
       juniperApplicationCard.hidden = !juniperWasSubmitted;
+
+      if (juniperWasSubmitted) {
+        renderTrackedApplicationCard(
+          juniperApplicationCard,
+          juniperApplication,
+          "juniper-house-server",
+        );
+      }
     }
 
     if (northlineApplicationCard) {
       northlineApplicationCard.hidden = !northlineWasSubmitted;
+
+      if (northlineWasSubmitted) {
+        renderTrackedApplicationCard(
+          northlineApplicationCard,
+          northlineApplication,
+          "northline-server",
+        );
+      }
     }
   }
-
   updateTrackApplications();
 
   jobsSection.addEventListener("click", (event) => {
