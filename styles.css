@@ -2496,6 +2496,7 @@ body:has(.people-loop-view) .home-logo-button {
 
 .bottom-nav {
   position: fixed;
+  z-index: 40;
   left: 50%;
   bottom: 14px;
   transform: translateX(-50%);

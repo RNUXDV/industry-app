@@ -970,57 +970,37 @@ document.addEventListener("DOMContentLoaded", () => {
      NEARBY: SELECTORS
   ======================================================= */
 
-  const nearbyOffState = document.querySelector(
-    "[data-nearby-off-state]",
-  );
+  const nearbyOffState = document.querySelector("[data-nearby-off-state]");
 
   const nearbyActiveState = document.querySelector(
     "[data-nearby-active-state]",
   );
 
-  const audienceButtons = document.querySelectorAll(
-    "[data-nearby-audience]",
-  );
+  const audienceButtons = document.querySelectorAll("[data-nearby-audience]");
 
   const socialStatusButtons = document.querySelectorAll(
     "[data-nearby-social-status]",
   );
 
-  const durationButtons = document.querySelectorAll(
-    "[data-nearby-duration]",
-  );
+  const durationButtons = document.querySelectorAll("[data-nearby-duration]");
 
-  const startNearbyButton = document.querySelector(
-    "[data-start-nearby]",
-  );
+  const startNearbyButton = document.querySelector("[data-start-nearby]");
 
-  const stopNearbyButton = document.querySelector(
-    "[data-stop-nearby]",
-  );
+  const stopNearbyButton = document.querySelector("[data-stop-nearby]");
 
-  const setupSummary = document.querySelector(
-    "[data-nearby-setup-summary]",
-  );
+  const setupSummary = document.querySelector("[data-nearby-setup-summary]");
 
-  const activeAudience = document.querySelector(
-    "[data-active-audience]",
-  );
+  const activeAudience = document.querySelector("[data-active-audience]");
 
-  const activeStatus = document.querySelector(
-    "[data-active-status]",
-  );
+  const activeStatus = document.querySelector("[data-active-status]");
 
-  const activeExpiration = document.querySelector(
-    "[data-active-expiration]",
-  );
+  const activeExpiration = document.querySelector("[data-active-expiration]");
 
   const nearbyStatusMessage = document.querySelector(
     "[data-nearby-status-message]",
   );
 
-  const messageButtons = document.querySelectorAll(
-    "[data-nearby-message]",
-  );
+  const messageButtons = document.querySelectorAll("[data-nearby-message]");
 
   const viewNearbyEventButton = document.querySelector(
     "[data-view-nearby-event]",
@@ -1088,21 +1068,13 @@ document.addEventListener("DOMContentLoaded", () => {
      NEARBY: BUTTON GROUP RENDERER
   ======================================================= */
 
-  function renderSelectedButtons(
-    buttons,
-    selectedValue,
-    datasetKey,
-  ) {
+  function renderSelectedButtons(buttons, selectedValue, datasetKey) {
     buttons.forEach((button) => {
-      const isSelected =
-        button.dataset[datasetKey] === selectedValue;
+      const isSelected = button.dataset[datasetKey] === selectedValue;
 
       button.classList.toggle("active", isSelected);
 
-      button.setAttribute(
-        "aria-pressed",
-        String(isSelected),
-      );
+      button.setAttribute("aria-pressed", String(isSelected));
     });
   }
 
@@ -1123,39 +1095,32 @@ document.addEventListener("DOMContentLoaded", () => {
   ======================================================= */
 
   function renderNearbySetupSummary() {
-    const hasAudience =
-      nearbyState.audience !== "hidden";
+    const hasAudience = nearbyState.audience !== "hidden";
 
-    const hasStatus =
-      nearbyState.socialStatus !== null;
+    const hasStatus = nearbyState.socialStatus !== null;
 
-    const hasDuration =
-      nearbyState.duration !== null;
+    const hasDuration = nearbyState.duration !== null;
 
     if (startNearbyButton) {
-      startNearbyButton.disabled =
-        !isNearbySetupComplete();
+      startNearbyButton.disabled = !isNearbySetupComplete();
     }
 
     if (!setupSummary) return;
 
     if (!hasAudience) {
-      setupSummary.textContent =
-        "Choose who can see you.";
+      setupSummary.textContent = "Choose who can see you.";
 
       return;
     }
 
     if (!hasStatus) {
-      setupSummary.textContent =
-        `${audienceLabels[nearbyState.audience]} selected. Choose what you are open to.`;
+      setupSummary.textContent = `${audienceLabels[nearbyState.audience]} selected. Choose what you are open to.`;
 
       return;
     }
 
     if (!hasDuration) {
-      setupSummary.textContent =
-        `${statusLabels[nearbyState.socialStatus]} selected. Choose how long sharing should last.`;
+      setupSummary.textContent = `${statusLabels[nearbyState.socialStatus]} selected. Choose how long sharing should last.`;
 
       return;
     }
@@ -1172,18 +1137,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderNearbyActiveSummary() {
     if (activeAudience) {
-      activeAudience.textContent =
-        audienceLabels[nearbyState.audience];
+      activeAudience.textContent = audienceLabels[nearbyState.audience];
     }
 
     if (activeStatus) {
-      activeStatus.textContent =
-        statusLabels[nearbyState.socialStatus];
+      activeStatus.textContent = statusLabels[nearbyState.socialStatus];
     }
 
     if (activeExpiration) {
-      activeExpiration.textContent =
-        expirationLabels[nearbyState.duration];
+      activeExpiration.textContent = expirationLabels[nearbyState.duration];
     }
   }
 
@@ -1219,15 +1181,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   audienceButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      nearbyState.audience =
-        button.dataset.nearbyAudience;
+      nearbyState.audience = button.dataset.nearbyAudience;
 
       renderNearbySetup();
 
       if (nearbyState.audience === "hidden") {
-        updateNearbyStatus(
-          "You remain hidden. Nothing is being shared.",
-        );
+        updateNearbyStatus("You remain hidden. Nothing is being shared.");
 
         return;
       }
@@ -1244,27 +1203,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   socialStatusButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      const selectedStatus =
-        button.dataset.nearbySocialStatus;
+      const selectedStatus = button.dataset.nearbySocialStatus;
 
       nearbyState.socialStatus =
-        nearbyState.socialStatus === selectedStatus
-          ? null
-          : selectedStatus;
+        nearbyState.socialStatus === selectedStatus ? null : selectedStatus;
 
       renderNearbySetup();
 
       if (!nearbyState.socialStatus) {
-        updateNearbyStatus(
-          "Your Nearby activity was cleared.",
-        );
+        updateNearbyStatus("Your Nearby activity was cleared.");
 
         return;
       }
 
-      updateNearbyStatus(
-        `${statusLabels[nearbyState.socialStatus]} selected.`,
-      );
+      updateNearbyStatus(`${statusLabels[nearbyState.socialStatus]} selected.`);
     });
   });
 
@@ -1274,27 +1226,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   durationButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      const selectedDuration =
-        button.dataset.nearbyDuration;
+      const selectedDuration = button.dataset.nearbyDuration;
 
       nearbyState.duration =
-        nearbyState.duration === selectedDuration
-          ? null
-          : selectedDuration;
+        nearbyState.duration === selectedDuration ? null : selectedDuration;
 
       renderNearbySetup();
 
       if (!nearbyState.duration) {
-        updateNearbyStatus(
-          "The sharing duration was cleared.",
-        );
+        updateNearbyStatus("The sharing duration was cleared.");
 
         return;
       }
 
-      updateNearbyStatus(
-        `${durationLabels[nearbyState.duration]} selected.`,
-      );
+      updateNearbyStatus(`${durationLabels[nearbyState.duration]} selected.`);
     });
   });
 
@@ -1302,72 +1247,60 @@ document.addEventListener("DOMContentLoaded", () => {
      NEARBY: START SHARING
   ======================================================= */
 
-  startNearbyButton?.addEventListener(
-    "click",
-    () => {
-      if (!isNearbySetupComplete()) return;
+  startNearbyButton?.addEventListener("click", () => {
+    if (!isNearbySetupComplete()) return;
 
-      nearbyState.isSharing = true;
+    nearbyState.isSharing = true;
 
-      renderNearbyActiveSummary();
+    renderNearbyActiveSummary();
 
-      if (nearbyOffState) {
-        nearbyOffState.hidden = true;
-      }
+    if (nearbyOffState) {
+      nearbyOffState.hidden = true;
+    }
 
-      if (nearbyActiveState) {
-        nearbyActiveState.hidden = false;
+    if (nearbyActiveState) {
+      nearbyActiveState.hidden = false;
 
-        nearbyActiveState.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
+      nearbyActiveState.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
 
-      updateNearbyStatus(
-        `Nearby is active. You are visible to ${
-          audienceLabels[nearbyState.audience]
-        } until ${
-          expirationLabels[
-            nearbyState.duration
-          ].toLowerCase()
-        }.`,
-      );
-    },
-  );
+    updateNearbyStatus(
+      `Nearby is active. You are visible to ${
+        audienceLabels[nearbyState.audience]
+      } until ${expirationLabels[nearbyState.duration].toLowerCase()}.`,
+    );
+  });
 
   /* =======================================================
      NEARBY: STOP SHARING
   ======================================================= */
 
-  stopNearbyButton?.addEventListener(
-    "click",
-    () => {
-      nearbyState.audience = "hidden";
-      nearbyState.socialStatus = null;
-      nearbyState.duration = null;
-      nearbyState.isSharing = false;
+  stopNearbyButton?.addEventListener("click", () => {
+    nearbyState.audience = "hidden";
+    nearbyState.socialStatus = null;
+    nearbyState.duration = null;
+    nearbyState.isSharing = false;
 
-      if (nearbyActiveState) {
-        nearbyActiveState.hidden = true;
-      }
+    if (nearbyActiveState) {
+      nearbyActiveState.hidden = true;
+    }
 
-      if (nearbyOffState) {
-        nearbyOffState.hidden = false;
+    if (nearbyOffState) {
+      nearbyOffState.hidden = false;
 
-        nearbyOffState.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
+      nearbyOffState.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
 
-      renderNearbySetup();
+    renderNearbySetup();
 
-      updateNearbyStatus(
-        "Nearby is off. Nothing is being shared.",
-      );
-    },
-  );
+    updateNearbyStatus("Nearby is off. Nothing is being shared.");
+  });
 
   /* =======================================================
      NEARBY: MESSAGE ACTIONS
@@ -1375,19 +1308,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   messageButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      const personId =
-        button.dataset.nearbyMessage;
+      const personId = button.dataset.nearbyMessage;
 
-      const personName =
-        nearbyPeopleNames[personId] ||
-        "This person";
+      const personName = nearbyPeopleNames[personId] || "This person";
 
       button.textContent = "Message ready";
       button.classList.add("active");
 
-      updateNearbyStatus(
-        `A message to ${personName} is ready to begin.`,
-      );
+      updateNearbyStatus(`A message to ${personName} is ready to begin.`);
     });
   });
 
@@ -1395,22 +1323,15 @@ document.addEventListener("DOMContentLoaded", () => {
      NEARBY: VIEW EVENT ACTION
   ======================================================= */
 
-  viewNearbyEventButton?.addEventListener(
-    "click",
-    () => {
-      viewNearbyEventButton.textContent =
-        "Opening event…";
+  viewNearbyEventButton?.addEventListener("click", () => {
+    viewNearbyEventButton.textContent = "Opening event…";
 
-      updateNearbyStatus(
-        "Opening Sober Industry Coffee in Events.",
-      );
+    updateNearbyStatus("Opening Sober Industry Coffee in Events.");
 
-      window.setTimeout(() => {
-        viewNearbyEventButton.textContent =
-          "View event";
-      }, 900);
-    },
-  );
+    window.setTimeout(() => {
+      viewNearbyEventButton.textContent = "View event";
+    }, 900);
+  });
 
   /* =======================================================
      NEARBY: INITIALIZE
@@ -1418,3 +1339,355 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderNearbySetup();
 });
+
+/* =========================================================
+   PEOPLE RESOURCES: CATEGORY FILTERS
+========================================================= */
+
+(() => {
+  const resourcesView = document.querySelector(".people-resources-view");
+
+  // This file also runs on My Loop, Events, and Nearby.
+  // Stop here when the current page is not Resources.
+  if (!resourcesView) return;
+
+  const filterButtons = Array.from(
+    resourcesView.querySelectorAll("[data-resource-filter]"),
+  );
+
+  const resourceCards = Array.from(
+    resourcesView.querySelectorAll("[data-resource-card]"),
+  );
+
+  const statusMessage = resourcesView.querySelector("[data-resource-status]");
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const selectedFilter = button.dataset.resourceFilter;
+
+      filterButtons.forEach((filterButton) => {
+        const isSelected = filterButton === button;
+
+        filterButton.classList.toggle("active", isSelected);
+        filterButton.setAttribute("aria-pressed", String(isSelected));
+      });
+
+      resourceCards.forEach((card) => {
+        const cardTags = (card.dataset.resourceTags || "")
+          .split(/\s+/)
+          .filter(Boolean);
+
+        const shouldShow =
+          selectedFilter === "all" || cardTags.includes(selectedFilter);
+
+        card.hidden = !shouldShow;
+      });
+
+      if (statusMessage) {
+        const filterName = button.textContent.trim();
+
+        statusMessage.textContent =
+          selectedFilter === "all"
+            ? "Showing all support areas. Nothing has been shared."
+            : `Showing ${filterName} support. Nothing has been shared.`;
+      }
+    });
+  });
+})();
+
+/* =========================================================
+   PEOPLE RESOURCES: SUPPORT PREVIEW
+========================================================= */
+
+(() => {
+  const resourcesView = document.querySelector(".people-resources-view");
+
+  // people-pages.js also runs on the other People screens.
+  if (!resourcesView) return;
+
+  const openButtons = Array.from(
+    resourcesView.querySelectorAll("[data-resource-open]"),
+  );
+
+  const previewPanel = resourcesView.querySelector("[data-resource-preview]");
+
+  const previewEyebrow = previewPanel?.querySelector(
+    ".resource-preview-heading .eyebrow",
+  );
+
+  const previewTitle = resourcesView.querySelector(
+    "[data-resource-preview-title]",
+  );
+
+  const previewDescription = resourcesView.querySelector(
+    "[data-resource-preview-description]",
+  );
+
+  const previewPrivacy = resourcesView.querySelector(
+    "[data-resource-preview-privacy]",
+  );
+
+  const previewAvailability = resourcesView.querySelector(
+    "[data-resource-preview-availability]",
+  );
+
+  const previewCost = resourcesView.querySelector(
+    "[data-resource-preview-cost]",
+  );
+
+  const previewCloseButton = resourcesView.querySelector(
+    "[data-resource-preview-close]",
+  );
+
+  const previewActionButton = resourcesView.querySelector(
+    ".resource-preview-action",
+  );
+
+  const statusMessage = resourcesView.querySelector("[data-resource-status]");
+
+  if (
+    !previewPanel ||
+    !previewTitle ||
+    !previewDescription ||
+    !previewPrivacy ||
+    !previewAvailability ||
+    !previewCost
+  ) {
+    return;
+  }
+
+  const resourcePreviewContent = {
+    "urgent-safety": {
+      eyebrow: "Immediate safety",
+      title: "Move toward safety first",
+      description:
+        "Identify a safer location, a trusted person, and the next immediate step. This prototype does not contact anyone or share your activity.",
+      privacy: "Private",
+      availability: "Immediate planning",
+      cost: "Varies",
+      actionLabel: "Review urgent support",
+    },
+
+    "mental-health-support": {
+      eyebrow: "Mental health",
+      title: "Mental health support",
+      description:
+        "Explore confidential support for anxiety, grief, depression, emotional overload, and stress that feels difficult to manage alone.",
+      privacy: "Confidential options",
+      availability: "Call, text, or online",
+      cost: "Free options",
+      actionLabel: "Continue to support",
+    },
+
+    "burnout-reset": {
+      eyebrow: "Burnout",
+      title: "Burnout reset",
+      description:
+        "Explore self-guided tools, local support spaces, boundary-setting, decompression, and ways to rebuild energy outside work.",
+      privacy: "Private",
+      availability: "Self-guided or local",
+      cost: "Free and low-cost",
+      actionLabel: "Continue to support",
+    },
+
+    "workplace-harm": {
+      eyebrow: "Workplace harm",
+      title: "Harassment and unsafe workplaces",
+      description:
+        "Review ways to document what happened, prepare information, explore reporting choices, and find confidential guidance.",
+      privacy: "Confidential guidance",
+      availability: "Reporting and support",
+      cost: "Free guidance",
+      actionLabel: "Continue to support",
+    },
+
+    "recovery-support": {
+      eyebrow: "Recovery",
+      title: "Addiction and recovery support",
+      description:
+        "Explore nonjudgmental peer, community, and professional support for substance use, relapse concerns, and beginning recovery.",
+      privacy: "Private options",
+      availability: "Peer and professional",
+      cost: "Free options",
+      actionLabel: "Continue to support",
+    },
+
+    "pay-rights": {
+      eyebrow: "Pay & rights",
+      title: "Wages, tips, breaks, and worker rights",
+      description:
+        "Prepare information and explore guidance for missing wages, withheld tips, unpaid work, scheduling concerns, and workplace rights.",
+      privacy: "Private preparation",
+      availability: "Self-guided and local",
+      cost: "Free guidance",
+      actionLabel: "Continue to support",
+    },
+
+    "safety-planning": {
+      eyebrow: "Safety",
+      title: "Make a private safety plan",
+      description:
+        "Prepare a safer exit, identify trusted contacts, preserve important information, and organize the next steps privately.",
+      privacy: "Private checklist",
+      availability: "Use anytime",
+      cost: "Free",
+      actionLabel: "Continue to support",
+    },
+  };
+
+  let activeResourceTitle = "";
+
+  function openResourcePreview(resourceId) {
+    const resource = resourcePreviewContent[resourceId];
+
+    if (!resource) return;
+
+    activeResourceTitle = resource.title;
+
+    if (previewEyebrow) {
+      previewEyebrow.textContent = resource.eyebrow;
+    }
+
+    previewTitle.textContent = resource.title;
+    previewDescription.textContent = resource.description;
+    previewPrivacy.textContent = resource.privacy;
+    previewAvailability.textContent = resource.availability;
+    previewCost.textContent = resource.cost;
+
+    if (previewActionButton) {
+      previewActionButton.textContent = resource.actionLabel;
+    }
+
+    previewPanel.classList.toggle("is-urgent", resourceId === "urgent-safety");
+
+    previewPanel.hidden = false;
+
+    if (statusMessage) {
+      statusMessage.textContent = `Previewing ${resource.title}. Nothing has been shared.`;
+    }
+
+    requestAnimationFrame(() => {
+      previewPanel.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+  }
+
+  function closeResourcePreview() {
+    previewPanel.hidden = true;
+    previewPanel.classList.remove("is-urgent");
+    activeResourceTitle = "";
+
+    if (statusMessage) {
+      statusMessage.textContent =
+        "Browse support privately. Nothing has been shared.";
+    }
+  }
+
+  openButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      openResourcePreview(button.dataset.resourceOpen);
+    });
+  });
+
+  previewCloseButton?.addEventListener("click", closeResourcePreview);
+
+  previewActionButton?.addEventListener("click", () => {
+    if (!activeResourceTitle || !statusMessage) return;
+
+    statusMessage.textContent = `${activeResourceTitle} is currently represented as a prototype. No information has been shared.`;
+  });
+})();
+
+/* =========================================================
+   PEOPLE RESOURCES: PRIVATE SAVES
+========================================================= */
+
+(() => {
+  const resourcesView = document.querySelector(".people-resources-view");
+
+  if (!resourcesView) return;
+
+  const STORAGE_KEY = "industry-v2-private-resources";
+
+  const saveButtons = Array.from(
+    resourcesView.querySelectorAll("[data-resource-save]"),
+  );
+
+  const statusMessage = resourcesView.querySelector("[data-resource-status]");
+
+  function loadSavedResources() {
+    try {
+      const storedValue = localStorage.getItem(STORAGE_KEY);
+
+      if (!storedValue) return [];
+
+      const parsedValue = JSON.parse(storedValue);
+
+      return Array.isArray(parsedValue) ? parsedValue : [];
+    } catch (error) {
+      console.warn("Unable to load saved resources:", error);
+      return [];
+    }
+  }
+
+  function storeSavedResources(savedResources) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedResources));
+    } catch (error) {
+      console.warn("Unable to save resources:", error);
+    }
+  }
+
+  function getResourceTitle(button) {
+    const resourceCard = button.closest("[data-resource-card]");
+    const resourceHeading = resourceCard?.querySelector("h3");
+
+    return resourceHeading?.textContent.trim() || "Resource";
+  }
+
+  function updateSaveButton(button, isSaved) {
+    button.classList.toggle("is-saved", isSaved);
+    button.setAttribute("aria-pressed", String(isSaved));
+    button.textContent = isSaved ? "Saved privately" : "Save privately";
+  }
+
+  let savedResources = loadSavedResources();
+
+  saveButtons.forEach((button) => {
+    const resourceId = button.dataset.resourceSave;
+    const isSaved = savedResources.includes(resourceId);
+
+    updateSaveButton(button, isSaved);
+
+    button.addEventListener("click", () => {
+      const resourceTitle = getResourceTitle(button);
+      const resourceIsSaved = savedResources.includes(resourceId);
+
+      if (resourceIsSaved) {
+        savedResources = savedResources.filter(
+          (savedId) => savedId !== resourceId,
+        );
+
+        updateSaveButton(button, false);
+
+        if (statusMessage) {
+          statusMessage.textContent = `${resourceTitle} was removed from your private saves.`;
+        }
+      } else {
+        savedResources.push(resourceId);
+
+        savedResources = [...new Set(savedResources)];
+
+        updateSaveButton(button, true);
+
+        if (statusMessage) {
+          statusMessage.textContent = `${resourceTitle} was saved privately on this device.`;
+        }
+      }
+
+      storeSavedResources(savedResources);
+    });
+  });
+})();

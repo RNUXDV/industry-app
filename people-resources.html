@@ -1,107 +1,646 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Industry - Resources</title>
+
+    <title>Industry — Resources</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="resources.css" />
   </head>
+
   <body data-theme="dark">
-    <div class="app-shell">
-      <header class="hero">
-        <div class="hero-top">
-          <p class="eyebrow">People lane</p>
-          <button class="theme-toggle" id="theme-toggle-button" type="button">Light / Dark: Dark</button>
-        </div>
-        <h1>Industry</h1>
-        <p class="tagline">The network behind the service.</p>
-        <p class="intro">A grounded connection layer for service workers across shifts, crews, neighborhoods, and opportunities.</p>
-      </header>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero-top">
+        <p class="eyebrow">People lane</p>
 
-      <main>
-        <section class="app-section active">
-          <button class="back-button" type="button" onclick="window.location.href='index.html#people'">Back to People</button>
-          <div class="section-heading">
+        <button class="theme-toggle" id="theme-toggle-button" type="button">
+          Light / Dark: Dark
+        </button>
+      </div>
+
+      <h1>Industry</h1>
+
+      <p class="tagline">The network behind the service.</p>
+
+      <p class="intro">
+        A grounded connection layer for service workers across shifts, crews,
+        neighborhoods, and opportunities.
+      </p>
+    </header>
+
+    <main>
+      <!-- =========================================================
+           PEOPLE VIEW: RESOURCES — START
+      ========================================================== -->
+
+      <section
+        class="app-section active people-resources-view"
+        aria-labelledby="people-resources-title"
+      >
+        <button
+          class="back-button"
+          type="button"
+          onclick="window.location.href = 'index.html#people'"
+        >
+          ← Back to People
+        </button>
+        <!-- ===================================================
+             RESOURCES: PAGE HEADER
+        ==================================================== -->
+
+        <header class="resources-page-header">
+          <div>
             <p class="section-label">People</p>
-            <h2>Resources</h2>
-            <p>Support for the real-life pressure of service work.</p>
+
+<h2 id="people-resources-title">Resources</h2>
+            <p>Private support for the real-life pressure of service work.</p>
           </div>
 
-          <div class="mood-row" role="group" aria-label="Resource filters">
-            <button class="filter-button page-filter-button active" type="button" data-filter-group="resources" data-filter-value="all">All</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="mental-health">Mental health</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="burnout">Burnout</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="workplace-abuse">Workplace abuse</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="addiction-recovery">Addiction / recovery</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="safety">Safety</button>
-            <button class="filter-button page-filter-button" type="button" data-filter-group="resources" data-filter-value="wage-issues">Wage issues</button>
+          <button
+            class="profile-button"
+            type="button"
+            aria-label="Open profile"
+          >
+            RN
+          </button>
+        </header>
+
+        <!-- ===================================================
+             RESOURCES: PRIVACY PROMISE
+        ==================================================== -->
+
+        <section
+          class="resources-privacy-panel"
+          aria-labelledby="resources-privacy-title"
+        >
+          <div class="resources-privacy-icon" aria-hidden="true">◌</div>
+
+          <div>
+            <span class="eyebrow">Private by design</span>
+
+            <h2 id="resources-privacy-title">Support without exposure</h2>
+
+            <p>
+              What you view or save here is not shared with coworkers,
+              employers, or anyone in your Loop.
+            </p>
+          </div>
+        </section>
+
+        <!-- ===================================================
+             RESOURCES: URGENT SUPPORT
+        ==================================================== -->
+
+        <section
+          class="urgent-support-card"
+          aria-labelledby="urgent-support-title"
+        >
+          <div class="urgent-support-heading">
+            <span class="urgent-indicator" aria-hidden="true"> ! </span>
+
+            <div>
+              <span class="eyebrow"> Immediate safety </span>
+
+              <h2 id="urgent-support-title">Do you need help right now?</h2>
+            </div>
           </div>
 
-          <section class="stack-list shift-list" aria-label="Support resources">
-            <article class="stack-card people-resource-card" data-resource-tags="mental-health">
-              <div class="stack-copy">
-                <p class="stack-kicker">Support</p>
-                <h3>Mental health support</h3>
-                <p>Find support for burnout, stress, anxiety, and emotional overload.</p>
+          <p>
+            For immediate danger, move somewhere safer when possible and contact
+            local emergency services or a trusted person.
+          </p>
+
+          <div class="urgent-support-actions">
+            <button
+              class="urgent-options-button"
+              type="button"
+              data-resource-open="urgent-safety"
+            >
+              View urgent options
+            </button>
+
+            <button class="exit-quietly-button" type="button" data-exit-quietly>
+              Exit quietly
+            </button>
+          </div>
+        </section>
+
+        <!-- ===================================================
+             RESOURCES: EXPLORATION
+        ==================================================== -->
+
+        <section
+          class="resources-explore"
+          aria-labelledby="resources-explore-title"
+        >
+          <div class="resources-section-heading">
+            <span class="eyebrow">Find support</span>
+
+            <h2 id="resources-explore-title">What do you need right now?</h2>
+
+            <p>Choose a category or browse every support area.</p>
+          </div>
+
+          <!-- =================================================
+               RESOURCES: FILTERS
+          ================================================== -->
+
+          <div
+            class="resource-filter-row"
+            role="group"
+            aria-label="Resource filters"
+          >
+            <button
+              class="resource-filter-button active"
+              type="button"
+              data-resource-filter="all"
+              aria-pressed="true"
+            >
+              All
+            </button>
+
+            <button
+              class="resource-filter-button"
+              type="button"
+              data-resource-filter="mental-health"
+              aria-pressed="false"
+            >
+              Mental health
+            </button>
+
+            <button
+              class="resource-filter-button"
+              type="button"
+              data-resource-filter="burnout"
+              aria-pressed="false"
+            >
+              Burnout
+            </button>
+
+            <button
+              class="resource-filter-button"
+              type="button"
+              data-resource-filter="workplace-harm"
+              aria-pressed="false"
+            >
+              Workplace harm
+            </button>
+
+            <button
+              class="resource-filter-button"
+              type="button"
+              data-resource-filter="recovery"
+              aria-pressed="false"
+            >
+              Recovery
+            </button>
+
+            <button
+              class="resource-filter-button"
+              type="button"
+              data-resource-filter="pay-rights"
+              aria-pressed="false"
+            >
+              Pay &amp; rights
+            </button>
+
+            <button
+              class="resource-filter-button"
+              type="button"
+              data-resource-filter="safety"
+              aria-pressed="false"
+            >
+              Safety
+            </button>
+          </div>
+
+          <!-- =================================================
+               RESOURCES: CARD LIST
+          ================================================== -->
+
+          <section class="resource-card-list" aria-label="Support resources">
+            <!-- ===============================================
+                 RESOURCE: MENTAL HEALTH
+            ================================================ -->
+
+            <article
+              class="resource-card resource-card-blue"
+              data-resource-card
+              data-resource-tags="mental-health"
+              data-resource-id="mental-health-support"
+            >
+              <div class="resource-card-top">
+                <span class="resource-category"> Mental health </span>
+
+                <span class="prototype-label"> Prototype </span>
               </div>
-              <button class="action-button resource-preview-button" type="button">View resources</button>
+
+              <h3>Mental health support</h3>
+
+              <p>
+                Help for anxiety, grief, emotional overload, depression, and
+                stress that feels difficult to manage alone.
+              </p>
+
+              <ul class="resource-meta">
+                <li>Confidential support</li>
+                <li>Call, text, or online</li>
+                <li>Free options available</li>
+              </ul>
+
+              <div class="resource-card-actions">
+                <button
+                  class="resource-primary-button"
+                  type="button"
+                  data-resource-open="mental-health-support"
+                >
+                  View support options
+                </button>
+
+                <button
+                  class="resource-save-button"
+                  type="button"
+                  data-resource-save="mental-health-support"
+                  aria-pressed="false"
+                >
+                  Save privately
+                </button>
+              </div>
             </article>
 
-            <article class="stack-card people-resource-card" data-resource-tags="burnout">
-              <div class="stack-copy">
-                <p class="stack-kicker">Recovery</p>
-                <h3>Burnout reset</h3>
-                <p>Tools and spaces for workers who feel depleted, overextended, or emotionally exhausted.</p>
+            <!-- ===============================================
+                 RESOURCE: BURNOUT
+            ================================================ -->
+
+            <article
+              class="resource-card resource-card-violet"
+              data-resource-card
+              data-resource-tags="burnout mental-health"
+              data-resource-id="burnout-reset"
+            >
+              <div class="resource-card-top">
+                <span class="resource-category"> Burnout </span>
+
+                <span class="prototype-label"> Prototype </span>
               </div>
-              <button class="action-button resource-preview-button" type="button">View resources</button>
+
+              <h3>Burnout reset</h3>
+
+              <p>
+                Tools for exhaustion, emotional depletion, boundary-setting,
+                decompression, and rebuilding energy outside work.
+              </p>
+
+              <ul class="resource-meta">
+                <li>Self-guided tools</li>
+                <li>Local support spaces</li>
+                <li>No employer involvement</li>
+              </ul>
+
+              <div class="resource-card-actions">
+                <button
+                  class="resource-primary-button"
+                  type="button"
+                  data-resource-open="burnout-reset"
+                >
+                  View support options
+                </button>
+
+                <button
+                  class="resource-save-button"
+                  type="button"
+                  data-resource-save="burnout-reset"
+                  aria-pressed="false"
+                >
+                  Save privately
+                </button>
+              </div>
             </article>
 
-            <article class="stack-card people-resource-card" data-resource-tags="workplace-abuse safety wage-issues">
-              <div class="stack-copy">
-                <p class="stack-kicker">Safety</p>
-                <h3>Workplace abuse support</h3>
-                <p>Guidance for harassment, unsafe workplaces, retaliation, wage issues, and reporting concerns.</p>
+            <!-- ===============================================
+                 RESOURCE: WORKPLACE HARM
+            ================================================ -->
+
+            <article
+              class="resource-card resource-card-red"
+              data-resource-card
+              data-resource-tags="workplace-harm safety"
+              data-resource-id="workplace-harm"
+            >
+              <div class="resource-card-top">
+                <span class="resource-category"> Workplace harm </span>
+
+                <span class="prototype-label"> Prototype </span>
               </div>
-              <button class="action-button resource-preview-button" type="button">View resources</button>
+
+              <h3>Harassment and unsafe workplaces</h3>
+
+              <p>
+                Guidance for harassment, discrimination, retaliation, threats,
+                abusive management, and unsafe working conditions.
+              </p>
+
+              <ul class="resource-meta">
+                <li>Document what happened</li>
+                <li>Explore reporting choices</li>
+                <li>Find confidential guidance</li>
+              </ul>
+
+              <div class="resource-card-actions">
+                <button
+                  class="resource-primary-button"
+                  type="button"
+                  data-resource-open="workplace-harm"
+                >
+                  View support options
+                </button>
+
+                <button
+                  class="resource-save-button"
+                  type="button"
+                  data-resource-save="workplace-harm"
+                  aria-pressed="false"
+                >
+                  Save privately
+                </button>
+              </div>
             </article>
 
-            <article class="stack-card people-resource-card" data-resource-tags="addiction-recovery">
-              <div class="stack-copy">
-                <p class="stack-kicker">Recovery</p>
-                <h3>Addiction and recovery support</h3>
-                <p>Sober meetups, recovery support, and nonjudgmental help for industry workers.</p>
+            <!-- ===============================================
+                 RESOURCE: RECOVERY
+            ================================================ -->
+
+            <article
+              class="resource-card resource-card-green"
+              data-resource-card
+              data-resource-tags="recovery mental-health"
+              data-resource-id="recovery-support"
+            >
+              <div class="resource-card-top">
+                <span class="resource-category"> Recovery </span>
+
+                <span class="prototype-label"> Prototype </span>
               </div>
-              <button class="action-button resource-preview-button" type="button">View resources</button>
+
+              <h3>Addiction and recovery support</h3>
+
+              <p>
+                Nonjudgmental support for alcohol, substances, sober community,
+                relapse concerns, and beginning recovery.
+              </p>
+
+              <ul class="resource-meta">
+                <li>Sober community</li>
+                <li>Peer and professional support</li>
+                <li>Private options available</li>
+              </ul>
+
+              <div class="resource-card-actions">
+                <button
+                  class="resource-primary-button"
+                  type="button"
+                  data-resource-open="recovery-support"
+                >
+                  View support options
+                </button>
+
+                <button
+                  class="resource-save-button"
+                  type="button"
+                  data-resource-save="recovery-support"
+                  aria-pressed="false"
+                >
+                  Save privately
+                </button>
+              </div>
             </article>
 
-            <article class="stack-card people-resource-card" data-resource-tags="safety">
-              <div class="stack-copy">
-                <p class="stack-kicker">Safety</p>
-                <h3>Emergency safety</h3>
-                <p>For urgent danger, contact local emergency services or trusted local crisis support.</p>
-              </div>
-              <button class="action-button resource-preview-button" type="button">View safety options</button>
-            </article>
-          </section>
+            <!-- ===============================================
+                 RESOURCE: PAY AND RIGHTS
+            ================================================ -->
 
-          <section class="today-panel" aria-label="Resource status">
-            <p class="status-text" id="resource-status-message">Choose a resource area to preview what could live here later.</p>
+            <article
+              class="resource-card resource-card-amber"
+              data-resource-card
+              data-resource-tags="pay-rights workplace-harm"
+              data-resource-id="pay-rights"
+            >
+              <div class="resource-card-top">
+                <span class="resource-category"> Pay &amp; rights </span>
+
+                <span class="prototype-label"> Prototype </span>
+              </div>
+
+              <h3>Wages, tips, breaks, and worker rights</h3>
+
+              <p>
+                Understand options for missing wages, withheld tips, unpaid
+                work, scheduling concerns, breaks, and workplace rights.
+              </p>
+
+              <ul class="resource-meta">
+                <li>Practical next steps</li>
+                <li>Prepare documentation</li>
+                <li>Find worker guidance</li>
+              </ul>
+
+              <div class="resource-card-actions">
+                <button
+                  class="resource-primary-button"
+                  type="button"
+                  data-resource-open="pay-rights"
+                >
+                  View support options
+                </button>
+
+                <button
+                  class="resource-save-button"
+                  type="button"
+                  data-resource-save="pay-rights"
+                  aria-pressed="false"
+                >
+                  Save privately
+                </button>
+              </div>
+            </article>
+
+            <!-- ===============================================
+                 RESOURCE: SAFETY PLANNING
+            ================================================ -->
+
+            <article
+              class="resource-card resource-card-teal"
+              data-resource-card
+              data-resource-tags="safety workplace-harm"
+              data-resource-id="safety-planning"
+            >
+              <div class="resource-card-top">
+                <span class="resource-category"> Safety </span>
+
+                <span class="prototype-label"> Prototype </span>
+              </div>
+
+              <h3>Make a private safety plan</h3>
+
+              <p>
+                Prepare a safer exit, identify trusted contacts, preserve
+                important information, and plan what to do next.
+              </p>
+
+              <ul class="resource-meta">
+                <li>Private checklist</li>
+                <li>Exit planning</li>
+                <li>Trusted-contact preparation</li>
+              </ul>
+
+              <div class="resource-card-actions">
+                <button
+                  class="resource-primary-button"
+                  type="button"
+                  data-resource-open="safety-planning"
+                >
+                  View support options
+                </button>
+
+                <button
+                  class="resource-save-button"
+                  type="button"
+                  data-resource-save="safety-planning"
+                  aria-pressed="false"
+                >
+                  Save privately
+                </button>
+              </div>
+            </article>
           </section>
         </section>
-      </main>
 
-      <a class="home-logo-button home-logo-link" href="index.html" aria-label="Go to Industry home">i</a>
+        <!-- ===================================================
+             RESOURCES: PREVIEW PANEL
+        ==================================================== -->
 
-      <nav class="bottom-nav" aria-label="Bottom navigation">
-        <a class="nav-item nav-link-item" href="index.html#schedule">Schedule</a>
-        <a class="nav-item nav-link-item" href="index.html#jobs">Jobs</a>
-        <a class="nav-item nav-link-item active" href="index.html#people">People</a>
-      </nav>
-    </div>
+        <section
+          class="resource-preview-panel"
+          data-resource-preview
+          aria-live="polite"
+          hidden
+        >
+          <div class="resource-preview-heading">
+            <div>
+              <span class="eyebrow">Support preview</span>
 
-    <script src="people-pages.js"></script>
-  </body>
-</html>
+              <h2 data-resource-preview-title>Resource title</h2>
+            </div>
+
+            <button
+              class="resource-preview-close"
+              type="button"
+              data-resource-preview-close
+              aria-label="Close support preview"
+            >
+              ×
+            </button>
+          </div>
+
+          <p data-resource-preview-description>
+            Support information will appear here.
+          </p>
+
+          <div class="resource-preview-details">
+            <div>
+              <span>Privacy</span>
+              <strong data-resource-preview-privacy> Private </strong>
+            </div>
+
+            <div>
+              <span>Availability</span>
+              <strong data-resource-preview-availability> Varies </strong>
+            </div>
+
+            <div>
+              <span>Cost</span>
+              <strong data-resource-preview-cost> Free options </strong>
+            </div>
+          </div>
+
+          <p class="prototype-warning">
+            Prototype content only. Every organization, service, phone number,
+            and eligibility requirement must be verified before launch.
+          </p>
+
+          <button class="resource-preview-action" type="button">
+            Continue to support
+          </button>
+        </section>
+
+        <!-- ===================================================
+             RESOURCES: PRIVATE STATUS
+        ==================================================== -->
+
+        <section
+          class="resources-status-message"
+          data-resource-status
+          aria-live="polite"
+        >
+          Browse support privately. Nothing has been shared.
+             </section>
+
+      </section>
+
+      <!-- =========================================================
+           PEOPLE VIEW: RESOURCES — END
+      ========================================================== -->
+    </main>   
+   
+
+    <!-- =====================================================
+         RESOURCES: FLOATING INFORMATION BUTTON
+    ====================================================== -->
+
+    <a
+      class="home-logo-button home-logo-link"
+      href="index.html"
+      aria-label="Go to Industry home"
+    >
+      i
+    </a>
+
+    <!-- =====================================================
+         RESOURCES: BOTTOM NAVIGATION
+    ====================================================== -->
+
+    <nav class="bottom-nav" aria-label="Bottom navigation">
+      <a class="nav-item nav-link-item" href="index.html#schedule">
+        Schedule
+      </a>
+
+      <a class="nav-item nav-link-item" href="index.html#jobs">
+        Jobs
+      </a>
+
+      <a
+        class="nav-item nav-link-item active"
+        href="index.html#people"
+      >
+        People
+      </a>
+    </nav>
+  </div>
+
+  <script src="people-pages.js"></script>
+</body>
+</html>    
