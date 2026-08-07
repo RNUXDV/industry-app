@@ -1691,3 +1691,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 })();
+
+/* =========================================================
+   PEOPLE RESOURCES: EXIT QUIETLY
+========================================================= */
+
+;(() => {
+  const resourcesView = document.querySelector(".people-resources-view");
+
+  if (!resourcesView) return;
+
+  const exitQuietlyButton = resourcesView.querySelector(
+    "[data-exit-quietly]"
+  );
+
+  if (!exitQuietlyButton) return;
+
+  exitQuietlyButton.addEventListener("click", () => {
+    window.location.replace("index.html#schedule");
+  });
+})();
