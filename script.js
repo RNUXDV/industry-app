@@ -854,7 +854,7 @@ function getBoardButtonLabel(shift) {
     return "Message worker";
   }
 
-  return "I can take this";
+  return "Catch shift";
 }
 
 function getBoardRequestLabel(shift) {
@@ -969,25 +969,52 @@ function getCrewShiftSummary(shift) {
 }
 
 function renderCrewMembers(listElement, members, actionLabel) {
+  const responses = getShiftResponses();
+  const currentResponse = responses[activeCrewShiftId] || {};
+
+  const interestedWorkers = Array.isArray(currentResponse.interestedWorkers)
+    ? currentResponse.interestedWorkers
+    : [];
+
   listElement.innerHTML = members
-    .map(
-      (member) => `
+    .map((member) => {
+      const memberId = `crew-${member.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")}`;
+
+      const isInterested = interestedWorkers.some(
+        (worker) => worker.id === memberId,
+      );
+
+      const isAvailabilityAction = actionLabel === "Ask availability";
+
+      const buttonLabel =
+        isAvailabilityAction && isInterested ? "Interested" : actionLabel;
+
+      const isDisabled = isAvailabilityAction && isInterested;
+
+      return `
         <article class="stack-card crew-member-card">
           <div class="stack-copy">
             <h3>${member.name}</h3>
             <p>${member.position}</p>
             <p>Status: ${member.status}</p>
           </div>
+
           <button
             class="action-button secondary-action crew-member-action-button"
             type="button"
             data-action-label="${actionLabel}"
+            data-member-name="${member.name}"
+            data-member-position="${member.position}"
+            ${isDisabled ? "disabled" : ""}
           >
-            ${actionLabel}
+            ${buttonLabel}
           </button>
         </article>
-      `,
-    )
+      `;
+    })
     .join("");
 }
 
@@ -1000,7 +1027,58 @@ function bindCrewMemberActions() {
         return;
       }
 
-      crewActionStatus.textContent = "Availability request sent.";
+      const memberName = button.dataset.memberName;
+      const memberPosition = button.dataset.memberPosition;
+
+      if (!activeCrewShiftId || !memberName) {
+        return;
+      }
+
+      const responses = getShiftResponses();
+      const currentResponse = responses[activeCrewShiftId] || {};
+
+      const existingWorkers = Array.isArray(currentResponse.interestedWorkers)
+        ? currentResponse.interestedWorkers
+        : [];
+
+      const memberId = `crew-${memberName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")}`;
+
+      const alreadyInterested = existingWorkers.some(
+        (worker) => worker.id === memberId,
+      );
+
+      if (!alreadyInterested) {
+        const interestedWorker = {
+          id: memberId,
+          name: memberName,
+          role: memberPosition || "Worker",
+          availability: {
+            label: "Available",
+            status: "available",
+          },
+          selected: false,
+        };
+
+        responses[activeCrewShiftId] = {
+          ...currentResponse,
+          interested: true,
+          interestedAt: getCatchEventTime(),
+          interestedWorkers: [...existingWorkers, interestedWorker],
+          interestedCount: existingWorkers.length + 1,
+          status: currentResponse.status || "Open",
+        };
+
+        saveShiftResponses(responses);
+        renderShiftBoard();
+      }
+
+      button.textContent = "Interested";
+      button.disabled = true;
+
+      crewActionStatus.textContent = `${memberName} is available and interested in this shift.`;
     });
   });
 }
@@ -1379,6 +1457,10 @@ function renderShiftBoard() {
   const shifts = getAllShifts().filter((shift) => {
     const displayedStatus = getDisplayedShiftStatus(shift, responses);
 
+    const isCatchOpportunity =
+      shift.source === "catch-board" ||
+      sampleShifts.some((sampleShift) => sampleShift.id === shift.id);
+
     const hasBeenScheduled = scheduledShifts.some(
       (scheduledShift) => scheduledShift.sourceBoardShiftId === shift.id,
     );
@@ -1386,7 +1468,7 @@ function renderShiftBoard() {
     const isCompletedOpportunity =
       displayedStatus === "Confirmed" || displayedStatus === "Scheduled";
 
-    return !hasBeenScheduled && !isCompletedOpportunity;
+    return isCatchOpportunity && !hasBeenScheduled && !isCompletedOpportunity;
   });
 
   shiftBoardList.innerHTML = "";
@@ -1581,6 +1663,12 @@ function renderShiftBoard() {
       `
       : "";
 
+    const sourceShift = shift.sourceShiftId
+      ? findShiftById(shift.sourceShiftId)
+      : null;
+
+    const isOwnCoverageRequest = sourceShift?.owner === CURRENT_USER.id;
+
     const releasedTimeLabel = getRelativeReleaseTime(shift.releasedTimestamp);
 
     const shiftCard = document.createElement("article");
@@ -1648,11 +1736,28 @@ function renderShiftBoard() {
 <p>${shift.notes || shift.note || "No additional notes."}</p>
 </div>
       <div class="shift-action-row">
-        <button class="action-button board-action-button" type="button" data-shift-id="${shift.id}"
+        ${
+          isOwnCoverageRequest
+            ? `
+      <button
+        class="action-button"
+        type="button"
+        disabled
+      >
+        Your coverage request
+      </button>
+    `
+            : `
+      <button
+        class="action-button board-action-button"
+        type="button"
+        data-shift-id="${shift.id}"
         ${hasInterest ? "disabled" : ""}
-        >
-          ${boardButtonLabel}
-        </button>
+      >
+        ${boardButtonLabel}
+      </button>
+    `
+        }
         ${
           isConfirmed
             ? ""
