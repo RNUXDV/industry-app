@@ -235,7 +235,7 @@ const sampleShifts = [
     time: "9:00 AM - 3:00 PM",
     neighborhood: "Portland Metro",
     note: "Extra brunch shift available. Fast feet matter.",
-    postType: "Offer pickup",
+    postType: "Release shift",
     postedTo: "Workplace crew",
     status: "Open",
   },
@@ -273,7 +273,7 @@ const importedScheduleShifts = [
     neighborhood: "SE Portland",
     station: "Brunch floor",
     manager: "Kira",
-    notes: "Busy brunch block. Good shift for swap or release testing.",
+    notes: "Busy brunch block. Fast-paced service with a strong crew.",
   },
 ];
 
@@ -850,18 +850,10 @@ function clearActivityFeed() {
 }
 
 function getBoardButtonLabel(shift) {
-  if (shift.postType === "Offer pickup") {
-    return "Message worker";
-  }
-
   return "Catch shift";
 }
 
-function getBoardRequestLabel(shift) {
-  if (shift.postType === "Offer pickup") {
-    return "Pickup opportunity";
-  }
-
+function getBoardRequestLabel() {
   return "Release request";
 }
 
@@ -994,6 +986,21 @@ function renderCrewMembers(listElement, members, actionLabel) {
 
       const isDisabled = isAvailabilityAction && isInterested;
 
+      const actionButtonMarkup = actionLabel
+        ? `
+      <button
+        class="action-button secondary-action crew-member-action-button"
+        type="button"
+        data-action-label="${actionLabel}"
+        data-member-name="${member.name}"
+        data-member-position="${member.position}"
+        ${isDisabled ? "disabled" : ""}
+      >
+        ${buttonLabel}
+      </button>
+    `
+        : "";
+
       return `
         <article class="stack-card crew-member-card">
           <div class="stack-copy">
@@ -1002,16 +1009,7 @@ function renderCrewMembers(listElement, members, actionLabel) {
             <p>Status: ${member.status}</p>
           </div>
 
-          <button
-            class="action-button secondary-action crew-member-action-button"
-            type="button"
-            data-action-label="${actionLabel}"
-            data-member-name="${member.name}"
-            data-member-position="${member.position}"
-            ${isDisabled ? "disabled" : ""}
-          >
-            ${buttonLabel}
-          </button>
+          ${actionButtonMarkup}
         </article>
       `;
     })
@@ -1087,6 +1085,13 @@ function openCrewShift(shift, shouldNavigate = true) {
   const crew =
     workplaceCrews[shift.workplace] || workplaceCrews["Departure Lounge"];
 
+  const sourceShift = shift.sourceShiftId
+    ? findShiftById(shift.sourceShiftId)
+    : null;
+
+  const isOwnCoverageRequest =
+    shift.requestType === "release" && sourceShift?.owner === CURRENT_USER.id;
+
   activeCrewShiftId = shift.id;
   crewShiftDate.textContent = shift.day;
   crewShiftWorkplace.textContent = shift.workplace;
@@ -1095,9 +1100,23 @@ function openCrewShift(shift, shouldNavigate = true) {
   crewShiftStatus.textContent = `Status: ${getDisplayedShiftStatus(shift, getShiftResponses())}`;
   crewActionStatus.textContent = `Viewing Shift Crew for ${shift.workplace}.`;
 
-  renderCrewMembers(frontOfHouseList, crew.frontOfHouse, "Ask availability");
-  renderCrewMembers(backOfHouseList, crew.backOfHouse, "Ask availability");
-  renderCrewMembers(managerList, crew.managers, "Approval needed");
+  renderCrewMembers(
+    frontOfHouseList,
+    crew.frontOfHouse,
+    isOwnCoverageRequest ? "Ask availability" : "",
+  );
+
+  renderCrewMembers(
+    backOfHouseList,
+    crew.backOfHouse,
+    isOwnCoverageRequest ? "Ask availability" : "",
+  );
+
+  renderCrewMembers(
+    managerList,
+    crew.managers,
+    isOwnCoverageRequest ? "Approval needed" : "",
+  );
   bindCrewMemberActions();
 
   if (shouldNavigate) {
@@ -1478,7 +1497,7 @@ function renderShiftBoard() {
     <div class="catch-empty-state">
       <p class="catch-empty-title">No open shifts right now.</p>
       <p class="catch-empty-text">
-        Released shifts and pickup opportunities will appear here.
+        Released shifts will appear here.
       </p>
     </div>
   `;
@@ -2158,7 +2177,7 @@ function renderTipAnalytics(entries) {
     return;
   }
 
-  const now = new Date();
+  const now = new Date(DEMO_NOW);
   const startOfWeek = new Date(now);
   const dayOfWeek = now.getDay();
 
@@ -2670,31 +2689,6 @@ ${managerMarkup}
       });
       activeScheduleAction = null;
       renderImportedShifts();
-    });
-  });
-
-  document.querySelectorAll(".swap-preference-button").forEach((button) => {
-    button.addEventListener("click", () => {
-      const shift = importedScheduleShifts.find(
-        (item) => item.id === button.dataset.shiftId,
-      );
-
-      if (!shift) {
-        return;
-      }
-
-      createBoardPost({
-        workplace: shift.workplace || "Departure Lounge",
-        role: shift.role,
-        day: shift.day,
-        time: shift.time,
-        neighborhood: shift.neighborhood,
-        note: `Pickup opportunity from ${
-          selectedScheduleSource || "imported schedule"
-        }.`,
-        postType: "Offer pickup",
-        postedTo: "Workplace crew",
-      });
     });
   });
 }

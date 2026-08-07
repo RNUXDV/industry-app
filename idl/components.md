@@ -240,7 +240,7 @@ Public workplace board for available shifts.
 ### Responsibilities
 
 - Display Open Release Requests
-- Display Open Pickup Requests
+- Display Open Release Requests
 - Allow coworkers to express interest
 - Never replace the worker's original shift
 

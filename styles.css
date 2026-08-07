@@ -608,6 +608,14 @@ h1 {
   min-height: 140px;
 }
 
+.earnings-tool-card {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.4rem;
+  text-align: left;
+}
+
 .tip-calculator-panel {
   display: grid;
   gap: 1rem;
