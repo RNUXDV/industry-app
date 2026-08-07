@@ -31,7 +31,12 @@ const themeToggleButton = document.querySelector("#theme-toggle-button");
 const goToFeedbackButton = document.querySelector("#go-to-feedback-button");
 const startHereButton = document.querySelector("#start-here-button");
 const saveShiftButton = document.querySelector("#save-shift-button");
+
 const shiftBoardList = document.querySelector("#shift-board-list");
+
+const caughtShiftsPanel = document.querySelector("#caught-shifts-panel");
+const caughtShiftsList = document.querySelector("#caught-shifts-list");
+
 const shiftBoardStatus = document.querySelector("#shift-board-status");
 const postShiftStatus = document.querySelector("#post-shift-status");
 const shiftWorkplaceSelect = document.querySelector("#shift-workplace");
@@ -200,7 +205,8 @@ const sampleShifts = [
     id: "sample-1",
     workplace: "Departure Lounge",
     role: "Server",
-    day: "Thursday",
+    day: "Thu, July 16",
+
     time: "4:30 PM - 10:30 PM",
     neighborhood: "Pearl District",
     note: "Dinner service. Strong wine knowledge helps.",
@@ -212,7 +218,8 @@ const sampleShifts = [
     id: "sample-2",
     workplace: "Cafe Luna",
     role: "Bartender",
-    day: "Saturday",
+    day: "Sat, July 18",
+
     time: "6:00 PM - Close",
     neighborhood: "SE Portland",
     note: "Busy cocktail shift with patio traffic.",
@@ -224,7 +231,7 @@ const sampleShifts = [
     id: "sample-3",
     workplace: "Event Pool",
     role: "Brunch",
-    day: "Sunday",
+    day: "Sun, July 19",
     time: "9:00 AM - 3:00 PM",
     neighborhood: "Portland Metro",
     note: "Extra brunch shift available. Fast feet matter.",
@@ -351,10 +358,9 @@ const DEMO_USERS = {
 
 const DEMO_NOW = new Date("2026-07-16T15:42:00");
 
-const savedDemoUser = localStorage.getItem(demoUserStorageKey) || "maya";
+const savedDemoUser = "original";
 
-let CURRENT_USER = DEMO_USERS[savedDemoUser] || DEMO_USERS.maya;
-
+let CURRENT_USER = DEMO_USERS.original;
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let selectedReleaseShift = null;
@@ -480,7 +486,6 @@ function renderDashboardShift() {
   }
 
   dashboardShiftDetailsButton.hidden = false;
-  dashboardShiftDetailsButton.dataset.shiftId = upcomingShift.id;
   dashboardShiftDetailsButton.dataset.shiftId = upcomingShift.id;
 
   dashboardCountdownTime.textContent = getCountdownText(upcomingShift);
@@ -1290,9 +1295,99 @@ function renderActivityFeed() {
     })
     .join("");
 }
-function renderShiftBoard() {
-  const shifts = getAllShifts();
+
+function renderCaughtShifts() {
+  if (!caughtShiftsPanel || !caughtShiftsList) return;
+
   const responses = getShiftResponses();
+  const allShifts = getAllShifts();
+
+  const pendingCaughtShifts = Object.keys(responses)
+    .filter((shiftId) => {
+      const response = responses[shiftId];
+
+      return (
+        response?.accepted === true &&
+        response?.caughtByWorkerId === CURRENT_USER.id &&
+        response?.status === "Pending Approval"
+      );
+    })
+    .map((shiftId) => {
+      const shift = findShiftById(shiftId);
+
+      if (!shift) return null;
+
+      return {
+        ...shift,
+        displayStatus: "Pending Approval",
+      };
+    })
+    .filter(Boolean);
+
+  const confirmedCaughtShifts = allShifts
+    .filter((shift) => {
+      return (
+        shift.owner === CURRENT_USER.id &&
+        shift.status === "Scheduled" &&
+        Boolean(shift.transferredAt)
+      );
+    })
+    .map((shift) => ({
+      ...shift,
+      displayStatus: "Confirmed",
+    }));
+
+  const caughtShifts = [...pendingCaughtShifts, ...confirmedCaughtShifts];
+
+  caughtShiftsPanel.hidden = caughtShifts.length === 0;
+
+  if (caughtShifts.length === 0) {
+    caughtShiftsList.innerHTML = "";
+    return;
+  }
+
+  caughtShiftsList.innerHTML = caughtShifts
+    .map(
+      (shift) => `
+        <article class="stack-card shift-card caught-shift-card">
+          <div class="stack-copy">
+            <p class="stack-kicker">
+              ${shift.displayStatus}
+            </p>
+
+            <h3>${shift.workplace}</h3>
+
+            <p>${shift.role}</p>
+
+            <ul class="shift-meta">
+              <li>${shift.day}</li>
+              <li>${shift.time}</li>
+            </ul>
+
+            <p>Status: ${shift.displayStatus}</p>
+          </div>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function renderShiftBoard() {
+  const responses = getShiftResponses();
+  const scheduledShifts = getShiftStore();
+
+  const shifts = getAllShifts().filter((shift) => {
+    const displayedStatus = getDisplayedShiftStatus(shift, responses);
+
+    const hasBeenScheduled = scheduledShifts.some(
+      (scheduledShift) => scheduledShift.sourceBoardShiftId === shift.id,
+    );
+
+    const isCompletedOpportunity =
+      displayedStatus === "Confirmed" || displayedStatus === "Scheduled";
+
+    return !hasBeenScheduled && !isCompletedOpportunity;
+  });
 
   shiftBoardList.innerHTML = "";
 
@@ -1672,6 +1767,7 @@ function renderShiftBoard() {
       saveShiftResponses(responses);
       renderShiftBoard();
       renderImportedShifts();
+      renderCaughtShifts();
 
       shiftBoardStatus.textContent = "Shift caught. Waiting for approval.";
     });
@@ -1785,8 +1881,9 @@ function renderShiftBoard() {
         confirmedWorkerName: selectedWorker.name,
       };
 
-      const boardPost = findShiftById(shiftId);
-
+      const boardPost =
+        findShiftById(shiftId) ||
+        sampleShifts.find((shift) => shift.id === shiftId);
       if (boardPost) {
         const updatedBoardPost = {
           ...boardPost,
@@ -1825,6 +1922,29 @@ function renderShiftBoard() {
               workplace: transferredShift.workplace,
               approvedBy: transferredShift.manager || "Manager",
             });
+          }
+        } else {
+          const savedShifts = getShiftStore();
+
+          const scheduledShiftId = `caught-${boardPost.id}-${selectedWorker.id}`;
+
+          const alreadyScheduled = savedShifts.some(
+            (shift) => shift.id === scheduledShiftId,
+          );
+
+          if (!alreadyScheduled) {
+            const scheduledShift = {
+              ...boardPost,
+              id: scheduledShiftId,
+              sourceBoardShiftId: boardPost.id,
+              owner: selectedWorker.id,
+              ownerName: selectedWorker.name,
+              status: "Scheduled",
+              transferredAt: getCatchEventTime(),
+            };
+
+            savedShifts.push(scheduledShift);
+            saveShiftStore(savedShifts);
           }
         }
       }
@@ -2327,11 +2447,13 @@ function renderImportedShifts() {
       `
       : "";
 
-    const isConfirmedCatch =
-      shift.owner === CURRENT_USER.id &&
-      shift.previousOwner &&
-      shift.previousOwner !== CURRENT_USER.id &&
-      Boolean(shift.transferredAt);
+    const isConfirmedCatch = Boolean(
+      shift.sourceBoardShiftId ||
+      (shift.owner === CURRENT_USER.id &&
+        shift.previousOwner &&
+        shift.previousOwner !== CURRENT_USER.id &&
+        shift.transferredAt),
+    );
     const shiftSourceLabel = isConfirmedCatch
       ? "Caught shift"
       : shift.status === "Pending Approval"
@@ -2339,8 +2461,11 @@ function renderImportedShifts() {
         : shift.status === "Pending Coverage"
           ? "Pending Coverage"
           : "Imported shift";
-    const station = shift.station || "Station not provided";
-    const manager = shift.manager || "Manager not provided";
+    const stationMarkup = shift.station ? `<li>${shift.station}</li>` : "";
+
+    const managerMarkup = shift.manager
+      ? `<p>Manager: ${shift.manager}</p>`
+      : "";
     const notes = shift.notes || shift.note || "No notes provided.";
 
     const transferContextMarkup = isConfirmedCatch
@@ -2367,9 +2492,10 @@ ${transferContextMarkup}
 </ul>
 <ul class="shift-meta">
   <li>${shift.workplace}</li>
-  <li>${station}</li>
+  ${stationMarkup}
 </ul>
-<p>Manager: ${manager}</p>
+
+${managerMarkup}
 <p>${notes}</p>
       </div>
       <div class="shift-action-row">
@@ -2648,6 +2774,7 @@ updateProfileSummary(savedProfile);
 initializeShiftStore();
 
 renderShiftBoard();
+
 renderImportedShifts();
 renderDashboardShift();
 renderTipEntries();
