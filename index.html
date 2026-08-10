@@ -14,6 +14,163 @@
   </head>
   <body data-theme="dark">
 
+  <!-- =========================================
+     INDUSTRY TESTING ONBOARDING
+     Build 1: Welcome Screen
+========================================= -->
+
+<div
+  class="onboarding-overlay"
+  id="onboarding-welcome"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="onboarding-title"
+>
+  <section class="onboarding-card">
+    <p class="onboarding-eyebrow">Industry Prototype</p>
+
+    <h1 id="onboarding-title">Welcome to Industry</h1>
+
+    <p class="onboarding-intro">
+      Industry is an early prototype being developed for people in
+      restaurant and service.
+    </p>
+
+    <p class="onboarding-copy">
+  <strong>Help build something for all of us in the Industry.</strong>
+  <br /><br />
+  Explore the prototype and tell us what’s useful, what’s confusing,
+  and what’s missing.
+</p>
+
+    <div class="onboarding-actions">
+      <button
+        class="onboarding-primary"
+        id="start-onboarding-button"
+        type="button"
+      >
+        Take a quick tour
+      </button>
+
+      <button
+        class="onboarding-secondary"
+        id="skip-onboarding-button"
+        type="button"
+      >
+        Skip &amp; explore
+      </button>
+    </div>
+
+    <p class="onboarding-note">
+      Prototype in active development
+    </p>
+  </section>
+</div> 
+
+<!-- =========================================
+     INDUSTRY TESTING ONBOARDING
+     Build 2: Home Orientation
+========================================= -->
+
+<div
+  class="onboarding-overlay is-hidden"
+  id="onboarding-home-step"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="onboarding-home-title"
+>
+  <section class="onboarding-card">
+    <p class="onboarding-eyebrow">Quick Tour · 1 of 2</p>
+
+    <h1 id="onboarding-home-title">This is Home</h1>
+
+    <p class="onboarding-intro">
+      The round Industry button at the bottom of the screen brings you Home anytime you want to get your bearings.
+    </p>
+
+    <p class="onboarding-copy">
+      From Home, you can move into Schedule, Jobs, or People.
+    </p>
+
+    <div class="onboarding-actions">
+      <button
+        class="onboarding-primary"
+        id="continue-onboarding-button"
+        type="button"
+      >
+        Continue
+      </button>
+
+      <button
+        class="onboarding-secondary"
+        id="exit-tour-button"
+        type="button"
+      >
+        Exit tour
+      </button>
+    </div>
+  </section>
+</div>
+
+<!-- =========================================
+     INDUSTRY TESTING ONBOARDING
+     Build 3: Main Lanes Orientation
+========================================= -->
+
+<div
+  class="onboarding-overlay is-hidden"
+  id="onboarding-lanes-step"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="onboarding-lanes-title"
+>
+  <section class="onboarding-card">
+    <p class="onboarding-eyebrow">Quick Tour · 2 of 2</p>
+
+    <h1 id="onboarding-lanes-title">Three ways into Industry</h1>
+
+    <div class="onboarding-lanes">
+      <article class="onboarding-lane">
+        <strong>Schedule</strong>
+        <span>Your shifts, coverage, and workweek.</span>
+      </article>
+
+      <article class="onboarding-lane">
+        <strong>Jobs</strong>
+        <span>Explore opportunities and your next move.</span>
+      </article>
+
+      <article class="onboarding-lane">
+        <strong>People</strong>
+        <span>Your service-industry community.</span>
+      </article>
+    </div>
+
+    <p class="onboarding-copy">
+      Explore however feels natural. We want to learn what makes sense
+      without telling you exactly where to go.
+    </p>
+
+    <div class="onboarding-actions">
+      <button
+        class="onboarding-primary"
+        id="finish-onboarding-button"
+        type="button"
+      >
+        Explore Industry
+      </button>
+
+      <button
+        class="onboarding-secondary"
+        id="exit-lanes-tour-button"
+        type="button"
+      >
+        Exit tour
+      </button>
+    </div>
+  </section>
+</div>
+
 <button
   class="developer-toggle"
   id="developer-toggle"
@@ -4427,6 +4584,59 @@
       >
         i
       </button>
+
+      <button
+  class="onboarding-help-button"
+  id="onboarding-help-button"
+  type="button"
+  aria-label="Open Industry help"
+>
+  ?
+</button>
+
+<div
+  class="onboarding-help-panel is-hidden"
+  id="onboarding-help-panel"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="onboarding-help-title"
+>
+  <section class="onboarding-card onboarding-help-card">
+    <p class="onboarding-eyebrow">Industry Help</p>
+
+    <h1 id="onboarding-help-title">Need a reminder?</h1>
+
+    <p class="onboarding-copy">
+      Share what you experienced, replay the quick tour, or return to Industry.
+    </p>
+
+    <div class="onboarding-actions">
+  <button
+    class="onboarding-primary"
+    id="share-feedback-button"
+    type="button"
+  >
+    Share feedback
+  </button>
+
+  <button
+    class="onboarding-secondary"
+    id="replay-onboarding-button"
+    type="button"
+  >
+    Replay quick tour
+  </button>
+
+  <button
+    class="onboarding-secondary"
+    id="close-onboarding-help-button"
+    type="button"
+  >
+    Back to Industry
+  </button>
+</div>
+  </section>
+</div>
 
       <nav class="bottom-nav" aria-label="Bottom navigation">
         <button class="nav-item" type="button" data-target="schedule">

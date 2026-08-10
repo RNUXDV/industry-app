@@ -8641,3 +8641,184 @@ body:has(.people-nearby-view) .bottom-nav .nav-link-item.active {
 /* =========================================================
    PEOPLE VIEW: NEARBY — END
 ========================================================= */
+
+/* =========================================
+   TESTING ONBOARDING
+   Build 1: Welcome Screen
+========================================= */
+
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 10, 14, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.onboarding-overlay.is-hidden {
+  display: none;
+}
+
+.onboarding-card {
+  width: min(100%, 480px);
+  padding: 32px 28px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--surface);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+}
+
+.onboarding-eyebrow {
+  margin: 0 0 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.onboarding-card h1 {
+  margin: 0;
+  font-size: clamp(2rem, 8vw, 3rem);
+  line-height: 1;
+}
+
+.onboarding-intro {
+  margin: 22px 0 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.onboarding-copy {
+  margin: 14px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.onboarding-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.onboarding-primary,
+.onboarding-secondary {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.onboarding-primary {
+  border: 0;
+  background: var(--text);
+  color: var(--bg);
+}
+
+.onboarding-secondary {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+}
+
+.onboarding-note {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* =========================================
+   TESTING ONBOARDING
+   Build 2: Home Orientation
+========================================= */
+
+#onboarding-home-step .onboarding-card {
+  position: relative;
+}
+
+/* Highlight the real Industry Home button during the tour */
+
+body.onboarding-home-active #home-logo-button {
+  z-index: 10001;
+  box-shadow:
+    0 0 0 4px rgba(255, 255, 255, 0.95),
+    0 0 0 10px rgba(255, 255, 255, 0.18);
+}
+
+/* =========================================
+   TESTING ONBOARDING
+   Build 3: Main Lanes Orientation
+========================================= */
+
+.onboarding-lanes {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.onboarding-lane {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.onboarding-lane strong {
+  font-size: 1rem;
+}
+
+.onboarding-lane span {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* =========================================
+   TESTING ONBOARDING
+   Build 5: Help / Replay
+========================================= */
+
+.onboarding-help-button {
+  position: fixed;
+  right: 14px;
+  bottom: 72px;
+  z-index: 80;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+.onboarding-help-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 10, 14, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.onboarding-help-panel.is-hidden {
+  display: none;
+}
+
+.onboarding-help-card {
+  width: min(100%, 480px);
+}

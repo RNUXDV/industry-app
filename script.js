@@ -5242,3 +5242,113 @@ window.addEventListener("hashchange", applyHashSection);
 
   updateOpportunityMatches();
 })();
+
+// =========================================
+// TESTING ONBOARDING
+// Build 1: Welcome Screen
+// =========================================
+
+const INDUSTRY_ONBOARDING_KEY = "industry-onboarding-complete";
+const onboardingWelcome = document.querySelector("#onboarding-welcome");
+const startOnboardingButton = document.querySelector(
+  "#start-onboarding-button",
+);
+const skipOnboardingButton = document.querySelector("#skip-onboarding-button");
+
+const onboardingHomeStep = document.querySelector("#onboarding-home-step");
+const continueOnboardingButton = document.querySelector(
+  "#continue-onboarding-button",
+);
+const exitTourButton = document.querySelector("#exit-tour-button");
+
+const onboardingLanesStep = document.querySelector("#onboarding-lanes-step");
+
+const finishOnboardingButton = document.querySelector(
+  "#finish-onboarding-button",
+);
+
+const exitLanesTourButton = document.querySelector("#exit-lanes-tour-button");
+
+const onboardingHelpButton = document.querySelector("#onboarding-help-button");
+
+const onboardingHelpPanel = document.querySelector("#onboarding-help-panel");
+
+const replayOnboardingButton = document.querySelector(
+  "#replay-onboarding-button",
+);
+
+const closeOnboardingHelpButton = document.querySelector(
+  "#close-onboarding-help-button",
+);
+
+const shareFeedbackButton = document.querySelector("#share-feedback-button");
+
+function completeOnboarding() {
+  localStorage.setItem(INDUSTRY_ONBOARDING_KEY, "true");
+
+  onboardingWelcome?.classList.add("is-hidden");
+  onboardingHomeStep?.classList.add("is-hidden");
+  onboardingLanesStep?.classList.add("is-hidden");
+
+  document.body.classList.remove("onboarding-home-active");
+}
+
+startOnboardingButton?.addEventListener("click", () => {
+  onboardingWelcome?.classList.add("is-hidden");
+  onboardingHomeStep?.classList.remove("is-hidden");
+  document.body.classList.add("onboarding-home-active");
+});
+skipOnboardingButton?.addEventListener("click", () => {
+  completeOnboarding();
+});
+continueOnboardingButton?.addEventListener("click", () => {
+  onboardingHomeStep?.classList.add("is-hidden");
+  document.body.classList.remove("onboarding-home-active");
+
+  onboardingLanesStep?.classList.remove("is-hidden");
+});
+
+onboardingHelpButton?.addEventListener("click", () => {
+  onboardingHelpPanel?.classList.remove("is-hidden");
+});
+
+closeOnboardingHelpButton?.addEventListener("click", () => {
+  onboardingHelpPanel?.classList.add("is-hidden");
+});
+
+replayOnboardingButton?.addEventListener("click", () => {
+  onboardingHelpPanel?.classList.add("is-hidden");
+
+  onboardingWelcome?.classList.add("is-hidden");
+  onboardingLanesStep?.classList.add("is-hidden");
+
+  onboardingHomeStep?.classList.remove("is-hidden");
+  document.body.classList.add("onboarding-home-active");
+});
+
+shareFeedbackButton?.addEventListener("click", () => {
+  window.open(
+    "https://docs.google.com/forms/d/e/1FAIpQLSdUwvbZ663lA_P7is0VA0X8ViLVhsxMNWnSPf-JfDcrkNdouw/viewform",
+    "_blank",
+    "noopener,noreferrer"
+  );
+});
+
+exitTourButton?.addEventListener("click", () => {
+  completeOnboarding();
+});
+finishOnboardingButton?.addEventListener("click", () => {
+  completeOnboarding();
+});
+exitLanesTourButton?.addEventListener("click", () => {
+  completeOnboarding();
+});
+
+const hasCompletedOnboarding =
+  localStorage.getItem(INDUSTRY_ONBOARDING_KEY) === "true";
+
+if (hasCompletedOnboarding) {
+  onboardingWelcome?.classList.add("is-hidden");
+} else {
+  onboardingWelcome?.classList.remove("is-hidden");
+}
