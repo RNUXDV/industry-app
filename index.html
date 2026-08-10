@@ -32,15 +32,23 @@
     <h1 id="onboarding-title">Welcome to Industry</h1>
 
     <p class="onboarding-intro">
-      Industry is an early prototype being developed for people in
-      restaurant and service.
-    </p>
+  Industry is an early prototype being developed for people in
+  restaurant and service work.
+</p>
 
-    <p class="onboarding-copy">
-  <strong>Help build something for all of us in the Industry.</strong>
-  <br /><br />
-  Explore the prototype and tell us what’s useful, what’s confusing,
-  and what’s missing.
+<p class="onboarding-copy">
+  Shifts change. Coverage is needed. People look for extra hours,
+  new jobs, and ways to stay connected to their service community.
+</p>
+
+<p class="onboarding-copy">
+  <strong>
+    Industry brings those parts of service work into one place.
+  </strong>
+</p>
+
+<p class="onboarding-copy">
+  Help build something for all of us in the Industry.
 </p>
 
     <div class="onboarding-actions">
@@ -80,12 +88,12 @@
   aria-labelledby="onboarding-home-title"
 >
   <section class="onboarding-card">
-    <p class="onboarding-eyebrow">Quick Tour · 1 of 2</p>
+    <p class="onboarding-eyebrow">Quick Tour · 1 of 3</p>
 
     <h1 id="onboarding-home-title">This is Home</h1>
 
     <p class="onboarding-intro">
-      The round Industry button at the bottom of the screen brings you Home anytime you want to get your bearings.
+      The round Industry button at the bottom of the screen brings you Home to the Dashboard anytime you want to get your bearings.
     </p>
 
     <p class="onboarding-copy">
@@ -125,44 +133,123 @@
   aria-labelledby="onboarding-lanes-title"
 >
   <section class="onboarding-card">
-    <p class="onboarding-eyebrow">Quick Tour · 2 of 2</p>
+  <p class="onboarding-eyebrow">Quick Tour 2 of 3</p>
 
-    <h1 id="onboarding-lanes-title">Three ways into Industry</h1>
+  <h1 id="onboarding-lanes-title">Industry has three pillars</h1>
 
-    <div class="onboarding-lanes">
-      <article class="onboarding-lane">
-        <strong>Schedule</strong>
-        <span>Your shifts, coverage, and workweek.</span>
-      </article>
+  <p class="onboarding-copy">
+    Two help organize your work life. One helps connect you to the
+    wider service community.
+  </p>
 
-      <article class="onboarding-lane">
-        <strong>Jobs</strong>
-        <span>Explore opportunities and your next move.</span>
-      </article>
+  <div class="onboarding-lanes">
+    <article class="onboarding-lane">
+      <span class="onboarding-pillar-type">Utility</span>
+      <strong>Schedule</strong>
+      <span>
+        Your shifts, coverage needs, available hours, and workweek.
+      </span>
+    </article>
 
-      <article class="onboarding-lane">
-        <strong>People</strong>
-        <span>Your service-industry community.</span>
-      </article>
-    </div>
+    <article class="onboarding-lane">
+      <span class="onboarding-pillar-type">Utility</span>
+      <strong>Jobs</strong>
+      <span>
+        Explore opportunities, prepare applications, and track your
+        next move.
+      </span>
+    </article>
+
+    <article class="onboarding-lane">
+      <span class="onboarding-pillar-type">Social</span>
+      <strong>People</strong>
+      <span>
+        Workers, events, connections, and resources across the Industry.
+      </span>
+    </article>
+  </div>
+
+  <p class="onboarding-copy">
+    We’d like you to spend some time exploring all three.
+  </p>
+
+  <div class="onboarding-actions">
+    <button
+      class="onboarding-primary"
+      id="finish-onboarding-button"
+      type="button"
+    >
+      Continue
+    </button>
+
+    <button
+      class="onboarding-secondary"
+      id="exit-lanes-tour-button"
+      type="button"
+    >
+      Exit tour
+    </button>
+  </div>
+</section>
+</div>
+
+<!-- ==========================================
+     TESTING ONBOARDING
+     Build 8C: Usability Test Orientation
+=========================================== -->
+
+<div
+  class="onboarding-overlay is-hidden"
+  id="onboarding-test-step"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="onboarding-test-title"
+>
+  <section class="onboarding-card">
+    <p class="onboarding-eyebrow">QUICK TOUR · 3 OF 3</p>
+
+    <h1 id="onboarding-test-title">You're testing Industry</h1>
 
     <p class="onboarding-copy">
-      Explore however feels natural. We want to learn what makes sense
-      without telling you exactly where to go.
+      This is a usability test of an early Industry prototype for
+      restaurant and service workers.
+    </p>
+
+    <p class="onboarding-copy">
+      The workers, workplaces, shifts, jobs, events, and activity
+      you'll see are <strong>simulated</strong> so you can experience how
+      Industry could work.
+    </p>
+
+    <p class="onboarding-copy">
+      <strong>
+        We have one task for each pillar: Schedule, Jobs, and People.
+      </strong>
+    </p>
+
+    <p class="onboarding-copy">
+      Explore each task as naturally as you can. We want to learn what makes
+      sense, what's confusing, and what could make Industry more useful for
+      service workers.
+    </p>
+
+    <p class="onboarding-copy">
+      <strong>Need a reminder? Tap the ? button anytime.</strong>
+      You'll find your three tasks there along with a way to share feedback.
     </p>
 
     <div class="onboarding-actions">
       <button
         class="onboarding-primary"
-        id="finish-onboarding-button"
+        id="start-usability-test-button"
         type="button"
       >
-        Explore Industry
+        Start usability test
       </button>
 
       <button
         class="onboarding-secondary"
-        id="exit-lanes-tour-button"
+        id="exit-test-tour-button"
         type="button"
       >
         Exit tour
@@ -4602,40 +4689,73 @@
   aria-labelledby="onboarding-help-title"
 >
   <section class="onboarding-card onboarding-help-card">
-    <p class="onboarding-eyebrow">Industry Help</p>
+  <p class="onboarding-eyebrow">Industry Test</p>
 
-    <h1 id="onboarding-help-title">Need a reminder?</h1>
+  <h1 id="onboarding-help-title">Need a reminder?</h1>
 
-    <p class="onboarding-copy">
-      Share what you experienced, replay the quick tour, or return to Industry.
-    </p>
+  <p class="onboarding-copy">
+    Try each of these during your usability test.
+  </p>
 
-    <div class="onboarding-actions">
-  <button
-    class="onboarding-primary"
-    id="share-feedback-button"
-    type="button"
-  >
-    Share feedback
-  </button>
+  <div class="onboarding-lanes">
+    <article class="onboarding-lane">
+      <span class="onboarding-pillar-type">Schedule</span>
+      <strong>Find coverage</strong>
+      <span>
+        You have an upcoming shift you can no longer work.
+        Find a way to get it covered.
+      </span>
+    </article>
 
-  <button
-    class="onboarding-secondary"
-    id="replay-onboarding-button"
-    type="button"
-  >
-    Replay quick tour
-  </button>
+    <article class="onboarding-lane">
+      <span class="onboarding-pillar-type">Jobs</span>
+      <strong>Explore your next move</strong>
+      <span>
+        You’re thinking about working somewhere new. Find a job that interests you and prepare to apply.
+      </span>
+    </article>
 
-  <button
-    class="onboarding-secondary"
-    id="close-onboarding-help-button"
-    type="button"
-  >
-    Back to Industry
-  </button>
-</div>
-  </section>
+    <article class="onboarding-lane">
+      <span class="onboarding-pillar-type">People</span>
+      <strong>Explore the community</strong>
+      <span>
+        See what’s happening in the service community.
+        Find something or someone you’d want to connect with.
+      </span>
+    </article>
+  </div>
+
+  <p class="onboarding-copy">
+    You don’t need to complete these in order.
+    Explore as naturally as you can.
+  </p>
+
+  <div class="onboarding-actions">
+    <button
+      class="onboarding-primary"
+      id="share-feedback-button"
+      type="button"
+    >
+      Share feedback
+    </button>
+
+    <button
+      class="onboarding-secondary"
+      id="replay-onboarding-button"
+      type="button"
+    >
+      Replay quick tour
+    </button>
+
+    <button
+      class="onboarding-secondary"
+      id="close-onboarding-help-button"
+      type="button"
+    >
+      Back to Industry
+    </button>
+  </div>
+</section>
 </div>
 
       <nav class="bottom-nav" aria-label="Bottom navigation">

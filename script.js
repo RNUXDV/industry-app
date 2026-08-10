@@ -5281,6 +5281,14 @@ const closeOnboardingHelpButton = document.querySelector(
   "#close-onboarding-help-button",
 );
 
+const onboardingTestStep = document.querySelector("#onboarding-test-step");
+
+const startUsabilityTestButton = document.querySelector(
+  "#start-usability-test-button",
+);
+
+const exitTestTourButton = document.querySelector("#exit-test-tour-button");
+
 const shareFeedbackButton = document.querySelector("#share-feedback-button");
 
 function completeOnboarding() {
@@ -5289,6 +5297,7 @@ function completeOnboarding() {
   onboardingWelcome?.classList.add("is-hidden");
   onboardingHomeStep?.classList.add("is-hidden");
   onboardingLanesStep?.classList.add("is-hidden");
+  onboardingTestStep?.classList.add("is-hidden");
 
   document.body.classList.remove("onboarding-home-active");
 }
@@ -5351,11 +5360,18 @@ shareFeedbackButton?.addEventListener("click", () => {
   window.open(feedbackUrl, "_blank", "noopener,noreferrer");
 });
 
-
 exitTourButton?.addEventListener("click", () => {
   completeOnboarding();
 });
 finishOnboardingButton?.addEventListener("click", () => {
+  onboardingLanesStep?.classList.add("is-hidden");
+  onboardingTestStep?.classList.remove("is-hidden");
+});
+startUsabilityTestButton?.addEventListener("click", () => {
+  completeOnboarding();
+});
+
+exitTestTourButton?.addEventListener("click", () => {
   completeOnboarding();
 });
 exitLanesTourButton?.addEventListener("click", () => {

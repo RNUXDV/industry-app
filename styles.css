@@ -8757,6 +8757,16 @@ body.onboarding-home-active #home-logo-button {
    Build 3: Main Lanes Orientation
 ========================================= */
 
+.onboarding-pillar-type {
+  width: fit-content;
+  margin-bottom: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .onboarding-lanes {
   display: grid;
   gap: 12px;
@@ -8788,8 +8798,8 @@ body.onboarding-home-active #home-logo-button {
 
 .onboarding-help-button {
   position: fixed;
-  right: 14px;
-  bottom: 72px;
+  right: 10px;
+  bottom: 50px;
   z-index: 80;
   width: 40px;
   height: 40px;
