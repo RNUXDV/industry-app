@@ -8660,9 +8660,34 @@ body:has(.people-nearby-view) .bottom-nav .nav-link-item.active {
 
   padding: 24px;
 
-  background: rgba(8, 10, 14, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background:
+  linear-gradient(
+    rgba(44, 48, 44, 0.055) 1px,
+    transparent 1px
+  ),
+  linear-gradient(
+    90deg,
+    rgba(44, 48, 44, 0.055) 1px,
+    transparent 1px
+  ),
+  radial-gradient(
+    circle at 18% 12%,
+    rgba(216, 90, 42, 0.14),
+    transparent 32%
+  ),
+  radial-gradient(
+    circle at 86% 82%,
+    rgba(139, 92, 246, 0.12),
+    transparent 36%
+  ),
+  #e7e2d8;
+
+background-size:
+  24px 24px,
+  24px 24px,
+  auto,
+  auto,
+  auto;
 }
 
 .onboarding-overlay.is-hidden {
@@ -8671,30 +8696,38 @@ body:has(.people-nearby-view) .bottom-nav .nav-link-item.active {
 
 .onboarding-card {
   width: min(100%, 480px);
-
   margin: auto;
   flex-shrink: 0;
 
   padding: 32px 28px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 28px;
-  background: var(--surface);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+
+  background: #292b29;
+  box-shadow: 0 24px 70px rgba(30, 26, 20, 0.18);
+
+  color: #f7f4ed;
 }
 
-@media (max-width: 600px) {
-  .onboarding-overlay {
-    padding: 16px;
-  }
+/* =========================================
+   ONBOARDING — CHARCOAL TEXT CONTRAST
+========================================= */
+
+.onboarding-card h1,
+.onboarding-card h2,
+.onboarding-card strong {
+  color: #f7f4ed;
 }
 
-.onboarding-eyebrow {
-  margin: 0 0 12px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
+.onboarding-card p,
+.onboarding-copy,
+.onboarding-intro {
+  color: #d8d3ca;
+}
+
+.onboarding-eyebrow,
+.onboarding-note {
+  color: #bcb6ac;
 }
 
 .onboarding-card h1 {
@@ -8737,10 +8770,31 @@ body:has(.people-nearby-view) .bottom-nav .nav-link-item.active {
   color: var(--bg);
 }
 
+.onboarding-primary {
+  background: #ded8cc;
+  color: #181817;
+}
+
+.onboarding-primary:hover,
+.onboarding-primary:focus-visible {
+  background: #d3ccbf;
+}
+
 .onboarding-secondary {
   border: 1px solid var(--line);
   background: transparent;
   color: var(--text);
+}
+
+.onboarding-secondary {
+  border: 1px solid rgba(24, 24, 22, 0.16);
+  background: rgba(255, 255, 255, 0.38);
+  color: #181817;
+}
+
+.onboarding-secondary:hover,
+.onboarding-secondary:focus-visible {
+  background: rgba(255, 255, 255, 0.68);
 }
 
 .onboarding-note {
@@ -8785,28 +8839,27 @@ body.onboarding-home-active #home-logo-button {
 
 .onboarding-lanes {
   display: grid;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 18px;
 }
 
 .onboarding-lane {
   display: grid;
-  gap: 4px;
-  padding: 16px 18px;
-  border: 1px solid var(--line);
+  gap: 6px;
+  padding: 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
+
+  background: rgba(255, 255, 255, 0.035);
 }
 
 .onboarding-lane strong {
-  font-size: 1rem;
+  color: #f7f4ed;
 }
 
-.onboarding-lane span {
-  color: var(--muted);
-  line-height: 1.45;
+.onboarding-lane > span:last-child {
+  color: #d7d2c8;
 }
-
 /* =========================================
    TESTING ONBOARDING
    Build 5: Help / Replay
@@ -8842,9 +8895,19 @@ body.onboarding-home-active #home-logo-button {
 
   padding: 24px;
 
-  background: rgba(8, 10, 14, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background:
+  linear-gradient(
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 1px
+  ),
+  linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 1px
+  ),
+  #0b0f11;
+
+background-size: 24px 24px;
 }
 
 .onboarding-help-panel.is-hidden {
@@ -8861,4 +8924,66 @@ body.onboarding-home-active #home-logo-button {
   .onboarding-help-panel {
     padding: 16px;
   }
+}
+
+/* =========================================
+   ONBOARDING — PILLAR COLOR SYSTEM
+========================================= */
+
+.onboarding-lane--schedule {
+  border-color: rgba(224, 102, 58, 0.55);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(224, 102, 58, 0.18),
+      rgba(41, 43, 41, 0.96) 45%
+    );
+}
+
+.onboarding-lane--schedule .onboarding-pillar-type {
+  color: #f08a63;
+}
+
+.onboarding-lane--schedule .onboarding-pillar-type,
+.onboarding-lane--schedule strong {
+  color: #e9784b;
+}
+
+.onboarding-lane--people {
+  border-color: rgba(153, 112, 246, 0.58);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(153, 112, 246, 0.20),
+      rgba(41, 43, 41, 0.96) 45%
+    );
+}
+
+.onboarding-lane--people .onboarding-pillar-type {
+  color: #b697ff;
+}
+
+.onboarding-lane--jobs .onboarding-pillar-type {
+  color: #82d9c8;
+}
+
+.onboarding-lane--jobs .onboarding-pillar-type,
+.onboarding-lane--jobs strong {
+  color: #74cdbd;
+}
+
+.onboarding-lane--people {
+  border-color: rgba(139, 92, 246, 0.4);
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.17),
+    rgba(139, 92, 246, 0.04)
+  );
+}
+
+.onboarding-lane--people .onboarding-pillar-type,
+.onboarding-lane--people strong {
+  color: #a987f7;
 }
