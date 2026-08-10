@@ -739,11 +739,11 @@ if (themeToggleButton) {
 
 if (resetDemoDataButton) {
   resetDemoDataButton.addEventListener("click", () => {
-    localStorage.removeItem("industry-v2-shifts");
-    localStorage.removeItem("industry-v2-shift-responses");
-    localStorage.removeItem("industry-v2-tip-entries");
-    localStorage.removeItem("industry-v2-activity");
-
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("industry-")) {
+        localStorage.removeItem(key);
+      }
+    });
     location.reload();
   });
 }
