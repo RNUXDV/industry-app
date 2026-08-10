@@ -5327,11 +5327,28 @@ replayOnboardingButton?.addEventListener("click", () => {
 });
 
 shareFeedbackButton?.addEventListener("click", () => {
-  window.open(
-    "https://docs.google.com/forms/d/e/1FAIpQLSdUwvbZ663lA_P7is0VA0X8ViLVhsxMNWnSPf-JfDcrkNdouw/viewform",
-    "_blank",
-    "noopener,noreferrer"
-  );
+  const savedSource = localStorage.getItem("industry-test-source");
+
+  const defaultFeedbackUrl =
+    "https://docs.google.com/forms/d/e/1FAIpQLSdUwvbZ663lA_P7is0VA0X8ViLVhsxMNWnSPf-JfDcrkNdouw/viewform";
+
+  const portlandFeedbackUrl =
+    "https://docs.google.com/forms/d/e/1FAIpQLSdUwvbZ663lA_P7is0VA0X8ViLVhsxMNWnSPf-JfDcrkNdouw/viewform?usp=pp_url&entry.128855954=Portland";
+
+  const tacomaFeedbackUrl =
+    "https://docs.google.com/forms/d/e/1FAIpQLSdUwvbZ663lA_P7is0VA0X8ViLVhsxMNWnSPf-JfDcrkNdouw/viewform?usp=pp_url&entry.128855954=Tacoma";
+
+  let feedbackUrl = defaultFeedbackUrl;
+
+  if (savedSource === "portland-qr") {
+    feedbackUrl = portlandFeedbackUrl;
+  }
+
+  if (savedSource === "tacoma-qr") {
+    feedbackUrl = tacomaFeedbackUrl;
+  }
+
+  window.open(feedbackUrl, "_blank", "noopener,noreferrer");
 });
 
 exitTourButton?.addEventListener("click", () => {
@@ -5351,4 +5368,16 @@ if (hasCompletedOnboarding) {
   onboardingWelcome?.classList.add("is-hidden");
 } else {
   onboardingWelcome?.classList.remove("is-hidden");
+}
+
+// =========================================
+// TESTING DISTRIBUTION
+// Build 7: QR Source Tracking
+// =========================================
+
+const industryUrlParams = new URLSearchParams(window.location.search);
+const industryTestSource = industryUrlParams.get("source");
+
+if (industryTestSource) {
+  localStorage.setItem("industry-test-source", industryTestSource);
 }
