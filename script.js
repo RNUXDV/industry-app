@@ -5351,6 +5351,7 @@ shareFeedbackButton?.addEventListener("click", () => {
   window.open(feedbackUrl, "_blank", "noopener,noreferrer");
 });
 
+
 exitTourButton?.addEventListener("click", () => {
   completeOnboarding();
 });
