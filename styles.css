@@ -8651,9 +8651,15 @@ body:has(.people-nearby-view) .bottom-nav .nav-link-item.active {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  display: grid;
-  place-items: center;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
   padding: 24px;
+
   background: rgba(8, 10, 14, 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -8665,11 +8671,21 @@ body:has(.people-nearby-view) .bottom-nav .nav-link-item.active {
 
 .onboarding-card {
   width: min(100%, 480px);
+
+  margin: auto;
+  flex-shrink: 0;
+
   padding: 32px 28px;
   border: 1px solid var(--line);
   border-radius: 28px;
   background: var(--surface);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+}
+
+@media (max-width: 600px) {
+  .onboarding-overlay {
+    padding: 16px;
+  }
 }
 
 .onboarding-eyebrow {
