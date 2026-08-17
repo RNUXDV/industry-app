@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Industry Backend Test</title>
+  </head>
+
+  <body>
+    <h1>Industry Backend Test</h1>
+    <p id="backend-status">Supabase test page loaded.</p>
+    <form id="login-form">
+      <p>
+        <label>
+          Email
+          <input id="login-email" type="email" required />
+        </label>
+      </p>
+
+      <p>
+        <label>
+          Password
+          <input id="login-password" type="password" required />
+        </label>
+      </p>
+
+      <button type="submit">Sign in</button>
+    </form>
+
+    <p id="login-status"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+      const SUPABASE_URL = "https://pzgfottwuczqgisrlfss.supabase.co";
+
+      const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_I4zjPUH_5zqN0x2cV_n1iQ_-gUwPS2H";
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+      );
+
+      document.querySelector("#backend-status").textContent =
+        "Supabase client initialized.";
+
+      console.log("Supabase client initialized:", supabaseClient);
+      const loginForm = document.querySelector("#login-form");
+      const loginStatus = document.querySelector("#login-status");
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const email = document.querySelector("#login-email").value.trim();
+        const password = document.querySelector("#login-password").value;
+
+        loginStatus.textContent = "Signing in...";
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          console.error("Sign-in error:", error);
+          loginStatus.textContent = `Sign-in failed: ${error.message}`;
+          return;
+        }
+
+        loginStatus.textContent = `Signed in as ${data.user.email}`;
+        console.log("Signed in user:", data.user);
+
+        const { data: profile, error: profileError } = await supabaseClient
+          .from("profiles")
+          .select("id, full_name, created_at")
+          .maybeSingle();
+
+        if (profileError) {
+          console.error("Profile error:", profileError);
+          loginStatus.textContent = `Signed in, but profile read failed: ${profileError.message}`;
+          return;
+        }
+
+        if (!profile) {
+          loginStatus.textContent =
+            "Signed in, but no profile row was returned.";
+          return;
+        }
+
+        loginStatus.textContent = `Signed in as ${data.user.email} — Profile: ${profile.full_name}`;
+
+        console.log("Profile returned:", profile);
+      });
+    </script>
+  </body>
+</html>
