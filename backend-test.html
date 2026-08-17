@@ -9,6 +9,36 @@
   <body>
     <h1>Industry Backend Test</h1>
     <p id="backend-status">Supabase test page loaded.</p>
+    <h2>Create account</h2>
+
+    <form id="signup-form">
+      <p>
+        <label>
+          Full name
+          <input id="signup-name" type="text" required />
+        </label>
+      </p>
+
+      <p>
+        <label>
+          Email
+          <input id="signup-email" type="email" required />
+        </label>
+      </p>
+
+      <p>
+        <label>
+          Password
+          <input id="signup-password" type="password" required />
+        </label>
+      </p>
+
+      <button type="submit">Create account</button>
+    </form>
+
+    <p id="signup-status"></p>
+
+    <h2>Sign in</h2>
     <form id="login-form">
       <p>
         <label>
@@ -45,6 +75,44 @@
         "Supabase client initialized.";
 
       console.log("Supabase client initialized:", supabaseClient);
+      const signupForm = document.querySelector("#signup-form");
+      const signupStatus = document.querySelector("#signup-status");
+
+      signupForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const fullName = document.querySelector("#signup-name").value.trim();
+
+        const email = document.querySelector("#signup-email").value.trim();
+
+        const password = document.querySelector("#signup-password").value;
+
+        signupStatus.textContent = "Creating account...";
+
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+            },
+          },
+        });
+
+        if (error) {
+          console.error("Signup error:", error);
+          signupStatus.textContent = `Account creation failed: ${error.message}`;
+          return;
+        }
+
+        console.log("Signup result:", data);
+
+        if (data.session) {
+          signupStatus.textContent = `Account created for ${data.user.email}.`;
+        } else {
+          signupStatus.textContent = `Account created for ${data.user.email}. Check your email if confirmation is required.`;
+        }
+      });
       const loginForm = document.querySelector("#login-form");
       const loginStatus = document.querySelector("#login-status");
 
