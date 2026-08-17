@@ -90,6 +90,39 @@
         loginStatus.textContent = `Signed in as ${data.user.email} — Profile: ${profile.full_name}`;
 
         console.log("Profile returned:", profile);
+        const OTHER_PROFILE_ID = "5c0df709-0809-4d4d-b63d-5ce6a9699115";
+
+        console.log("Starting RLS test query...");
+        const { data: otherProfiles, error: otherProfileError } =
+          await supabaseClient
+            .from("profiles")
+            .select("id, full_name")
+            .eq("id", OTHER_PROFILE_ID);
+        console.log("RLS query completed:", {
+          otherProfiles,
+          otherProfileError,
+        });
+
+        if (otherProfileError) {
+          console.error("RLS test error:", otherProfileError);
+
+          loginStatus.textContent = `RLS test error: ${otherProfileError.message}`;
+
+          return;
+        }
+
+        if (otherProfiles.length > 0) {
+          loginStatus.textContent =
+            "RLS TEST FAILED — another user's profile was returned.";
+
+          console.error("RLS TEST FAILED:", otherProfiles);
+
+          return;
+        }
+
+        loginStatus.textContent = `Signed in as ${data.user.email} — Profile: ${profile.full_name} — RLS PASS: other profile blocked.`;
+
+        console.log("RLS PASS: Test Worker Two was not accessible.");
       });
     </script>
   </body>
