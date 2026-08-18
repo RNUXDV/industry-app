@@ -291,7 +291,9 @@
   <div class="hero-top compact-hero-top">
     <div>
       <p class="eyebrow">Industry</p>
-      <h1>Good Afternoon</h1>
+      <h1 id="dashboard-greeting">
+  Good Afternoon, <span id="dashboard-greeting-name">Maya</span>
+</h1>
      <p class="compact-hero-date">Thursday • July 16</p>
     </div>
 
@@ -336,69 +338,75 @@
   Departure Lounge
 </div> 
 
-    <button
-  id="dashboard-shift-details-button"
-  type="button"
->
-  View Details
-</button>
+    
 </section>
 
-    <button
-  class="action-button"
-  data-dashboard-section="schedule"
-  data-dashboard-view="my-shifts"
-  type="button"
->
-  View Schedule
-</button>
+<div class="shift-commute-strip" aria-label="Commute and weather">
+  <div class="shift-commute-item">
+    <span class="shift-commute-icon" aria-hidden="true">↗</span>
+    <div>
+      <strong>4:32 PM</strong>
+      <span>Leave by</span>
+    </div>
+    
+  </div>
+
+  
+
+  <div class="shift-commute-item">
+    <span class="shift-commute-icon" aria-hidden="true">🚗</span>
+    <div>
+      <strong>18 min</strong>
+      <span>Drive</span>
+    </div>
+  </div>
+
+  
+
+  <div class="shift-commute-item">
+    <span class="shift-commute-icon" aria-hidden="true">🚌</span>
+    <div>
+      <strong>24 min</strong>
+      <span>Transit</span>
+    </div>
+  </div>
+
+  <div class="shift-commute-item">
+    <span class="shift-commute-icon" aria-hidden="true">☀️</span>
+    <div>
+      <strong>74°</strong>
+      <span>Sunny</span>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-shift-actions">
+  <button
+    class="action-button dashboard-shift-primary"
+    id="dashboard-shift-details-button"
+    type="button"
+  >
+    View Shift
+  </button>
+
+  <button
+    class="action-button dashboard-shift-secondary"
+    data-dashboard-section="schedule"
+    data-dashboard-view="my-shifts"
+    type="button"
+  >
+    Full Schedule
+  </button>
+</div>
   </section>
 
-  <!-- Before You Go -->
-
-  <section class="today-panel conditions-panel">
-
-  <div class="panel-heading">
-    <p class="section-label">Before You Go</p>
-  </div>
-
-  <div class="conditions-grid">
-
-    <article class="condition-item">
-
-      <p class="condition-icon">☀️</p>
-
-      <div>
-        <h3>74°</h3>
-        <p>Sunny this afternoon</p>
-      </div>
-
-    </article>
-
-    <article class="condition-item">
-
-      <p class="condition-icon">🚗</p>
-
-      <div>
-        <h3>18 min</h3>
-        <p>Traffic is normal</p>
-      </div>
-
-    </article>
-
-  </div>
-
-  <p class="conditions-insight">
-    You're good to go. Leave around 4:32 PM.
-  </p>
-
-</section>
+  
 
   <!-- Today's Snapshot -->
 
   <section class="today-panel snapshot-panel">
   <div class="panel-heading">
-    <p class="section-label">Today</p>
+    <p class="section-label">At a Glance</p>
   </div>
 
   <div class="snapshot-grid">
@@ -457,13 +465,14 @@
 </button>
 
     <button
-      class="quick-action-item"
-      data-dashboard-section="jobs"
-      type="button"
-    >
-      <span class="quick-action-icon" aria-hidden="true">🔎</span>
-      <span>Find Jobs</span>
-    </button>
+  class="quick-action-item"
+  data-dashboard-section="schedule"
+  data-dashboard-view="shift-crew"
+  type="button"
+>
+  <span class="quick-action-icon" aria-hidden="true">👥</span>
+  <span>View Crew</span>
+</button>
 
     <button
       class="quick-action-item"

@@ -8987,3 +8987,109 @@ background-size: 24px 24px;
 .onboarding-lane--people strong {
   color: #a987f7;
 }
+
+/* Dashboard — Next Shift commute strip */
+.shift-commute-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 1rem 0 1.25rem;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, currentColor 4%, transparent);
+  overflow: hidden;
+}
+
+.shift-commute-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 0.9rem 0.8rem;
+}
+
+.shift-commute-item:not(:last-child) {
+  border-right: 1px solid
+    color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.shift-commute-icon {
+  flex: 0 0 auto;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.shift-commute-item div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.shift-commute-item strong {
+  font-size: 0.95rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.shift-commute-item div span {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  opacity: 0.65;
+  white-space: nowrap;
+}
+
+/* Keep the strip readable on narrow phones */
+@media (max-width: 640px) {
+  .shift-commute-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shift-commute-item:nth-child(2) {
+    border-right: 0;
+  }
+
+  .shift-commute-item:nth-child(-n + 2) {
+    border-bottom: 1px solid
+      color-mix(in srgb, currentColor 14%, transparent);
+  }
+}
+
+/* Dashboard — Next Shift actions */
+.dashboard-shift-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.dashboard-shift-actions .action-button {
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  border-radius: 16px;
+  font-weight: 700;
+}
+
+.dashboard-shift-primary {
+  background: var(--schedule-accent, #e85d2a);
+  border: 1px solid var(--schedule-accent, #e85d2a);
+  color: #fff;
+}
+
+.dashboard-shift-secondary {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  color: inherit;
+}
+
+@media (max-width: 380px) {
+  .dashboard-shift-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Keep dashboard content clear of the fixed bottom nav */
+.app-section {
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
