@@ -67,6 +67,158 @@
   </section>
 </div> 
 
+<!-- =========================================================
+     INDUSTRY AUTH — SCREEN 2
+========================================================= -->
+<div
+  class="industry-auth-overlay"
+  id="industry-auth-screen"
+  aria-hidden="true"
+>
+  <section
+    class="industry-auth-card"
+    aria-labelledby="industry-auth-title"
+  >
+    <button
+      class="industry-auth-back"
+      id="industry-auth-back"
+      type="button"
+      aria-label="Back"
+    >
+      ←
+    </button>
+
+    <header class="industry-auth-header">
+      <p class="industry-auth-brand">INDUSTRY</p>
+
+      <h2 id="industry-auth-title">Create your account</h2>
+
+      <p class="industry-auth-copy">
+        Your space starts here.
+      </p>
+    </header>
+
+    <!-- CREATE ACCOUNT -->
+    <form
+      class="industry-auth-form"
+      id="signup-form"
+      autocomplete="on"
+    >
+      <label class="industry-auth-field">
+        <span>Full name</span>
+        <input
+          id="signup-name"
+          name="name"
+          type="text"
+          autocomplete="name"
+          placeholder="Your name"
+          required
+        />
+      </label>
+
+      <label class="industry-auth-field">
+        <span>Email</span>
+        <input
+          id="signup-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="you@email.com"
+          required
+        />
+      </label>
+
+      <label class="industry-auth-field">
+        <span>Password</span>
+        <input
+          id="signup-password"
+          name="password"
+          type="password"
+          autocomplete="new-password"
+          placeholder="Create a password"
+          required
+        />
+      </label>
+
+      <button
+        class="industry-auth-primary"
+        type="submit"
+      >
+        Create account
+      </button>
+
+      <p
+        class="industry-auth-status"
+        id="signup-status"
+        aria-live="polite"
+      ></p>
+    </form>
+
+    <!-- SIGN IN -->
+    <form
+      class="industry-auth-form"
+      id="login-form"
+      autocomplete="on"
+      hidden
+    >
+      <label class="industry-auth-field">
+        <span>Email</span>
+        <input
+          id="login-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="you@email.com"
+          required
+        />
+      </label>
+
+      <label class="industry-auth-field">
+        <span>Password</span>
+        <input
+          id="login-password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Your password"
+          required
+        />
+      </label>
+
+      <button
+        class="industry-auth-primary"
+        type="submit"
+      >
+        Sign in
+      </button>
+
+      <p
+        class="industry-auth-status"
+        id="login-status"
+        aria-live="polite"
+      ></p>
+    </form>
+
+    <div class="industry-auth-switch">
+      <p id="industry-auth-switch-copy">
+        Already have an account?
+      </p>
+
+      <button
+        class="industry-auth-switch-button"
+        id="industry-auth-switch-button"
+        type="button"
+      >
+        Sign in
+      </button>
+    </div>
+
+    <p class="industry-auth-footer">
+      Built for the people who work the shift.
+    </p>
+  </section>
+</div>
+
 <!-- =========================================
      INDUSTRY TESTING ONBOARDING
      Build 2: Home Orientation
@@ -4768,6 +4920,8 @@
         </button>
       </nav>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
     <script src="script.js"></script>
   </body>

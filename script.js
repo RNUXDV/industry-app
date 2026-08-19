@@ -5303,9 +5303,7 @@ function completeOnboarding() {
 }
 
 startOnboardingButton?.addEventListener("click", () => {
-  onboardingWelcome?.classList.add("is-hidden");
-  onboardingHomeStep?.classList.remove("is-hidden");
-  document.body.classList.add("onboarding-home-active");
+  openIndustryAuth("signup");
 });
 skipOnboardingButton?.addEventListener("click", () => {
   completeOnboarding();
@@ -5386,6 +5384,180 @@ if (hasCompletedOnboarding) {
 } else {
   onboardingWelcome?.classList.remove("is-hidden");
 }
+
+// =========================================================
+// INDUSTRY AUTH — SCREEN 2
+// =========================================================
+
+const industryAuthScreen = document.querySelector("#industry-auth-screen");
+const industryAuthBack = document.querySelector("#industry-auth-back");
+
+const industryAuthTitle = document.querySelector("#industry-auth-title");
+const industryAuthCopy = document.querySelector(".industry-auth-copy");
+
+const signupForm = document.querySelector("#signup-form");
+const loginForm = document.querySelector("#login-form");
+
+const signupStatus = document.querySelector("#signup-status");
+const loginStatus = document.querySelector("#login-status");
+
+const authSwitchCopy = document.querySelector("#industry-auth-switch-copy");
+const authSwitchButton = document.querySelector("#industry-auth-switch-button");
+
+const onboardingSignInButton = document.querySelector(
+  "#onboarding-signin-button",
+);
+
+// =========================================================
+// SUPABASE CLIENT
+// =========================================================
+
+const SUPABASE_URL = "https://pzgfottwuczqgisrlfss.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_I4zjPUH_5zqN0x2cV_n1iQ_-gUwPS2H";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+);
+
+function setIndustryAuthMode(mode = "signup") {
+  const isLogin = mode === "login";
+
+  signupForm.hidden = isLogin;
+  loginForm.hidden = !isLogin;
+
+  industryAuthTitle.textContent = isLogin
+    ? "Welcome back"
+    : "Create your account";
+
+  industryAuthCopy.textContent = isLogin
+    ? "Sign in to your space."
+    : "Your space starts here.";
+
+  authSwitchCopy.textContent = isLogin
+    ? "New to Industry?"
+    : "Already have an account?";
+
+  authSwitchButton.textContent = isLogin ? "Create account" : "Sign in";
+
+  industryAuthScreen.dataset.mode = isLogin ? "login" : "signup";
+}
+
+function openIndustryAuth(mode = "signup") {
+  setIndustryAuthMode(mode);
+
+  onboardingWelcome?.classList.add("is-hidden");
+
+  industryAuthScreen?.classList.add("is-active");
+  industryAuthScreen?.setAttribute("aria-hidden", "false");
+
+  document.body.classList.remove("onboarding-home-active");
+}
+
+function closeIndustryAuth() {
+  industryAuthScreen?.classList.remove("is-active");
+  industryAuthScreen?.setAttribute("aria-hidden", "true");
+
+  onboardingWelcome?.classList.remove("is-hidden");
+}
+
+industryAuthBack?.addEventListener("click", () => {
+  closeIndustryAuth();
+});
+
+function enterAuthenticatedIndustry() {
+  industryAuthScreen?.classList.remove("is-active");
+  industryAuthScreen?.setAttribute("aria-hidden", "true");
+
+  document.body.classList.remove("industry-auth-active");
+
+  completeOnboarding();
+}
+
+authSwitchButton?.addEventListener("click", () => {
+  const currentMode = industryAuthScreen?.dataset.mode;
+
+  setIndustryAuthMode(currentMode === "login" ? "signup" : "login");
+});
+
+onboardingSignInButton?.addEventListener("click", () => {
+  openIndustryAuth("login");
+});
+
+// =========================================================
+// INDUSTRY AUTH — CREATE ACCOUNT
+// =========================================================
+
+signupForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const fullName = document.querySelector("#signup-name").value.trim();
+
+  const email = document.querySelector("#signup-email").value.trim();
+
+  const password = document.querySelector("#signup-password").value;
+
+  signupStatus.textContent = "Creating your account…";
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+      },
+    },
+  });
+
+  if (error) {
+    console.error("Industry signup error:", error);
+    signupStatus.textContent = error.message;
+    return;
+  }
+
+  console.log("Industry signup result:", data);
+
+  if (!data.session) {
+    signupStatus.textContent =
+      "Account created. Check your email to confirm your account.";
+    return;
+  }
+
+  signupStatus.textContent = "Account created.";
+
+  enterAuthenticatedIndustry();
+});
+
+// =========================================================
+// INDUSTRY AUTH — SIGN IN
+// =========================================================
+
+loginForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.querySelector("#login-email").value.trim();
+
+  const password = document.querySelector("#login-password").value;
+
+  loginStatus.textContent = "Signing in…";
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    console.error("Industry sign-in error:", error);
+    loginStatus.textContent = error.message;
+    return;
+  }
+
+  console.log("Industry signed-in user:", data.user);
+
+  loginStatus.textContent = "Welcome back.";
+
+  enterAuthenticatedIndustry();
+});
 
 // =========================================
 // TESTING DISTRIBUTION
