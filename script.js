@@ -372,6 +372,7 @@ const savedDemoUser = "original";
 
 let CURRENT_USER = DEMO_USERS.original;
 let authenticatedScheduleShifts = undefined;
+let authenticatedCatchShifts = undefined;
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let selectedReleaseShift = null;
@@ -661,6 +662,91 @@ async function loadAuthenticatedSchedule() {
   renderAuthenticatedNextShiftSummary(authenticatedScheduleShifts);
   renderImportedShifts(authenticatedScheduleShifts);
   renderDashboardShift(authenticatedScheduleShifts[0] || null);
+}
+
+async function loadAuthenticatedCatchShifts() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabaseClient.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Industry Catch user error:", userError);
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("shifts")
+    .select(
+      `
+        id,
+        assigned_profile_id,
+        role,
+        starts_at,
+        ends_at,
+        end_label,
+        status,
+        workplace:workplaces (
+          name,
+          time_zone
+        )
+      `,
+    )
+    .eq("status", "coverage_needed")
+    .order("starts_at", { ascending: true });
+
+  if (error) {
+    console.error("Industry Catch shift error:", error);
+    return;
+  }
+
+  authenticatedCatchShifts = (data || []).map((shift) => {
+    const timeZone =
+      shift.workplace?.time_zone ||
+      Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const startDate = new Date(shift.starts_at);
+
+    const day = startDate.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone,
+    });
+
+    const startTime = startDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone,
+    });
+
+    const endText = shift.ends_at
+      ? new Date(shift.ends_at).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone,
+        })
+      : shift.end_label || "";
+
+    return {
+      id: shift.id,
+      owner: shift.assigned_profile_id,
+      workplace: shift.workplace?.name || "",
+      role: shift.role || "",
+      day,
+      time: endText ? `${startTime} – ${endText}` : startTime,
+      status: shift.status,
+      displayStatus: "Open",
+      startsAt: shift.starts_at,
+      source: "backend-catch",
+    };
+  });
+
+  console.log(
+    "Industry authenticated Catch shifts loaded:",
+    authenticatedCatchShifts,
+  );
+  renderShiftBoard();
 }
 
 function renderDashboardShift(backendShift = undefined) {
@@ -1774,22 +1860,27 @@ function renderShiftBoard() {
   const responses = getShiftResponses();
   const scheduledShifts = getShiftStore();
 
-  const shifts = getAllShifts().filter((shift) => {
-    const displayedStatus = getDisplayedShiftStatus(shift, responses);
+  const shifts =
+    authenticatedCatchShifts !== undefined
+      ? authenticatedCatchShifts
+      : getAllShifts().filter((shift) => {
+          const displayedStatus = getDisplayedShiftStatus(shift, responses);
 
-    const isCatchOpportunity =
-      shift.source === "catch-board" ||
-      sampleShifts.some((sampleShift) => sampleShift.id === shift.id);
+          const isCatchOpportunity =
+            shift.source === "catch-board" ||
+            sampleShifts.some((sampleShift) => sampleShift.id === shift.id);
 
-    const hasBeenScheduled = scheduledShifts.some(
-      (scheduledShift) => scheduledShift.sourceBoardShiftId === shift.id,
-    );
+          const hasBeenScheduled = scheduledShifts.some(
+            (scheduledShift) => scheduledShift.sourceBoardShiftId === shift.id,
+          );
 
-    const isCompletedOpportunity =
-      displayedStatus === "Confirmed" || displayedStatus === "Scheduled";
+          const isCompletedOpportunity =
+            displayedStatus === "Confirmed" || displayedStatus === "Scheduled";
 
-    return isCatchOpportunity && !hasBeenScheduled && !isCompletedOpportunity;
-  });
+          return (
+            isCatchOpportunity && !hasBeenScheduled && !isCompletedOpportunity
+          );
+        });
 
   shiftBoardList.innerHTML = "";
 
@@ -1807,7 +1898,8 @@ function renderShiftBoard() {
   }
 
   shifts.forEach((shift) => {
-    const displayedStatus = getDisplayedShiftStatus(shift, responses);
+    const displayedStatus =
+      shift.displayStatus || getDisplayedShiftStatus(shift, responses);
     const interestedCount = responses[shift.id]?.interestedCount || 1;
     const interestedWorkers = responses[shift.id]?.interestedWorkers || [];
     const confirmedWorkerId = responses[shift.id]?.confirmedWorkerId;
@@ -2016,9 +2108,15 @@ function renderShiftBoard() {
     <li>${shift.time}</li>
   </ul>
 
-  <ul class="shift-meta">
-    <li>${shift.neighborhood}</li>
-  </ul>
+  ${
+    shift.neighborhood
+      ? `
+      <ul class="shift-meta">
+        <li>${shift.neighborhood}</li>
+      </ul>
+    `
+      : ""
+  }
 
   <p class="shift-release-time">
   ${releasedTimeLabel}
@@ -6095,6 +6193,7 @@ function enterAuthenticatedIndustry() {
   loadAuthenticatedIndustryProfile();
   updateIndustryDashboardDate();
   loadAuthenticatedSchedule();
+  loadAuthenticatedCatchShifts();
 }
 
 authSwitchButton?.addEventListener("click", () => {
