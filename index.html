@@ -859,21 +859,23 @@
     <div class="next-shift-title-row">
   <div>
     <p class="section-label">Upcoming shift</p>
-    <h3>Today · 5:00 PM &ndash; Close</h3>
+   <h3 id="my-shifts-next-time">Today · 5:00 PM &ndash; Close</h3>
   </div>
 
-  <span class="shift-status-badge">Upcoming</span>
+  <span class="shift-status-badge" id="my-shifts-next-status">
+  Upcoming
+</span>
 </div>
 
   <div class="next-shift-details">
     <div>
       <span>Role</span>
-      <strong>Server</strong>
+     <strong id="my-shifts-next-role">Server</strong>
     </div>
 
     <div>
       <span>Workplace</span>
-      <strong>Departure Lounge</strong>
+      <strong id="my-shifts-next-workplace">Departure Lounge</strong>
     </div>
 
     
@@ -922,11 +924,12 @@
               aria-label="Schedule status"
             >
               <div class="panel-heading">
-                <p class="section-label">Schedule status</p>
-                <h3>Schedule connected</h3>
+              <p class="section-label">Schedule sources</p>
+<h3>Add or manage a schedule source</h3>
 <p>
-  ScheduleFly is connected. Your upcoming shifts are ready to review.
-</p>
+  Import from a supported source or add shifts manually to keep your schedule
+  in Industry.
+</p> 
               </div>
 
               <details
@@ -934,9 +937,8 @@
                 id="import-schedule-details"
               >
                 <summary class="action-button import-schedule-summary">
-                Manage schedule connection  
-                </summary>
-
+  Manage schedule sources
+</summary>
                 <div class="import-schedule-options">
                   <p class="status-text">
                     Bring your schedule into Industry. Choose a source below.

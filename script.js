@@ -24,6 +24,15 @@ const dashboardShiftRole = document.querySelector("#dashboard-shift-role");
 const dashboardShiftWorkplace = document.querySelector(
   "#dashboard-shift-workplace",
 );
+
+const myShiftsNextTime = document.querySelector("#my-shifts-next-time");
+const myShiftsNextStatus = document.querySelector("#my-shifts-next-status");
+const myShiftsNextRole = document.querySelector("#my-shifts-next-role");
+const myShiftsNextWorkplace = document.querySelector(
+  "#my-shifts-next-workplace",
+);
+
+
 const activityFeedList = document.querySelector("#activity-feed-list");
 const scheduleSubviews = document.querySelectorAll(".schedule-subview");
 const homeLogoButton = document.querySelector("#home-logo-button");
@@ -648,8 +657,8 @@ async function loadAuthenticatedSchedule() {
     authenticatedScheduleShifts,
   );
 
+  renderAuthenticatedNextShiftSummary(authenticatedScheduleShifts);
   renderImportedShifts(authenticatedScheduleShifts);
-
   renderDashboardShift(authenticatedScheduleShifts[0] || null);
 }
 
@@ -2736,6 +2745,34 @@ function renderMockCalendar() {
     .join("");
 
   mockCalendarPanel.classList.remove("hidden-panel");
+}
+
+function renderAuthenticatedNextShiftSummary(shifts) {
+  if (
+    !myShiftsNextTime ||
+    !myShiftsNextStatus ||
+    !myShiftsNextRole ||
+    !myShiftsNextWorkplace
+  ) {
+    return;
+  }
+
+  const nextShift = shifts[0];
+
+  if (!nextShift) {
+    myShiftsNextTime.textContent = "No upcoming shift";
+    myShiftsNextStatus.textContent = "No shift";
+    myShiftsNextRole.textContent = "—";
+    myShiftsNextWorkplace.textContent = "—";
+    return;
+  }
+
+  const dayLabel = getShiftDayLabel(nextShift);
+
+  myShiftsNextTime.textContent = `${dayLabel} · ${nextShift.time}`;
+  myShiftsNextStatus.textContent = "Upcoming";
+  myShiftsNextRole.textContent = nextShift.role || "—";
+  myShiftsNextWorkplace.textContent = nextShift.workplace || "—";
 }
 
 function renderAuthenticatedScheduleShifts(shifts) {
