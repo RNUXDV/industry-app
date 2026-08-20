@@ -391,22 +391,32 @@ function setActiveScheduleView(viewName) {
 }
 
 function getShiftDateValue(shift) {
+  if (shift.startsAt) {
+    return new Date(shift.startsAt).getTime();
+  }
+
   const dateText = shift.day.replace(/^[A-Za-z]{3},\s*/, "");
 
   return new Date(`${dateText}, 2026`).getTime();
 }
 
 function getShiftStartDate(shift) {
+  // Real backend shifts use an ISO timestamp.
+  if (shift.startsAt) {
+    return new Date(shift.startsAt);
+  }
+
+  // Existing prototype/demo shifts keep using day + time.
   const dateText = shift.day.replace(/^[A-Za-z]{3},\s*/, "");
-  const startTimeText = shift.time.split(/\s*[–—-]\s*/)[0].trim();
+  const startTimeText = shift.time.split(/\s*[—-]\s*/)[0].trim();
 
   return new Date(`${dateText}, 2026 ${startTimeText}`);
 }
 
 function getCountdownText(shift) {
   const shiftStart = getShiftStartDate(shift);
-  const differenceMs = shiftStart.getTime() - DEMO_NOW.getTime();
-
+  const referenceNow = shift.startsAt ? new Date() : DEMO_NOW;
+  const differenceMs = shiftStart.getTime() - referenceNow.getTime();
   if (differenceMs <= 0) {
     return "Starting soon";
   }
@@ -435,7 +445,8 @@ function getCountdownText(shift) {
 function getShiftDayLabel(shift) {
   const shiftDate = getShiftStartDate(shift);
 
-  const demoDay = new Date(DEMO_NOW);
+  const referenceNow = shift.startsAt ? new Date() : DEMO_NOW;
+  const demoDay = new Date(referenceNow);
   demoDay.setHours(0, 0, 0, 0);
 
   const targetDay = new Date(shiftDate);
@@ -456,7 +467,100 @@ function getShiftDayLabel(shift) {
   });
 }
 
-function renderDashboardShift() {
+async function loadAuthenticatedDashboardShift() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabaseClient.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Industry dashboard user error:", userError);
+    return;
+  }
+
+  const nowIso = new Date().toISOString();
+
+  const { data, error } = await supabaseClient
+    .from("shifts")
+    .select(
+      `
+      id,
+      assigned_profile_id,
+      role,
+      starts_at,
+      ends_at,
+      end_label,
+      status,
+      workplace:workplaces (
+        name,
+        time_zone
+      )
+    `,
+    )
+    .eq("assigned_profile_id", user.id)
+    .eq("status", "scheduled")
+    .gte("starts_at", nowIso)
+    .order("starts_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Industry dashboard shift error:", error);
+    return;
+  }
+
+  if (!data) {
+    console.log("Industry: no upcoming authenticated shift.");
+    renderDashboardShift(null);
+    return;
+  }
+
+  const timeZone =
+    data.workplace?.time_zone ||
+    Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const startDate = new Date(data.starts_at);
+
+  const day = startDate.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    timeZone,
+  });
+
+  const startTime = startDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone,
+  });
+
+  let endText = data.end_label || "";
+
+  if (data.ends_at) {
+    endText = new Date(data.ends_at).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone,
+    });
+  }
+
+  const dashboardShift = {
+    id: data.id,
+    owner: user.id,
+    day,
+    time: endText ? `${startTime} – ${endText}` : startTime,
+    role: data.role || "",
+    workplace: data.workplace?.name || "",
+    status: data.status,
+    startsAt: data.starts_at,
+  };
+
+  console.log("Industry dashboard shift loaded:", dashboardShift);
+
+  renderDashboardShift(dashboardShift);
+}
+
+function renderDashboardShift(backendShift = undefined) {
   if (
     !dashboardCountdownTime ||
     !dashboardShiftDay ||
@@ -468,11 +572,14 @@ function renderDashboardShift() {
     return;
   }
 
-  const upcomingShift = getShiftStore()
-    .filter((shift) => shift.owner === CURRENT_USER.id)
-    .sort((shiftA, shiftB) => {
-      return getShiftDateValue(shiftA) - getShiftDateValue(shiftB);
-    })[0];
+  const upcomingShift =
+    backendShift !== undefined
+      ? backendShift
+      : getShiftStore()
+          .filter((shift) => shift.owner === CURRENT_USER.id)
+          .sort((shiftA, shiftB) => {
+            return getShiftDateValue(shiftA) - getShiftDateValue(shiftB);
+          })[0];
 
   if (!upcomingShift) {
     dashboardShiftDetailsButton.hidden = true;
@@ -5424,11 +5531,27 @@ const dashboardDate = document.querySelector("#dashboard-date");
 
 // =========================================================
 // SUPABASE CLIENT
+// Local development uses local Supabase.
+// GitHub Pages uses production Supabase.
 // =========================================================
 
-const SUPABASE_URL = "https://pzgfottwuczqgisrlfss.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_I4zjPUH_5zqN0x2cV_n1iQ_-gUwPS2H";
+const IS_LOCAL_INDUSTRY =
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === "localhost";
+
+const SUPABASE_URL = IS_LOCAL_INDUSTRY
+  ? "http://127.0.0.1:54321"
+  : "https://pzgfottwuczqgisrlfss.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY = IS_LOCAL_INDUSTRY
+  ? "sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH"
+  : "sb_publishable_I4zjPUH_5zqN0x2cV_n1iQ_-gUwPS2H";
+
+console.log(
+  `Industry Supabase environment: ${
+    IS_LOCAL_INDUSTRY ? "LOCAL" : "PRODUCTION"
+  }`,
+);
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -5664,9 +5787,8 @@ function enterAuthenticatedIndustry() {
 
   loadAuthenticatedIndustryProfile();
   updateIndustryDashboardDate();
+  loadAuthenticatedDashboardShift();
 }
-
-
 
 authSwitchButton?.addEventListener("click", () => {
   const currentMode = industryAuthScreen?.dataset.mode;
