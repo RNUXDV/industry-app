@@ -5419,6 +5419,9 @@ const updatePasswordStatus = document.querySelector("#update-password-status");
 
 const authSwitch = document.querySelector(".industry-auth-switch");
 
+const dashboardGreeting = document.querySelector("#dashboard-greeting");
+const dashboardDate = document.querySelector("#dashboard-date");
+
 // =========================================================
 // SUPABASE CLIENT
 // =========================================================
@@ -5436,9 +5439,7 @@ const recoveryHashParams = new URLSearchParams(
   window.location.hash.replace(/^#/, ""),
 );
 
-const recoveryQueryParams = new URLSearchParams(
-  window.location.search,
-);
+const recoveryQueryParams = new URLSearchParams(window.location.search);
 
 let passwordRecoveryActive =
   recoveryHashParams.get("type") === "recovery" ||
@@ -5587,6 +5588,72 @@ industrySignOutButton?.addEventListener("click", () => {
   signOutOfIndustry();
 });
 
+// =========================================================
+// INDUSTRY AUTH — USER PROFILE
+// =========================================================
+
+function getIndustryGreeting() {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+
+  return "Good evening";
+}
+
+function updateIndustryDashboardDate() {
+  const now = new Date();
+
+  const formattedDate = now.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+
+  dashboardDate.textContent = formattedDate.replace(",", " •");
+}
+
+async function loadAuthenticatedIndustryProfile() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabaseClient.auth.getUser();
+
+  if (userError) {
+    console.error("Industry user lookup error:", userError);
+    return;
+  }
+
+  if (!user) {
+    console.log("Industry: no authenticated user for profile.");
+    return;
+  }
+
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    console.error("Industry profile lookup error:", profileError);
+    return;
+  }
+
+  const fullName = profile?.full_name?.trim();
+
+  if (!fullName) {
+    dashboardGreeting.textContent = getIndustryGreeting();
+    return;
+  }
+
+  const firstName = fullName.split(/\s+/)[0];
+
+  const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+
+  dashboardGreeting.textContent = `${getIndustryGreeting()}, ${displayName}`;
+}
+
 function enterAuthenticatedIndustry() {
   industryAuthScreen?.classList.remove("is-active");
   industryAuthScreen?.setAttribute("aria-hidden", "true");
@@ -5594,7 +5661,12 @@ function enterAuthenticatedIndustry() {
   document.body.classList.remove("industry-auth-active");
 
   completeOnboarding();
+
+  loadAuthenticatedIndustryProfile();
+  updateIndustryDashboardDate();
 }
+
+
 
 authSwitchButton?.addEventListener("click", () => {
   const currentMode = industryAuthScreen?.dataset.mode;
