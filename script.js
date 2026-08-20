@@ -25,13 +25,14 @@ const dashboardShiftWorkplace = document.querySelector(
   "#dashboard-shift-workplace",
 );
 
+const myShiftsNextCard = document.querySelector("#my-shifts-next-card");
+
 const myShiftsNextTime = document.querySelector("#my-shifts-next-time");
 const myShiftsNextStatus = document.querySelector("#my-shifts-next-status");
 const myShiftsNextRole = document.querySelector("#my-shifts-next-role");
 const myShiftsNextWorkplace = document.querySelector(
   "#my-shifts-next-workplace",
 );
-
 
 const activityFeedList = document.querySelector("#activity-feed-list");
 const scheduleSubviews = document.querySelectorAll(".schedule-subview");
@@ -834,43 +835,133 @@ navCards.forEach((card) => {
 /* Shift transfer actions */
 
 if (releaseToBoardButton) {
-  releaseToBoardButton.addEventListener("click", () => {
+  releaseToBoardButton.addEventListener("click", async () => {
     if (!selectedReleaseShift) {
       return;
     }
 
-    const storedOriginalShift = findShiftById(selectedReleaseShift.id);
+    const originalButtonText = releaseToBoardButton.textContent;
 
-    const updatedOriginalShift = {
-      ...storedOriginalShift,
-      ...selectedReleaseShift,
-      owner: CURRENT_USER.id,
-      source: storedOriginalShift?.source || "imported",
-      status: "Pending Coverage",
-    };
+    releaseToBoardButton.disabled = true;
+    releaseToBoardButton.textContent = "Releasing...";
 
-    updateShift(updatedOriginalShift);
-    selectedReleaseShift = updatedOriginalShift;
+    if (postShiftStatus) {
+      postShiftStatus.textContent = "";
+    }
 
-    addActivity({
-      type: "shift-released",
-      title: "Shift released",
-      message: `${updatedOriginalShift.role} at ${updatedOriginalShift.workplace} was released to Catch.`,
-      workerId: updatedOriginalShift.owner,
-      shiftId: updatedOriginalShift.id,
-      workplace: updatedOriginalShift.workplace,
-    });
+    try {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabaseClient.auth.getUser();
 
-    const { id, status, owner, source, ...shiftData } = selectedReleaseShift;
+      if (userError || !user) {
+        console.error("Industry release user error:", userError);
 
-    createBoardPost({
-      ...shiftData,
-      sourceShiftId: id,
-      source: "catch-board",
-      requestType: "release",
-    });
+        if (postShiftStatus) {
+          postShiftStatus.textContent =
+            "Unable to verify your account. Please try again.";
+        }
 
-    renderImportedShifts();
+        return;
+      }
+
+      const { data: releasedShift, error: releaseError } = await supabaseClient
+        .from("shifts")
+        .update({
+          status: "coverage_needed",
+        })
+        .eq("id", selectedReleaseShift.id)
+        .eq("assigned_profile_id", user.id)
+        .select(
+          `
+              id,
+              assigned_profile_id,
+              role,
+              starts_at,
+              ends_at,
+              end_label,
+              status,
+              workplace:workplaces (
+                name,
+                time_zone
+              )
+            `,
+        )
+        .maybeSingle();
+
+      if (releaseError) {
+        console.error("Industry release shift error:", releaseError);
+
+        if (postShiftStatus) {
+          postShiftStatus.textContent =
+            "We couldn't release this shift. Please try again.";
+        }
+
+        return;
+      }
+
+      if (!releasedShift) {
+        console.error(
+          "Industry release shift error: no matching shift was updated.",
+        );
+
+        if (postShiftStatus) {
+          postShiftStatus.textContent = "This shift could not be released.";
+        }
+
+        return;
+      }
+
+      console.log("Industry shift released to Catch:", releasedShift);
+
+      selectedReleaseShift = {
+        ...selectedReleaseShift,
+        status: "Pending Coverage",
+      };
+
+      addActivity({
+        type: "shift-released",
+        title: "Shift released",
+        message: `${selectedReleaseShift.role} at ${selectedReleaseShift.workplace}`,
+        workerId: user.id,
+        shiftId: selectedReleaseShift.id,
+        workplace: selectedReleaseShift.workplace,
+      });
+
+      const { id, status, owner, source, ...shiftData } = selectedReleaseShift;
+
+      createBoardPost({
+        ...shiftData,
+        sourceShiftId: id,
+        source: "catch-board",
+        requestType: "release",
+      });
+
+      if (postShiftStatus) {
+        postShiftStatus.textContent = "Shift released to Catch.";
+      }
+
+      await loadAuthenticatedSchedule();
+
+      setActiveSection("schedule");
+      setActiveScheduleView("my-shifts");
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } catch (error) {
+      console.error("Industry release unexpected error:", error);
+
+      if (postShiftStatus) {
+        postShiftStatus.textContent =
+          "Something went wrong while releasing this shift.";
+      }
+    } finally {
+      releaseToBoardButton.disabled = false;
+      releaseToBoardButton.textContent = originalButtonText;
+    }
   });
 }
 
@@ -1523,6 +1614,7 @@ if (shiftDetailsReleaseButton) {
     const shiftId = shiftDetailsReleaseButton.dataset.shiftId;
 
     const shift =
+      authenticatedScheduleShifts?.find((item) => item.id === shiftId) ||
       importedScheduleShifts.find((item) => item.id === shiftId) ||
       getAllShifts().find((item) => item.id === shiftId);
 
@@ -2764,6 +2856,11 @@ function renderAuthenticatedNextShiftSummary(shifts) {
     myShiftsNextStatus.textContent = "No shift";
     myShiftsNextRole.textContent = "—";
     myShiftsNextWorkplace.textContent = "—";
+
+    if (myShiftsNextCard) {
+      delete myShiftsNextCard.dataset.shiftId;
+    }
+
     return;
   }
 
@@ -2773,6 +2870,41 @@ function renderAuthenticatedNextShiftSummary(shifts) {
   myShiftsNextStatus.textContent = "Upcoming";
   myShiftsNextRole.textContent = nextShift.role || "—";
   myShiftsNextWorkplace.textContent = nextShift.workplace || "—";
+
+  if (myShiftsNextCard) {
+    myShiftsNextCard.dataset.shiftId = nextShift.id;
+  }
+} // end renderAuthenticatedNextShiftSummary
+
+if (myShiftsNextCard) {
+  const openAuthenticatedNextShift = () => {
+    const shiftId = myShiftsNextCard.dataset.shiftId;
+
+    if (!shiftId || !authenticatedScheduleShifts) {
+      return;
+    }
+
+    const shift = authenticatedScheduleShifts.find(
+      (item) => item.id === shiftId,
+    );
+
+    if (!shift) {
+      return;
+    }
+
+    openShiftDetails(shift);
+  };
+
+  myShiftsNextCard.addEventListener("click", openAuthenticatedNextShift);
+
+  myShiftsNextCard.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    openAuthenticatedNextShift();
+  });
 }
 
 function renderAuthenticatedScheduleShifts(shifts) {
