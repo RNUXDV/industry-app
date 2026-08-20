@@ -5403,6 +5403,10 @@ const onboardingSignInButton = document.querySelector(
   "#onboarding-signin-button",
 );
 
+const industrySignOutButton = document.querySelector(
+  "#industry-signout-button",
+);
+
 // =========================================================
 // SUPABASE CLIENT
 // =========================================================
@@ -5496,6 +5500,33 @@ async function restoreIndustrySession() {
 }
 
 restoreIndustrySession();
+
+async function signOutOfIndustry() {
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    console.error("Industry sign-out error:", error);
+    return;
+  }
+
+  console.log("Industry: signed out.");
+
+  onboardingHelpPanel?.classList.add("is-hidden");
+
+  signupForm?.reset();
+  loginForm?.reset();
+
+  signupStatus.textContent = "";
+  loginStatus.textContent = "";
+
+  setIndustryAuthMode("signup");
+
+  showSignedOutIndustry();
+}
+
+industrySignOutButton?.addEventListener("click", () => {
+  signOutOfIndustry();
+});
 
 function enterAuthenticatedIndustry() {
   industryAuthScreen?.classList.remove("is-active");
