@@ -361,6 +361,7 @@ const DEMO_NOW = new Date("2026-07-16T15:42:00");
 const savedDemoUser = "original";
 
 let CURRENT_USER = DEMO_USERS.original;
+let authenticatedScheduleShifts = undefined;
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let selectedReleaseShift = null;
@@ -558,6 +559,98 @@ async function loadAuthenticatedDashboardShift() {
   console.log("Industry dashboard shift loaded:", dashboardShift);
 
   renderDashboardShift(dashboardShift);
+}
+
+async function loadAuthenticatedSchedule() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabaseClient.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Industry schedule user error:", userError);
+    return;
+  }
+
+  const nowIso = new Date().toISOString();
+
+  const { data, error } = await supabaseClient
+    .from("shifts")
+    .select(
+      `
+      id,
+      assigned_profile_id,
+      role,
+      starts_at,
+      ends_at,
+      end_label,
+      status,
+      workplace:workplaces (
+        name,
+        time_zone
+      )
+    `,
+    )
+    .eq("assigned_profile_id", user.id)
+    .eq("status", "scheduled")
+    .gte("starts_at", nowIso)
+    .order("starts_at", { ascending: true });
+
+  if (error) {
+    console.error("Industry authenticated schedule error:", error);
+    return;
+  }
+
+  authenticatedScheduleShifts = (data || []).map((shift) => {
+    const timeZone =
+      shift.workplace?.time_zone ||
+      Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const startDate = new Date(shift.starts_at);
+
+    const day = startDate.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone,
+    });
+
+    const startTime = startDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone,
+    });
+
+    let endText = shift.end_label || "";
+
+    if (shift.ends_at) {
+      endText = new Date(shift.ends_at).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone,
+      });
+    }
+
+    return {
+      id: shift.id,
+      owner: user.id,
+      day,
+      time: endText ? `${startTime} – ${endText}` : startTime,
+      role: shift.role || "",
+      workplace: shift.workplace?.name || "",
+      status: shift.status,
+      startsAt: shift.starts_at,
+    };
+  });
+
+  console.log(
+    "Industry authenticated schedule loaded:",
+    authenticatedScheduleShifts,
+  );
+
+  renderImportedShifts(authenticatedScheduleShifts);
+
+  renderDashboardShift(authenticatedScheduleShifts[0] || null);
 }
 
 function renderDashboardShift(backendShift = undefined) {
@@ -2645,8 +2738,53 @@ function renderMockCalendar() {
   mockCalendarPanel.classList.remove("hidden-panel");
 }
 
-function renderImportedShifts() {
+function renderAuthenticatedScheduleShifts(shifts) {
   importedShiftList.innerHTML = "";
+
+  if (!shifts.length) {
+    importedShiftList.innerHTML = `
+      <article class="stack-card shift-card">
+        <div class="stack-copy">
+          <p class="stack-kicker">My schedule</p>
+          <h3>No upcoming shifts</h3>
+          <p>Your scheduled shifts will appear here.</p>
+        </div>
+      </article>
+    `;
+    return;
+  }
+
+  shifts.forEach((shift) => {
+    const shiftCard = document.createElement("article");
+    shiftCard.className = "stack-card shift-card";
+
+    shiftCard.innerHTML = `
+      <div class="stack-copy">
+        <p class="stack-kicker">Scheduled shift</p>
+        <h3>${shift.day}</h3>
+        <p>${shift.role}</p>
+
+        <ul class="shift-meta">
+          <li>${shift.time}</li>
+        </ul>
+
+        <ul class="shift-meta">
+          <li>${shift.workplace}</li>
+        </ul>
+      </div>
+    `;
+
+    importedShiftList.appendChild(shiftCard);
+  });
+}
+
+function renderImportedShifts(backendShifts = authenticatedScheduleShifts) {
+  importedShiftList.innerHTML = "";
+
+  if (backendShifts !== undefined) {
+    renderAuthenticatedScheduleShifts(backendShifts);
+    return;
+  }
 
   const responses = getShiftResponses();
 
@@ -5787,7 +5925,7 @@ function enterAuthenticatedIndustry() {
 
   loadAuthenticatedIndustryProfile();
   updateIndustryDashboardDate();
-  loadAuthenticatedDashboardShift();
+  loadAuthenticatedSchedule();
 }
 
 authSwitchButton?.addEventListener("click", () => {
