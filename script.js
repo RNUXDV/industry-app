@@ -5376,14 +5376,9 @@ exitLanesTourButton?.addEventListener("click", () => {
   completeOnboarding();
 });
 
-const hasCompletedOnboarding =
-  localStorage.getItem(INDUSTRY_ONBOARDING_KEY) === "true";
-
-if (hasCompletedOnboarding) {
-  onboardingWelcome?.classList.add("is-hidden");
-} else {
-  onboardingWelcome?.classList.remove("is-hidden");
-}
+// Authentication now decides whether the user enters Industry.
+// Keep the entry screen available until Supabase resolves the session.
+onboardingWelcome?.classList.remove("is-hidden");
 
 // =========================================================
 // INDUSTRY AUTH — SCREEN 2
@@ -5413,7 +5408,8 @@ const onboardingSignInButton = document.querySelector(
 // =========================================================
 
 const SUPABASE_URL = "https://pzgfottwuczqgisrlfss.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_I4zjPUH_5zqN0x2cV_n1iQ_-gUwPS2H";
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_I4zjPUH_5zqN0x2cV_n1iQ_-gUwPS2H";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -5459,11 +5455,47 @@ function closeIndustryAuth() {
   industryAuthScreen?.setAttribute("aria-hidden", "true");
 
   onboardingWelcome?.classList.remove("is-hidden");
+
+  document.body.classList.remove("industry-auth-active");
 }
 
 industryAuthBack?.addEventListener("click", () => {
   closeIndustryAuth();
 });
+
+function showSignedOutIndustry() {
+  industryAuthScreen?.classList.remove("is-active");
+  industryAuthScreen?.setAttribute("aria-hidden", "true");
+
+  onboardingWelcome?.classList.remove("is-hidden");
+
+  document.body.classList.remove("industry-auth-active");
+}
+
+async function restoreIndustrySession() {
+  const {
+    data: { session },
+    error,
+  } = await supabaseClient.auth.getSession();
+
+  if (error) {
+    console.error("Industry session restore error:", error);
+    showSignedOutIndustry();
+    return;
+  }
+
+  if (!session) {
+    console.log("Industry: no saved session.");
+    showSignedOutIndustry();
+    return;
+  }
+
+  console.log("Industry: restored session for", session.user.email);
+
+  enterAuthenticatedIndustry();
+}
+
+restoreIndustrySession();
 
 function enterAuthenticatedIndustry() {
   industryAuthScreen?.classList.remove("is-active");
