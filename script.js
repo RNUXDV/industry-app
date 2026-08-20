@@ -373,6 +373,10 @@ const savedDemoUser = "original";
 let CURRENT_USER = DEMO_USERS.original;
 let authenticatedScheduleShifts = undefined;
 let authenticatedCatchShifts = undefined;
+let authenticatedShiftInterests = undefined;
+let authenticatedWorkplaceId = null;
+let authenticatedWorkplaceRole = null;
+let authenticatedUserId = null;
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let selectedReleaseShift = null;
@@ -746,6 +750,44 @@ async function loadAuthenticatedCatchShifts() {
     "Industry authenticated Catch shifts loaded:",
     authenticatedCatchShifts,
   );
+  renderShiftBoard();
+}
+
+async function loadAuthenticatedShiftInterests() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabaseClient.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Industry shift interests user error:", userError);
+    return;
+  }
+
+  authenticatedUserId = user.id;
+
+  const { data, error } = await supabaseClient.from("shift_interests").select(`
+  id,
+  shift_id,
+  profile_id,
+  status,
+  profile:profiles (
+    full_name
+  )
+`);
+
+  if (error) {
+    console.error("Industry shift interests load error:", error);
+    return;
+  }
+
+  authenticatedShiftInterests = data || [];
+
+  console.log(
+    "Industry authenticated shift interests loaded:",
+    authenticatedShiftInterests,
+  );
+
   renderShiftBoard();
 }
 
@@ -1900,18 +1942,90 @@ function renderShiftBoard() {
   shifts.forEach((shift) => {
     const displayedStatus =
       shift.displayStatus || getDisplayedShiftStatus(shift, responses);
-    const interestedCount = responses[shift.id]?.interestedCount || 1;
-    const interestedWorkers = responses[shift.id]?.interestedWorkers || [];
-    const confirmedWorkerId = responses[shift.id]?.confirmedWorkerId;
+
+    const backendInterests =
+      authenticatedShiftInterests !== undefined
+        ? authenticatedShiftInterests.filter(
+            (interest) => interest.shift_id === shift.id,
+          )
+        : [];
+
+    const isOwnCoverageRequest =
+      Boolean(authenticatedUserId) && shift.owner === authenticatedUserId;
+
+    const currentUserInterest = backendInterests.find(
+      (interest) => interest.profile_id === authenticatedUserId,
+    );
+
+    const hasAnyInterest =
+      authenticatedShiftInterests !== undefined
+        ? backendInterests.length > 0
+        : Boolean(responses[shift.id]?.interested);
+
+    const hasInterest =
+      authenticatedShiftInterests !== undefined
+        ? isOwnCoverageRequest
+          ? hasAnyInterest
+          : Boolean(currentUserInterest)
+        : Boolean(responses[shift.id]?.interested);
+
+    const interestedCount =
+      authenticatedShiftInterests !== undefined
+        ? backendInterests.length
+        : responses[shift.id]?.interestedCount || 0;
+
+    const interestedWorkers =
+      authenticatedShiftInterests !== undefined
+        ? backendInterests.map((interest) => ({
+            id: interest.profile_id,
+            name: interest.profile?.full_name || "Coworker",
+            role: "Coworker",
+            availability: {
+              label: "Interested",
+              status: "available",
+            },
+            selected:
+              interest.status === "selected" || interest.status === "confirmed",
+            interestId: interest.id,
+            interestStatus: interest.status,
+          }))
+        : responses[shift.id]?.interestedWorkers || [];
+
+    const confirmedWorkerId =
+      authenticatedShiftInterests !== undefined
+        ? null
+        : responses[shift.id]?.confirmedWorkerId;
 
     const confirmedWorker = interestedWorkers.find(
       (worker) => worker.id === confirmedWorkerId,
     );
 
-    const hasInterest = Boolean(responses[shift.id]?.interested);
-    const isAccepted = Boolean(responses[shift.id]?.accepted);
+    const isAccepted =
+      authenticatedShiftInterests !== undefined
+        ? backendInterests.some(
+            (interest) =>
+              interest.status === "selected" || interest.status === "confirmed",
+          )
+        : Boolean(responses[shift.id]?.accepted);
+
     const catchTimeline = getCatchTimeline(shift, responses);
-    const isConfirmed = Boolean(responses[shift.id]?.confirmed);
+
+    const isConfirmed =
+      authenticatedShiftInterests !== undefined
+        ? backendInterests.some((interest) => interest.status === "confirmed")
+        : Boolean(responses[shift.id]?.confirmed);
+
+    const selectedBackendInterest =
+      authenticatedShiftInterests !== undefined
+        ? backendInterests.find((interest) => interest.status === "selected") ||
+          null
+        : null;
+
+    const canManagerApprove =
+      authenticatedShiftInterests !== undefined &&
+      authenticatedWorkplaceRole?.toLowerCase() === "manager" &&
+      Boolean(selectedBackendInterest) &&
+      !isConfirmed;
 
     const interestedWorkersMarkup = interestedWorkers.length
       ? isConfirmed && confirmedWorker
@@ -2079,8 +2193,6 @@ function renderShiftBoard() {
       ? findShiftById(shift.sourceShiftId)
       : null;
 
-    const isOwnCoverageRequest = sourceShift?.owner === CURRENT_USER.id;
-
     const releasedTimeLabel = getRelativeReleaseTime(shift.releasedTimestamp);
 
     const shiftCard = document.createElement("article");
@@ -2165,16 +2277,27 @@ function renderShiftBoard() {
         Your coverage request
       </button>
     `
-            : `
-      <button
-        class="action-button board-action-button"
-        type="button"
-        data-shift-id="${shift.id}"
-        ${hasInterest ? "disabled" : ""}
-      >
-        ${boardButtonLabel}
-      </button>
-    `
+            : canManagerApprove
+              ? `
+        <button
+          class="action-button manager-approve-button"
+          type="button"
+          data-shift-id="${shift.id}"
+          data-profile-id="${selectedBackendInterest.profile_id}"
+        >
+          Approve Coverage
+        </button>
+      `
+              : `
+        <button
+          class="action-button board-action-button"
+          type="button"
+          data-shift-id="${shift.id}"
+          ${hasInterest ? "disabled" : ""}
+        >
+          ${boardButtonLabel}
+        </button>
+      `
         }
         ${
           isConfirmed
@@ -2197,102 +2320,66 @@ function renderShiftBoard() {
   });
 
   document.querySelectorAll(".board-action-button").forEach((button) => {
-    button.addEventListener("click", () => {
-      const responses = getShiftResponses();
+    button.addEventListener("click", async () => {
       const shiftId = button.dataset.shiftId;
 
-      const currentCount = responses[shiftId]?.interestedCount || 0;
-
-      responses[shiftId] = {
-        ...responses[shiftId],
-        interested: true,
-        interestedAt: getCatchEventTime(),
-        interestedCount: currentCount + 1,
-        interestedWorkers: [
-          {
-            id: "worker-maya",
-            name: "Maya Chen",
-            role: "Server",
-            availability: {
-              label: "Available",
-              status: "available",
-            },
-            selected: false,
-          },
-          {
-            id: "worker-chris",
-            name: "Chris Hall",
-            role: "Bartender",
-            availability: {
-              label: "Working",
-              status: "working",
-            },
-            selected: false,
-          },
-          {
-            id: "worker-sam",
-            name: "Sam Ortiz",
-            role: "Host",
-            availability: {
-              label: "Off Today",
-              status: "off",
-            },
-            selected: false,
-          },
-        ],
-        status: "Open",
-      };
-
-      const caughtByWorker = {
-        id: CURRENT_USER.id,
-        name: CURRENT_USER.name,
-        role: CURRENT_USER.role || "Worker",
-      };
-
-      responses[shiftId] = {
-        ...responses[shiftId],
-        accepted: true,
-        acceptedAt: getCatchEventTime(),
-        status: "Pending Approval",
-        caughtByWorkerId: caughtByWorker.id,
-        caughtByWorkerName: caughtByWorker.name,
-      };
-
-      const boardPost = findShiftById(shiftId);
-
-      if (boardPost) {
-        const updatedBoardPost = {
-          ...boardPost,
-          status: "Pending Approval",
-          caughtByWorkerId: caughtByWorker.id,
-          caughtByWorkerName: caughtByWorker.name,
-          caughtAt: getCatchEventTime(),
-        };
-
-        updateShift(updatedBoardPost);
-
-        if (boardPost.sourceShiftId) {
-          const originalShift = findShiftById(boardPost.sourceShiftId);
-
-          if (originalShift) {
-            const updatedOriginalShift = {
-              ...originalShift,
-              status: "Pending Approval",
-              pendingWorkerId: caughtByWorker.id,
-              pendingWorkerName: caughtByWorker.name,
-            };
-
-            updateShift(updatedOriginalShift);
-          }
-        }
+      if (!shiftId) {
+        return;
       }
 
-      saveShiftResponses(responses);
-      renderShiftBoard();
-      renderImportedShifts();
-      renderCaughtShifts();
+      const originalButtonText = button.textContent;
 
-      shiftBoardStatus.textContent = "Shift caught. Waiting for approval.";
+      button.disabled = true;
+      button.textContent = "Catching...";
+
+      try {
+        const {
+          data: { user },
+          error: userError,
+        } = await supabaseClient.auth.getUser();
+
+        if (userError || !user) {
+          console.error("Industry Catch user error:", userError);
+          button.disabled = false;
+          button.textContent = originalButtonText;
+          return;
+        }
+
+        const { data: interest, error: interestError } = await supabaseClient
+          .from("shift_interests")
+          .insert({
+            shift_id: shiftId,
+            profile_id: user.id,
+            status: "interested",
+          })
+          .select()
+          .single();
+
+        if (interestError) {
+          // User already expressed interest in this shift.
+          if (interestError.code === "23505") {
+            button.textContent = "Waiting for approval";
+            button.disabled = true;
+            return;
+          }
+
+          console.error("Industry Catch interest error:", interestError);
+
+          button.disabled = false;
+          button.textContent = originalButtonText;
+          return;
+        }
+
+        console.log("Industry shift interest created:", interest);
+
+        button.textContent = "Waiting for approval";
+        button.disabled = true;
+      } catch (error) {
+        console.error("Industry Catch unexpected error:", error);
+
+        button.disabled = false;
+        button.textContent = originalButtonText;
+      }
     });
   });
 
@@ -2326,37 +2413,62 @@ function renderShiftBoard() {
   });
 
   document.querySelectorAll(".interested-worker").forEach((workerRow) => {
-    const selectWorker = () => {
-      const responses = getShiftResponses();
+    const selectWorker = async () => {
       const shiftId = workerRow.dataset.shiftId;
       const workerIndex = Number(workerRow.dataset.workerIndex);
-      const response = responses[shiftId];
 
-      if (!response?.interestedWorkers?.[workerIndex]) {
+      if (authenticatedShiftInterests === undefined || !authenticatedUserId) {
         return;
       }
 
-      const updatedWorkers = response.interestedWorkers.map(
-        (worker, index) => ({
-          ...worker,
-          selected: index === workerIndex,
-        }),
+      const shift = authenticatedCatchShifts?.find(
+        (catchShift) => catchShift.id === shiftId,
       );
 
-      responses[shiftId] = {
-        ...response,
-        interested: true,
-        interestedWorkers: updatedWorkers,
-        accepted: true,
-        acceptedAt: getCatchEventTime(),
-        declined: false,
-        status: "Pending confirmation",
-      };
+      // Only the worker who released the shift can select coverage.
+      if (!shift || shift.owner !== authenticatedUserId) {
+        return;
+      }
 
-      saveShiftResponses(responses);
-      renderShiftBoard();
+      const shiftInterests = authenticatedShiftInterests.filter(
+        (interest) => interest.shift_id === shiftId,
+      );
 
-      shiftBoardStatus.textContent = `${updatedWorkers[workerIndex].name} selected for coverage.`;
+      const selectedInterest = shiftInterests[workerIndex];
+
+      if (!selectedInterest) {
+        console.error("Industry: unable to find selected shift interest.", {
+          shiftId,
+          workerIndex,
+          shiftInterests,
+        });
+        return;
+      }
+
+      const { data: updatedInterest, error: updateError } = await supabaseClient
+        .from("shift_interests")
+        .update({
+          status: "selected",
+        })
+        .eq("id", selectedInterest.id)
+        .select(
+          `
+          id,
+          shift_id,
+          profile_id,
+          status
+        `,
+        )
+        .single();
+
+      if (updateError) {
+        console.error("Industry shift interest selection error:", updateError);
+        return;
+      }
+
+      console.log("Industry worker selected for coverage:", updatedInterest);
+
+      await loadAuthenticatedShiftInterests();
     };
 
     workerRow.addEventListener("click", selectWorker);
@@ -2370,113 +2482,46 @@ function renderShiftBoard() {
   });
 
   document.querySelectorAll(".manager-approve-button").forEach((button) => {
-    button.addEventListener("click", () => {
-      const responses = getShiftResponses();
+    button.addEventListener("click", async () => {
       const shiftId = button.dataset.shiftId;
-      const currentResponse = responses[shiftId] || {};
+      const selectedProfileId = button.dataset.profileId;
 
-      const selectedWorker = currentResponse.interestedWorkers?.find(
-        (worker) => worker.selected,
-      ) || {
-        id: currentResponse.caughtByWorkerId,
-        name: currentResponse.caughtByWorkerName,
-        role: currentResponse.caughtByWorkerRole || "Worker",
-      };
-
-      if (!selectedWorker.id || !selectedWorker.name) {
-        console.error("No valid worker selected for approval.", {
+      if (!shiftId || !selectedProfileId) {
+        console.error("Industry manager approval missing shift or worker.", {
           shiftId,
-          currentResponse,
+          selectedProfileId,
         });
-
-        shiftBoardStatus.textContent =
-          "Unable to approve coverage because no worker was selected.";
-
         return;
       }
-      responses[shiftId] = {
-        ...currentResponse,
-        accepted: true,
-        confirmed: true,
-        confirmedAt: getCatchEventTime(),
-        status: "Confirmed",
-        confirmedWorkerId: selectedWorker.id,
-        confirmedWorkerName: selectedWorker.name,
-      };
 
-      const boardPost =
-        findShiftById(shiftId) ||
-        sampleShifts.find((shift) => shift.id === shiftId);
-      if (boardPost) {
-        const updatedBoardPost = {
-          ...boardPost,
-          status: "Confirmed",
-          approvedAt: getCatchEventTime(),
-          confirmedWorkerId: selectedWorker.id,
-          confirmedWorkerName: selectedWorker.name,
-        };
+      const originalButtonText = button.textContent;
 
-        updateShift(updatedBoardPost);
+      button.disabled = true;
+      button.textContent = "Approving...";
 
-        if (boardPost.sourceShiftId) {
-          const originalShift = findShiftById(boardPost.sourceShiftId);
+      const { error } = await supabaseClient.rpc("confirm_shift_coverage", {
+        target_shift_id: shiftId,
+        selected_profile_id: selectedProfileId,
+      });
 
-          if (originalShift) {
-            const transferredShift = {
-              ...originalShift,
-              previousOwner: originalShift.owner,
-              owner: selectedWorker.id,
-              ownerName: selectedWorker.name,
-              status: "Scheduled",
-              transferredAt: getCatchEventTime(),
-              transferredFromWorkerId: CURRENT_USER.id,
-            };
+      if (error) {
+        console.error("Industry coverage approval error:", error);
 
-            delete transferredShift.pendingWorkerId;
-            delete transferredShift.pendingWorkerName;
-
-            updateShift(transferredShift);
-            addActivity({
-              type: "shift-approved",
-              title: "Coverage approved",
-              message: `${selectedWorker.name} was approved for ${transferredShift.role} at ${transferredShift.workplace}.`,
-              workerId: selectedWorker.id,
-              shiftId: transferredShift.id,
-              workplace: transferredShift.workplace,
-              approvedBy: transferredShift.manager || "Manager",
-            });
-          }
-        } else {
-          const savedShifts = getShiftStore();
-
-          const scheduledShiftId = `caught-${boardPost.id}-${selectedWorker.id}`;
-
-          const alreadyScheduled = savedShifts.some(
-            (shift) => shift.id === scheduledShiftId,
-          );
-
-          if (!alreadyScheduled) {
-            const scheduledShift = {
-              ...boardPost,
-              id: scheduledShiftId,
-              sourceBoardShiftId: boardPost.id,
-              owner: selectedWorker.id,
-              ownerName: selectedWorker.name,
-              status: "Scheduled",
-              transferredAt: getCatchEventTime(),
-            };
-
-            savedShifts.push(scheduledShift);
-            saveShiftStore(savedShifts);
-          }
-        }
+        button.disabled = false;
+        button.textContent = originalButtonText;
+        return;
       }
 
-      saveShiftResponses(responses);
-      renderShiftBoard();
-      renderImportedShifts();
+      console.log("Industry coverage confirmed:", {
+        shiftId,
+        selectedProfileId,
+      });
 
-      shiftBoardStatus.textContent = `Coverage approved. Shift transferred to ${selectedWorker.name}.`;
+      shiftBoardStatus.textContent = "Coverage confirmed.";
+
+      await loadAuthenticatedShiftInterests();
+      await loadAuthenticatedCatchShifts();
+      await loadAuthenticatedSchedule();
     });
   });
 
@@ -6168,6 +6213,27 @@ async function loadAuthenticatedIndustryProfile() {
     return;
   }
 
+  const { data: membership, error: membershipError } = await supabaseClient
+    .from("workplace_members")
+    .select("workplace_id, role")
+    .eq("profile_id", user.id)
+    .maybeSingle();
+
+  if (membershipError) {
+    console.error(
+      "Industry workplace membership lookup error:",
+      membershipError,
+    );
+  } else {
+    authenticatedWorkplaceId = membership?.workplace_id || null;
+    authenticatedWorkplaceRole = membership?.role || null;
+
+    console.log("Industry authenticated workplace membership:", {
+      workplaceId: authenticatedWorkplaceId,
+      role: authenticatedWorkplaceRole,
+    });
+  }
+
   const fullName = profile?.full_name?.trim();
 
   if (!fullName) {
@@ -6180,6 +6246,9 @@ async function loadAuthenticatedIndustryProfile() {
   const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 
   dashboardGreeting.textContent = `${getIndustryGreeting()}, ${displayName}`;
+
+  // Re-render Catch after the authenticated role is known.
+  renderShiftBoard();
 }
 
 function enterAuthenticatedIndustry() {
@@ -6194,6 +6263,7 @@ function enterAuthenticatedIndustry() {
   updateIndustryDashboardDate();
   loadAuthenticatedSchedule();
   loadAuthenticatedCatchShifts();
+  loadAuthenticatedShiftInterests();
 }
 
 authSwitchButton?.addEventListener("click", () => {
