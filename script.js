@@ -5407,6 +5407,18 @@ const industrySignOutButton = document.querySelector(
   "#industry-signout-button",
 );
 
+const forgotPasswordButton = document.querySelector(
+  "#industry-forgot-password",
+);
+
+const recoveryForm = document.querySelector("#recovery-form");
+const recoveryStatus = document.querySelector("#recovery-status");
+
+const updatePasswordForm = document.querySelector("#update-password-form");
+const updatePasswordStatus = document.querySelector("#update-password-status");
+
+const authSwitch = document.querySelector(".industry-auth-switch");
+
 // =========================================================
 // SUPABASE CLIENT
 // =========================================================
@@ -5420,29 +5432,72 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_PUBLISHABLE_KEY,
 );
 
+const recoveryHashParams = new URLSearchParams(
+  window.location.hash.replace(/^#/, ""),
+);
+
+const recoveryQueryParams = new URLSearchParams(
+  window.location.search,
+);
+
+let passwordRecoveryActive =
+  recoveryHashParams.get("type") === "recovery" ||
+  recoveryQueryParams.get("type") === "recovery";
+
+supabaseClient.auth.onAuthStateChange((event) => {
+  if (event === "PASSWORD_RECOVERY") {
+    console.log("Industry: password recovery session detected.");
+
+    passwordRecoveryActive = true;
+
+    openIndustryAuth("update-password");
+  }
+});
+
 function setIndustryAuthMode(mode = "signup") {
-  const isLogin = mode === "login";
+  signupForm.hidden = true;
+  loginForm.hidden = true;
+  recoveryForm.hidden = true;
+  updatePasswordForm.hidden = true;
 
-  signupForm.hidden = isLogin;
-  loginForm.hidden = !isLogin;
+  authSwitch.hidden = false;
 
-  industryAuthTitle.textContent = isLogin
-    ? "Welcome back"
-    : "Create your account";
+  if (mode === "login") {
+    loginForm.hidden = false;
 
-  industryAuthCopy.textContent = isLogin
-    ? "Sign in to your space."
-    : "Your space starts here.";
+    industryAuthTitle.textContent = "Welcome back";
+    industryAuthCopy.textContent = "Sign in to your space.";
 
-  authSwitchCopy.textContent = isLogin
-    ? "New to Industry?"
-    : "Already have an account?";
+    authSwitchCopy.textContent = "New to Industry?";
+    authSwitchButton.textContent = "Create account";
+  } else if (mode === "recovery") {
+    recoveryForm.hidden = false;
 
-  authSwitchButton.textContent = isLogin ? "Create account" : "Sign in";
+    industryAuthTitle.textContent = "Reset your password";
+    industryAuthCopy.textContent = "We’ll send you a link to get back in.";
 
-  industryAuthScreen.dataset.mode = isLogin ? "login" : "signup";
+    authSwitchCopy.textContent = "Remembered it?";
+    authSwitchButton.textContent = "Sign in";
+  } else if (mode === "update-password") {
+    updatePasswordForm.hidden = false;
+    authSwitch.hidden = true;
+
+    industryAuthTitle.textContent = "Choose a new password";
+    industryAuthCopy.textContent = "Make it something only you know.";
+  } else {
+    signupForm.hidden = false;
+
+    industryAuthTitle.textContent = "Create your account";
+    industryAuthCopy.textContent = "Your space starts here.";
+
+    authSwitchCopy.textContent = "Already have an account?";
+    authSwitchButton.textContent = "Sign in";
+
+    mode = "signup";
+  }
+
+  industryAuthScreen.dataset.mode = mode;
 }
-
 function openIndustryAuth(mode = "signup") {
   setIndustryAuthMode(mode);
 
@@ -5477,6 +5532,10 @@ function showSignedOutIndustry() {
 }
 
 async function restoreIndustrySession() {
+  if (passwordRecoveryActive) {
+    console.log("Industry: recovery flow active.");
+    return;
+  }
   const {
     data: { session },
     error,
@@ -5540,11 +5599,81 @@ function enterAuthenticatedIndustry() {
 authSwitchButton?.addEventListener("click", () => {
   const currentMode = industryAuthScreen?.dataset.mode;
 
-  setIndustryAuthMode(currentMode === "login" ? "signup" : "login");
+  if (currentMode === "login") {
+    setIndustryAuthMode("signup");
+  } else {
+    setIndustryAuthMode("login");
+  }
 });
-
+forgotPasswordButton?.addEventListener("click", () => {
+  setIndustryAuthMode("recovery");
+});
 onboardingSignInButton?.addEventListener("click", () => {
   openIndustryAuth("login");
+});
+
+// =========================================================
+// INDUSTRY AUTH — PASSWORD RECOVERY REQUEST
+// =========================================================
+
+recoveryForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.querySelector("#recovery-email").value.trim();
+
+  recoveryStatus.textContent = "Sending reset link…";
+
+  const redirectTo = `${window.location.origin}${window.location.pathname}`;
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo,
+  });
+
+  if (error) {
+    console.error("Industry password recovery error:", error);
+    recoveryStatus.textContent = error.message;
+    return;
+  }
+
+  recoveryStatus.textContent =
+    "If an account exists for that email, a reset link has been sent.";
+});
+
+// =========================================================
+// INDUSTRY AUTH — UPDATE PASSWORD
+// =========================================================
+
+updatePasswordForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const newPassword = document.querySelector("#new-password").value;
+
+  const confirmPassword = document.querySelector("#confirm-new-password").value;
+
+  if (newPassword !== confirmPassword) {
+    updatePasswordStatus.textContent = "Passwords do not match.";
+    return;
+  }
+
+  updatePasswordStatus.textContent = "Updating your password…";
+
+  const { error } = await supabaseClient.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    console.error("Industry password update error:", error);
+    updatePasswordStatus.textContent = error.message;
+    return;
+  }
+
+  updatePasswordStatus.textContent = "Password updated.";
+
+  passwordRecoveryActive = false;
+
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  enterAuthenticatedIndustry();
 });
 
 // =========================================================

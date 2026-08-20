@@ -9368,6 +9368,34 @@ body.onboarding-home-active #home-logo-button {
     box-shadow 160ms ease;
 }
 
+.industry-auth-forgot {
+  justify-self: end;
+
+  margin-top: -6px;
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: rgba(245, 241, 232, 0.68);
+
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.industry-auth-forgot:hover {
+  color: #f5f1e8;
+}
+
+.industry-auth-forgot:focus-visible {
+  outline: 2px solid #f1eadf;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
 /* Keep Industry styling when browser autofill is active */
 .industry-auth-field input:-webkit-autofill,
 .industry-auth-field input:-webkit-autofill:hover,
@@ -9461,6 +9489,10 @@ body.onboarding-home-active #home-logo-button {
   outline: 2px solid #f1eadf;
   outline-offset: 4px;
   border-radius: 4px;
+}
+
+.industry-auth-switch[hidden] {
+  display: none !important;
 }
 
 .industry-auth-footer {

@@ -186,6 +186,14 @@
       </label>
 
       <button
+  class="industry-auth-forgot"
+  id="industry-forgot-password"
+  type="button"
+>
+  Forgot password?
+</button>
+
+      <button
         class="industry-auth-primary"
         type="submit"
       >
@@ -198,6 +206,79 @@
         aria-live="polite"
       ></p>
     </form>
+
+    <!-- PASSWORD RECOVERY REQUEST -->
+<form
+  class="industry-auth-form"
+  id="recovery-form"
+  hidden
+>
+  <label class="industry-auth-field">
+    <span>Email</span>
+    <input
+      id="recovery-email"
+      type="email"
+      autocomplete="email"
+      placeholder="you@email.com"
+      required
+    />
+  </label>
+
+  <button
+    class="industry-auth-primary"
+    type="submit"
+  >
+    Send reset link
+  </button>
+
+  <p
+    class="industry-auth-status"
+    id="recovery-status"
+    aria-live="polite"
+  ></p>
+</form>
+
+<!-- SET NEW PASSWORD -->
+<form
+  class="industry-auth-form"
+  id="update-password-form"
+  hidden
+>
+  <label class="industry-auth-field">
+    <span>New password</span>
+    <input
+      id="new-password"
+      type="password"
+      autocomplete="new-password"
+      placeholder="Create a new password"
+      required
+    />
+  </label>
+
+  <label class="industry-auth-field">
+    <span>Confirm password</span>
+    <input
+      id="confirm-new-password"
+      type="password"
+      autocomplete="new-password"
+      placeholder="Confirm your new password"
+      required
+    />
+  </label>
+
+  <button
+    class="industry-auth-primary"
+    type="submit"
+  >
+    Update password
+  </button>
+
+  <p
+    class="industry-auth-status"
+    id="update-password-status"
+    aria-live="polite"
+  ></p>
+</form>
 
     <div class="industry-auth-switch">
       <p id="industry-auth-switch-copy">
