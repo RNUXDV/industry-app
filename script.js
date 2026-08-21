@@ -1899,30 +1899,31 @@ function renderCaughtShifts() {
 }
 
 function renderShiftBoard() {
-  const responses = getShiftResponses();
+  const isAuthenticatedCatchMode = Boolean(authenticatedUserId);
+
+  const responses = isAuthenticatedCatchMode ? {} : getShiftResponses();
   const scheduledShifts = getShiftStore();
 
-  const shifts =
-    authenticatedCatchShifts !== undefined
-      ? authenticatedCatchShifts
-      : getAllShifts().filter((shift) => {
-          const displayedStatus = getDisplayedShiftStatus(shift, responses);
+  const shifts = isAuthenticatedCatchMode
+    ? (authenticatedCatchShifts ?? [])
+    : getAllShifts().filter((shift) => {
+        const displayedStatus = getDisplayedShiftStatus(shift, responses);
 
-          const isCatchOpportunity =
-            shift.source === "catch-board" ||
-            sampleShifts.some((sampleShift) => sampleShift.id === shift.id);
+        const isCatchOpportunity =
+          shift.source === "catch-board" ||
+          sampleShifts.some((sampleShift) => sampleShift.id === shift.id);
 
-          const hasBeenScheduled = scheduledShifts.some(
-            (scheduledShift) => scheduledShift.sourceBoardShiftId === shift.id,
-          );
+        const hasBeenScheduled = scheduledShifts.some(
+          (scheduledShift) => scheduledShift.sourceBoardShiftId === shift.id,
+        );
 
-          const isCompletedOpportunity =
-            displayedStatus === "Confirmed" || displayedStatus === "Scheduled";
+        const isCompletedOpportunity =
+          displayedStatus === "Confirmed" || displayedStatus === "Scheduled";
 
-          return (
-            isCatchOpportunity && !hasBeenScheduled && !isCompletedOpportunity
-          );
-        });
+        return (
+          isCatchOpportunity && !hasBeenScheduled && !isCompletedOpportunity
+        );
+      });
 
   shiftBoardList.innerHTML = "";
 
@@ -1943,12 +1944,15 @@ function renderShiftBoard() {
     const displayedStatus =
       shift.displayStatus || getDisplayedShiftStatus(shift, responses);
 
-    const backendInterests =
-      authenticatedShiftInterests !== undefined
-        ? authenticatedShiftInterests.filter(
-            (interest) => interest.shift_id === shift.id,
-          )
-        : [];
+    const backendInterests = isAuthenticatedCatchMode
+      ? (authenticatedShiftInterests ?? []).filter(
+          (interest) => interest.shift_id === shift.id,
+        )
+      : [];
+
+    const legacyResponse = isAuthenticatedCatchMode
+      ? null
+      : (responses[shift.id] ?? {});
 
     const isOwnCoverageRequest =
       Boolean(authenticatedUserId) && shift.owner === authenticatedUserId;
@@ -1957,72 +1961,71 @@ function renderShiftBoard() {
       (interest) => interest.profile_id === authenticatedUserId,
     );
 
-    const hasAnyInterest =
-      authenticatedShiftInterests !== undefined
-        ? backendInterests.length > 0
-        : Boolean(responses[shift.id]?.interested);
+    const hasAnyInterest = isAuthenticatedCatchMode
+      ? backendInterests.length > 0
+      : Boolean(legacyResponse?.interested);
 
-    const hasInterest =
-      authenticatedShiftInterests !== undefined
-        ? isOwnCoverageRequest
-          ? hasAnyInterest
-          : Boolean(currentUserInterest)
-        : Boolean(responses[shift.id]?.interested);
+    const hasInterest = isAuthenticatedCatchMode
+      ? isOwnCoverageRequest
+        ? hasAnyInterest
+        : Boolean(currentUserInterest)
+      : Boolean(legacyResponse?.interested);
+    const interestedCount = isAuthenticatedCatchMode
+      ? backendInterests.length
+      : legacyResponse?.interestedCount || 0;
 
-    const interestedCount =
-      authenticatedShiftInterests !== undefined
-        ? backendInterests.length
-        : responses[shift.id]?.interestedCount || 0;
+    const interestedWorkers = isAuthenticatedCatchMode
+      ? backendInterests.map((interest) => ({
+          id: interest.profile_id,
+          name: interest.profile?.full_name || "Coworker",
+          role: "Coworker",
+          availability: {
+            label: "Interested",
+            status: "available",
+          },
+          selected:
+            interest.status === "selected" || interest.status === "confirmed",
+          interestId: interest.id,
+          interestStatus: interest.status,
+        }))
+      : legacyResponse?.interestedWorkers || [];
 
-    const interestedWorkers =
-      authenticatedShiftInterests !== undefined
-        ? backendInterests.map((interest) => ({
-            id: interest.profile_id,
-            name: interest.profile?.full_name || "Coworker",
-            role: "Coworker",
-            availability: {
-              label: "Interested",
-              status: "available",
-            },
-            selected:
-              interest.status === "selected" || interest.status === "confirmed",
-            interestId: interest.id,
-            interestStatus: interest.status,
-          }))
-        : responses[shift.id]?.interestedWorkers || [];
+    const confirmedBackendInterest = isAuthenticatedCatchMode
+      ? (backendInterests.find((interest) => interest.status === "confirmed") ??
+        null)
+      : null;
 
-    const confirmedWorkerId =
-      authenticatedShiftInterests !== undefined
-        ? null
-        : responses[shift.id]?.confirmedWorkerId;
+    const confirmedWorkerId = isAuthenticatedCatchMode
+      ? (confirmedBackendInterest?.profile_id ?? null)
+      : legacyResponse?.confirmedWorkerId;
 
     const confirmedWorker = interestedWorkers.find(
       (worker) => worker.id === confirmedWorkerId,
     );
 
-    const isAccepted =
-      authenticatedShiftInterests !== undefined
-        ? backendInterests.some(
-            (interest) =>
-              interest.status === "selected" || interest.status === "confirmed",
-          )
-        : Boolean(responses[shift.id]?.accepted);
+    const isAccepted = isAuthenticatedCatchMode
+      ? backendInterests.some(
+          (interest) =>
+            interest.status === "selected" || interest.status === "confirmed",
+        )
+      : Boolean(legacyResponse?.accepted);
 
-    const catchTimeline = getCatchTimeline(shift, responses);
+    const catchTimeline = getCatchTimeline(
+      shift,
+      isAuthenticatedCatchMode ? {} : responses,
+    );
 
-    const isConfirmed =
-      authenticatedShiftInterests !== undefined
-        ? backendInterests.some((interest) => interest.status === "confirmed")
-        : Boolean(responses[shift.id]?.confirmed);
+    const isConfirmed = isAuthenticatedCatchMode
+      ? backendInterests.some((interest) => interest.status === "confirmed")
+      : Boolean(legacyResponse?.confirmed);
 
-    const selectedBackendInterest =
-      authenticatedShiftInterests !== undefined
-        ? backendInterests.find((interest) => interest.status === "selected") ||
-          null
-        : null;
+    const selectedBackendInterest = isAuthenticatedCatchMode
+      ? (backendInterests.find((interest) => interest.status === "selected") ??
+        null)
+      : null;
 
     const canManagerApprove =
-      authenticatedShiftInterests !== undefined &&
+      isAuthenticatedCatchMode &&
       authenticatedWorkplaceRole?.toLowerCase() === "manager" &&
       Boolean(selectedBackendInterest) &&
       !isConfirmed;
@@ -2098,7 +2101,9 @@ function renderShiftBoard() {
         ? "Waiting for approval"
         : hasInterest
           ? "Interest sent"
-          : getBoardButtonLabel(shift);
+          : isAuthenticatedCatchMode
+            ? "Catch shift"
+            : getBoardButtonLabel(shift);
     const responsePanel = hasInterest
       ? `
         <div class="response-panel">
@@ -2358,8 +2363,7 @@ function renderShiftBoard() {
         if (interestError) {
           // User already expressed interest in this shift.
           if (interestError.code === "23505") {
-            button.textContent = "Waiting for approval";
-            button.disabled = true;
+            await loadAuthenticatedShiftInterests();
             return;
           }
 
@@ -2372,8 +2376,7 @@ function renderShiftBoard() {
 
         console.log("Industry shift interest created:", interest);
 
-        button.textContent = "Waiting for approval";
-        button.disabled = true;
+        await loadAuthenticatedShiftInterests();
       } catch (error) {
         console.error("Industry Catch unexpected error:", error);
 
