@@ -692,6 +692,7 @@ async function loadAuthenticatedCatchShifts() {
         ends_at,
         end_label,
         status,
+        coverage_stage,
         workplace:workplaces (
           name,
           time_zone
@@ -742,6 +743,7 @@ async function loadAuthenticatedCatchShifts() {
       day,
       time: endText ? `${startTime} – ${endText}` : startTime,
       status: shift.status,
+      coverageStage: shift.coverage_stage || "open",
       displayStatus: "Open",
       startsAt: shift.starts_at,
       source: "backend-catch",
@@ -2021,6 +2023,27 @@ function renderShiftBoard() {
       ? backendInterests.some((interest) => interest.status === "confirmed")
       : Boolean(legacyResponse?.confirmed);
 
+    const publicCoverageStage = isAuthenticatedCatchMode
+      ? shift.coverageStage || "open"
+      : null;
+
+    const shiftHasInterest = isAuthenticatedCatchMode
+      ? ["interest", "selected", "confirmed"].includes(publicCoverageStage)
+      : hasAnyInterest;
+
+    const shiftIsSelected = isAuthenticatedCatchMode
+      ? ["selected", "confirmed"].includes(publicCoverageStage)
+      : isAccepted;
+
+    const shiftIsConfirmed = isAuthenticatedCatchMode
+      ? publicCoverageStage === "confirmed"
+      : isConfirmed;
+
+    const anotherWorkerSelected =
+      isAuthenticatedCatchMode &&
+      shiftIsSelected &&
+      currentUserInterest?.status === "interested";
+
     const selectedBackendInterest = isAuthenticatedCatchMode
       ? (backendInterests.find((interest) => interest.status === "selected") ??
         null)
@@ -2101,11 +2124,13 @@ function renderShiftBoard() {
       ? "Coverage confirmed"
       : isAccepted
         ? "Waiting for approval"
-        : hasInterest
-          ? "Interest sent"
-          : isAuthenticatedCatchMode
-            ? "Catch shift"
-            : getBoardButtonLabel(shift);
+        : anotherWorkerSelected
+          ? "Another coworker selected"
+          : hasInterest
+            ? "Interest sent"
+            : isAuthenticatedCatchMode
+              ? "Catch shift"
+              : getBoardButtonLabel(shift);
     const hasInterestedCoworkers = interestedWorkers.length > 0;
     const responsePanel =
       hasInterest || hasInterestedCoworkers
@@ -2209,19 +2234,19 @@ function renderShiftBoard() {
 
     let statusClass = "status-open";
 
-    if (isConfirmed) {
+    if (shiftIsConfirmed) {
       statusClass = "status-confirmed";
-    } else if (isAccepted) {
+    } else if (shiftIsSelected) {
       statusClass = "status-pending";
-    } else if (hasAnyInterest) {
+    } else if (shiftHasInterest) {
       statusClass = "status-interest";
     }
 
-    const coverageStatusLabel = isConfirmed
+    const coverageStatusLabel = shiftIsConfirmed
       ? "Confirmed"
-      : isAccepted
+      : shiftIsSelected
         ? "Selected"
-        : hasAnyInterest
+        : shiftHasInterest
           ? "Interest"
           : displayedStatus;
 
@@ -2259,21 +2284,23 @@ function renderShiftBoard() {
  <span>${coverageStatusLabel}</span>
 </div>
 <div class="catch-progress ${statusClass}" aria-label="Shift coverage progress">
- <div class="catch-progress-step ${hasAnyInterest ? "is-complete" : ""} ${
-   hasAnyInterest && !isAccepted ? "is-current" : ""
- }">
+  <div class="catch-progress-step ${shiftHasInterest ? "is-complete" : ""} ${
+    shiftHasInterest && !shiftIsSelected ? "is-current" : ""
+  }">
     <span class="catch-progress-dot"></span>
     <span>Interest</span>
   </div>
 
-  <div class="catch-progress-step ${isAccepted ? "is-complete" : ""} ${
-    isAccepted && !isConfirmed ? "is-current" : ""
+  <div class="catch-progress-step ${shiftIsSelected ? "is-complete" : ""} ${
+    shiftIsSelected && !shiftIsConfirmed ? "is-current" : ""
   }">
-  <span class="catch-progress-dot"></span>
-  <span>Selected</span>
-</div>
+    <span class="catch-progress-dot"></span>
+    <span>Selected</span>
+  </div>
 
- <div class="catch-progress-step ${isConfirmed ? "is-complete is-current" : ""}">
+  <div class="catch-progress-step ${
+    shiftIsConfirmed ? "is-complete is-current" : ""
+  }">
     <span class="catch-progress-dot"></span>
     <span>Confirmed</span>
   </div>
