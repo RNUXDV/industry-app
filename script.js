@@ -29,6 +29,7 @@ const myShiftsNextCard = document.querySelector("#my-shifts-next-card");
 
 const myShiftsNextTime = document.querySelector("#my-shifts-next-time");
 const myShiftsNextStatus = document.querySelector("#my-shifts-next-status");
+const myShiftsNextLabel = document.getElementById("my-shifts-next-label");
 const myShiftsNextRole = document.querySelector("#my-shifts-next-role");
 const myShiftsNextWorkplace = document.querySelector(
   "#my-shifts-next-workplace",
@@ -608,7 +609,7 @@ async function loadAuthenticatedSchedule() {
     `,
     )
     .eq("assigned_profile_id", user.id)
-    .eq("status", "scheduled")
+    .in("status", ["scheduled", "coverage_needed"])
     .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true });
 
@@ -2988,6 +2989,7 @@ function renderMockCalendar() {
 
 function renderAuthenticatedNextShiftSummary(shifts) {
   if (
+    !myShiftsNextLabel ||
     !myShiftsNextTime ||
     !myShiftsNextStatus ||
     !myShiftsNextRole ||
@@ -2999,6 +3001,7 @@ function renderAuthenticatedNextShiftSummary(shifts) {
   const nextShift = shifts[0];
 
   if (!nextShift) {
+    myShiftsNextLabel.textContent = "Upcoming shift";
     myShiftsNextTime.textContent = "No upcoming shift";
     myShiftsNextStatus.textContent = "No shift";
     myShiftsNextRole.textContent = "—";
@@ -3012,9 +3015,17 @@ function renderAuthenticatedNextShiftSummary(shifts) {
   }
 
   const dayLabel = getShiftDayLabel(nextShift);
+  const isCoverageNeeded = nextShift.status === "coverage_needed";
+
+  myShiftsNextLabel.textContent = isCoverageNeeded
+    ? "Coverage requested"
+    : "Upcoming shift";
 
   myShiftsNextTime.textContent = `${dayLabel} · ${nextShift.time}`;
-  myShiftsNextStatus.textContent = "Upcoming";
+
+  myShiftsNextStatus.textContent = isCoverageNeeded
+    ? "Coverage requested"
+    : "Upcoming";
   myShiftsNextRole.textContent = nextShift.role || "—";
   myShiftsNextWorkplace.textContent = nextShift.workplace || "—";
 
@@ -3036,6 +3047,13 @@ if (myShiftsNextCard) {
     );
 
     if (!shift) {
+      return;
+    }
+
+    if (shift.status === "coverage_needed") {
+      renderShiftBoard();
+      setActiveSection("schedule");
+      setActiveScheduleView("catch");
       return;
     }
 
@@ -3071,24 +3089,61 @@ function renderAuthenticatedScheduleShifts(shifts) {
   }
 
   shifts.forEach((shift) => {
+    const isCoverageNeeded = shift.status === "coverage_needed";
+
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
 
     shiftCard.innerHTML = `
-      <div class="stack-copy">
-        <p class="stack-kicker">Scheduled shift</p>
-        <h3>${shift.day}</h3>
-        <p>${shift.role}</p>
+    <div class="stack-copy">
+      <p class="stack-kicker">
+        ${isCoverageNeeded ? "Coverage requested" : "Scheduled shift"}
+      </p>
 
-        <ul class="shift-meta">
-          <li>${shift.time}</li>
-        </ul>
+      <h3>${shift.day}</h3>
+      <p>${shift.role}</p>
 
-        <ul class="shift-meta">
-          <li>${shift.workplace}</li>
-        </ul>
-      </div>
-    `;
+      <ul class="shift-meta">
+        <li>${shift.time}</li>
+      </ul>
+
+      <ul class="shift-meta">
+        <li>${shift.workplace}</li>
+      </ul>
+    </div>
+  `;
+
+  shiftCard.setAttribute("role", "button");
+shiftCard.tabIndex = 0;
+
+shiftCard.setAttribute(
+  "aria-label",
+  isCoverageNeeded
+    ? "Open coverage request"
+    : `Open shift details for ${shift.day}`,
+);
+
+const openAuthenticatedScheduleShift = () => {
+  if (isCoverageNeeded) {
+    renderShiftBoard();
+    setActiveSection("schedule");
+    setActiveScheduleView("catch");
+    return;
+  }
+
+  openShiftDetails(shift);
+};
+
+shiftCard.addEventListener("click", openAuthenticatedScheduleShift);
+
+shiftCard.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") {
+    return;
+  }
+
+  event.preventDefault();
+  openAuthenticatedScheduleShift();
+});
 
     importedShiftList.appendChild(shiftCard);
   });
