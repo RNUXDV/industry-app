@@ -382,6 +382,7 @@ let activeScheduleAction = null;
 let selectedReleaseShift = null;
 let activeCrewShiftId = "";
 let activeTipEntryId = "";
+let industryRealtimeChannel = null;
 
 function setActiveScheduleView(viewName) {
   if (viewName === "my-shifts") {
@@ -6252,6 +6253,75 @@ async function loadAuthenticatedIndustryProfile() {
 
   // Re-render Catch after the authenticated role is known.
   renderShiftBoard();
+
+  setupIndustryRealtime();
+}
+
+async function setupIndustryRealtime() {
+  if (!authenticatedUserId) {
+    return;
+  }
+
+  if (industryRealtimeChannel) {
+    await supabaseClient.removeChannel(industryRealtimeChannel);
+    industryRealtimeChannel = null;
+  }
+
+  industryRealtimeChannel = supabaseClient
+    .channel("industry-authenticated-realtime")
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "shifts",
+      },
+      async (payload) => {
+        console.log("Industry realtime shift change:", payload);
+
+        await Promise.all([
+          loadAuthenticatedSchedule(),
+          loadAuthenticatedCatchShifts(),
+        ]);
+      },
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "shift_interests",
+      },
+      async (payload) => {
+        console.log("Industry realtime shift interest change:", payload);
+
+        await loadAuthenticatedShiftInterests();
+      },
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "coverage_events",
+      },
+      async (payload) => {
+        console.log("Industry realtime coverage event:", payload);
+
+        await Promise.all([
+          loadAuthenticatedSchedule(),
+          loadAuthenticatedCatchShifts(),
+          loadAuthenticatedShiftInterests(),
+        ]);
+      },
+    )
+
+    .subscribe((status) => {
+      console.log("Industry realtime status:", status);
+    });
 }
 
 function enterAuthenticatedIndustry() {
