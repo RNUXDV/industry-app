@@ -2106,8 +2106,10 @@ function renderShiftBoard() {
           : isAuthenticatedCatchMode
             ? "Catch shift"
             : getBoardButtonLabel(shift);
-    const responsePanel = hasInterest
-      ? `
+    const hasInterestedCoworkers = interestedWorkers.length > 0;
+    const responsePanel =
+      hasInterest || hasInterestedCoworkers
+        ? `
         <div class="response-panel">
          ${interestedWorkersMarkup}
          ${
@@ -2194,7 +2196,7 @@ function renderShiftBoard() {
          } 
         </div>
       `
-      : "";
+        : "";
 
     const sourceShift = shift.sourceShiftId
       ? findShiftById(shift.sourceShiftId)
@@ -2211,9 +2213,17 @@ function renderShiftBoard() {
       statusClass = "status-confirmed";
     } else if (isAccepted) {
       statusClass = "status-pending";
-    } else if (hasInterest) {
+    } else if (hasAnyInterest) {
       statusClass = "status-interest";
     }
+
+    const coverageStatusLabel = isConfirmed
+      ? "Confirmed"
+      : isAccepted
+        ? "Selected"
+        : hasAnyInterest
+          ? "Interest"
+          : displayedStatus;
 
     shiftCard.innerHTML = `
       <div class="stack-copy">
@@ -2246,12 +2256,12 @@ function renderShiftBoard() {
 
  <div class="catch-status-chip ${statusClass}">
   <span class="catch-status-dot" aria-hidden="true"></span>
-  <span>${displayedStatus}</span>
+ <span>${coverageStatusLabel}</span>
 </div>
- <div class="catch-progress ${statusClass}" aria-label="Shift coverage progress">
-  <div class="catch-progress-step ${hasInterest ? "is-complete" : ""} ${
-    hasInterest && !isAccepted ? "is-current" : ""
-  }">
+<div class="catch-progress ${statusClass}" aria-label="Shift coverage progress">
+ <div class="catch-progress-step ${hasAnyInterest ? "is-complete" : ""} ${
+   hasAnyInterest && !isAccepted ? "is-current" : ""
+ }">
     <span class="catch-progress-dot"></span>
     <span>Interest</span>
   </div>
@@ -6284,6 +6294,8 @@ async function loadAuthenticatedIndustryProfile() {
     return;
   }
 
+  authenticatedUserId = user.id;
+
   const { data: profile, error: profileError } = await supabaseClient
     .from("profiles")
     .select("full_name")
@@ -6332,7 +6344,7 @@ async function loadAuthenticatedIndustryProfile() {
   // Re-render Catch after the authenticated role is known.
   renderShiftBoard();
 
-  setupIndustryRealtime();
+  await setupIndustryRealtime();
 }
 
 async function setupIndustryRealtime() {
@@ -6376,6 +6388,10 @@ async function setupIndustryRealtime() {
         console.log("Industry realtime shift interest change:", payload);
 
         await loadAuthenticatedShiftInterests();
+
+        renderShiftBoard();
+
+        renderAuthenticatedNextShiftSummary(authenticatedScheduleShifts ?? []);
       },
     )
 
