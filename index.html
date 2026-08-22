@@ -1468,6 +1468,210 @@
 
 </section>
 
+<!-- Manager Schedule -->
+<section
+  class="schedule-subview"
+  data-schedule-subview="manager-schedule"
+  aria-label="Manager schedule"
+>
+  <div class="section-heading">
+    <p class="section-label">Schedule / Manager</p>
+    <h2>Team Schedule</h2>
+    <p>
+      Review staffing, create shifts, resolve coverage, and manage your crew.
+    </p>
+  </div>
+
+  <div class="panel-heading">
+    <p class="section-label">Manager Schedule</p>
+    <h3>Team schedule at a glance</h3>
+    <p>
+      See who is working, what needs attention, and what comes next.
+    </p>
+  </div>
+
+  <section
+    class="card-list schedule-card-list"
+    aria-label="Manager schedule tools"
+  >
+    <button
+      class="feature-card manager-schedule-card"
+      id="manager-team-schedule-button"
+      type="button"
+    >
+      <div class="card-icon" aria-hidden="true">T</div>
+      <h3>Team Schedule</h3>
+      <p>See who is working today and what is coming up.</p>
+    </button>
+
+    <button
+      class="feature-card manager-schedule-card"
+      id="manager-create-shift-button"
+      type="button"
+    >
+      <div class="card-icon" aria-hidden="true">+</div>
+      <h3>Create Shift</h3>
+      <p>Assign a shift to a member of your workplace crew.</p>
+    </button>
+
+    <button
+      class="feature-card manager-schedule-card"
+      id="manager-coverage-requests-button"
+      type="button"
+    >
+      <div class="card-icon" aria-hidden="true">C</div>
+      <h3>Coverage Requests</h3>
+      <p>Review shift coverage that needs manager approval.</p>
+    </button>
+
+    <button
+      class="feature-card manager-schedule-card"
+      id="manager-crew-button"
+      type="button"
+    >
+      <div class="card-icon" aria-hidden="true">P</div>
+      <h3>Crew</h3>
+      <p>View workplace members and their roles.</p>
+    </button>
+  </section>
+</section>
+
+<!-- Manager Team Schedule -->
+<section
+  class="schedule-subview"
+  data-schedule-subview="manager-team-schedule"
+  aria-label="Manager team schedule"
+>
+  <button
+  class="back-to-schedule-button"
+  type="button"
+  data-back-to-schedule
+>
+  ← Back to Manager Schedule
+</button>
+
+  <div class="section-heading">
+    <p class="section-label">Schedule / Manager</p>
+    <h2>Team Schedule</h2>
+    <p>
+      See upcoming shifts across your workplace.
+    </p>
+  </div>
+
+  <div class="panel-heading">
+    <p class="section-label">Workplace Schedule</p>
+    <h3>Who's working</h3>
+    <p>
+      Assigned and unassigned shifts for your team.
+    </p>
+  </div>
+
+  <section
+    class="stack-list"
+    id="manager-team-schedule-list"
+    aria-label="Upcoming workplace shifts"
+  ></section>
+</section>
+
+<!-- Manager Create Shift -->
+<section
+  class="schedule-subview"
+  data-schedule-subview="manager-create-shift"
+  aria-label="Manager create shift"
+>
+  <button
+  class="back-to-schedule-button"
+  type="button"
+  data-back-to-schedule
+>
+  ← Back to Manager Schedule
+</button>
+
+  <div class="section-heading">
+    <p class="section-label">Schedule / Manager</p>
+    <h2>Create Shift</h2>
+    <p>
+      Assign a new shift to a member of your workplace crew.
+    </p>
+  </div>
+
+  <section
+    class="today-panel"
+    aria-label="Create workplace shift"
+  >
+    <div class="panel-heading">
+      <p class="section-label">New Shift</p>
+      <h3>Shift details</h3>
+      <p>
+        Choose the worker, role, date, and shift time.
+      </p>
+    </div>
+
+    <div class="form-grid">
+      <label>
+        Crew member
+        <select id="manager-shift-worker" required>
+          <option value="">Choose a crew member</option>
+        </select>
+      </label>
+
+      <label>
+        Position
+        <input
+          id="manager-shift-role"
+          type="text"
+          placeholder="Server"
+          required
+        />
+      </label>
+
+      <label>
+        Date
+        <input
+          id="manager-shift-date"
+          type="date"
+          required
+        />
+      </label>
+
+      <label>
+        Start time
+        <input
+          id="manager-shift-start"
+          type="time"
+          required
+        />
+      </label>
+
+      <label>
+        End time
+        <input
+          id="manager-shift-end"
+          type="time"
+        />
+      </label>
+    </div>
+
+    <p class="status-text">
+      Leave end time blank if the shift runs until close.
+    </p>
+
+    <button
+      class="action-button"
+      id="manager-save-shift-button"
+      type="button"
+    >
+      Create Shift
+    </button>
+
+    <p
+      class="status-text"
+      id="manager-create-shift-status"
+      aria-live="polite"
+    ></p>
+  </section>
+</section>
+
           
 
           <section

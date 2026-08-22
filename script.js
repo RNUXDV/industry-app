@@ -54,6 +54,39 @@ const shiftWorkplaceSelect = document.querySelector("#shift-workplace");
 const workplacePreviewPanel = document.querySelector(
   "#workplace-preview-panel",
 );
+
+const managerTeamScheduleButton = document.getElementById(
+  "manager-team-schedule-button",
+);
+
+const managerCreateShiftButton = document.getElementById(
+  "manager-create-shift-button",
+);
+
+const managerTeamScheduleList = document.getElementById(
+  "manager-team-schedule-list",
+);
+
+const managerShiftWorkerSelect = document.getElementById(
+  "manager-shift-worker",
+);
+
+const managerCreateShiftStatus = document.getElementById(
+  "manager-create-shift-status",
+);
+
+const managerShiftRoleInput = document.getElementById("manager-shift-role");
+
+const managerShiftDateInput = document.getElementById("manager-shift-date");
+
+const managerShiftStartInput = document.getElementById("manager-shift-start");
+
+const managerShiftEndInput = document.getElementById("manager-shift-end");
+
+const managerSaveShiftButton = document.getElementById(
+  "manager-save-shift-button",
+);
+
 const mockCalendarPanel = document.querySelector("#mock-calendar-panel");
 const mockCalendarGrid = document.querySelector("#mock-calendar-grid");
 const scheduleHub = document.querySelector("#schedule-hub");
@@ -375,6 +408,7 @@ let CURRENT_USER = DEMO_USERS.original;
 let authenticatedScheduleShifts = undefined;
 let authenticatedCatchShifts = undefined;
 let authenticatedShiftInterests = undefined;
+let authenticatedTeamScheduleShifts = undefined;
 let authenticatedWorkplaceId = null;
 let authenticatedWorkplaceRole = null;
 let authenticatedUserId = null;
@@ -386,24 +420,35 @@ let activeTipEntryId = "";
 let industryRealtimeChannel = null;
 
 function setActiveScheduleView(viewName) {
-  if (viewName === "my-shifts") {
+  const resolvedViewName =
+    viewName === "my-shifts" &&
+    authenticatedWorkplaceRole?.toLowerCase() === "manager"
+      ? "manager-schedule"
+      : viewName;
+
+  if (resolvedViewName === "my-shifts") {
     renderImportedShifts();
   }
-  if (viewName === "activity-feed") {
+
+  if (resolvedViewName === "activity-feed") {
     renderActivityFeed();
   }
+
   if (scheduleHub) {
     scheduleHub.classList.add("hidden-panel");
   }
 
   scheduleViewCards.forEach((card) => {
-    card.classList.toggle("active", card.dataset.scheduleView === viewName);
+    card.classList.toggle(
+      "active",
+      card.dataset.scheduleView === resolvedViewName,
+    );
   });
 
   scheduleSubviews.forEach((subview) => {
     subview.classList.toggle(
       "active",
-      subview.dataset.scheduleSubview === viewName,
+      subview.dataset.scheduleSubview === resolvedViewName,
     );
   });
 }
@@ -670,6 +715,257 @@ async function loadAuthenticatedSchedule() {
   renderDashboardShift(authenticatedScheduleShifts[0] || null);
 }
 
+async function loadAuthenticatedManagerCrew() {
+  if (!managerShiftWorkerSelect) {
+    return;
+  }
+
+  managerShiftWorkerSelect.innerHTML =
+    '<option value="">Choose a crew member</option>';
+
+  if (
+    authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
+    !authenticatedWorkplaceId
+  ) {
+    return;
+  }
+
+  if (managerCreateShiftStatus) {
+    managerCreateShiftStatus.textContent = "Loading workplace crew…";
+  }
+
+  const { data: memberships, error: membershipError } = await supabaseClient
+    .from("workplace_members")
+    .select("profile_id, role")
+    .eq("workplace_id", authenticatedWorkplaceId);
+
+  if (membershipError) {
+    console.error("Industry manager crew membership error:", membershipError);
+
+    if (managerCreateShiftStatus) {
+      managerCreateShiftStatus.textContent = "Unable to load workplace crew.";
+    }
+
+    return;
+  }
+
+  const profileIds = (memberships || [])
+    .map((membership) => membership.profile_id)
+    .filter(Boolean);
+
+  if (!profileIds.length) {
+    if (managerCreateShiftStatus) {
+      managerCreateShiftStatus.textContent = "No workplace members found.";
+    }
+
+    return;
+  }
+
+  const { data: profiles, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("id, full_name")
+    .in("id", profileIds);
+
+  if (profileError) {
+    console.error("Industry manager crew profile error:", profileError);
+
+    if (managerCreateShiftStatus) {
+      managerCreateShiftStatus.textContent = "Unable to load workplace crew.";
+    }
+
+    return;
+  }
+
+  const profilesById = new Map(
+    (profiles || []).map((profile) => [profile.id, profile]),
+  );
+
+  const crew = (memberships || [])
+    .map((membership) => {
+      const profile = profilesById.get(membership.profile_id);
+
+      return {
+        id: membership.profile_id,
+        name: profile?.full_name || "Crew member",
+        role: membership.role || "",
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  crew.forEach((member) => {
+    const option = document.createElement("option");
+
+    option.value = member.id;
+    option.textContent = member.role
+      ? `${member.name} · ${member.role}`
+      : member.name;
+
+    managerShiftWorkerSelect.appendChild(option);
+  });
+
+  if (managerCreateShiftStatus) {
+    managerCreateShiftStatus.textContent = "";
+  }
+
+  console.log("Industry manager crew loaded:", crew);
+}
+
+async function loadAuthenticatedTeamSchedule() {
+  if (
+    authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
+    !authenticatedWorkplaceId
+  ) {
+    authenticatedTeamScheduleShifts = [];
+    return;
+  }
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const startOfTodayIso = startOfToday.toISOString();
+
+  const { data, error } = await supabaseClient
+    .from("shifts")
+    .select(
+      `
+    id,
+    workplace_id,
+    assigned_profile_id,
+    role,
+    starts_at,
+    ends_at,
+    end_label,
+    status,
+    coverage_stage,
+    assigned_profile:profiles!shifts_assigned_profile_id_fkey (
+      full_name
+    ),
+    workplace:workplaces (
+      name,
+      time_zone
+    )
+  `,
+    )
+    .eq("workplace_id", authenticatedWorkplaceId)
+    .in("status", ["scheduled", "coverage_needed"])
+    .gte("starts_at", startOfTodayIso)
+    .order("starts_at", { ascending: true });
+
+  if (error) {
+    console.error("Industry manager team schedule error:", error);
+    return;
+  }
+
+  authenticatedTeamScheduleShifts = (data || []).map((shift) => {
+    const timeZone =
+      shift.workplace?.time_zone ||
+      Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const startDate = new Date(shift.starts_at);
+
+    const day = startDate.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone,
+    });
+
+    const startTime = startDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone,
+    });
+
+    let endText = shift.end_label || "";
+
+    if (shift.ends_at) {
+      endText = new Date(shift.ends_at).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone,
+      });
+    }
+
+    return {
+      id: shift.id,
+      owner: shift.assigned_profile_id,
+      workerName: shift.assigned_profile?.full_name || "Unassigned",
+      workplaceId: shift.workplace_id,
+      workplace: shift.workplace?.name || "",
+      role: shift.role || "",
+      day,
+      time: endText ? `${startTime} – ${endText}` : startTime,
+      status: shift.status,
+      coverageStage: shift.coverage_stage || null,
+      startsAt: shift.starts_at,
+    };
+  });
+
+  console.log(
+    "Industry manager team schedule loaded:",
+    authenticatedTeamScheduleShifts,
+  );
+  renderAuthenticatedTeamSchedule();
+}
+function renderAuthenticatedTeamSchedule() {
+  if (!managerTeamScheduleList) {
+    return;
+  }
+
+  managerTeamScheduleList.innerHTML = "";
+
+  const shifts = authenticatedTeamScheduleShifts || [];
+
+  if (!shifts.length) {
+    managerTeamScheduleList.innerHTML = `
+      <article class="stack-card shift-card">
+        <div class="stack-copy">
+          <p class="stack-kicker">Team schedule</p>
+          <h3>No workplace shifts</h3>
+          <p>Upcoming team shifts will appear here.</p>
+        </div>
+      </article>
+    `;
+    return;
+  }
+
+  shifts.forEach((shift) => {
+    const isUnassigned = !shift.owner;
+    const needsCoverage = shift.status === "coverage_needed";
+
+    const shiftCard = document.createElement("article");
+    shiftCard.className = "stack-card shift-card";
+
+    shiftCard.innerHTML = `
+      <div class="stack-copy">
+        <p class="stack-kicker">
+          ${
+            needsCoverage
+              ? "Coverage requested"
+              : isUnassigned
+                ? "Unassigned shift"
+                : "Scheduled shift"
+          }
+        </p>
+
+        <h3>${shift.workerName}</h3>
+
+        <p>${shift.role}</p>
+
+        <ul class="shift-meta">
+          <li>${shift.day}</li>
+          <li>${shift.time}</li>
+        </ul>
+
+        <ul class="shift-meta">
+          <li>${shift.workplace}</li>
+        </ul>
+      </div>
+    `;
+
+    managerTeamScheduleList.appendChild(shiftCard);
+  });
+}
 async function loadAuthenticatedCatchShifts() {
   const {
     data: { user },
@@ -862,7 +1158,152 @@ scheduleViewCards.forEach((card) => {
   });
 });
 
+if (managerTeamScheduleButton) {
+  managerTeamScheduleButton.addEventListener("click", () => {
+    renderAuthenticatedTeamSchedule();
+
+    setActiveSection("schedule");
+    setActiveScheduleView("manager-team-schedule");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+}
+
+if (managerCreateShiftButton) {
+  managerCreateShiftButton.addEventListener("click", async () => {
+    setActiveSection("schedule");
+    setActiveScheduleView("manager-create-shift");
+
+    await loadAuthenticatedManagerCrew();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+}
+
+if (managerSaveShiftButton) {
+  managerSaveShiftButton.addEventListener("click", async () => {
+    if (
+      authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
+      !authenticatedWorkplaceId
+    ) {
+      managerCreateShiftStatus.textContent = "Manager access is required.";
+      return;
+    }
+
+    const assignedProfileId = managerShiftWorkerSelect?.value || "";
+    const role = managerShiftRoleInput?.value.trim() || "";
+    const date = managerShiftDateInput?.value || "";
+    const startTime = managerShiftStartInput?.value || "";
+    const endTime = managerShiftEndInput?.value || "";
+
+    if (!assignedProfileId || !role || !date || !startTime) {
+      managerCreateShiftStatus.textContent =
+        "Choose a crew member and enter the role, date, and start time.";
+      return;
+    }
+
+    const startsAtDate = new Date(`${date}T${startTime}:00`);
+
+    if (Number.isNaN(startsAtDate.getTime())) {
+      managerCreateShiftStatus.textContent =
+        "Enter a valid shift date and start time.";
+      return;
+    }
+
+    let endsAt = null;
+    let endLabel = "Close";
+
+    if (endTime) {
+      const endsAtDate = new Date(`${date}T${endTime}:00`);
+
+      if (Number.isNaN(endsAtDate.getTime())) {
+        managerCreateShiftStatus.textContent = "Enter a valid end time.";
+        return;
+      }
+
+      // Restaurant shifts commonly cross midnight.
+      if (endsAtDate <= startsAtDate) {
+        endsAtDate.setDate(endsAtDate.getDate() + 1);
+      }
+
+      endsAt = endsAtDate.toISOString();
+      endLabel = null;
+    }
+
+    const originalButtonText = managerSaveShiftButton.textContent;
+
+    managerSaveShiftButton.disabled = true;
+    managerSaveShiftButton.textContent = "Creating…";
+    managerCreateShiftStatus.textContent = "Creating shift…";
+
+    console.log("Industry manager create shift payload:", {
+      workplace_id: authenticatedWorkplaceId,
+      assigned_profile_id: assignedProfileId,
+      role,
+      date,
+      startTime,
+      endTime,
+      starts_at: startsAtDate.toISOString(),
+      ends_at: endsAt,
+      end_label: endLabel,
+      status: "scheduled",
+    });
+
+    const { error } = await supabaseClient.from("shifts").insert({
+      workplace_id: authenticatedWorkplaceId,
+      assigned_profile_id: assignedProfileId,
+      role,
+      starts_at: startsAtDate.toISOString(),
+      ends_at: endsAt,
+      end_label: endLabel,
+      status: "scheduled",
+    });
+
+    if (error) {
+      console.error("Industry manager create shift error:", error);
+
+      managerCreateShiftStatus.textContent = "Unable to create this shift.";
+
+      managerSaveShiftButton.disabled = false;
+      managerSaveShiftButton.textContent = originalButtonText;
+      return;
+    }
+
+    console.log("Industry manager shift created.");
+
+    managerCreateShiftStatus.textContent = "Shift created.";
+
+    await loadAuthenticatedTeamSchedule();
+
+    managerShiftWorkerSelect.value = "";
+    managerShiftRoleInput.value = "";
+    managerShiftStartInput.value = "";
+    managerShiftEndInput.value = "";
+
+    managerSaveShiftButton.disabled = false;
+    managerSaveShiftButton.textContent = originalButtonText;
+
+    setActiveScheduleView("manager-team-schedule");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+}
+
 function showScheduleHub() {
+  const defaultScheduleView =
+    authenticatedWorkplaceRole?.toLowerCase() === "manager"
+      ? "manager-schedule"
+      : "my-shifts";
+
   if (scheduleHub) {
     scheduleHub.classList.add("hidden-panel");
   }
@@ -870,12 +1311,15 @@ function showScheduleHub() {
   scheduleSubviews.forEach((subview) => {
     subview.classList.toggle(
       "active",
-      subview.dataset.scheduleSubview === "my-shifts",
+      subview.dataset.scheduleSubview === defaultScheduleView,
     );
   });
 
   scheduleViewCards.forEach((card) => {
-    card.classList.toggle("active", card.dataset.scheduleView === "my-shifts");
+    card.classList.toggle(
+      "active",
+      card.dataset.scheduleView === defaultScheduleView,
+    );
   });
 }
 
@@ -3553,7 +3997,7 @@ renderShiftBoard();
 renderImportedShifts();
 renderDashboardShift();
 renderTipEntries();
-setActiveScheduleView("my-shifts");
+
 openCrewShift(
   {
     id: "crew-default",
@@ -6248,7 +6692,7 @@ async function restoreIndustrySession() {
 
   console.log("Industry: restored session for", session.user.email);
 
-  enterAuthenticatedIndustry();
+  await enterAuthenticatedIndustry();
 }
 
 restoreIndustrySession();
@@ -6368,7 +6812,11 @@ async function loadAuthenticatedIndustryProfile() {
 
   dashboardGreeting.textContent = `${getIndustryGreeting()}, ${displayName}`;
 
-  // Re-render Catch after the authenticated role is known.
+  // Re-render role-aware Schedule and Catch after the authenticated role is known.
+  if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {
+    setActiveScheduleView("manager-schedule");
+  }
+
   renderShiftBoard();
 
   await setupIndustryRealtime();
@@ -6445,19 +6893,32 @@ async function setupIndustryRealtime() {
     });
 }
 
-function enterAuthenticatedIndustry() {
+async function enterAuthenticatedIndustry() {
   industryAuthScreen?.classList.remove("is-active");
   industryAuthScreen?.setAttribute("aria-hidden", "true");
 
   document.body.classList.remove("industry-auth-active");
 
   completeOnboarding();
-
-  loadAuthenticatedIndustryProfile();
   updateIndustryDashboardDate();
-  loadAuthenticatedSchedule();
-  loadAuthenticatedCatchShifts();
-  loadAuthenticatedShiftInterests();
+
+  // Establish authenticated identity and workplace role first.
+  await loadAuthenticatedIndustryProfile();
+
+  // Then load the user's Schedule/Catch data.
+  await Promise.all([
+    loadAuthenticatedSchedule(),
+    loadAuthenticatedCatchShifts(),
+    loadAuthenticatedShiftInterests(),
+    loadAuthenticatedTeamSchedule(),
+  ]);
+
+  // Make the final Schedule destination role-aware.
+  if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {
+    setActiveScheduleView("manager-schedule");
+  } else {
+    setActiveScheduleView("my-shifts");
+  }
 }
 
 authSwitchButton?.addEventListener("click", () => {
