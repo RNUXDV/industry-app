@@ -9064,6 +9064,50 @@ body.onboarding-home-active #home-logo-button {
   color: inherit;
 }
 
+.dashboard-header-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 0.55rem;
+}
+
+.dashboard-header-controls .theme-toggle {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dashboard-clock {
+  margin: 0;
+  padding-right: 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  opacity: 0.76;
+  white-space: nowrap;
+}
+
+.compact-hero-top > div:first-child {
+  min-width: 0;
+}
+
+@media (max-width: 430px) {
+  .dashboard-header-controls {
+    gap: 0.4rem;
+  }
+
+  .dashboard-header-controls .theme-toggle {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+    font-size: 0.88rem;
+  }
+
+  .dashboard-clock {
+    font-size: 0.88rem;
+  }
+}
+
 @media (max-width: 380px) {
   .dashboard-shift-actions {
     grid-template-columns: 1fr;

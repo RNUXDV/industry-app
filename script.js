@@ -422,6 +422,7 @@ let authenticatedTeamScheduleShifts = undefined;
 let authenticatedWorkplaceId = null;
 let authenticatedWorkplaceRole = null;
 let authenticatedUserId = null;
+let authenticatedDisplayName = "";
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let selectedReleaseShift = null;
@@ -1335,7 +1336,8 @@ function updateCatchViewForRole() {
     !catchSectionLabel ||
     !catchViewTitle ||
     !catchViewCopy ||
-    !catchViewHelper
+    !catchViewHelper ||
+    !shiftBoardStatus
   ) {
     return;
   }
@@ -1348,6 +1350,8 @@ function updateCatchViewForRole() {
       "Review released shifts and coverage that needs your attention.";
     catchViewHelper.textContent =
       "Track requests from release through manager approval.";
+    shiftBoardStatus.textContent = "Coverage requests appear here.";
+
     return;
   }
 
@@ -1357,6 +1361,7 @@ function updateCatchViewForRole() {
   catchViewCopy.textContent = "Catch shifts released by your workplace crew.";
   catchViewHelper.textContent =
     "Need coverage? Release a shift from My Shifts.";
+  shiftBoardStatus.textContent = "Open shifts appear here.";
 }
 
 function showScheduleHub() {
@@ -2077,6 +2082,13 @@ function createBoardPost(postData) {
   saveShiftStore(savedShifts);
   renderShiftBoard();
   shiftBoardStatus.textContent = "Added to Catch Board.";
+
+  window.setTimeout(() => {
+    if (shiftBoardStatus.textContent === "Added to Catch Board.") {
+      updateCatchViewForRole();
+    }
+  }, 2500);
+
   setActiveSection("schedule");
   setActiveScheduleView("catch");
 }
@@ -2437,11 +2449,24 @@ function renderShiftBoard() {
   shiftBoardList.innerHTML = "";
 
   if (shifts.length === 0) {
+    const isManager = authenticatedWorkplaceRole?.toLowerCase() === "manager";
+
     shiftBoardList.innerHTML = `
     <div class="catch-empty-state">
-      <p class="catch-empty-title">No open shifts right now.</p>
+      <p class="catch-empty-title">
+        ${
+          isManager
+            ? "No coverage requests right now."
+            : "No open shifts right now."
+        }
+      </p>
+
       <p class="catch-empty-text">
-        Released shifts will appear here.
+        ${
+          isManager
+            ? "New coverage requests will appear here."
+            : "Released shifts will appear here."
+        }
       </p>
     </div>
   `;
@@ -6604,6 +6629,7 @@ const authSwitch = document.querySelector(".industry-auth-switch");
 
 const dashboardGreeting = document.querySelector("#dashboard-greeting");
 const dashboardDate = document.querySelector("#dashboard-date");
+const dashboardClock = document.querySelector("#dashboard-clock");
 
 // =========================================================
 // SUPABASE CLIENT
@@ -6800,6 +6826,16 @@ function getIndustryGreeting() {
   return "Good evening";
 }
 
+function updateIndustryDashboardGreeting() {
+  if (!dashboardGreeting) {
+    return;
+  }
+
+  dashboardGreeting.textContent = authenticatedDisplayName
+    ? `${getIndustryGreeting()}, ${authenticatedDisplayName}`
+    : getIndustryGreeting();
+}
+
 function updateIndustryDashboardDate() {
   const now = new Date();
 
@@ -6810,6 +6846,37 @@ function updateIndustryDashboardDate() {
   });
 
   dashboardDate.textContent = formattedDate.replace(",", " •");
+}
+
+window.addEventListener("focus", () => {
+  updateIndustryDashboardDate();
+  updateIndustryDashboardGreeting();
+  updateIndustryDashboardClock();
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    updateIndustryDashboardDate();
+    updateIndustryDashboardGreeting();
+    updateIndustryDashboardClock();
+  }
+});
+
+window.setInterval(() => {
+  updateIndustryDashboardClock();
+}, 30000);
+
+function updateIndustryDashboardClock() {
+  if (!dashboardClock) {
+    return;
+  }
+
+  const now = new Date();
+
+  dashboardClock.textContent = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 async function loadAuthenticatedIndustryProfile() {
@@ -6865,7 +6932,8 @@ async function loadAuthenticatedIndustryProfile() {
   const fullName = profile?.full_name?.trim();
 
   if (!fullName) {
-    dashboardGreeting.textContent = getIndustryGreeting();
+    authenticatedDisplayName = "";
+    updateIndustryDashboardGreeting();
     return;
   }
 
@@ -6873,7 +6941,9 @@ async function loadAuthenticatedIndustryProfile() {
 
   const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 
-  dashboardGreeting.textContent = `${getIndustryGreeting()}, ${displayName}`;
+  authenticatedDisplayName = displayName;
+
+  updateIndustryDashboardGreeting();
 
   // Re-render role-aware Schedule and Catch after the authenticated role is known.
   if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {
@@ -6964,6 +7034,7 @@ async function enterAuthenticatedIndustry() {
 
   completeOnboarding();
   updateIndustryDashboardDate();
+  updateIndustryDashboardClock();
 
   // Establish authenticated identity and workplace role first.
   await loadAuthenticatedIndustryProfile();
