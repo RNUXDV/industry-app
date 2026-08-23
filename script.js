@@ -63,6 +63,10 @@ const managerCreateShiftButton = document.getElementById(
   "manager-create-shift-button",
 );
 
+const managerCoverageRequestsButton = document.getElementById(
+  "manager-coverage-requests-button",
+);
+
 const managerTeamScheduleList = document.getElementById(
   "manager-team-schedule-list",
 );
@@ -86,6 +90,12 @@ const managerShiftEndInput = document.getElementById("manager-shift-end");
 const managerSaveShiftButton = document.getElementById(
   "manager-save-shift-button",
 );
+
+const catchBackButton = document.getElementById("catch-back-button");
+const catchSectionLabel = document.getElementById("catch-section-label");
+const catchViewTitle = document.getElementById("catch-view-title");
+const catchViewCopy = document.getElementById("catch-view-copy");
+const catchViewHelper = document.getElementById("catch-view-helper");
 
 const mockCalendarPanel = document.querySelector("#mock-calendar-panel");
 const mockCalendarGrid = document.querySelector("#mock-calendar-grid");
@@ -1186,6 +1196,25 @@ if (managerCreateShiftButton) {
   });
 }
 
+if (managerCoverageRequestsButton) {
+  managerCoverageRequestsButton.addEventListener("click", async () => {
+    await Promise.all([
+      loadAuthenticatedCatchShifts(),
+      loadAuthenticatedShiftInterests(),
+    ]);
+
+    updateCatchViewForRole();
+
+    setActiveSection("schedule");
+    setActiveScheduleView("catch");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+}
+
 if (managerSaveShiftButton) {
   managerSaveShiftButton.addEventListener("click", async () => {
     if (
@@ -1296,6 +1325,38 @@ if (managerSaveShiftButton) {
       behavior: "smooth",
     });
   });
+}
+
+function updateCatchViewForRole() {
+  const isManager = authenticatedWorkplaceRole?.toLowerCase() === "manager";
+
+  if (
+    !catchBackButton ||
+    !catchSectionLabel ||
+    !catchViewTitle ||
+    !catchViewCopy ||
+    !catchViewHelper
+  ) {
+    return;
+  }
+
+  if (isManager) {
+    catchBackButton.textContent = "← Back to Manager Schedule";
+    catchSectionLabel.textContent = "Schedule / Manager";
+    catchViewTitle.textContent = "Coverage Requests";
+    catchViewCopy.textContent =
+      "Review released shifts and coverage that needs your attention.";
+    catchViewHelper.textContent =
+      "Track requests from release through manager approval.";
+    return;
+  }
+
+  catchBackButton.textContent = "← Back to Schedule";
+  catchSectionLabel.textContent = "Catch";
+  catchViewTitle.textContent = "Catch Board";
+  catchViewCopy.textContent = "Catch shifts released by your workplace crew.";
+  catchViewHelper.textContent =
+    "Need coverage? Release a shift from My Shifts.";
 }
 
 function showScheduleHub() {
@@ -2776,16 +2837,18 @@ function renderShiftBoard() {
           Approve Coverage
         </button>
       `
-              : `
-        <button
-          class="action-button board-action-button"
-          type="button"
-          data-shift-id="${shift.id}"
-          ${hasInterest ? "disabled" : ""}
-        >
-          ${boardButtonLabel}
-        </button>
-      `
+              : authenticatedWorkplaceRole?.toLowerCase() === "manager"
+                ? ""
+                : `
+<button
+  class="action-button board-action-button"
+  type="button"
+  data-shift-id="${shift.id}"
+  ${hasInterest ? "disabled" : ""}
+>
+  ${boardButtonLabel}
+</button>
+`
         }
         ${
           isConfirmed
