@@ -1042,6 +1042,8 @@ async function loadAuthenticatedCatchShifts() {
     return;
   }
 
+  const nowIso = new Date().toISOString();
+
   const { data, error } = await supabaseClient
     .from("shifts")
     .select(
@@ -1061,6 +1063,7 @@ async function loadAuthenticatedCatchShifts() {
       `,
     )
     .eq("status", "coverage_needed")
+    .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true });
 
   if (error) {
@@ -7121,7 +7124,11 @@ function updateDashboardForRole() {
   dashboardSnapshotPrimary.dataset.scrollTarget = "tip-tracker-panel";
 
   dashboardSnapshotSecondaryIcon.textContent = "📅";
-  dashboardSnapshotSecondaryValue.textContent = "2";
+  const openCatchCount = (authenticatedCatchShifts || []).filter(
+    (shift) => shift.owner !== authenticatedUserId,
+  ).length;
+
+  dashboardSnapshotSecondaryValue.textContent = String(openCatchCount);
   dashboardSnapshotSecondaryLabel.textContent = "Open catches";
   dashboardSnapshotSecondary.dataset.dashboardSection = "schedule";
   dashboardSnapshotSecondary.dataset.dashboardView = "catch";
@@ -7285,8 +7292,9 @@ async function setupIndustryRealtime() {
 
         if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {
           await loadAuthenticatedTeamSchedule();
-          updateDashboardForRole();
         }
+
+        updateDashboardForRole();
       },
     )
 
