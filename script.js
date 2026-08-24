@@ -3294,6 +3294,25 @@ function getTipEntries() {
   return readLocalJson(tipEntriesStorageKey, []);
 }
 
+function getYesterdayTipTotal() {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const year = yesterday.getFullYear();
+  const month = String(yesterday.getMonth() + 1).padStart(2, "0");
+  const day = String(yesterday.getDate()).padStart(2, "0");
+
+  const yesterdayDate = `${year}-${month}-${day}`;
+
+  return getTipEntries()
+    .filter((entry) => entry.date === yesterdayDate)
+    .reduce(
+      (total, entry) =>
+        total + (Number(entry.cashTips) || 0) + (Number(entry.creditTips) || 0),
+      0,
+    );
+}
+
 function renderTipAnalytics(entries) {
   if (
     !tipAnalyticsPanel ||
@@ -3513,6 +3532,7 @@ function renderTipEntries() {
 
       saveLocalJson(tipEntriesStorageKey, updatedEntries);
       renderTipEntries();
+      updateDashboardForRole();
     });
   });
 }
@@ -3574,6 +3594,8 @@ if (saveTipEntryButton) {
 
     updateLiveEarnings();
     renderTipEntries();
+
+    updateDashboardForRole();
   });
 }
 
@@ -7116,8 +7138,10 @@ function updateDashboardForRole() {
   // Worker defaults
   dashboardQuickActionsGrid?.classList.remove("is-manager");
 
+  const yesterdayTipTotal = getYesterdayTipTotal();
+
   dashboardSnapshotPrimaryIcon.textContent = "💵";
-  dashboardSnapshotPrimaryValue.textContent = "$214";
+  dashboardSnapshotPrimaryValue.textContent = formatMoney(yesterdayTipTotal);
   dashboardSnapshotPrimaryLabel.textContent = "Yesterday’s tips";
   dashboardSnapshotPrimary.dataset.dashboardSection = "schedule";
   dashboardSnapshotPrimary.dataset.dashboardView = "earnings-tools";
@@ -7129,7 +7153,8 @@ function updateDashboardForRole() {
   ).length;
 
   dashboardSnapshotSecondaryValue.textContent = String(openCatchCount);
-  dashboardSnapshotSecondaryLabel.textContent = "Open catches";
+  dashboardSnapshotSecondaryLabel.textContent =
+    openCatchCount === 1 ? "Open catch" : "Open catches";
   dashboardSnapshotSecondary.dataset.dashboardSection = "schedule";
   dashboardSnapshotSecondary.dataset.dashboardView = "catch";
   delete dashboardSnapshotSecondary.dataset.scrollTarget;
