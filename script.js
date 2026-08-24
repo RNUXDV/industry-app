@@ -63,6 +63,8 @@ const managerCreateShiftButton = document.getElementById(
   "manager-create-shift-button",
 );
 
+const managerCrewButton = document.getElementById("manager-crew-button");
+
 const managerCoverageRequestsButton = document.getElementById(
   "manager-coverage-requests-button",
 );
@@ -70,6 +72,8 @@ const managerCoverageRequestsButton = document.getElementById(
 const managerTeamScheduleList = document.getElementById(
   "manager-team-schedule-list",
 );
+
+const managerCrewList = document.getElementById("manager-crew-list");
 
 const managerShiftWorkerSelect = document.getElementById(
   "manager-shift-worker",
@@ -419,6 +423,7 @@ let authenticatedScheduleShifts = undefined;
 let authenticatedCatchShifts = undefined;
 let authenticatedShiftInterests = undefined;
 let authenticatedTeamScheduleShifts = undefined;
+let authenticatedManagerCrew = [];
 let authenticatedWorkplaceId = null;
 let authenticatedWorkplaceRole = null;
 let authenticatedUserId = null;
@@ -803,6 +808,8 @@ async function loadAuthenticatedManagerCrew() {
     })
     .sort((a, b) => a.name.localeCompare(b.name));
 
+  authenticatedManagerCrew = crew;
+
   crew.forEach((member) => {
     const option = document.createElement("option");
 
@@ -819,6 +826,55 @@ async function loadAuthenticatedManagerCrew() {
   }
 
   console.log("Industry manager crew loaded:", crew);
+
+  return crew;
+}
+
+function renderAuthenticatedManagerCrew(
+  crew = authenticatedManagerCrew,
+) {
+  if (!managerCrewList) {
+    return;
+  }
+
+  managerCrewList.innerHTML = "";
+
+  if (!crew?.length) {
+    managerCrewList.innerHTML = `
+      <article class="stack-card shift-card">
+        <div class="stack-copy">
+          <p class="stack-kicker">Workplace crew</p>
+          <h3>No crew members found</h3>
+          <p>Connected workplace members will appear here.</p>
+        </div>
+      </article>
+    `;
+
+    return;
+  }
+
+  crew.forEach((member) => {
+    const isManager = member.role?.toLowerCase() === "manager";
+
+    const memberCard = document.createElement("article");
+    memberCard.className = "stack-card shift-card";
+
+    memberCard.innerHTML = `
+      <div class="stack-copy">
+        <p class="stack-kicker">
+          ${isManager ? "Manager" : "Crew member"}
+        </p>
+
+        <h3>${member.name}</h3>
+
+        <ul class="shift-meta">
+          <li>${member.role || "Role not set"}</li>
+        </ul>
+      </div>
+    `;
+
+    managerCrewList.appendChild(memberCard);
+  });
 }
 
 async function loadAuthenticatedTeamSchedule() {
@@ -1189,6 +1245,24 @@ if (managerCreateShiftButton) {
     setActiveScheduleView("manager-create-shift");
 
     await loadAuthenticatedManagerCrew();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+}
+
+if (managerCrewButton) {
+  managerCrewButton.addEventListener("click", async () => {
+    const crew = await loadAuthenticatedManagerCrew();
+
+    renderAuthenticatedManagerCrew(
+      crew ?? authenticatedManagerCrew,
+    );
+
+    setActiveSection("schedule");
+    setActiveScheduleView("manager-crew");
 
     window.scrollTo({
       top: 0,
