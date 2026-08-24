@@ -7282,6 +7282,11 @@ async function setupIndustryRealtime() {
           loadAuthenticatedSchedule(),
           loadAuthenticatedCatchShifts(),
         ]);
+
+        if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {
+          await loadAuthenticatedTeamSchedule();
+          updateDashboardForRole();
+        }
       },
     )
 
