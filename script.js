@@ -830,9 +830,7 @@ async function loadAuthenticatedManagerCrew() {
   return crew;
 }
 
-function renderAuthenticatedManagerCrew(
-  crew = authenticatedManagerCrew,
-) {
+function renderAuthenticatedManagerCrew(crew = authenticatedManagerCrew) {
   if (!managerCrewList) {
     return;
   }
@@ -1257,9 +1255,7 @@ if (managerCrewButton) {
   managerCrewButton.addEventListener("click", async () => {
     const crew = await loadAuthenticatedManagerCrew();
 
-    renderAuthenticatedManagerCrew(
-      crew ?? authenticatedManagerCrew,
-    );
+    renderAuthenticatedManagerCrew(crew ?? authenticatedManagerCrew);
 
     setActiveSection("schedule");
     setActiveScheduleView("manager-crew");
@@ -1404,6 +1400,9 @@ if (managerSaveShiftButton) {
 
 function updateCatchViewForRole() {
   const isManager = authenticatedWorkplaceRole?.toLowerCase() === "manager";
+  if (resetDemoDataButton) {
+    resetDemoDataButton.hidden = true;
+  }
 
   if (
     !catchBackButton ||
@@ -1702,6 +1701,17 @@ dashboardLinks.forEach((link) => {
     setActiveSection(sectionName);
 
     if (sectionName === "schedule" && scheduleView) {
+      if (scheduleView === "catch") {
+        updateCatchViewForRole();
+      }
+
+      if (
+        scheduleView === "manager-crew" &&
+        authenticatedWorkplaceRole?.toLowerCase() === "manager"
+      ) {
+        renderAuthenticatedManagerCrew(authenticatedManagerCrew);
+      }
+
       setActiveScheduleView(scheduleView);
     }
 
@@ -1736,6 +1746,34 @@ if (startHereButton) {
     setActiveSection("schedule");
   });
 }
+
+const dashboardQuickPrimary = document.getElementById(
+  "dashboard-quick-primary",
+);
+const dashboardQuickPrimaryLabel = document.getElementById(
+  "dashboard-quick-primary-label",
+);
+
+const dashboardQuickSecondary = document.getElementById(
+  "dashboard-quick-secondary",
+);
+const dashboardQuickSecondaryLabel = document.getElementById(
+  "dashboard-quick-secondary-label",
+);
+
+const dashboardQuickTertiary = document.getElementById(
+  "dashboard-quick-tertiary",
+);
+const dashboardQuickTertiaryLabel = document.getElementById(
+  "dashboard-quick-tertiary-label",
+);
+
+const dashboardQuickQuaternary = document.getElementById(
+  "dashboard-quick-quaternary",
+);
+const dashboardQuickQuaternaryLabel = document.getElementById(
+  "dashboard-quick-quaternary-label",
+);
 
 function applyTheme(themeName) {
   // Theme switching works by saving a short label in localStorage.
@@ -6705,6 +6743,49 @@ const dashboardGreeting = document.querySelector("#dashboard-greeting");
 const dashboardDate = document.querySelector("#dashboard-date");
 const dashboardClock = document.querySelector("#dashboard-clock");
 
+const dashboardSnapshotPrimary = document.getElementById(
+  "dashboard-snapshot-primary",
+);
+const dashboardSnapshotPrimaryIcon = document.getElementById(
+  "dashboard-snapshot-primary-icon",
+);
+const dashboardSnapshotPrimaryValue = document.getElementById(
+  "dashboard-snapshot-primary-value",
+);
+const dashboardSnapshotPrimaryLabel = document.getElementById(
+  "dashboard-snapshot-primary-label",
+);
+
+const dashboardSnapshotSecondary = document.getElementById(
+  "dashboard-snapshot-secondary",
+);
+const dashboardSnapshotSecondaryIcon = document.getElementById(
+  "dashboard-snapshot-secondary-icon",
+);
+const dashboardSnapshotSecondaryValue = document.getElementById(
+  "dashboard-snapshot-secondary-value",
+);
+const dashboardSnapshotSecondaryLabel = document.getElementById(
+  "dashboard-snapshot-secondary-label",
+);
+
+const dashboardSnapshotTertiary = document.getElementById(
+  "dashboard-snapshot-tertiary",
+);
+const dashboardSnapshotTertiaryIcon = document.getElementById(
+  "dashboard-snapshot-tertiary-icon",
+);
+const dashboardSnapshotTertiaryValue = document.getElementById(
+  "dashboard-snapshot-tertiary-value",
+);
+const dashboardSnapshotTertiaryLabel = document.getElementById(
+  "dashboard-snapshot-tertiary-label",
+);
+
+const dashboardQuickActionsGrid = document.getElementById(
+  "dashboard-quick-actions-grid",
+);
+
 // =========================================================
 // SUPABASE CLIENT
 // Local development uses local Supabase.
@@ -6928,6 +7009,151 @@ window.addEventListener("focus", () => {
   updateIndustryDashboardClock();
 });
 
+function updateDashboardForRole() {
+  const isManager = authenticatedWorkplaceRole?.toLowerCase() === "manager";
+
+  if (resetDemoDataButton) {
+    resetDemoDataButton.hidden = true;
+  }
+
+  if (
+    !dashboardSnapshotPrimary ||
+    !dashboardSnapshotPrimaryIcon ||
+    !dashboardSnapshotPrimaryValue ||
+    !dashboardSnapshotPrimaryLabel ||
+    !dashboardSnapshotSecondary ||
+    !dashboardSnapshotSecondaryIcon ||
+    !dashboardSnapshotSecondaryValue ||
+    !dashboardSnapshotSecondaryLabel ||
+    !dashboardSnapshotTertiary ||
+    !dashboardSnapshotTertiaryIcon ||
+    !dashboardSnapshotTertiaryValue ||
+    !dashboardSnapshotTertiaryLabel ||
+    !dashboardQuickPrimary ||
+    !dashboardQuickPrimaryLabel ||
+    !dashboardQuickSecondary ||
+    !dashboardQuickSecondaryLabel ||
+    !dashboardQuickTertiary ||
+    !dashboardQuickTertiaryLabel ||
+    !dashboardQuickQuaternary ||
+    !dashboardQuickQuaternaryLabel
+  ) {
+    return;
+  }
+
+  if (isManager) {
+    dashboardQuickActionsGrid?.classList.add("is-manager");
+
+    const today = new Date().toLocaleDateString("en-US");
+
+    const teamTodayCount = (authenticatedTeamScheduleShifts || []).filter(
+      (shift) => {
+        return new Date(shift.startsAt).toLocaleDateString("en-US") === today;
+      },
+    ).length;
+
+    const coverageCount = (authenticatedTeamScheduleShifts || []).filter(
+      (shift) => shift.status === "coverage_needed",
+    ).length;
+
+    const crewCount = authenticatedManagerCrew?.length || 0;
+
+    // At a Glance
+    dashboardSnapshotPrimaryIcon.textContent = "👥";
+    dashboardSnapshotPrimaryValue.textContent = teamTodayCount;
+    dashboardSnapshotPrimaryLabel.textContent = "Team today";
+    dashboardSnapshotPrimary.dataset.dashboardSection = "schedule";
+    dashboardSnapshotPrimary.dataset.dashboardView = "manager-team-schedule";
+    delete dashboardSnapshotPrimary.dataset.scrollTarget;
+
+    dashboardSnapshotSecondaryIcon.textContent = "↗";
+    dashboardSnapshotSecondaryValue.textContent = coverageCount;
+    dashboardSnapshotSecondaryLabel.textContent = "Coverage";
+    dashboardSnapshotSecondary.dataset.dashboardSection = "schedule";
+    dashboardSnapshotSecondary.dataset.dashboardView = "catch";
+    delete dashboardSnapshotSecondary.dataset.scrollTarget;
+
+    dashboardSnapshotTertiaryIcon.textContent = "👥";
+    dashboardSnapshotTertiaryValue.textContent = crewCount;
+    dashboardSnapshotTertiaryLabel.textContent = "Crew";
+    dashboardSnapshotTertiary.dataset.dashboardSection = "schedule";
+    dashboardSnapshotTertiary.dataset.dashboardView = "manager-crew";
+    delete dashboardSnapshotTertiary.dataset.scrollTarget;
+
+    // Quick Actions
+    dashboardQuickPrimary.querySelector(".quick-action-icon").textContent =
+      "🗓";
+    dashboardQuickPrimaryLabel.textContent = "Team Schedule";
+    dashboardQuickPrimary.dataset.dashboardSection = "schedule";
+    dashboardQuickPrimary.dataset.dashboardView = "manager-team-schedule";
+    delete dashboardQuickPrimary.dataset.scrollTarget;
+
+    dashboardQuickSecondary.querySelector(".quick-action-icon").textContent =
+      "＋";
+    dashboardQuickSecondaryLabel.textContent = "Create Shift";
+    dashboardQuickSecondary.dataset.dashboardSection = "schedule";
+    dashboardQuickSecondary.dataset.dashboardView = "manager-create-shift";
+
+    dashboardQuickTertiary.querySelector(".quick-action-icon").textContent =
+      "↗";
+    dashboardQuickTertiaryLabel.textContent = "Coverage Requests";
+    dashboardQuickTertiary.dataset.dashboardSection = "schedule";
+    dashboardQuickTertiary.dataset.dashboardView = "catch";
+
+    dashboardQuickQuaternary.hidden = false;
+    dashboardQuickQuaternary.querySelector(".quick-action-icon").textContent =
+      "👥";
+    dashboardQuickQuaternaryLabel.textContent = "Crew";
+    dashboardQuickQuaternary.dataset.dashboardSection = "schedule";
+    dashboardQuickQuaternary.dataset.dashboardView = "manager-crew";
+
+    return;
+  }
+
+  // Worker defaults
+  dashboardQuickActionsGrid?.classList.remove("is-manager");
+
+  dashboardSnapshotPrimaryIcon.textContent = "💵";
+  dashboardSnapshotPrimaryValue.textContent = "$214";
+  dashboardSnapshotPrimaryLabel.textContent = "Yesterday’s tips";
+  dashboardSnapshotPrimary.dataset.dashboardSection = "schedule";
+  dashboardSnapshotPrimary.dataset.dashboardView = "earnings-tools";
+  dashboardSnapshotPrimary.dataset.scrollTarget = "tip-tracker-panel";
+
+  dashboardSnapshotSecondaryIcon.textContent = "📅";
+  dashboardSnapshotSecondaryValue.textContent = "2";
+  dashboardSnapshotSecondaryLabel.textContent = "Open catches";
+  dashboardSnapshotSecondary.dataset.dashboardSection = "schedule";
+  dashboardSnapshotSecondary.dataset.dashboardView = "catch";
+  delete dashboardSnapshotSecondary.dataset.scrollTarget;
+
+  dashboardSnapshotTertiaryIcon.textContent = "💬";
+  dashboardSnapshotTertiaryValue.textContent = "1";
+  dashboardSnapshotTertiaryLabel.textContent = "New message";
+  dashboardSnapshotTertiary.dataset.dashboardSection = "people";
+  delete dashboardSnapshotTertiary.dataset.dashboardView;
+  delete dashboardSnapshotTertiary.dataset.scrollTarget;
+
+  dashboardQuickPrimary.querySelector(".quick-action-icon").textContent = "💵";
+  dashboardQuickPrimaryLabel.textContent = "Tip Tracker";
+  dashboardQuickPrimary.dataset.dashboardSection = "schedule";
+  dashboardQuickPrimary.dataset.dashboardView = "earnings-tools";
+  dashboardQuickPrimary.dataset.scrollTarget = "tip-tracker-panel";
+
+  dashboardQuickSecondary.querySelector(".quick-action-icon").textContent =
+    "👥";
+  dashboardQuickSecondaryLabel.textContent = "View Crew";
+  dashboardQuickSecondary.dataset.dashboardSection = "schedule";
+  dashboardQuickSecondary.dataset.dashboardView = "shift-crew";
+
+  dashboardQuickTertiary.querySelector(".quick-action-icon").textContent = "↗";
+  dashboardQuickTertiaryLabel.textContent = "Release Shift";
+  dashboardQuickTertiary.dataset.dashboardSection = "schedule";
+  dashboardQuickTertiary.dataset.dashboardView = "need-coverage";
+
+  dashboardQuickQuaternary.hidden = true;
+}
+
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
     updateIndustryDashboardDate();
@@ -7119,7 +7345,10 @@ async function enterAuthenticatedIndustry() {
     loadAuthenticatedCatchShifts(),
     loadAuthenticatedShiftInterests(),
     loadAuthenticatedTeamSchedule(),
+    loadAuthenticatedManagerCrew(),
   ]);
+
+  updateDashboardForRole();
 
   // Make the final Schedule destination role-aware.
   if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {

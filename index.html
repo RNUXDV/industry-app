@@ -637,40 +637,78 @@
   </div>
 
   <div class="snapshot-grid">
-   <button
-  class="snapshot-item"
-  data-dashboard-section="schedule"
-  data-dashboard-view="earnings-tools"
-  data-scroll-target="tip-tracker-panel"
-  type="button"
->
-    
-      <span class="snapshot-icon" aria-hidden="true">💵</span>
-      <span class="snapshot-value">$214</span>
-      <span class="snapshot-label">Yesterday’s tips</span>
-    </button>
+  <button
+    class="snapshot-item"
+    id="dashboard-snapshot-primary"
+    data-dashboard-section="schedule"
+    data-dashboard-view="earnings-tools"
+    data-scroll-target="tip-tracker-panel"
+    type="button"
+  >
+    <span
+      class="snapshot-icon"
+      id="dashboard-snapshot-primary-icon"
+      aria-hidden="true"
+    >💵</span>
 
-    <button
-  class="snapshot-item"
-  data-dashboard-section="schedule"
-  data-dashboard-view="catch"
-  type="button"
->
-      <span class="snapshot-icon" aria-hidden="true">📅</span>
-      <span class="snapshot-value">2</span>
-      <span class="snapshot-label">Open catches</span>
-    </button>
+    <span
+      class="snapshot-value"
+      id="dashboard-snapshot-primary-value"
+    >$214</span>
 
-    <button
-      class="snapshot-item"
-      data-dashboard-section="people"
-      type="button"
-    >
-      <span class="snapshot-icon" aria-hidden="true">💬</span>
-      <span class="snapshot-value">1</span>
-      <span class="snapshot-label">New message</span>
-    </button>
-  </div>
+    <span
+      class="snapshot-label"
+      id="dashboard-snapshot-primary-label"
+    >Yesterday’s tips</span>
+  </button>
+
+  <button
+    class="snapshot-item"
+    id="dashboard-snapshot-secondary"
+    data-dashboard-section="schedule"
+    data-dashboard-view="catch"
+    type="button"
+  >
+    <span
+      class="snapshot-icon"
+      id="dashboard-snapshot-secondary-icon"
+      aria-hidden="true"
+    >📅</span>
+
+    <span
+      class="snapshot-value"
+      id="dashboard-snapshot-secondary-value"
+    >2</span>
+
+    <span
+      class="snapshot-label"
+      id="dashboard-snapshot-secondary-label"
+    >Open catches</span>
+  </button>
+
+  <button
+    class="snapshot-item"
+    id="dashboard-snapshot-tertiary"
+    data-dashboard-section="people"
+    type="button"
+  >
+    <span
+      class="snapshot-icon"
+      id="dashboard-snapshot-tertiary-icon"
+      aria-hidden="true"
+    >💬</span>
+
+    <span
+      class="snapshot-value"
+      id="dashboard-snapshot-tertiary-value"
+    >1</span>
+
+    <span
+      class="snapshot-label"
+      id="dashboard-snapshot-tertiary-label"
+    >New message</span>
+  </button>
+</div>
 </section>
   <!-- Quick Actions -->
 
@@ -679,37 +717,52 @@
     <p class="section-label">Quick Actions</p>
   </div>
 
-  <div class="quick-actions-grid">
+ <div class="quick-actions-grid" id="dashboard-quick-actions-grid">
     <button
   class="quick-action-item"
+  id="dashboard-quick-primary"
   data-dashboard-section="schedule"
   data-dashboard-view="earnings-tools"
   data-scroll-target="tip-tracker-panel"
   type="button"
 >
   <span class="quick-action-icon" aria-hidden="true">💵</span>
-  <span>Tip Tracker</span>
+  <span id="dashboard-quick-primary-label">Tip Tracker</span>
 </button>
-
-    <button
+    
+<button
   class="quick-action-item"
+  id="dashboard-quick-secondary"
   data-dashboard-section="schedule"
   data-dashboard-view="shift-crew"
   type="button"
 >
   <span class="quick-action-icon" aria-hidden="true">👥</span>
-  <span>View Crew</span>
+  <span id="dashboard-quick-secondary-label">View Crew</span>
 </button>
 
     <button
-      class="quick-action-item"
-      data-dashboard-section="schedule"
-      data-dashboard-view="need-coverage"
-      type="button"
-    >
-      <span class="quick-action-icon" aria-hidden="true">↗</span>
-      <span>Release Shift</span>
-    </button>
+  class="quick-action-item"
+  id="dashboard-quick-tertiary"
+  data-dashboard-section="schedule"
+  data-dashboard-view="need-coverage"
+  type="button"
+>
+  <span class="quick-action-icon" aria-hidden="true">↗</span>
+  <span id="dashboard-quick-tertiary-label">Release Shift</span>
+</button>
+
+<button
+  class="quick-action-item"
+  id="dashboard-quick-quaternary"
+  data-dashboard-section="schedule"
+  data-dashboard-view="manager-crew"
+  type="button"
+  hidden
+>
+  <span class="quick-action-icon" aria-hidden="true">👥</span>
+  <span id="dashboard-quick-quaternary-label">Crew</span>
+</button>
   </div>
 </section>
 
