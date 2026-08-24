@@ -13,6 +13,10 @@ const dashboardCountdownTime = document.querySelector(
   "#dashboard-countdown-time",
 );
 
+const dashboardShiftCommuteStrip = document.getElementById(
+  "dashboard-shift-commute-strip",
+);
+
 const dashboardShiftDay = document.querySelector("#dashboard-shift-day");
 
 const dashboardShiftDate = document.querySelector("#dashboard-shift-date");
@@ -728,7 +732,12 @@ async function loadAuthenticatedSchedule() {
 
   renderAuthenticatedNextShiftSummary(authenticatedScheduleShifts);
   renderImportedShifts(authenticatedScheduleShifts);
-  renderDashboardShift(authenticatedScheduleShifts[0] || null);
+
+  const nextScheduledShift = authenticatedScheduleShifts.find(
+    (shift) => shift.status === "scheduled",
+  );
+
+  renderDashboardShift(nextScheduledShift || null);
 }
 
 async function loadAuthenticatedManagerCrew() {
@@ -1171,6 +1180,12 @@ function renderDashboardShift(backendShift = undefined) {
     return;
   }
 
+  const isAuthenticatedDashboard = backendShift !== undefined;
+
+  if (dashboardShiftCommuteStrip) {
+    dashboardShiftCommuteStrip.hidden = isAuthenticatedDashboard;
+  }
+
   const upcomingShift =
     backendShift !== undefined
       ? backendShift
@@ -1521,9 +1536,16 @@ if (dashboardShiftDetailsButton) {
   dashboardShiftDetailsButton.addEventListener("click", () => {
     const shiftId = dashboardShiftDetailsButton.dataset.shiftId;
 
-    const shift = getShiftStore().find((item) => item.id === shiftId);
+    const authenticatedShift = (authenticatedScheduleShifts || []).find(
+      (item) => item.id === shiftId,
+    );
+
+    const demoShift = getShiftStore().find((item) => item.id === shiftId);
+
+    const shift = authenticatedShift || demoShift;
 
     if (!shift) {
+      console.warn("Industry dashboard shift not found:", shiftId);
       return;
     }
 
@@ -7189,6 +7211,11 @@ function updateDashboardForRole() {
   dashboardQuickTertiary.dataset.dashboardSection = "schedule";
   dashboardQuickTertiary.dataset.dashboardView = "need-coverage";
 
+  const hasScheduledShift = (authenticatedScheduleShifts || []).some(
+    (shift) => shift.status === "scheduled",
+  );
+
+  dashboardQuickTertiary.hidden = !hasScheduledShift;
   dashboardQuickQuaternary.hidden = true;
 }
 

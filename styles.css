@@ -9011,6 +9011,10 @@ body.onboarding-home-active #home-logo-button {
   overflow: hidden;
 }
 
+.shift-commute-strip[hidden] {
+  display: none !important;
+}
+
 .shift-commute-item {
   display: flex;
   align-items: center;
