@@ -2828,6 +2828,10 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
     background-color 180ms ease;
 }
 
+.quick-actions-grid .quick-action-item[hidden] {
+  display: none !important;
+}
+
 .quick-action-item:hover,
 .quick-action-item:focus-visible {
   transform: translateY(-2px);

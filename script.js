@@ -7159,11 +7159,17 @@ function updateDashboardForRole() {
   dashboardSnapshotSecondary.dataset.dashboardView = "catch";
   delete dashboardSnapshotSecondary.dataset.scrollTarget;
 
-  dashboardSnapshotTertiaryIcon.textContent = "💬";
-  dashboardSnapshotTertiaryValue.textContent = "1";
-  dashboardSnapshotTertiaryLabel.textContent = "New message";
-  dashboardSnapshotTertiary.dataset.dashboardSection = "people";
-  delete dashboardSnapshotTertiary.dataset.dashboardView;
+  const upcomingShiftCount = (authenticatedScheduleShifts || []).filter(
+    (shift) => shift.status === "scheduled",
+  ).length;
+
+  dashboardSnapshotTertiaryIcon.textContent = "📅";
+  dashboardSnapshotTertiaryValue.textContent = String(upcomingShiftCount);
+  dashboardSnapshotTertiaryLabel.textContent =
+    upcomingShiftCount === 1 ? "Upcoming shift" : "Upcoming shifts";
+
+  dashboardSnapshotTertiary.dataset.dashboardSection = "schedule";
+  dashboardSnapshotTertiary.dataset.dashboardView = "my-shifts";
   delete dashboardSnapshotTertiary.dataset.scrollTarget;
 
   dashboardQuickPrimary.querySelector(".quick-action-icon").textContent = "💵";
