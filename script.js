@@ -496,6 +496,29 @@ function getShiftStartDate(shift) {
   return new Date(`${dateText}, 2026 ${startTimeText}`);
 }
 
+function isCurrentShift(shift) {
+  if (!shift?.startsAt || shift.actualEndedAt) {
+    return false;
+  }
+
+  const now = new Date();
+  const start = new Date(shift.startsAt);
+
+  if (start > now) {
+    return false;
+  }
+
+  // If an exact end time exists, use it.
+  if (shift.endsAt) {
+    const end = new Date(shift.endsAt);
+    return now < end;
+  }
+
+  // For shifts such as "Close", treat the shift as current
+  // for the remainder of the calendar day.
+  return start.toDateString() === now.toDateString();
+}
+
 function getCountdownText(shift) {
   const shiftStart = getShiftStartDate(shift);
   const referenceNow = shift.startsAt ? new Date() : DEMO_NOW;
@@ -574,6 +597,8 @@ async function loadAuthenticatedDashboardShift() {
       ends_at,
       end_label,
       status,
+      actual_started_at,
+      actual_ended_at,
       workplace:workplaces (
         name,
         time_zone
@@ -582,6 +607,7 @@ async function loadAuthenticatedDashboardShift() {
     )
     .eq("assigned_profile_id", user.id)
     .eq("status", "scheduled")
+    .is("actual_ended_at", null)
     .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true })
     .limit(1)
@@ -636,6 +662,10 @@ async function loadAuthenticatedDashboardShift() {
     workplace: data.workplace?.name || "",
     status: data.status,
     startsAt: data.starts_at,
+    endsAt: data.ends_at || null,
+    endLabel: data.end_label || "",
+    actualStartedAt: data.actual_started_at || null,
+    actualEndedAt: data.actual_ended_at || null,
   };
 
   console.log("Industry dashboard shift loaded:", dashboardShift);
@@ -654,7 +684,10 @@ async function loadAuthenticatedSchedule() {
     return;
   }
 
-  const nowIso = new Date().toISOString();
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const todayStartIso = todayStart.toISOString();
 
   const { data, error } = await supabaseClient
     .from("shifts")
@@ -675,7 +708,8 @@ async function loadAuthenticatedSchedule() {
     )
     .eq("assigned_profile_id", user.id)
     .in("status", ["scheduled", "coverage_needed"])
-    .gte("starts_at", nowIso)
+    .is("actual_ended_at", null)
+    .gte("starts_at", todayStartIso)
     .order("starts_at", { ascending: true });
 
   if (error) {
@@ -722,6 +756,10 @@ async function loadAuthenticatedSchedule() {
       workplace: shift.workplace?.name || "",
       status: shift.status,
       startsAt: shift.starts_at,
+      endsAt: shift.ends_at || null,
+      endLabel: shift.end_label || "",
+      actualStartedAt: shift.actual_started_at || null,
+      actualEndedAt: shift.actual_ended_at || null,
     };
   });
 
@@ -1209,7 +1247,9 @@ function renderDashboardShift(backendShift = undefined) {
   dashboardShiftDetailsButton.hidden = false;
   dashboardShiftDetailsButton.dataset.shiftId = upcomingShift.id;
 
-  dashboardCountdownTime.textContent = getCountdownText(upcomingShift);
+  dashboardCountdownTime.textContent = isCurrentShift(upcomingShift)
+    ? "On shift now"
+    : getCountdownText(upcomingShift);
   dashboardShiftDay.textContent = getShiftDayLabel(upcomingShift);
   dashboardShiftDate.textContent = upcomingShift.day;
   dashboardShiftTime.textContent = upcomingShift.time;
@@ -1711,16 +1751,72 @@ if (directReleaseButton) {
   });
 }
 
+async function endAuthenticatedShift(shiftId) {
+  if (!shiftId) {
+    return;
+  }
+
+  const { error } = await supabaseClient.rpc("end_assigned_shift", {
+    target_shift_id: shiftId,
+  });
+
+  if (error) {
+    console.error("Industry end shift error:", error);
+    return;
+  }
+
+  console.log("Industry shift ended:", shiftId);
+
+  await Promise.all([
+    loadAuthenticatedSchedule(),
+    loadAuthenticatedDashboardShift(),
+  ]);
+
+  updateDashboardForRole();
+}
+
 /* Dashboard direct links */
 
 dashboardLinks.forEach((link) => {
   link.addEventListener("click", () => {
+    const dashboardAction = link.dataset.dashboardAction;
+
+    if (dashboardAction === "end-shift") {
+      const shiftId = link.dataset.shiftId;
+
+      if (!shiftId) {
+        return;
+      }
+
+      const confirmed = window.confirm(
+        "End this shift now? Industry will mark your shift as complete.",
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      endAuthenticatedShift(shiftId);
+      return;
+    }
     const sectionName = link.dataset.dashboardSection;
     const scheduleView = link.dataset.dashboardView;
     const scrollTarget = link.dataset.scrollTarget;
 
     if (!sectionName) {
       return;
+    }
+
+    if (sectionName === "schedule" && scheduleView === "need-coverage") {
+      const shift = (authenticatedScheduleShifts || []).find(
+        (item) => item.status === "scheduled",
+      );
+
+      if (!shift) {
+        return;
+      }
+
+      prefillReleaseForm(shift);
     }
 
     setActiveSection(sectionName);
@@ -2709,7 +2805,9 @@ function renderShiftBoard() {
     const anotherWorkerSelected =
       isAuthenticatedCatchMode &&
       shiftIsSelected &&
-      currentUserInterest?.status === "interested";
+      !isOwnCoverageRequest &&
+      currentUserInterest?.status !== "selected" &&
+      currentUserInterest?.status !== "confirmed";
 
     const selectedBackendInterest = isAuthenticatedCatchMode
       ? (backendInterests.find((interest) => interest.status === "selected") ??
@@ -2898,6 +2996,8 @@ function renderShiftBoard() {
 
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
+    shiftCard.dataset.catchShiftId = shift.id;
+    shiftCard.tabIndex = -1;
 
     let statusClass = "status-open";
 
@@ -3006,8 +3106,8 @@ function renderShiftBoard() {
   class="action-button board-action-button"
   type="button"
   data-shift-id="${shift.id}"
-  ${hasInterest ? "disabled" : ""}
->
+  ${hasInterest || anotherWorkerSelected ? "disabled" : ""}
+  >
   ${boardButtonLabel}
 </button>
 `
@@ -3744,6 +3844,8 @@ function renderAuthenticatedNextShiftSummary(shifts) {
 
   const dayLabel = getShiftDayLabel(nextShift);
   const isCoverageNeeded = nextShift.status === "coverage_needed";
+  const isCurrent =
+    nextShift.status === "scheduled" && isCurrentShift(nextShift);
 
   const nextShiftInterests = (authenticatedShiftInterests ?? []).filter(
     (interest) => interest.shift_id === nextShift.id,
@@ -3769,13 +3871,17 @@ function renderAuthenticatedNextShiftSummary(shifts) {
 
   myShiftsNextLabel.textContent = isCoverageNeeded
     ? "Coverage requested"
-    : "Upcoming shift";
+    : isCurrent
+      ? "Current shift"
+      : "Upcoming shift";
 
   myShiftsNextTime.textContent = `${dayLabel} · ${nextShift.time}`;
 
   myShiftsNextStatus.textContent = isCoverageNeeded
     ? coverageStatusLabel
-    : "Upcoming";
+    : isCurrent
+      ? "On shift now"
+      : "Upcoming";
 
   myShiftsNextRole.textContent = nextShift.role || "—";
   myShiftsNextWorkplace.textContent = nextShift.workplace || "—";
@@ -3805,6 +3911,26 @@ if (myShiftsNextCard) {
       renderShiftBoard();
       setActiveSection("schedule");
       setActiveScheduleView("catch");
+
+      requestAnimationFrame(() => {
+        const coverageCard = document.querySelector(
+          `[data-catch-shift-id="${shift.id}"]`,
+        );
+
+        if (!coverageCard) {
+          return;
+        }
+
+        coverageCard.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+
+        coverageCard.focus({
+          preventScroll: true,
+        });
+      });
+
       return;
     }
 
@@ -3841,6 +3967,7 @@ function renderAuthenticatedScheduleShifts(shifts) {
 
   shifts.forEach((shift) => {
     const isCoverageNeeded = shift.status === "coverage_needed";
+    const isCurrent = shift.status === "scheduled" && isCurrentShift(shift);
 
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
@@ -3848,8 +3975,14 @@ function renderAuthenticatedScheduleShifts(shifts) {
     shiftCard.innerHTML = `
     <div class="stack-copy">
       <p class="stack-kicker">
-        ${isCoverageNeeded ? "Coverage requested" : "Scheduled shift"}
-      </p>
+  ${
+    isCoverageNeeded
+      ? "Coverage requested"
+      : isCurrent
+        ? "Current shift"
+        : "Scheduled shift"
+  }
+</p>
 
       <h3>${shift.day}</h3>
       <p>${shift.role}</p>
@@ -7182,7 +7315,10 @@ function updateDashboardForRole() {
   delete dashboardSnapshotSecondary.dataset.scrollTarget;
 
   const upcomingShiftCount = (authenticatedScheduleShifts || []).filter(
-    (shift) => shift.status === "scheduled",
+    (shift) =>
+      shift.status === "scheduled" &&
+      !isCurrentShift(shift) &&
+      new Date(shift.startsAt) > new Date(),
   ).length;
 
   dashboardSnapshotTertiaryIcon.textContent = "📅";
@@ -7206,14 +7342,34 @@ function updateDashboardForRole() {
   dashboardQuickSecondary.dataset.dashboardSection = "schedule";
   dashboardQuickSecondary.dataset.dashboardView = "shift-crew";
 
-  dashboardQuickTertiary.querySelector(".quick-action-icon").textContent = "↗";
-  dashboardQuickTertiaryLabel.textContent = "Release Shift";
-  dashboardQuickTertiary.dataset.dashboardSection = "schedule";
-  dashboardQuickTertiary.dataset.dashboardView = "need-coverage";
-
-  const hasScheduledShift = (authenticatedScheduleShifts || []).some(
+  const scheduledShifts = (authenticatedScheduleShifts || []).filter(
     (shift) => shift.status === "scheduled",
   );
+
+  const currentShift = scheduledShifts.find((shift) => isCurrentShift(shift));
+  const hasScheduledShift = scheduledShifts.length > 0;
+
+  if (currentShift) {
+    dashboardQuickTertiary.querySelector(".quick-action-icon").textContent =
+      "✓";
+    dashboardQuickTertiaryLabel.textContent = "End Shift";
+
+    dashboardQuickTertiary.dataset.dashboardAction = "end-shift";
+    dashboardQuickTertiary.dataset.shiftId = currentShift.id;
+
+    delete dashboardQuickTertiary.dataset.dashboardSection;
+    delete dashboardQuickTertiary.dataset.dashboardView;
+  } else {
+    dashboardQuickTertiary.querySelector(".quick-action-icon").textContent =
+      "↗";
+    dashboardQuickTertiaryLabel.textContent = "Release Shift";
+
+    dashboardQuickTertiary.dataset.dashboardSection = "schedule";
+    dashboardQuickTertiary.dataset.dashboardView = "need-coverage";
+
+    delete dashboardQuickTertiary.dataset.dashboardAction;
+    delete dashboardQuickTertiary.dataset.shiftId;
+  }
 
   dashboardQuickTertiary.hidden = !hasScheduledShift;
   dashboardQuickQuaternary.hidden = true;
@@ -7389,6 +7545,8 @@ async function setupIndustryRealtime() {
           loadAuthenticatedCatchShifts(),
           loadAuthenticatedShiftInterests(),
         ]);
+
+        updateDashboardForRole();
       },
     )
 
