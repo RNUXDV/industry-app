@@ -13,6 +13,12 @@ const dashboardCountdownTime = document.querySelector(
   "#dashboard-countdown-time",
 );
 
+const dashboardShiftKicker = document.querySelector("#dashboard-shift-kicker");
+
+const dashboardCountdownCopy = document.querySelector(
+  "#dashboard-countdown-copy",
+);
+
 const dashboardShiftCommuteStrip = document.getElementById(
   "dashboard-shift-commute-strip",
 );
@@ -515,9 +521,14 @@ function isCurrentShift(shift) {
     return now < end;
   }
 
-  // For shifts such as "Close", treat the shift as current
-  // for the remainder of the calendar day.
-  return start.toDateString() === now.toDateString();
+  // For open-ended shifts such as "Close", allow the shift
+  // to continue past midnight, but never indefinitely.
+  const maxOpenShiftHours = 18;
+  const maxOpenShiftEnd = new Date(
+    start.getTime() + maxOpenShiftHours * 60 * 60 * 1000,
+  );
+
+  return now < maxOpenShiftEnd;
 }
 
 function getCountdownText(shift) {
@@ -690,6 +701,10 @@ async function loadAuthenticatedSchedule() {
 
   const todayStartIso = todayStart.toISOString();
 
+  const scheduleLookbackIso = new Date(
+    Date.now() - 18 * 60 * 60 * 1000,
+  ).toISOString();
+
   const { data, error } = await supabaseClient
     .from("shifts")
     .select(
@@ -710,7 +725,7 @@ async function loadAuthenticatedSchedule() {
     .eq("assigned_profile_id", user.id)
     .in("status", ["scheduled", "coverage_needed"])
     .is("actual_ended_at", null)
-    .gte("starts_at", todayStartIso)
+    .gte("starts_at", scheduleLookbackIso)
     .order("starts_at", { ascending: true });
 
   const { data: endedData, error: endedError } = await supabaseClient
@@ -751,51 +766,58 @@ async function loadAuthenticatedSchedule() {
     authenticatedEndedScheduleShifts = [];
   }
 
-  authenticatedScheduleShifts = (data || []).map((shift) => {
-    const timeZone =
-      shift.workplace?.time_zone ||
-      Intl.DateTimeFormat().resolvedOptions().timeZone;
+  authenticatedScheduleShifts = (data || [])
+    .map((shift) => {
+      const timeZone =
+        shift.workplace?.time_zone ||
+        Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const startDate = new Date(shift.starts_at);
+      const startDate = new Date(shift.starts_at);
 
-    const day = startDate.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      timeZone,
-    });
+      const day = startDate.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        timeZone,
+      });
 
-    const startTime = startDate.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      timeZone,
-    });
-
-    let endText = shift.end_label || "";
-
-    if (shift.ends_at) {
-      endText = new Date(shift.ends_at).toLocaleTimeString("en-US", {
+      const startTime = startDate.toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
         timeZone,
       });
-    }
 
-    return {
-      id: shift.id,
-      owner: user.id,
-      day,
-      time: endText ? `${startTime} – ${endText}` : startTime,
-      role: shift.role || "",
-      workplace: shift.workplace?.name || "",
-      status: shift.status,
-      startsAt: shift.starts_at,
-      endsAt: shift.ends_at || null,
-      endLabel: shift.end_label || "",
-      actualStartedAt: shift.actual_started_at || null,
-      actualEndedAt: shift.actual_ended_at || null,
-    };
-  });
+      let endText = shift.end_label || "";
+
+      if (shift.ends_at) {
+        endText = new Date(shift.ends_at).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone,
+        });
+      }
+
+      return {
+        id: shift.id,
+        owner: user.id,
+        day,
+        time: endText ? `${startTime} – ${endText}` : startTime,
+        role: shift.role || "",
+        workplace: shift.workplace?.name || "",
+        status: shift.status,
+        startsAt: shift.starts_at,
+        endsAt: shift.ends_at || null,
+        endLabel: shift.end_label || "",
+        actualStartedAt: shift.actual_started_at || null,
+        actualEndedAt: shift.actual_ended_at || null,
+      };
+    })
+    .filter((shift) => {
+      const now = new Date();
+      const start = new Date(shift.startsAt);
+
+      return start > now || isCurrentShift(shift);
+    });
 
   authenticatedEndedScheduleShifts = (endedData || []).map((shift) => {
     const timeZone =
@@ -810,8 +832,6 @@ async function loadAuthenticatedSchedule() {
       day: "numeric",
       timeZone,
     });
-
-    
 
     const startTime = startDate.toLocaleTimeString("en-US", {
       hour: "numeric",
@@ -1038,6 +1058,9 @@ async function loadAuthenticatedTeamSchedule() {
   startOfToday.setHours(0, 0, 0, 0);
 
   const startOfTodayIso = startOfToday.toISOString();
+  const teamScheduleLookbackIso = new Date(
+    Date.now() - 18 * 60 * 60 * 1000,
+  ).toISOString();
 
   const { data, error } = await supabaseClient
     .from("shifts")
@@ -1068,7 +1091,7 @@ coverage_stage,
     )
     .eq("workplace_id", authenticatedWorkplaceId)
     .in("status", ["scheduled", "coverage_needed"])
-    .gte("starts_at", startOfTodayIso)
+    .gte("starts_at", teamScheduleLookbackIso)
     .order("starts_at", { ascending: true });
 
   if (error) {
@@ -1076,75 +1099,86 @@ coverage_stage,
     return;
   }
 
-  authenticatedTeamScheduleShifts = (data || []).map((shift) => {
-    const timeZone =
-      shift.workplace?.time_zone ||
-      Intl.DateTimeFormat().resolvedOptions().timeZone;
+  authenticatedTeamScheduleShifts = (data || [])
+    .map((shift) => {
+      const timeZone =
+        shift.workplace?.time_zone ||
+        Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const startDate = new Date(shift.starts_at);
+      const startDate = new Date(shift.starts_at);
 
-    const day = startDate.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      timeZone,
-    });
+      const day = startDate.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        timeZone,
+      });
 
-    const startTime = startDate.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      timeZone,
-    });
-
-    let endText = shift.end_label || "";
-
-    if (shift.ends_at) {
-      endText = new Date(shift.ends_at).toLocaleTimeString("en-US", {
+      const startTime = startDate.toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
         timeZone,
       });
-    }
 
-    const clockedOutTime = shift.reported_ended_at
-      ? new Date(shift.reported_ended_at).toLocaleTimeString("en-US", {
+      let endText = shift.end_label || "";
+
+      if (shift.ends_at) {
+        endText = new Date(shift.ends_at).toLocaleTimeString("en-US", {
           hour: "numeric",
           minute: "2-digit",
           timeZone,
-        })
-      : "";
+        });
+      }
 
-    const recordedInIndustryTime = shift.end_recorded_at
-      ? new Date(shift.end_recorded_at).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          timeZone,
-        })
-      : "";
+      const clockedOutTime = shift.reported_ended_at
+        ? new Date(shift.reported_ended_at).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            timeZone,
+          })
+        : "";
 
-    return {
-      id: shift.id,
-      owner: shift.assigned_profile_id,
-      workerName: shift.assigned_profile?.full_name || "Unassigned",
-      workplaceId: shift.workplace_id,
-      workplace: shift.workplace?.name || "",
-      role: shift.role || "",
-      day,
-      time: endText ? `${startTime} – ${endText}` : startTime,
-      status: shift.status,
-      coverageStage: shift.coverage_stage || null,
-      startsAt: shift.starts_at,
-      endsAt: shift.ends_at || null,
-      endLabel: shift.end_label || "",
-      actualStartedAt: shift.actual_started_at || null,
-      actualEndedAt: shift.actual_ended_at || null,
-      reportedEndedAt: shift.reported_ended_at || null,
-      endRecordedAt: shift.end_recorded_at || null,
-      endTimeSource: shift.end_time_source || null,
-      clockedOutTime,
-      recordedInIndustryTime,
-    };
-  });
+      const recordedInIndustryTime = shift.end_recorded_at
+        ? new Date(shift.end_recorded_at).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            timeZone,
+          })
+        : "";
+
+      return {
+        id: shift.id,
+        owner: shift.assigned_profile_id,
+        workerName: shift.assigned_profile?.full_name || "Unassigned",
+        workplaceId: shift.workplace_id,
+        workplace: shift.workplace?.name || "",
+        role: shift.role || "",
+        day,
+        time: endText ? `${startTime} – ${endText}` : startTime,
+        status: shift.status,
+        coverageStage: shift.coverage_stage || null,
+        startsAt: shift.starts_at,
+        endsAt: shift.ends_at || null,
+        endLabel: shift.end_label || "",
+        actualStartedAt: shift.actual_started_at || null,
+        actualEndedAt: shift.actual_ended_at || null,
+        reportedEndedAt: shift.reported_ended_at || null,
+        endRecordedAt: shift.end_recorded_at || null,
+        endTimeSource: shift.end_time_source || null,
+        clockedOutTime,
+        recordedInIndustryTime,
+      };
+    })
+    .filter((shift) => {
+      const now = new Date();
+      const start = new Date(shift.startsAt);
+
+      if (shift.actualEndedAt) {
+        return new Date(shift.actualEndedAt) >= startOfToday;
+      }
+
+      return start > now || isCurrentShift(shift);
+    });
 
   console.log(
     "Industry manager team schedule loaded:",
@@ -1178,6 +1212,8 @@ function renderAuthenticatedTeamSchedule() {
     const isUnassigned = !shift.owner;
     const needsCoverage = shift.status === "coverage_needed";
     const hasEnded = Boolean(shift.actualEndedAt);
+    const isCurrent =
+      !hasEnded && shift.status === "scheduled" && isCurrentShift(shift);
 
     const endedShiftDetails =
       hasEnded && shift.clockedOutTime
@@ -1208,15 +1244,17 @@ function renderAuthenticatedTeamSchedule() {
     shiftCard.innerHTML = `
     <div class="stack-copy">
       <p class="stack-kicker">
-        ${
-          hasEnded
-            ? "Shift ended"
-            : needsCoverage
-              ? "Coverage requested"
-              : isUnassigned
-                ? "Unassigned shift"
-                : "Scheduled shift"
-        }
+       ${
+         hasEnded
+           ? "Shift ended"
+           : needsCoverage
+             ? "Coverage requested"
+             : isCurrent
+               ? "Current shift"
+               : isUnassigned
+                 ? "Unassigned shift"
+                 : "Scheduled shift"
+       } 
       </p>
 
       <h3>${shift.workerName}</h3>
@@ -1396,6 +1434,8 @@ async function loadAuthenticatedShiftInterests() {
 function renderDashboardShift(backendShift = undefined) {
   if (
     !dashboardCountdownTime ||
+    !dashboardShiftKicker ||
+    !dashboardCountdownCopy ||
     !dashboardShiftDay ||
     !dashboardShiftDate ||
     !dashboardShiftTime ||
@@ -1422,7 +1462,11 @@ function renderDashboardShift(backendShift = undefined) {
 
   if (!upcomingShift) {
     dashboardShiftDetailsButton.hidden = true;
+
+    dashboardShiftKicker.textContent = "Next Shift";
+    dashboardCountdownCopy.textContent = "No upcoming shift scheduled";
     dashboardCountdownTime.textContent = "--";
+
     dashboardShiftDay.textContent = "No shift";
     dashboardShiftDate.textContent = "";
     dashboardShiftTime.textContent = "";
@@ -1434,9 +1478,19 @@ function renderDashboardShift(backendShift = undefined) {
   dashboardShiftDetailsButton.hidden = false;
   dashboardShiftDetailsButton.dataset.shiftId = upcomingShift.id;
 
-  dashboardCountdownTime.textContent = isCurrentShift(upcomingShift)
+  const currentShift = isCurrentShift(upcomingShift);
+
+  dashboardShiftKicker.textContent = currentShift
+    ? "Current Shift"
+    : "Next Shift";
+
+  dashboardCountdownTime.textContent = currentShift
     ? "On shift now"
     : getCountdownText(upcomingShift);
+
+  dashboardCountdownCopy.textContent = currentShift
+    ? "shift currently in progress"
+    : "until your next shift";
   dashboardShiftDay.textContent = getShiftDayLabel(upcomingShift);
   dashboardShiftDate.textContent = upcomingShift.day;
   dashboardShiftTime.textContent = upcomingShift.time;
