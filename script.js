@@ -424,6 +424,7 @@ const savedDemoUser = "original";
 
 let CURRENT_USER = DEMO_USERS.original;
 let authenticatedScheduleShifts = undefined;
+let authenticatedEndedScheduleShifts = undefined;
 let authenticatedCatchShifts = undefined;
 let authenticatedShiftInterests = undefined;
 let authenticatedTeamScheduleShifts = undefined;
@@ -712,9 +713,42 @@ async function loadAuthenticatedSchedule() {
     .gte("starts_at", todayStartIso)
     .order("starts_at", { ascending: true });
 
+  const { data: endedData, error: endedError } = await supabaseClient
+    .from("shifts")
+    .select(
+      `
+      id,
+      assigned_profile_id,
+      role,
+      starts_at,
+      ends_at,
+      end_label,
+      status,
+      actual_started_at,
+      actual_ended_at,
+      reported_ended_at,
+      end_recorded_at,
+      end_time_source,
+      workplace:workplaces (
+        name,
+        time_zone
+      )
+    `,
+    )
+    .eq("assigned_profile_id", user.id)
+    .not("actual_ended_at", "is", null)
+    .gte("actual_ended_at", todayStartIso)
+    .order("actual_ended_at", { ascending: false });
+
   if (error) {
     console.error("Industry authenticated schedule error:", error);
     return;
+  }
+
+  if (endedError) {
+    console.error("Industry authenticated ended schedule error:", endedError);
+
+    authenticatedEndedScheduleShifts = [];
   }
 
   authenticatedScheduleShifts = (data || []).map((shift) => {
@@ -760,6 +794,75 @@ async function loadAuthenticatedSchedule() {
       endLabel: shift.end_label || "",
       actualStartedAt: shift.actual_started_at || null,
       actualEndedAt: shift.actual_ended_at || null,
+    };
+  });
+
+  authenticatedEndedScheduleShifts = (endedData || []).map((shift) => {
+    const timeZone =
+      shift.workplace?.time_zone ||
+      Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const startDate = new Date(shift.starts_at);
+
+    const day = startDate.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone,
+    });
+
+    
+
+    const startTime = startDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone,
+    });
+
+    let endText = shift.end_label || "";
+
+    if (shift.ends_at) {
+      endText = new Date(shift.ends_at).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone,
+      });
+    }
+
+    const clockedOutTime = shift.reported_ended_at
+      ? new Date(shift.reported_ended_at).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone,
+        })
+      : "";
+
+    const recordedInIndustryTime = shift.end_recorded_at
+      ? new Date(shift.end_recorded_at).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone,
+        })
+      : "";
+
+    return {
+      id: shift.id,
+      owner: user.id,
+      day,
+      time: endText ? `${startTime} – ${endText}` : startTime,
+      role: shift.role || "",
+      workplace: shift.workplace?.name || "",
+      status: shift.status,
+      startsAt: shift.starts_at,
+      endsAt: shift.ends_at || null,
+      endLabel: shift.end_label || "",
+      actualStartedAt: shift.actual_started_at || null,
+      actualEndedAt: shift.actual_ended_at || null,
+      reportedEndedAt: shift.reported_ended_at || null,
+      endRecordedAt: shift.end_recorded_at || null,
+      endTimeSource: shift.end_time_source || null,
+      clockedOutTime,
+      recordedInIndustryTime,
     };
   });
 
@@ -949,8 +1052,11 @@ async function loadAuthenticatedTeamSchedule() {
     end_label,
     status,
     actual_started_at,
-    actual_ended_at,
-    coverage_stage,
+actual_ended_at,
+reported_ended_at,
+end_recorded_at,
+end_time_source,
+coverage_stage,
     assigned_profile:profiles!shifts_assigned_profile_id_fkey (
       full_name
     ),
@@ -1000,6 +1106,22 @@ async function loadAuthenticatedTeamSchedule() {
       });
     }
 
+    const clockedOutTime = shift.reported_ended_at
+      ? new Date(shift.reported_ended_at).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone,
+        })
+      : "";
+
+    const recordedInIndustryTime = shift.end_recorded_at
+      ? new Date(shift.end_recorded_at).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone,
+        })
+      : "";
+
     return {
       id: shift.id,
       owner: shift.assigned_profile_id,
@@ -1016,6 +1138,11 @@ async function loadAuthenticatedTeamSchedule() {
       endLabel: shift.end_label || "",
       actualStartedAt: shift.actual_started_at || null,
       actualEndedAt: shift.actual_ended_at || null,
+      reportedEndedAt: shift.reported_ended_at || null,
+      endRecordedAt: shift.end_recorded_at || null,
+      endTimeSource: shift.end_time_source || null,
+      clockedOutTime,
+      recordedInIndustryTime,
     };
   });
 
@@ -1047,45 +1174,96 @@ function renderAuthenticatedTeamSchedule() {
     return;
   }
 
-  shifts.forEach((shift) => {
+  const renderTeamShiftCard = (shift) => {
     const isUnassigned = !shift.owner;
     const needsCoverage = shift.status === "coverage_needed";
     const hasEnded = Boolean(shift.actualEndedAt);
+
+    const endedShiftDetails =
+      hasEnded && shift.clockedOutTime
+        ? `
+        <div class="shift-end-details">
+          <p>
+            <span>Clocked out</span>
+            <strong>${shift.clockedOutTime}</strong>
+          </p>
+
+          ${
+            shift.recordedInIndustryTime
+              ? `
+                <p>
+                  <span>Recorded in Industry</span>
+                  <strong>${shift.recordedInIndustryTime}</strong>
+                </p>
+              `
+              : ""
+          }
+        </div>
+      `
+        : "";
 
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
 
     shiftCard.innerHTML = `
-      <div class="stack-copy">
-        <p class="stack-kicker">
-          ${
-            hasEnded
-              ? "Shift ended"
-              : needsCoverage
-                ? "Coverage requested"
-                : isUnassigned
-                  ? "Unassigned shift"
-                  : "Scheduled shift"
-          }
-        </p>
+    <div class="stack-copy">
+      <p class="stack-kicker">
+        ${
+          hasEnded
+            ? "Shift ended"
+            : needsCoverage
+              ? "Coverage requested"
+              : isUnassigned
+                ? "Unassigned shift"
+                : "Scheduled shift"
+        }
+      </p>
 
-        <h3>${shift.workerName}</h3>
+      <h3>${shift.workerName}</h3>
 
-        <p>${shift.role}</p>
+      <p>${shift.role}</p>
 
-        <ul class="shift-meta">
-          <li>${shift.day}</li>
-          <li>${shift.time}</li>
-        </ul>
+      <ul class="shift-meta">
+        <li>${shift.day}</li>
+        <li>${shift.time}</li>
+      </ul>
 
-        <ul class="shift-meta">
-          <li>${shift.workplace}</li>
-        </ul>
-      </div>
-    `;
+      <ul class="shift-meta">
+        <li>${shift.workplace}</li>
+      </ul>
+
+      ${endedShiftDetails}
+    </div>
+  `;
 
     managerTeamScheduleList.appendChild(shiftCard);
-  });
+  };
+
+  const activeAndUpcomingShifts = shifts.filter(
+    (shift) => !shift.actualEndedAt,
+  );
+
+  const endedShifts = shifts
+    .filter((shift) => Boolean(shift.actualEndedAt))
+    .sort(
+      (shiftA, shiftB) =>
+        new Date(shiftB.actualEndedAt) - new Date(shiftA.actualEndedAt),
+    );
+
+  activeAndUpcomingShifts.forEach(renderTeamShiftCard);
+
+  if (endedShifts.length) {
+    const endedHeading = document.createElement("div");
+    endedHeading.className = "manager-ended-shifts-heading";
+
+    endedHeading.innerHTML = `
+    <p class="stack-kicker">Ended today</p>
+  `;
+
+    managerTeamScheduleList.appendChild(endedHeading);
+
+    endedShifts.forEach(renderTeamShiftCard);
+  }
 }
 async function loadAuthenticatedCatchShifts() {
   const {
@@ -4128,7 +4306,14 @@ if (myShiftsNextCard) {
 function renderAuthenticatedScheduleShifts(shifts) {
   importedShiftList.innerHTML = "";
 
-  if (!shifts.length) {
+  const activeShifts = shifts || [];
+  const endedShifts = authenticatedEndedScheduleShifts || [];
+
+  // -----------------------------------------
+  // ACTIVE / UPCOMING SHIFTS
+  // -----------------------------------------
+
+  if (!activeShifts.length) {
     importedShiftList.innerHTML = `
       <article class="stack-card shift-card">
         <div class="stack-copy">
@@ -4138,10 +4323,9 @@ function renderAuthenticatedScheduleShifts(shifts) {
         </div>
       </article>
     `;
-    return;
   }
 
-  shifts.forEach((shift) => {
+  activeShifts.forEach((shift) => {
     const isCoverageNeeded = shift.status === "coverage_needed";
     const isCurrent = shift.status === "scheduled" && isCurrentShift(shift);
 
@@ -4149,29 +4333,29 @@ function renderAuthenticatedScheduleShifts(shifts) {
     shiftCard.className = "stack-card shift-card";
 
     shiftCard.innerHTML = `
-    <div class="stack-copy">
-      <p class="stack-kicker">
-  ${
-    isCoverageNeeded
-      ? "Coverage requested"
-      : isCurrent
-        ? "Current shift"
-        : "Scheduled shift"
-  }
-</p>
+      <div class="stack-copy">
+        <p class="stack-kicker">
+          ${
+            isCoverageNeeded
+              ? "Coverage requested"
+              : isCurrent
+                ? "Current shift"
+                : "Scheduled shift"
+          }
+        </p>
 
-      <h3>${shift.day}</h3>
-      <p>${shift.role}</p>
+        <h3>${shift.day}</h3>
+        <p>${shift.role}</p>
 
-      <ul class="shift-meta">
-        <li>${shift.time}</li>
-      </ul>
+        <ul class="shift-meta">
+          <li>${shift.time}</li>
+        </ul>
 
-      <ul class="shift-meta">
-        <li>${shift.workplace}</li>
-      </ul>
-    </div>
-  `;
+        <ul class="shift-meta">
+          <li>${shift.workplace}</li>
+        </ul>
+      </div>
+    `;
 
     shiftCard.setAttribute("role", "button");
     shiftCard.tabIndex = 0;
@@ -4207,6 +4391,69 @@ function renderAuthenticatedScheduleShifts(shifts) {
 
     importedShiftList.appendChild(shiftCard);
   });
+
+  // -----------------------------------------
+  // ENDED TODAY
+  // -----------------------------------------
+
+  if (endedShifts.length) {
+    const endedHeading = document.createElement("div");
+    endedHeading.className = "worker-ended-shifts-heading";
+
+    endedHeading.innerHTML = `
+      <p class="stack-kicker">Ended today</p>
+    `;
+
+    importedShiftList.appendChild(endedHeading);
+
+    endedShifts.forEach((shift) => {
+      const endedShiftDetails = shift.clockedOutTime
+        ? `
+            <div class="shift-end-details">
+              <p>
+                <span>Clocked out</span>
+                <strong>${shift.clockedOutTime}</strong>
+              </p>
+
+              ${
+                shift.recordedInIndustryTime
+                  ? `
+                    <p>
+                      <span>Recorded in Industry</span>
+                      <strong>${shift.recordedInIndustryTime}</strong>
+                    </p>
+                  `
+                  : ""
+              }
+            </div>
+          `
+        : "";
+
+      const shiftCard = document.createElement("article");
+      shiftCard.className = "stack-card shift-card";
+
+      shiftCard.innerHTML = `
+        <div class="stack-copy">
+          <p class="stack-kicker">Shift ended</p>
+
+          <h3>${shift.day}</h3>
+          <p>${shift.role}</p>
+
+          <ul class="shift-meta">
+            <li>${shift.time}</li>
+          </ul>
+
+          <ul class="shift-meta">
+            <li>${shift.workplace}</li>
+          </ul>
+
+          ${endedShiftDetails}
+        </div>
+      `;
+
+      importedShiftList.appendChild(shiftCard);
+    });
+  }
 }
 
 function renderImportedShifts(backendShifts = authenticatedScheduleShifts) {

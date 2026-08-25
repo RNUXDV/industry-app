@@ -9740,3 +9740,66 @@ body.onboarding-home-active #home-logo-button {
 #end-shift-now-button {
   box-shadow: 0 0 0 1.7px rgba(214, 95, 50, 0.9);
 }
+
+/* =========================================
+   SHIFT END TRANSPARENCY
+========================================= */
+
+.shift-end-details {
+  margin-top: 20px;
+  padding-top: 18px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  display: grid;
+  gap: 10px;
+}
+
+.shift-end-details p {
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  font-size: 0.95rem;
+}
+
+.shift-end-details span {
+  color: rgba(247, 244, 237, 0.58);
+}
+
+.shift-end-details strong {
+  color: #f7f4ed;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* =========================================
+   MANAGER — ENDED TODAY
+========================================= */
+
+.manager-ended-shifts-heading {
+  margin-top: 32px;
+  padding-top: 24px;
+  margin-bottom: 16px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.manager-ended-shifts-heading .stack-kicker {
+  margin: 0;
+}
+
+.worker-ended-shifts-heading {
+  margin-top: 32px;
+  padding-top: 24px;
+  margin-bottom: 16px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.worker-ended-shifts-heading .stack-kicker {
+  margin: 0;
+}
