@@ -609,8 +609,11 @@ async function loadAuthenticatedDashboardShift() {
       ends_at,
       end_label,
       status,
-      actual_started_at,
-      actual_ended_at,
+actual_started_at,
+reported_started_at,
+start_recorded_at,
+start_time_source,
+actual_ended_at,
       workplace:workplaces (
         name,
         time_zone
@@ -677,6 +680,9 @@ async function loadAuthenticatedDashboardShift() {
     endsAt: data.ends_at || null,
     endLabel: data.end_label || "",
     actualStartedAt: data.actual_started_at || null,
+    reportedStartedAt: data.reported_started_at || null,
+    startRecordedAt: data.start_recorded_at || null,
+    startTimeSource: data.start_time_source || null,
     actualEndedAt: data.actual_ended_at || null,
   };
 
@@ -709,18 +715,23 @@ async function loadAuthenticatedSchedule() {
     .from("shifts")
     .select(
       `
-      id,
-      assigned_profile_id,
-      role,
-      starts_at,
-      ends_at,
-      end_label,
-      status,
-      workplace:workplaces (
-        name,
-        time_zone
-      )
-    `,
+    id,
+    assigned_profile_id,
+    role,
+    starts_at,
+    ends_at,
+    end_label,
+    status,
+    actual_started_at,
+    reported_started_at,
+    start_recorded_at,
+    start_time_source,
+    actual_ended_at,
+    workplace:workplaces (
+      name,
+      time_zone
+    )
+  `,
     )
     .eq("assigned_profile_id", user.id)
     .in("status", ["scheduled", "coverage_needed"])
@@ -740,6 +751,9 @@ async function loadAuthenticatedSchedule() {
       end_label,
       status,
       actual_started_at,
+      reported_started_at,
+start_recorded_at,
+start_time_source,
       actual_ended_at,
       reported_ended_at,
       end_recorded_at,
@@ -809,6 +823,9 @@ async function loadAuthenticatedSchedule() {
         endsAt: shift.ends_at || null,
         endLabel: shift.end_label || "",
         actualStartedAt: shift.actual_started_at || null,
+        reportedStartedAt: shift.reported_started_at || null,
+        startRecordedAt: shift.start_recorded_at || null,
+        startTimeSource: shift.start_time_source || null,
         actualEndedAt: shift.actual_ended_at || null,
       };
     })
@@ -1075,6 +1092,9 @@ async function loadAuthenticatedTeamSchedule() {
     end_label,
     status,
     actual_started_at,
+    reported_started_at,
+start_recorded_at,
+start_time_source,
 actual_ended_at,
 reported_ended_at,
 end_recorded_at,
@@ -1161,6 +1181,9 @@ coverage_stage,
         endsAt: shift.ends_at || null,
         endLabel: shift.end_label || "",
         actualStartedAt: shift.actual_started_at || null,
+        reportedStartedAt: shift.reported_started_at || null,
+        startRecordedAt: shift.start_recorded_at || null,
+        startTimeSource: shift.start_time_source || null,
         actualEndedAt: shift.actual_ended_at || null,
         reportedEndedAt: shift.reported_ended_at || null,
         endRecordedAt: shift.end_recorded_at || null,
@@ -1478,19 +1501,31 @@ function renderDashboardShift(backendShift = undefined) {
   dashboardShiftDetailsButton.hidden = false;
   dashboardShiftDetailsButton.dataset.shiftId = upcomingShift.id;
 
-  const currentShift = isCurrentShift(upcomingShift);
+  const scheduledNow = isCurrentShift(upcomingShift);
 
-  dashboardShiftKicker.textContent = currentShift
+  const hasReportedStart = Boolean(
+    upcomingShift.reportedStartedAt || upcomingShift.actualStartedAt,
+  );
+
+  const onShiftNow = scheduledNow && hasReportedStart;
+
+  dashboardShiftKicker.textContent = onShiftNow
     ? "Current Shift"
-    : "Next Shift";
+    : scheduledNow
+      ? "Scheduled Shift"
+      : "Next Shift";
 
-  dashboardCountdownTime.textContent = currentShift
+  dashboardCountdownTime.textContent = onShiftNow
     ? "On shift now"
-    : getCountdownText(upcomingShift);
+    : scheduledNow
+      ? "Scheduled now"
+      : getCountdownText(upcomingShift);
 
-  dashboardCountdownCopy.textContent = currentShift
+  dashboardCountdownCopy.textContent = onShiftNow
     ? "shift currently in progress"
-    : "until your next shift";
+    : scheduledNow
+      ? "report when you clock in"
+      : "until your next shift";
   dashboardShiftDay.textContent = getShiftDayLabel(upcomingShift);
   dashboardShiftDate.textContent = upcomingShift.day;
   dashboardShiftTime.textContent = upcomingShift.time;
@@ -2032,6 +2067,203 @@ async function endAuthenticatedShift(
   return true;
 }
 
+const startShiftOverlay = document.getElementById("start-shift-overlay");
+const startShiftChoicePanel = document.getElementById(
+  "start-shift-choice-panel",
+);
+const startShiftTimePanel = document.getElementById("start-shift-time-panel");
+
+const startShiftNowButton = document.getElementById("start-shift-now-button");
+const startShiftChooseTimeButton = document.getElementById(
+  "start-shift-choose-time-button",
+);
+const startShiftCancelButton = document.getElementById(
+  "start-shift-cancel-button",
+);
+
+const startShiftTimeInput = document.getElementById("start-shift-time-input");
+const startShiftSaveTimeButton = document.getElementById(
+  "start-shift-save-time-button",
+);
+const startShiftBackButton = document.getElementById("start-shift-back-button");
+const startShiftError = document.getElementById("start-shift-error");
+
+let pendingStartShiftId = null;
+
+function openStartShiftDialog(shiftId) {
+  if (!shiftId || !startShiftOverlay) {
+    return;
+  }
+
+  pendingStartShiftId = shiftId;
+
+  startShiftChoicePanel.hidden = false;
+  startShiftTimePanel.hidden = true;
+
+  startShiftTimeInput.value = "";
+
+  startShiftError.textContent = "";
+  startShiftError.hidden = true;
+
+  startShiftOverlay.hidden = false;
+
+  startShiftNowButton?.focus();
+}
+
+function closeStartShiftDialog() {
+  pendingStartShiftId = null;
+
+  startShiftOverlay.hidden = true;
+
+  startShiftChoicePanel.hidden = false;
+  startShiftTimePanel.hidden = true;
+
+  startShiftTimeInput.value = "";
+
+  startShiftError.textContent = "";
+  startShiftError.hidden = true;
+}
+
+async function startAuthenticatedShift(
+  shiftId,
+  reportedStartAt = new Date().toISOString(),
+) {
+  if (!shiftId || !reportedStartAt) {
+    return false;
+  }
+
+  const reportedStartDate = new Date(reportedStartAt);
+
+  if (Number.isNaN(reportedStartDate.getTime())) {
+    console.error("Industry start shift error: invalid reported start time");
+    return false;
+  }
+
+  const { error } = await supabaseClient.rpc("report_assigned_shift_start", {
+    target_shift_id: shiftId,
+    reported_start_at: reportedStartDate.toISOString(),
+  });
+
+  if (error) {
+    console.error("Industry start shift error:", error);
+    return false;
+  }
+
+  console.log("Industry shift start reported:", {
+    shiftId,
+    reportedStartAt: reportedStartDate.toISOString(),
+  });
+
+  await Promise.all([
+    loadAuthenticatedSchedule(),
+    loadAuthenticatedDashboardShift(),
+  ]);
+
+  updateDashboardForRole();
+
+  return true;
+}
+
+startShiftCancelButton?.addEventListener("click", () => {
+  closeStartShiftDialog();
+});
+
+startShiftNowButton?.addEventListener("click", async () => {
+  if (!pendingStartShiftId) {
+    return;
+  }
+
+  const shiftId = pendingStartShiftId;
+  const originalLabel = startShiftNowButton.textContent;
+
+  startShiftNowButton.disabled = true;
+  startShiftNowButton.textContent = "Starting shift...";
+
+  const success = await startAuthenticatedShift(
+    shiftId,
+    new Date().toISOString(),
+  );
+
+  startShiftNowButton.disabled = false;
+  startShiftNowButton.textContent = originalLabel;
+
+  if (success) {
+    closeStartShiftDialog();
+  }
+});
+
+startShiftChooseTimeButton?.addEventListener("click", () => {
+  startShiftChoicePanel.hidden = true;
+  startShiftTimePanel.hidden = false;
+
+  startShiftError.textContent = "";
+  startShiftError.hidden = true;
+
+  const nowValue = getLocalDateTimeInputValue();
+
+  startShiftTimeInput.value = nowValue;
+  startShiftTimeInput.max = nowValue;
+});
+
+startShiftBackButton?.addEventListener("click", () => {
+  startShiftTimePanel.hidden = true;
+  startShiftChoicePanel.hidden = false;
+
+  startShiftError.textContent = "";
+  startShiftError.hidden = true;
+
+  startShiftTimeInput.value = "";
+});
+
+startShiftSaveTimeButton?.addEventListener("click", async () => {
+  if (!pendingStartShiftId) {
+    return;
+  }
+
+  if (!startShiftTimeInput.value) {
+    startShiftError.textContent = "Choose the time you clocked in.";
+    startShiftError.hidden = false;
+    return;
+  }
+
+  const reportedStartDate = new Date(startShiftTimeInput.value);
+
+  if (Number.isNaN(reportedStartDate.getTime())) {
+    startShiftError.textContent = "Enter a valid clock-in time.";
+    startShiftError.hidden = false;
+    return;
+  }
+
+  const now = new Date();
+
+  if (reportedStartDate > now) {
+    startShiftError.textContent = "Clock-in time cannot be in the future.";
+    startShiftError.hidden = false;
+    return;
+  }
+
+  const shiftId = pendingStartShiftId;
+  const originalLabel = startShiftSaveTimeButton.textContent;
+
+  startShiftError.textContent = "";
+  startShiftError.hidden = true;
+
+  startShiftSaveTimeButton.disabled = true;
+  startShiftSaveTimeButton.textContent = "Saving...";
+
+  const success = await startAuthenticatedShift(
+    shiftId,
+    reportedStartDate.toISOString(),
+  );
+
+  startShiftSaveTimeButton.disabled = false;
+  startShiftSaveTimeButton.textContent = originalLabel;
+
+  if (success) {
+    closeStartShiftDialog();
+  }
+});
+
 const endShiftOverlay = document.getElementById("end-shift-overlay");
 const endShiftChoicePanel = document.getElementById("end-shift-choice-panel");
 const endShiftTimePanel = document.getElementById("end-shift-time-panel");
@@ -2195,6 +2427,17 @@ function closeEndShiftDialog() {
 dashboardLinks.forEach((link) => {
   link.addEventListener("click", () => {
     const dashboardAction = link.dataset.dashboardAction;
+
+    if (dashboardAction === "start-shift") {
+      const shiftId = link.dataset.shiftId;
+
+      if (!shiftId) {
+        return;
+      }
+
+      openStartShiftDialog(shiftId);
+      return;
+    }
 
     if (dashboardAction === "end-shift") {
       const shiftId = link.dataset.shiftId;
@@ -7825,13 +8068,25 @@ function updateDashboardForRole() {
 
   const currentShift = scheduledShifts.find((shift) => isCurrentShift(shift));
   const hasScheduledShift = scheduledShifts.length > 0;
+  const currentShiftHasStarted = Boolean(
+    currentShift?.reportedStartedAt || currentShift?.actualStartedAt,
+  );
 
   if (currentShift) {
-    dashboardQuickTertiary.querySelector(".quick-action-icon").textContent =
-      "✓";
-    dashboardQuickTertiaryLabel.textContent = "End Shift";
+    if (currentShiftHasStarted) {
+      dashboardQuickTertiary.querySelector(".quick-action-icon").textContent =
+        "✓";
 
-    dashboardQuickTertiary.dataset.dashboardAction = "end-shift";
+      dashboardQuickTertiaryLabel.textContent = "End Shift";
+      dashboardQuickTertiary.dataset.dashboardAction = "end-shift";
+    } else {
+      dashboardQuickTertiary.querySelector(".quick-action-icon").textContent =
+        "→";
+
+      dashboardQuickTertiaryLabel.textContent = "Start Shift";
+      dashboardQuickTertiary.dataset.dashboardAction = "start-shift";
+    }
+
     dashboardQuickTertiary.dataset.shiftId = currentShift.id;
 
     delete dashboardQuickTertiary.dataset.dashboardSection;
@@ -7839,6 +8094,7 @@ function updateDashboardForRole() {
   } else {
     dashboardQuickTertiary.querySelector(".quick-action-icon").textContent =
       "↗";
+
     dashboardQuickTertiaryLabel.textContent = "Release Shift";
 
     dashboardQuickTertiary.dataset.dashboardSection = "schedule";

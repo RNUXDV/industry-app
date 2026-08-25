@@ -9659,13 +9659,17 @@ body.onboarding-home-active #home-logo-button {
 }
 
 #end-shift-choice-panel,
-#end-shift-time-panel {
+#end-shift-time-panel,
+#start-shift-choice-panel,
+#start-shift-time-panel {
   display: grid;
   gap: 12px;
 }
 
 #end-shift-choice-panel[hidden],
-#end-shift-time-panel[hidden] {
+#end-shift-time-panel[hidden],
+#start-shift-choice-panel[hidden],
+#start-shift-time-panel[hidden] {
   display: none;
 }
 

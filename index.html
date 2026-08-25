@@ -5329,6 +5329,88 @@
       <!-- =========================================
      END SHIFT REPORTING
 ========================================= -->
+<div
+  class="end-shift-overlay"
+  id="start-shift-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="start-shift-title"
+  hidden
+>
+  <section class="end-shift-card">
+    <p class="end-shift-eyebrow">SHIFT STATUS</p>
+
+    <h2 id="start-shift-title">When did your shift start?</h2>
+
+    <p class="end-shift-copy">
+      Enter the time you clocked in.
+    </p>
+
+    <div id="start-shift-choice-panel">
+      <button
+        class="action-button"
+        id="start-shift-now-button"
+        type="button"
+      >
+        Start now
+      </button>
+
+      <button
+  class="action-button secondary-action"
+  id="start-shift-choose-time-button"
+  type="button"
+>
+        Choose a different time
+      </button>
+
+      <button
+  class="end-shift-cancel-button"
+  id="start-shift-cancel-button"
+  type="button"
+>
+        Cancel
+      </button>
+    </div>
+
+    <div id="start-shift-time-panel" hidden>
+      <label for="start-shift-time-input">
+        Shift start time
+      </label>
+
+      <input
+        id="start-shift-time-input"
+        type="datetime-local"
+      />
+
+      <p class="end-shift-copy">
+        Time Clocked In.
+      </p>
+
+      <button
+        class="action-button"
+        id="start-shift-save-time-button"
+        type="button"
+      >
+        Save start time
+      </button>
+
+      <button
+        class="secondary-action"
+        id="start-shift-back-button"
+        type="button"
+      >
+        Back
+      </button>
+    </div>
+
+    <p
+      id="start-shift-error"
+      class="end-shift-error"
+      hidden
+    ></p>
+  </section>
+</div>
+
 
 <div
   class="end-shift-overlay"
