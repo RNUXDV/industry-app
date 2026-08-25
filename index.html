@@ -5325,6 +5325,92 @@
           People
         </button>
       </nav>
+
+      <!-- =========================================
+     END SHIFT REPORTING
+========================================= -->
+
+<div
+  class="end-shift-overlay"
+  id="end-shift-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="end-shift-title"
+  hidden
+>
+  <section class="end-shift-card">
+    <p class="end-shift-eyebrow">SHIFT STATUS</p>
+
+    <h2 id="end-shift-title">When did your shift end?</h2>
+
+    <p class="end-shift-copy">
+      Enter the time you clocked out.
+    </p>
+
+    <div id="end-shift-choice-panel">
+      <button
+        class="action-button"
+        id="end-shift-now-button"
+        type="button"
+      >
+        End now
+      </button>
+
+      <button
+        class="action-button secondary-action"
+        id="end-shift-choose-time-button"
+        type="button"
+      >
+        Choose a different time
+      </button>
+      
+      <button
+        class="end-shift-cancel-button"
+        id="end-shift-cancel-button"
+        type="button"
+      >
+        Cancel
+      </button>
+    </div>
+
+    <div id="end-shift-time-panel" hidden>
+      <label class="end-shift-field-label" for="end-shift-time-input">
+        Clock-out time
+      </label>
+
+      <input
+        id="end-shift-time-input"
+        class="end-shift-time-input"
+        type="datetime-local"
+      />
+
+      
+
+      <p
+        class="end-shift-error"
+        id="end-shift-error"
+        role="alert"
+        hidden
+      ></p>
+
+      <button
+        class="action-button"
+        id="end-shift-save-time-button"
+        type="button"
+      >
+        Save end time
+      </button>
+
+      <button
+        class="action-button secondary-action"
+        id="end-shift-back-button"
+        type="button"
+      >
+        Back
+      </button>
+    </div>
+  </section>
+</div>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 

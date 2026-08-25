@@ -9587,3 +9587,156 @@ body.onboarding-home-active #home-logo-button {
     margin-top: 42px;
   }
 }
+
+/* =========================================
+   END SHIFT REPORTING
+========================================= */
+
+.end-shift-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  padding: 24px;
+
+  background: rgba(18, 18, 16, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.end-shift-overlay[hidden] {
+  display: none;
+}
+
+.end-shift-card {
+  width: min(100%, 480px);
+  margin: auto;
+
+  padding: 32px 28px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+
+  background: #292b29;
+  box-shadow: 0 24px 70px rgba(30, 26, 20, 0.28);
+
+  color: #f7f4ed;
+}
+
+.end-shift-eyebrow {
+  margin: 0 0 12px;
+
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+
+  color: #d65f32;
+}
+
+.end-shift-card h2 {
+  margin: 0;
+
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.end-shift-copy {
+  margin: 18px 0 28px;
+
+  font-size: 1rem;
+  line-height: 1.55;
+
+  color: rgba(247, 244, 237, 0.72);
+}
+
+#end-shift-choice-panel,
+#end-shift-time-panel {
+  display: grid;
+  gap: 12px;
+}
+
+#end-shift-choice-panel[hidden],
+#end-shift-time-panel[hidden] {
+  display: none;
+}
+
+.end-shift-field-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.end-shift-time-input {
+  width: 100%;
+  min-height: 54px;
+
+  padding: 0 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.05);
+  color: #f7f4ed;
+
+  font: inherit;
+}
+
+.end-shift-time-input:focus {
+  outline: 2px solid rgba(214, 95, 50, 0.6);
+  outline-offset: 2px;
+}
+
+.end-shift-field-help {
+  margin: -2px 0 6px;
+
+  font-size: 0.88rem;
+  line-height: 1.45;
+
+  color: rgba(247, 244, 237, 0.62);
+}
+
+.end-shift-error {
+  margin: 0;
+  padding: 12px 14px;
+
+  border: 1px solid rgba(255, 120, 100, 0.28);
+  border-radius: 14px;
+
+  background: rgba(255, 120, 100, 0.08);
+
+  font-size: 0.9rem;
+}
+
+.end-shift-error[hidden] {
+  display: none;
+}
+
+.end-shift-cancel-button {
+  min-height: 50px;
+
+  border: 0;
+  background: transparent;
+
+  color: rgba(247, 244, 237, 0.7);
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.end-shift-cancel-button:hover {
+  color: #f7f4ed;
+}
+
+#end-shift-now-button {
+  box-shadow: 0 0 0 1.7px rgba(214, 95, 50, 0.9);
+}

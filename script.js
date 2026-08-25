@@ -948,6 +948,8 @@ async function loadAuthenticatedTeamSchedule() {
     ends_at,
     end_label,
     status,
+    actual_started_at,
+    actual_ended_at,
     coverage_stage,
     assigned_profile:profiles!shifts_assigned_profile_id_fkey (
       full_name
@@ -1010,6 +1012,10 @@ async function loadAuthenticatedTeamSchedule() {
       status: shift.status,
       coverageStage: shift.coverage_stage || null,
       startsAt: shift.starts_at,
+      endsAt: shift.ends_at || null,
+      endLabel: shift.end_label || "",
+      actualStartedAt: shift.actual_started_at || null,
+      actualEndedAt: shift.actual_ended_at || null,
     };
   });
 
@@ -1044,6 +1050,7 @@ function renderAuthenticatedTeamSchedule() {
   shifts.forEach((shift) => {
     const isUnassigned = !shift.owner;
     const needsCoverage = shift.status === "coverage_needed";
+    const hasEnded = Boolean(shift.actualEndedAt);
 
     const shiftCard = document.createElement("article");
     shiftCard.className = "stack-card shift-card";
@@ -1052,11 +1059,13 @@ function renderAuthenticatedTeamSchedule() {
       <div class="stack-copy">
         <p class="stack-kicker">
           ${
-            needsCoverage
-              ? "Coverage requested"
-              : isUnassigned
-                ? "Unassigned shift"
-                : "Scheduled shift"
+            hasEnded
+              ? "Shift ended"
+              : needsCoverage
+                ? "Coverage requested"
+                : isUnassigned
+                  ? "Unassigned shift"
+                  : "Scheduled shift"
           }
         </p>
 
@@ -1751,21 +1760,35 @@ if (directReleaseButton) {
   });
 }
 
-async function endAuthenticatedShift(shiftId) {
-  if (!shiftId) {
-    return;
+async function endAuthenticatedShift(
+  shiftId,
+  reportedEndAt = new Date().toISOString(),
+) {
+  if (!shiftId || !reportedEndAt) {
+    return false;
   }
 
-  const { error } = await supabaseClient.rpc("end_assigned_shift", {
+  const reportedEndDate = new Date(reportedEndAt);
+
+  if (Number.isNaN(reportedEndDate.getTime())) {
+    console.error("Industry end shift error: invalid reported end time");
+    return false;
+  }
+
+  const { error } = await supabaseClient.rpc("report_assigned_shift_end", {
     target_shift_id: shiftId,
+    reported_end_at: reportedEndDate.toISOString(),
   });
 
   if (error) {
     console.error("Industry end shift error:", error);
-    return;
+    return false;
   }
 
-  console.log("Industry shift ended:", shiftId);
+  console.log("Industry shift end reported:", {
+    shiftId,
+    reportedEndAt: reportedEndDate.toISOString(),
+  });
 
   await Promise.all([
     loadAuthenticatedSchedule(),
@@ -1773,6 +1796,166 @@ async function endAuthenticatedShift(shiftId) {
   ]);
 
   updateDashboardForRole();
+
+  return true;
+}
+
+const endShiftOverlay = document.getElementById("end-shift-overlay");
+const endShiftChoicePanel = document.getElementById("end-shift-choice-panel");
+const endShiftTimePanel = document.getElementById("end-shift-time-panel");
+
+const endShiftNowButton = document.getElementById("end-shift-now-button");
+const endShiftChooseTimeButton = document.getElementById(
+  "end-shift-choose-time-button",
+);
+const endShiftCancelButton = document.getElementById("end-shift-cancel-button");
+
+const endShiftTimeInput = document.getElementById("end-shift-time-input");
+const endShiftSaveTimeButton = document.getElementById(
+  "end-shift-save-time-button",
+);
+const endShiftBackButton = document.getElementById("end-shift-back-button");
+const endShiftError = document.getElementById("end-shift-error");
+
+let pendingEndShiftId = null;
+
+function openEndShiftDialog(shiftId) {
+  if (!shiftId || !endShiftOverlay) {
+    return;
+  }
+
+  pendingEndShiftId = shiftId;
+
+  endShiftChoicePanel.hidden = false;
+  endShiftTimePanel.hidden = true;
+
+  endShiftTimeInput.value = "";
+  endShiftError.textContent = "";
+  endShiftError.hidden = true;
+
+  endShiftOverlay.hidden = false;
+
+  endShiftNowButton?.focus();
+}
+
+endShiftCancelButton?.addEventListener("click", () => {
+  closeEndShiftDialog();
+});
+
+endShiftNowButton?.addEventListener("click", async () => {
+  if (!pendingEndShiftId) {
+    return;
+  }
+
+  const shiftId = pendingEndShiftId;
+  const originalLabel = endShiftNowButton.textContent;
+
+  endShiftNowButton.disabled = true;
+  endShiftNowButton.textContent = "Ending shift…";
+
+  const success = await endAuthenticatedShift(
+    shiftId,
+    new Date().toISOString(),
+  );
+
+  endShiftNowButton.disabled = false;
+  endShiftNowButton.textContent = originalLabel;
+
+  if (success) {
+    closeEndShiftDialog();
+  }
+});
+
+function getLocalDateTimeInputValue(date = new Date()) {
+  const timezoneOffset = date.getTimezoneOffset() * 60000;
+  const localDate = new Date(date.getTime() - timezoneOffset);
+
+  return localDate.toISOString().slice(0, 16);
+}
+
+endShiftChooseTimeButton?.addEventListener("click", () => {
+  endShiftChoicePanel.hidden = true;
+  endShiftTimePanel.hidden = false;
+
+  endShiftError.textContent = "";
+  endShiftError.hidden = true;
+
+  const nowValue = getLocalDateTimeInputValue();
+
+  endShiftTimeInput.value = nowValue;
+  endShiftTimeInput.max = nowValue;
+});
+
+endShiftBackButton?.addEventListener("click", () => {
+  endShiftTimePanel.hidden = true;
+  endShiftChoicePanel.hidden = false;
+
+  endShiftError.textContent = "";
+  endShiftError.hidden = true;
+
+  endShiftNowButton?.focus();
+});
+
+endShiftSaveTimeButton?.addEventListener("click", async () => {
+  if (!pendingEndShiftId) {
+    return;
+  }
+
+  if (!endShiftTimeInput.value) {
+    endShiftError.textContent = "Choose the time you clocked out.";
+    endShiftError.hidden = false;
+    return;
+  }
+
+  const reportedEndDate = new Date(endShiftTimeInput.value);
+
+  if (Number.isNaN(reportedEndDate.getTime())) {
+    endShiftError.textContent = "Enter a valid clock-out time.";
+    endShiftError.hidden = false;
+    return;
+  }
+
+  const now = new Date();
+
+  if (reportedEndDate > now) {
+    endShiftError.textContent = "Clock-out time cannot be in the future.";
+    endShiftError.hidden = false;
+    return;
+  }
+
+  const shiftId = pendingEndShiftId;
+  const originalLabel = endShiftSaveTimeButton.textContent;
+
+  endShiftError.textContent = "";
+  endShiftError.hidden = true;
+
+  endShiftSaveTimeButton.disabled = true;
+  endShiftSaveTimeButton.textContent = "Saving…";
+
+  const success = await endAuthenticatedShift(
+    shiftId,
+    reportedEndDate.toISOString(),
+  );
+
+  endShiftSaveTimeButton.disabled = false;
+  endShiftSaveTimeButton.textContent = originalLabel;
+
+  if (success) {
+    closeEndShiftDialog();
+  }
+});
+
+function closeEndShiftDialog() {
+  pendingEndShiftId = null;
+
+  endShiftOverlay.hidden = true;
+
+  endShiftChoicePanel.hidden = false;
+  endShiftTimePanel.hidden = true;
+
+  endShiftTimeInput.value = "";
+  endShiftError.textContent = "";
+  endShiftError.hidden = true;
 }
 
 /* Dashboard direct links */
@@ -1788,17 +1971,10 @@ dashboardLinks.forEach((link) => {
         return;
       }
 
-      const confirmed = window.confirm(
-        "End this shift now? Industry will mark your shift as complete.",
-      );
-
-      if (!confirmed) {
-        return;
-      }
-
-      endAuthenticatedShift(shiftId);
+      openEndShiftDialog(shiftId);
       return;
     }
+
     const sectionName = link.dataset.dashboardSection;
     const scheduleView = link.dataset.dashboardView;
     const scrollTarget = link.dataset.scrollTarget;
