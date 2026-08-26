@@ -105,6 +105,95 @@ const managerSaveShiftButton = document.getElementById(
   "manager-save-shift-button",
 );
 
+const managerShiftFormTitle = document.getElementById(
+  "manager-shift-form-title",
+);
+
+const managerShiftFormCopy = document.getElementById("manager-shift-form-copy");
+
+const managerShiftFormLabel = document.getElementById(
+  "manager-shift-form-label",
+);
+
+const managerShiftFormPanelTitle = document.getElementById(
+  "manager-shift-form-panel-title",
+);
+
+let editingManagerShiftId = null;
+
+function setManagerShiftFormMode(mode = "create") {
+  const isEdit = mode === "edit";
+
+  if (managerShiftFormTitle) {
+    managerShiftFormTitle.textContent = isEdit ? "Edit Shift" : "Create Shift";
+  }
+
+  if (managerShiftFormCopy) {
+    managerShiftFormCopy.textContent = isEdit
+      ? "Update this scheduled shift for your workplace crew."
+      : "Assign a new shift to a member of your workplace crew.";
+  }
+
+  if (managerShiftFormLabel) {
+    managerShiftFormLabel.textContent = isEdit
+      ? "Scheduled Shift"
+      : "New Shift";
+  }
+
+  if (managerShiftFormPanelTitle) {
+    managerShiftFormPanelTitle.textContent = isEdit
+      ? "Edit shift details"
+      : "Shift details";
+  }
+
+  if (managerSaveShiftButton) {
+    managerSaveShiftButton.textContent = isEdit
+      ? "Save Changes"
+      : "Create Shift";
+  }
+}
+
+function getManagerShiftInputValues(shift) {
+  const timeZone =
+    shift.workplaceTimeZone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const getParts = (isoString) => {
+    if (!isoString) {
+      return null;
+    }
+
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(new Date(isoString));
+
+    const values = Object.fromEntries(
+      parts.map((part) => [part.type, part.value]),
+    );
+
+    return {
+      date: `${values.year}-${values.month}-${values.day}`,
+      time: `${values.hour}:${values.minute}`,
+    };
+  };
+
+  const start = getParts(shift.startsAt);
+  const end = getParts(shift.endsAt);
+
+  const runsUntilClose = String(shift.endLabel || "").toLowerCase() === "close";
+
+  return {
+    date: start?.date || "",
+    startTime: start?.time || "",
+    endTime: runsUntilClose ? "" : end?.time || "",
+  };
+}
+
 const catchBackButton = document.getElementById("catch-back-button");
 const catchSectionLabel = document.getElementById("catch-section-label");
 const catchViewTitle = document.getElementById("catch-view-title");
@@ -813,7 +902,7 @@ start_time_source,
 
       return {
         id: shift.id,
-        owner: user.id,
+        owner: shift.assigned_profile_id,
         day,
         time: endText ? `${startTime} – ${endText}` : startTime,
         role: shift.role || "",
@@ -884,7 +973,7 @@ start_time_source,
 
     return {
       id: shift.id,
-      owner: user.id,
+      owner: shift.assigned_profile_id,
       day,
       time: endText ? `${startTime} – ${endText}` : startTime,
       role: shift.role || "",
@@ -1172,6 +1261,9 @@ coverage_stage,
         workerName: shift.assigned_profile?.full_name || "Unassigned",
         workplaceId: shift.workplace_id,
         workplace: shift.workplace?.name || "",
+        workplaceTimeZone:
+          shift.workplace?.time_zone ||
+          Intl.DateTimeFormat().resolvedOptions().timeZone,
         role: shift.role || "",
         day,
         time: endText ? `${startTime} – ${endText}` : startTime,
@@ -1238,6 +1330,9 @@ function renderAuthenticatedTeamSchedule() {
     const isCurrent =
       !hasEnded && shift.status === "scheduled" && isCurrentShift(shift);
 
+    const canManageShift =
+      !hasEnded && !isCurrent && shift.status === "scheduled";
+
     const endedShiftDetails =
       hasEnded && shift.clockedOutTime
         ? `
@@ -1294,8 +1389,55 @@ function renderAuthenticatedTeamSchedule() {
       </ul>
 
       ${endedShiftDetails}
-    </div>
-  `;
+
+${
+  canManageShift
+    ? `
+      <button
+        class="secondary-action"
+        type="button"
+        data-manager-manage-shift="${shift.id}"
+      >
+        Manage Shift
+      </button>
+    `
+    : ""
+}
+</div>
+`;
+
+    const manageShiftButton = shiftCard.querySelector(
+      "[data-manager-manage-shift]",
+    );
+
+    if (manageShiftButton) {
+      manageShiftButton.addEventListener("click", async () => {
+        editingManagerShiftId = shift.id;
+        setManagerShiftFormMode("edit");
+
+        const { date, startTime, endTime } = getManagerShiftInputValues(shift);
+
+        if (managerCreateShiftStatus) {
+          managerCreateShiftStatus.textContent = "";
+        }
+
+        setActiveSection("schedule");
+        setActiveScheduleView("manager-create-shift");
+
+        await loadAuthenticatedManagerCrew();
+
+        managerShiftWorkerSelect.value = shift.owner || "";
+        managerShiftRoleInput.value = shift.role || "";
+        managerShiftDateInput.value = date;
+        managerShiftStartInput.value = startTime;
+        managerShiftEndInput.value = endTime;
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      });
+    }
 
     managerTeamScheduleList.appendChild(shiftCard);
   };
@@ -1573,6 +1715,19 @@ if (managerTeamScheduleButton) {
 
 if (managerCreateShiftButton) {
   managerCreateShiftButton.addEventListener("click", async () => {
+    editingManagerShiftId = null;
+    setManagerShiftFormMode("create");
+
+    managerShiftWorkerSelect.value = "";
+    managerShiftRoleInput.value = "";
+    managerShiftDateInput.value = "";
+    managerShiftStartInput.value = "";
+    managerShiftEndInput.value = "";
+
+    if (managerCreateShiftStatus) {
+      managerCreateShiftStatus.textContent = "";
+    }
+
     setActiveSection("schedule");
     setActiveScheduleView("manager-create-shift");
 
@@ -1689,34 +1844,71 @@ if (managerSaveShiftButton) {
       status: "scheduled",
     });
 
-    const { error } = await supabaseClient.from("shifts").insert({
-      workplace_id: authenticatedWorkplaceId,
-      assigned_profile_id: assignedProfileId,
-      role,
-      starts_at: startsAtDate.toISOString(),
-      ends_at: endsAt,
-      end_label: endLabel,
-      status: "scheduled",
-    });
+    const isEditing = Boolean(editingManagerShiftId);
 
-    if (error) {
-      console.error("Industry manager create shift error:", error);
+    let saveError = null;
 
-      managerCreateShiftStatus.textContent = "Unable to create this shift.";
+    if (isEditing) {
+      const { data: updatedShift, error } = await supabaseClient
+        .from("shifts")
+        .update({
+          assigned_profile_id: assignedProfileId,
+          role,
+          starts_at: startsAtDate.toISOString(),
+          ends_at: endsAt,
+          end_label: endLabel,
+          status: "scheduled",
+        })
+        .eq("id", editingManagerShiftId)
+        .select("id")
+        .maybeSingle();
 
+      saveError = error;
+
+      if (!error && !updatedShift) {
+        saveError = new Error("Shift update did not return a row.");
+      }
+    } else {
+      const { error } = await supabaseClient.from("shifts").insert({
+        workplace_id: authenticatedWorkplaceId,
+        assigned_profile_id: assignedProfileId,
+        role,
+        starts_at: startsAtDate.toISOString(),
+        ends_at: endsAt,
+        end_label: endLabel,
+        status: "scheduled",
+      });
+
+      saveError = error;
+    }
+
+    if (saveError) {
+      console.error("Industry manager shift save error:", saveError);
+      managerCreateShiftStatus.textContent = isEditing
+        ? "Unable to update this shift."
+        : "Unable to create this shift.";
       managerSaveShiftButton.disabled = false;
       managerSaveShiftButton.textContent = originalButtonText;
       return;
     }
 
-    console.log("Industry manager shift created.");
+    console.log(
+      isEditing
+        ? "Industry manager shift updated."
+        : "Industry manager shift created.",
+    );
 
-    managerCreateShiftStatus.textContent = "Shift created.";
-
+    managerCreateShiftStatus.textContent = isEditing
+      ? "Shift updated."
+      : "Shift created.";
     await loadAuthenticatedTeamSchedule();
+
+    editingManagerShiftId = null;
+    setManagerShiftFormMode("create");
 
     managerShiftWorkerSelect.value = "";
     managerShiftRoleInput.value = "";
+    managerShiftDateInput.value = "";
     managerShiftStartInput.value = "";
     managerShiftEndInput.value = "";
 
