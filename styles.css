@@ -9807,3 +9807,26 @@ body.onboarding-home-active #home-logo-button {
 .worker-ended-shifts-heading .stack-kicker {
   margin: 0;
 }
+
+.destructive-action {
+  min-height: 48px;
+  padding: 0.8rem 1.1rem;
+  margin-left: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  background: transparent;
+  color: #f1ede7;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.destructive-action:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.destructive-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

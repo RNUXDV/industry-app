@@ -105,6 +105,10 @@ const managerSaveShiftButton = document.getElementById(
   "manager-save-shift-button",
 );
 
+const managerCancelShiftButton = document.getElementById(
+  "manager-cancel-shift-button",
+);
+
 const managerShiftFormTitle = document.getElementById(
   "manager-shift-form-title",
 );
@@ -150,6 +154,10 @@ function setManagerShiftFormMode(mode = "create") {
     managerSaveShiftButton.textContent = isEdit
       ? "Save Changes"
       : "Create Shift";
+  }
+
+  if (managerCancelShiftButton) {
+    managerCancelShiftButton.hidden = !isEdit;
   }
 }
 
@@ -1705,6 +1713,65 @@ if (managerTeamScheduleButton) {
 
     setActiveSection("schedule");
     setActiveScheduleView("manager-team-schedule");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+}
+
+if (managerCancelShiftButton) {
+  managerCancelShiftButton.addEventListener("click", async () => {
+    if (!editingManagerShiftId) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Cancel this shift? It will be removed from the worker's active schedule.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const originalButtonText = managerCancelShiftButton.textContent;
+
+    managerCancelShiftButton.disabled = true;
+    managerCancelShiftButton.textContent = "Cancelling...";
+
+    const { data: cancelledShift, error } = await supabaseClient
+      .from("shifts")
+      .update({
+        status: "cancelled",
+      })
+      .eq("id", editingManagerShiftId)
+      .select("id")
+      .maybeSingle();
+
+    if (error || !cancelledShift) {
+      console.error("Industry manager cancel shift error:", error);
+
+      if (managerCreateShiftStatus) {
+        managerCreateShiftStatus.textContent = "Unable to cancel this shift.";
+      }
+
+      managerCancelShiftButton.disabled = false;
+      managerCancelShiftButton.textContent = originalButtonText;
+      return;
+    }
+
+    console.log("Industry manager shift cancelled.");
+
+    editingManagerShiftId = null;
+    setManagerShiftFormMode("create");
+
+    await loadAuthenticatedTeamSchedule();
+
+    setActiveScheduleView("manager-team-schedule");
+
+    managerCancelShiftButton.disabled = false;
+    managerCancelShiftButton.textContent = originalButtonText;
 
     window.scrollTo({
       top: 0,
