@@ -2021,10 +2021,10 @@ function updateCatchViewForRole() {
     catchSectionLabel.textContent = "Schedule / Manager";
     catchViewTitle.textContent = "Coverage Requests";
     catchViewCopy.textContent =
-      "Review released shifts and coverage that needs your attention.";
+      "Review open shifts and coverage requests that need your attention.";
     catchViewHelper.textContent =
-      "Track requests from release through manager approval.";
-    shiftBoardStatus.textContent = "Coverage requests appear here.";
+      "Track open and released shifts from interest through approval.";
+    shiftBoardStatus.textContent = "Coverage activity appears here.";
 
     return;
   }
@@ -2032,7 +2032,7 @@ function updateCatchViewForRole() {
   catchBackButton.textContent = "← Back to Schedule";
   catchSectionLabel.textContent = "Catch";
   catchViewTitle.textContent = "Catch Board";
-  catchViewCopy.textContent = "Catch shifts released by your workplace crew.";
+  catchViewCopy.textContent = "Find open shifts posted by managers or released by your workplace crew.";
   catchViewHelper.textContent =
     "Need coverage? Release a shift from My Shifts.";
   shiftBoardStatus.textContent = "Open shifts appear here.";
@@ -3609,16 +3609,16 @@ function renderShiftBoard() {
       <p class="catch-empty-title">
         ${
           isManager
-            ? "No coverage requests right now."
-            : "No open shifts right now."
+            ? "No coverage activity right now."
+            : "New coverage activity will appear here."
         }
       </p>
 
       <p class="catch-empty-text">
         ${
           isManager
-            ? "New coverage requests will appear here."
-            : "Released shifts will appear here."
+            ? "New coverage activity will appear here."
+            : "Available shifts will appear here."
         }
       </p>
     </div>
