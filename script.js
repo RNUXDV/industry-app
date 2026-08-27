@@ -4205,21 +4205,11 @@ function renderShiftBoard() {
       }
 
       const { data: updatedInterest, error: updateError } = await supabaseClient
-        .from("shift_interests")
-        .update({
-          status: "selected",
-        })
-        .eq("id", selectedInterest.id)
-        .select(
-          `
-          id,
-          shift_id,
-          profile_id,
-          status
-        `,
-        )
-        .single();
-
+  .rpc("select_shift_interest", {
+    p_interest_id: selectedInterest.id,
+  })
+  .single();
+        
       if (updateError) {
         console.error("Industry shift interest selection error:", updateError);
         return;
