@@ -1020,8 +1020,10 @@ async function loadAuthenticatedManagerCrew() {
     return;
   }
 
-  managerShiftWorkerSelect.innerHTML =
-    '<option value="">Choose a crew member</option>';
+  managerShiftWorkerSelect.innerHTML = `
+  <option value="">Choose a crew member</option>
+  <option value="open">Open Shift</option>
+`;
 
   if (
     authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
@@ -1207,7 +1209,7 @@ coverage_stage,
   `,
     )
     .eq("workplace_id", authenticatedWorkplaceId)
-    .in("status", ["scheduled", "coverage_needed"])
+    .in("status", ["scheduled", "coverage_needed", "open"])
     .gte("starts_at", teamScheduleLookbackIso)
     .order("starts_at", { ascending: true });
 
@@ -1339,7 +1341,9 @@ function renderAuthenticatedTeamSchedule() {
       !hasEnded && shift.status === "scheduled" && isCurrentShift(shift);
 
     const canManageShift =
-      !hasEnded && !isCurrent && shift.status === "scheduled";
+      !hasEnded &&
+      !isCurrent &&
+      (shift.status === "scheduled" || shift.status === "open");
 
     const endedShiftDetails =
       hasEnded && shift.clockedOutTime
@@ -1434,7 +1438,8 @@ ${
 
         await loadAuthenticatedManagerCrew();
 
-        managerShiftWorkerSelect.value = shift.owner || "";
+        managerShiftWorkerSelect.value =
+          shift.status === "open" && !shift.owner ? "open" : shift.owner || "";
         managerShiftRoleInput.value = shift.role || "";
         managerShiftDateInput.value = date;
         managerShiftStartInput.value = startTime;
@@ -1507,7 +1512,7 @@ async function loadAuthenticatedCatchShifts() {
         )
       `,
     )
-    .eq("status", "coverage_needed")
+    .in("status", ["coverage_needed", "open"])
     .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true });
 
@@ -1852,18 +1857,20 @@ if (managerSaveShiftButton) {
       return;
     }
 
-    const assignedProfileId = managerShiftWorkerSelect?.value || "";
+    const selectedWorkerValue = managerShiftWorkerSelect?.value || "";
+    const isOpenShift = selectedWorkerValue === "open";
+    const assignedProfileId = isOpenShift ? null : selectedWorkerValue;
+
     const role = managerShiftRoleInput?.value.trim() || "";
     const date = managerShiftDateInput?.value || "";
     const startTime = managerShiftStartInput?.value || "";
     const endTime = managerShiftEndInput?.value || "";
 
-    if (!assignedProfileId || !role || !date || !startTime) {
+    if ((!assignedProfileId && !isOpenShift) || !role || !date || !startTime) {
       managerCreateShiftStatus.textContent =
-        "Choose a crew member and enter the role, date, and start time.";
+        "Choose a crew member or Open Shift, and enter the role, date, and start time.";
       return;
     }
-
     const startsAtDate = new Date(`${date}T${startTime}:00`);
 
     if (Number.isNaN(startsAtDate.getTime())) {
@@ -1943,7 +1950,8 @@ if (managerSaveShiftButton) {
         starts_at: startsAtDate.toISOString(),
         ends_at: endsAt,
         end_label: endLabel,
-        status: "scheduled",
+        status: isOpenShift ? "open" : "scheduled",
+        coverage_stage: isOpenShift ? "open" : null,
       });
 
       saveError = error;
@@ -2938,8 +2946,10 @@ function getBoardButtonLabel(shift) {
   return "Catch shift";
 }
 
-function getBoardRequestLabel() {
-  return "Release request";
+function getBoardRequestLabel(shift) {
+  const isManagerPostedOpen = shift?.status === "open" && !shift?.owner;
+
+  return isManagerPostedOpen ? "Manager posted" : "Release request";
 }
 
 function getDisplayedShiftStatus(shift, responses) {
@@ -3657,7 +3667,12 @@ function renderShiftBoard() {
           name: interest.profile?.full_name || "Coworker",
           role: "Coworker",
           availability: {
-            label: "Interested",
+            label:
+              interest.status === "confirmed"
+                ? "Confirmed"
+                : interest.status === "selected"
+                  ? "Selected"
+                  : "Interested",
             status: "available",
           },
           selected:
@@ -3666,7 +3681,6 @@ function renderShiftBoard() {
           interestStatus: interest.status,
         }))
       : legacyResponse?.interestedWorkers || [];
-
     const confirmedBackendInterest = isAuthenticatedCatchMode
       ? (backendInterests.find((interest) => interest.status === "confirmed") ??
         null)
@@ -3867,32 +3881,44 @@ function renderShiftBoard() {
           </button>
         </div>
       `
-               : `
-        <div class="shift-action-row">
-          <button
-            class="action-button secondary-action shift-message-button"
-            type="button"
-          >
-            Shift message
-          </button>
+               : isAuthenticatedCatchMode
+                 ? `
+      <div class="schedule-action-panel">
+        <p class="status-text">
+          ${
+            hasInterestedCoworkers
+              ? "Select an interested coworker above."
+              : "Waiting for coworker interest."
+          }
+        </p>
+      </div>
+    `
+                 : `
+      <div class="shift-action-row">
+        <button
+          class="action-button secondary-action shift-message-button"
+          type="button"
+        >
+          Shift message
+        </button>
 
-          <button
-            class="action-button accept-button"
-            type="button"
-            data-shift-id="${shift.id}"
-          >
-            Accept
-          </button>
+        <button
+          class="action-button accept-button"
+          type="button"
+          data-shift-id="${shift.id}"
+        >
+          Accept
+        </button>
 
-          <button
-            class="action-button secondary-action decline-button"
-            type="button"
-            data-shift-id="${shift.id}"
-          >
-            Decline
-          </button>
-        </div>
-      `
+        <button
+          class="action-button secondary-action decline-button"
+          type="button"
+          data-shift-id="${shift.id}"
+        >
+          Decline
+        </button>
+      </div>
+    `
          } 
         </div>
       `
@@ -3909,16 +3935,13 @@ function renderShiftBoard() {
     shiftCard.dataset.catchShiftId = shift.id;
     shiftCard.tabIndex = -1;
 
-    let statusClass = "status-open";
-
-    if (shiftIsConfirmed) {
-      statusClass = "status-confirmed";
-    } else if (shiftIsSelected) {
-      statusClass = "status-pending";
-    } else if (shiftHasInterest) {
-      statusClass = "status-interest";
-    }
-
+    const statusClass = shiftIsConfirmed
+      ? "status-confirmed"
+      : shiftIsSelected
+        ? "status-pending"
+        : shiftHasInterest
+          ? "status-interest"
+          : "status-open";
     const coverageStatusLabel = shiftIsConfirmed
       ? "Confirmed"
       : shiftIsSelected
@@ -4146,8 +4169,16 @@ function renderShiftBoard() {
         (catchShift) => catchShift.id === shiftId,
       );
 
-      // Only the worker who released the shift can select coverage.
-      if (!shift || shift.owner !== authenticatedUserId) {
+      const isReleaseOwner =
+        shift?.status === "coverage_needed" &&
+        shift.owner === authenticatedUserId;
+
+      const isManagerSelectingOpenShift =
+        shift?.status === "open" &&
+        !shift.owner &&
+        authenticatedWorkplaceRole?.toLowerCase() === "manager";
+
+      if (!shift || (!isReleaseOwner && !isManagerSelectingOpenShift)) {
         return;
       }
 
