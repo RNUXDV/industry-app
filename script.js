@@ -3715,15 +3715,22 @@ function renderShiftBoard() {
       : null;
 
     const shiftHasInterest = isAuthenticatedCatchMode
-      ? ["interest", "selected", "confirmed"].includes(publicCoverageStage)
+      ? ["interest", "selected", "confirmed"].includes(publicCoverageStage) ||
+        backendInterests.some((interest) =>
+          ["interested", "selected", "confirmed"].includes(interest.status),
+        )
       : hasAnyInterest;
 
     const shiftIsSelected = isAuthenticatedCatchMode
-      ? ["selected", "confirmed"].includes(publicCoverageStage)
+      ? ["selected", "confirmed"].includes(publicCoverageStage) ||
+        backendInterests.some((interest) =>
+          ["selected", "confirmed"].includes(interest.status),
+        )
       : isAccepted;
 
     const shiftIsConfirmed = isAuthenticatedCatchMode
-      ? publicCoverageStage === "confirmed"
+      ? publicCoverageStage === "confirmed" ||
+        backendInterests.some((interest) => interest.status === "confirmed")
       : isConfirmed;
 
     const anotherWorkerSelected =
