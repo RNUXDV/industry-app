@@ -3964,16 +3964,16 @@ function renderShiftBoard() {
       )
       .join("");
     const boardButtonLabel = isConfirmed
-      ? "Coverage confirmed"
-      : isAccepted
-        ? "Waiting for approval"
-        : anotherWorkerSelected
-          ? "Another coworker selected"
-          : hasInterest
-            ? "Interest sent"
-            : isAuthenticatedCatchMode
-              ? "Catch shift"
-              : getBoardButtonLabel(shift);
+  ? "Coverage confirmed"
+  : isAccepted
+    ? "Waiting for approval"
+    : anotherWorkerSelected
+      ? "Another coworker selected"
+      : hasInterest
+        ? "Withdraw interest"
+        : isAuthenticatedCatchMode
+          ? "Catch shift"
+          : getBoardButtonLabel(shift);
     const hasInterestedCoworkers = interestedWorkers.length > 0;
     const responsePanel =
       hasInterest || hasInterestedCoworkers
@@ -4193,7 +4193,7 @@ function renderShiftBoard() {
   class="action-button board-action-button"
   type="button"
   data-shift-id="${shift.id}"
-  ${hasInterest || anotherWorkerSelected ? "disabled" : ""}
+ ${isConfirmed || isAccepted || anotherWorkerSelected ? "disabled" : ""}
   >
   ${boardButtonLabel}
 </button>
@@ -4244,6 +4244,44 @@ function renderShiftBoard() {
           button.textContent = originalButtonText;
           return;
         }
+
+        const existingOwnInterest = authenticatedShiftInterests.find(
+  (interest) =>
+    interest.shift_id === shiftId &&
+    interest.profile_id === user.id &&
+    interest.status === "interested",
+);
+
+if (existingOwnInterest) {
+  button.textContent = "Withdrawing...";
+
+  const { error: withdrawError } = await supabaseClient.rpc(
+    "withdraw_shift_interest",
+    {
+      p_shift_id: shiftId,
+    },
+  );
+
+  if (withdrawError) {
+    console.error(
+      "Industry withdraw shift interest error:",
+      withdrawError,
+    );
+
+    button.disabled = false;
+    button.textContent = originalButtonText;
+    return;
+  }
+
+  console.log(
+    "Industry shift interest withdrawn:",
+    existingOwnInterest,
+  );
+
+  await loadAuthenticatedShiftInterests();
+  await loadAuthenticatedCatchShifts();
+  return;
+}
 
         const { data: interest, error: interestError } = await supabaseClient
           .from("shift_interests")
