@@ -75,6 +75,10 @@ const managerCreateShiftButton = document.getElementById(
 
 const managerCrewButton = document.getElementById("manager-crew-button");
 
+const managerActivityButton = document.getElementById(
+  "manager-activity-button",
+);
+
 const managerCoverageRequestsButton = document.getElementById(
   "manager-coverage-requests-button",
 );
@@ -530,6 +534,7 @@ let authenticatedScheduleShifts = undefined;
 let authenticatedEndedScheduleShifts = undefined;
 let authenticatedCatchShifts = undefined;
 let authenticatedShiftInterests = undefined;
+let authenticatedCoverageEvents = undefined;
 let authenticatedTeamScheduleShifts = undefined;
 let authenticatedManagerCrew = [];
 let authenticatedWorkplaceId = null;
@@ -1608,6 +1613,57 @@ async function loadAuthenticatedShiftInterests() {
 
   renderShiftBoard();
 }
+async function loadAuthenticatedCoverageEvents() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabaseClient.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Industry coverage events user error:", userError);
+    return;
+  }
+
+  if (!authenticatedWorkplaceId) {
+    console.log("Industry coverage events skipped: no workplace selected.");
+    authenticatedCoverageEvents = [];
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("coverage_events")
+    .select(
+      `
+      id,
+      shift_id,
+      workplace_id,
+      event_type,
+      previous_profile_id,
+      new_profile_id,
+      created_at,
+      shift:shifts (
+        starts_at,
+        ends_at,
+        role
+      )
+    `,
+    )
+    .eq("workplace_id", authenticatedWorkplaceId)
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (error) {
+    console.error("Industry coverage events load error:", error);
+    return;
+  }
+
+  authenticatedCoverageEvents = data ?? [];
+
+  console.log(
+    "Industry authenticated coverage events loaded:",
+    authenticatedCoverageEvents,
+  );
+}
 
 function renderDashboardShift(backendShift = undefined) {
   if (
@@ -1828,6 +1884,18 @@ if (managerCrewButton) {
   });
 }
 
+if (managerActivityButton) {
+  managerActivityButton.addEventListener("click", () => {
+    setActiveSection("schedule");
+    setActiveScheduleView("activity-feed");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+}
+
 if (managerCoverageRequestsButton) {
   managerCoverageRequestsButton.addEventListener("click", async () => {
     await Promise.all([
@@ -2032,7 +2100,8 @@ function updateCatchViewForRole() {
   catchBackButton.textContent = "← Back to Schedule";
   catchSectionLabel.textContent = "Catch";
   catchViewTitle.textContent = "Catch Board";
-  catchViewCopy.textContent = "Find open shifts posted by managers or released by your workplace crew.";
+  catchViewCopy.textContent =
+    "Find open shifts posted by managers or released by your workplace crew.";
   catchViewHelper.textContent =
     "Need coverage? Release a shift from My Shifts.";
   shiftBoardStatus.textContent = "Open shifts appear here.";
@@ -2189,29 +2258,25 @@ if (releaseToBoardButton) {
         return;
       }
 
-      const { data: releasedShift, error: releaseError } = await supabaseClient
-        .from("shifts")
-        .update({
-          status: "coverage_needed",
-        })
-        .eq("id", selectedReleaseShift.id)
-        .eq("assigned_profile_id", user.id)
-        .select(
-          `
-              id,
-              assigned_profile_id,
-              role,
-              starts_at,
-              ends_at,
-              end_label,
-              status,
-              workplace:workplaces (
-                name,
-                time_zone
-              )
-            `,
-        )
-        .maybeSingle();
+      
+      
+
+const { error: clearInterestsError } = await supabaseClient
+  .from("shift_interests")
+  .delete()
+  .eq("shift_id", selectedReleaseShift.id);
+
+if (clearInterestsError) {
+  console.error("Industry clear old shift interests error:", clearInterestsError);
+  return;
+}
+
+      const { data: releasedShift, error: releaseError } = await supabaseClient.rpc(
+  "release_shift_for_coverage",
+  {
+    target_shift_id: selectedReleaseShift.id,
+  },
+);
 
       if (releaseError) {
         console.error("Industry release shift error:", releaseError);
@@ -3440,14 +3505,88 @@ function renderActivityFeed() {
     return;
   }
 
-  const activities = getActivityFeed().filter((activity) => {
-    return activity.workerId === CURRENT_USER.id;
-  });
+  const isAuthenticatedActivityMode = Array.isArray(
+    authenticatedCoverageEvents,
+  );
+
+  let activities;
+
+  if (isAuthenticatedActivityMode) {
+    const crew = Array.isArray(authenticatedManagerCrew)
+      ? authenticatedManagerCrew
+      : [];
+
+    const getCrewName = (profileId) => {
+      if (!profileId) return null;
+
+      const crewMember = crew.find((member) => member.id === profileId);
+
+      return crewMember?.name || "Coworker";
+    };
+
+    activities = authenticatedCoverageEvents.map((event) => {
+      const previousWorker = getCrewName(event.previous_profile_id);
+
+      const newWorker = getCrewName(event.new_profile_id);
+
+      const shiftStartsAt = event.shift?.starts_at
+        ? new Date(event.shift.starts_at)
+        : null;
+
+      const shiftLabel =
+        shiftStartsAt && !Number.isNaN(shiftStartsAt.getTime())
+          ? shiftStartsAt.toLocaleString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+            })
+          : "Shift time unavailable";
+
+      if (event.event_type === "shift_reassigned") {
+        return {
+          id: event.id,
+          type: "shift-reassigned",
+          title: "Shift reassigned",
+          message: `${previousWorker || "Unassigned"} → ${
+            newWorker || "Unassigned"
+          }`,
+          createdAt: event.created_at,
+          workplace: shiftLabel,
+        };
+      }
+
+      if (event.event_type === "coverage_confirmed") {
+        return {
+          id: event.id,
+          type: "coverage-confirmed",
+          title: "Coverage confirmed",
+          message: previousWorker
+            ? `${previousWorker} → ${newWorker || "Coworker"}`
+            : `${newWorker || "Coworker"} picked up an open shift`,
+          createdAt: event.created_at,
+          workplace: shiftLabel,
+        };
+      }
+
+      return {
+        id: event.id,
+        type: event.event_type,
+        title: "Schedule activity",
+        message: "Schedule activity recorded",
+        createdAt: event.created_at,
+        workplace: shiftLabel,
+      };
+    });
+  } else {
+    activities = getActivityFeed().filter((activity) => {
+      return activity.workerId === CURRENT_USER.id;
+    });
+  }
 
   if (activities.length === 0) {
-    activityFeedList.innerHTML = `
-      <p class="status-text">No activity yet.</p>
-    `;
+    activityFeedList.innerHTML = `<p class="status-text">No activity yet.</p>`;
     return;
   }
 
@@ -3464,22 +3603,30 @@ function renderActivityFeed() {
       );
 
       const approvalMarkup =
-        activity.type === "shift-approved"
+        !isAuthenticatedActivityMode && activity.type === "shift-approved"
           ? `
-            <p class="activity-feed-detail">
-              Approved by ${activity.approvedBy || "Manager"}
-            </p>
-          `
+              <p class="activity-feed-detail">
+                Approved by ${activity.approvedBy || "Manager"}
+              </p>
+            `
           : "";
 
       return `
         <article class="activity-feed-item">
-          <div class="activity-feed-marker" aria-hidden="true">✓</div>
+          <div
+            class="activity-feed-marker"
+            aria-hidden="true"
+          ></div>
 
           <div class="activity-feed-content">
             <div class="activity-feed-header">
-              <p class="activity-feed-type">${activity.title}</p>
-              <p class="activity-feed-time">${activityTime}</p>
+              <p class="activity-feed-type">
+                ${activity.title}
+              </p>
+
+              <p class="activity-feed-time">
+                ${activityTime}
+              </p>
             </div>
 
             <h3>${activity.message}</h3>
@@ -4176,18 +4323,14 @@ function renderShiftBoard() {
         (catchShift) => catchShift.id === shiftId,
       );
 
-      const isReleaseOwner =
-        shift?.status === "coverage_needed" &&
-        shift.owner === authenticatedUserId;
+      const isManagerSelectingShift =
+  authenticatedWorkplaceRole?.toLowerCase() === "manager" &&
+  (shift?.status === "coverage_needed" ||
+    (shift?.status === "open" && !shift.owner));
 
-      const isManagerSelectingOpenShift =
-        shift?.status === "open" &&
-        !shift.owner &&
-        authenticatedWorkplaceRole?.toLowerCase() === "manager";
-
-      if (!shift || (!isReleaseOwner && !isManagerSelectingOpenShift)) {
-        return;
-      }
+if (!shift || !isManagerSelectingShift) {
+  return;
+}
 
       const shiftInterests = authenticatedShiftInterests.filter(
         (interest) => interest.shift_id === shiftId,
@@ -4205,11 +4348,11 @@ function renderShiftBoard() {
       }
 
       const { data: updatedInterest, error: updateError } = await supabaseClient
-  .rpc("select_shift_interest", {
-    p_interest_id: selectedInterest.id,
-  })
-  .single();
-        
+        .rpc("select_shift_interest", {
+          p_interest_id: selectedInterest.id,
+        })
+        .single();
+
       if (updateError) {
         console.error("Industry shift interest selection error:", updateError);
         return;
@@ -8464,6 +8607,13 @@ async function loadAuthenticatedIndustryProfile() {
     authenticatedWorkplaceId = membership?.workplace_id || null;
     authenticatedWorkplaceRole = membership?.role || null;
 
+    backToScheduleButtons.forEach((button) => {
+      button.textContent =
+        authenticatedWorkplaceRole?.toLowerCase() === "manager"
+          ? "← Back to Team Schedule"
+          : "← Back to My Shifts";
+    });
+
     console.log("Industry authenticated workplace membership:", {
       workplaceId: authenticatedWorkplaceId,
       role: authenticatedWorkplaceRole,
@@ -8561,12 +8711,14 @@ async function setupIndustryRealtime() {
         console.log("Industry realtime coverage event:", payload);
 
         await Promise.all([
-          loadAuthenticatedSchedule(),
-          loadAuthenticatedCatchShifts(),
-          loadAuthenticatedShiftInterests(),
-        ]);
+  loadAuthenticatedSchedule(),
+  loadAuthenticatedCatchShifts(),
+  loadAuthenticatedShiftInterests(),
+  loadAuthenticatedCoverageEvents(),
+]);
 
-        updateDashboardForRole();
+updateDashboardForRole();
+renderActivityFeed();
       },
     )
 
@@ -8593,6 +8745,7 @@ async function enterAuthenticatedIndustry() {
     loadAuthenticatedSchedule(),
     loadAuthenticatedCatchShifts(),
     loadAuthenticatedShiftInterests(),
+    loadAuthenticatedCoverageEvents(),
     loadAuthenticatedTeamSchedule(),
     loadAuthenticatedManagerCrew(),
   ]);
