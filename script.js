@@ -1012,6 +1012,7 @@ start_time_source,
 
   renderAuthenticatedNextShiftSummary(authenticatedScheduleShifts);
   renderImportedShifts(authenticatedScheduleShifts);
+  
 
   const nextScheduledShift = authenticatedScheduleShifts.find(
     (shift) => shift.status === "scheduled",
@@ -1020,40 +1021,24 @@ start_time_source,
   renderDashboardShift(nextScheduledShift || null);
 }
 
-async function loadAuthenticatedManagerCrew() {
-  if (!managerShiftWorkerSelect) {
-    return;
+async function loadAuthenticatedWorkplaceCrew() {
+  if (!authenticatedWorkplaceId) {
+    return [];
   }
 
-  managerShiftWorkerSelect.innerHTML = `
-  <option value="">Choose a crew member</option>
-  <option value="open">Open Shift</option>
-`;
-
-  if (
-    authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
-    !authenticatedWorkplaceId
-  ) {
-    return;
-  }
-
-  if (managerCreateShiftStatus) {
-    managerCreateShiftStatus.textContent = "Loading workplace crew…";
-  }
-
-  const { data: memberships, error: membershipError } = await supabaseClient
-    .from("workplace_members")
-    .select("profile_id, role")
-    .eq("workplace_id", authenticatedWorkplaceId);
+  const { data: memberships, error: membershipError } =
+    await supabaseClient
+      .from("workplace_members")
+      .select("profile_id, role")
+      .eq("workplace_id", authenticatedWorkplaceId);
 
   if (membershipError) {
-    console.error("Industry manager crew membership error:", membershipError);
+    console.error(
+      "Industry workplace crew membership error:",
+      membershipError
+    );
 
-    if (managerCreateShiftStatus) {
-      managerCreateShiftStatus.textContent = "Unable to load workplace crew.";
-    }
-
-    return;
+    throw membershipError;
   }
 
   const profileIds = (memberships || [])
@@ -1061,33 +1046,29 @@ async function loadAuthenticatedManagerCrew() {
     .filter(Boolean);
 
   if (!profileIds.length) {
-    if (managerCreateShiftStatus) {
-      managerCreateShiftStatus.textContent = "No workplace members found.";
-    }
-
-    return;
+    return [];
   }
 
-  const { data: profiles, error: profileError } = await supabaseClient
-    .from("profiles")
-    .select("id, full_name")
-    .in("id", profileIds);
+  const { data: profiles, error: profileError } =
+    await supabaseClient
+      .from("profiles")
+      .select("id, full_name")
+      .in("id", profileIds);
 
   if (profileError) {
-    console.error("Industry manager crew profile error:", profileError);
+    console.error(
+      "Industry workplace crew profile error:",
+      profileError
+    );
 
-    if (managerCreateShiftStatus) {
-      managerCreateShiftStatus.textContent = "Unable to load workplace crew.";
-    }
-
-    return;
+    throw profileError;
   }
 
   const profilesById = new Map(
-    (profiles || []).map((profile) => [profile.id, profile]),
+    (profiles || []).map((profile) => [profile.id, profile])
   );
 
-  const crew = (memberships || [])
+  return (memberships || [])
     .map((membership) => {
       const profile = profilesById.get(membership.profile_id);
 
@@ -1098,29 +1079,68 @@ async function loadAuthenticatedManagerCrew() {
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
-
-  authenticatedManagerCrew = crew;
-
-  crew.forEach((member) => {
-    const option = document.createElement("option");
-
-    option.value = member.id;
-    option.textContent = member.role
-      ? `${member.name} · ${member.role}`
-      : member.name;
-
-    managerShiftWorkerSelect.appendChild(option);
-  });
-
-  if (managerCreateShiftStatus) {
-    managerCreateShiftStatus.textContent = "";
-  }
-
-  console.log("Industry manager crew loaded:", crew);
-
-  return crew;
 }
 
+async function loadAuthenticatedManagerCrew() {
+  if (!managerShiftWorkerSelect) {
+    return;
+  }
+
+  managerShiftWorkerSelect.innerHTML = `
+    <option value="">Choose a crew member</option>
+    <option value="open">Open Shift</option>
+  `;
+
+  if (
+    authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
+    !authenticatedWorkplaceId
+  ) {
+    return;
+  }
+
+  if (managerCreateShiftStatus) {
+    managerCreateShiftStatus.textContent = "Loading workplace crew...";
+  }
+
+  try {
+    const crew = await loadAuthenticatedWorkplaceCrew();
+
+    authenticatedManagerCrew = crew;
+
+    crew.forEach((member) => {
+      const option = document.createElement("option");
+
+      option.value = member.id;
+
+      option.textContent = member.role
+        ? `${member.name} · ${member.role}`
+        : member.name;
+
+      managerShiftWorkerSelect.appendChild(option);
+    });
+
+    if (managerCreateShiftStatus) {
+      managerCreateShiftStatus.textContent = crew.length
+        ? ""
+        : "No workplace members found.";
+    }
+
+    console.log("Industry manager crew loaded:", crew);
+
+    return crew;
+  } catch (error) {
+    console.error("Industry manager crew load error:", error);
+
+    authenticatedManagerCrew = [];
+
+    if (managerCreateShiftStatus) {
+      managerCreateShiftStatus.textContent =
+        "Unable to load workplace crew.";
+    }
+
+    return [];
+  }
+}
 function renderAuthenticatedManagerCrew(crew = authenticatedManagerCrew) {
   if (!managerCrewList) {
     return;
@@ -2352,8 +2372,207 @@ if (releaseToBoardButton) {
 }
 
 if (directReleaseButton) {
-  directReleaseButton.addEventListener("click", () => {
-    console.log("Send Directly to Coworker");
+  directReleaseButton.addEventListener("click", async () => {
+    if (!selectedReleaseShift) {
+      console.error("Industry direct release: no selected shift.");
+      return;
+    }
+
+    const originalButtonText = directReleaseButton.textContent;
+
+    directReleaseButton.disabled = true;
+    directReleaseButton.textContent = "Loading coworkers...";
+
+    try {
+     const {
+  data: directReleaseCoworkers,
+  error: directReleaseCoworkersError,
+} = await supabaseClient.rpc("get_direct_release_coworkers");
+
+if (directReleaseCoworkersError) {
+  console.error(
+    "Industry direct release coworkers error:",
+    directReleaseCoworkersError
+  );
+  throw directReleaseCoworkersError;
+}
+
+const availableCoworkers = (directReleaseCoworkers || []).map(
+  (coworker) => ({
+    id: coworker.profile_id,
+    name: coworker.full_name || "Crew member",
+    role: coworker.role || "",
+  })
+);
+
+console.log(
+  "Industry direct release coworkers:",
+  availableCoworkers
+); 
+
+if (directReleaseCoworkersError) {
+  console.error(
+    "Industry direct release coworkers error:",
+    directReleaseCoworkersError
+  );
+  return;
+}
+
+      console.log(
+        "Industry direct release coworkers:",
+        availableCoworkers
+      );
+
+      const existingCoworkerList = document.getElementById(
+  "direct-release-coworker-list"
+);
+
+if (existingCoworkerList) {
+  existingCoworkerList.remove();
+}
+
+if (!availableCoworkers.length) {
+  if (postShiftStatus) {
+    postShiftStatus.textContent =
+      "No other workplace coworkers are available.";
+  }
+
+  return;
+}
+
+if (postShiftStatus) {
+  postShiftStatus.textContent =
+    `Choose a coworker for this shift:`;
+}
+
+const coworkerList = document.createElement("div");
+coworkerList.id = "direct-release-coworker-list";
+coworkerList.className = "direct-release-coworker-list";
+
+availableCoworkers.forEach((member) => {
+  const coworkerButton = document.createElement("button");
+
+  coworkerButton.type = "button";
+  coworkerButton.className =
+    "secondary-action direct-release-coworker-option";
+
+  coworkerButton.dataset.profileId = member.id;
+
+  coworkerButton.textContent = member.role
+    ? `${member.name} · ${member.role}`
+    : member.name;
+
+  coworkerButton.addEventListener("click", () => {
+  coworkerList
+    .querySelectorAll(".direct-release-coworker-option")
+    .forEach((button) => {
+      button.setAttribute("aria-pressed", "false");
+    });
+
+  coworkerButton.setAttribute("aria-pressed", "true");
+
+  const existingSendButton = document.getElementById(
+    "direct-release-send-button"
+  );
+
+  if (existingSendButton) {
+    existingSendButton.remove();
+  }
+
+  if (postShiftStatus) {
+    postShiftStatus.textContent =
+      `${member.name} selected for direct offer.`;
+  }
+
+  console.log(
+    "Industry direct release selected coworker:",
+    member
+  );
+
+  const sendOfferButton = document.createElement("button");
+
+  sendOfferButton.type = "button";
+  sendOfferButton.id = "direct-release-send-button";
+  sendOfferButton.className = "action-button";
+  sendOfferButton.textContent = `Send Direct Offer to ${member.name}`;
+
+  sendOfferButton.addEventListener("click", async () => {
+    sendOfferButton.disabled = true;
+    sendOfferButton.textContent = "Sending offer…";
+
+    try {
+      const {
+        data: offerId,
+        error: offerError,
+      } = await supabaseClient.rpc(
+        "send_direct_shift_offer",
+        {
+          target_shift_id: selectedReleaseShift.id,
+          target_recipient_profile_id: member.id,
+        }
+      );
+
+      if (offerError) {
+        throw offerError;
+      }
+
+      console.log(
+        "Industry direct offer created:",
+        offerId
+      );
+
+      if (postShiftStatus) {
+        postShiftStatus.textContent =
+          `Direct offer sent to ${member.name}.`;
+      }
+
+      sendOfferButton.textContent = "Offer Sent";
+    } catch (error) {
+      console.error(
+        "Industry direct offer send error:",
+        error
+      );
+
+      if (postShiftStatus) {
+        postShiftStatus.textContent =
+          "Unable to send direct offer.";
+      }
+
+      sendOfferButton.disabled = false;
+      sendOfferButton.textContent =
+        `Send Direct Offer to ${member.name}`;
+    }
+  });
+
+  coworkerList.insertAdjacentElement(
+    "afterend",
+    sendOfferButton
+  );
+});
+
+  coworkerList.appendChild(coworkerButton);
+});
+
+if (postShiftStatus) {
+  postShiftStatus.insertAdjacentElement(
+    "afterend",
+    coworkerList
+  );
+}
+    } catch (error) {
+      console.error(
+        "Industry direct release crew error:",
+        error
+      );
+
+      if (postShiftStatus) {
+        postShiftStatus.textContent =
+          "Unable to load workplace coworkers.";
+      }
+    } finally {
+      directReleaseButton.disabled = false;
+      directReleaseButton.textContent = originalButtonText;
+    }
   });
 }
 
@@ -3580,7 +3799,7 @@ function renderActivityFeed() {
         createdAt: event.created_at,
         workplace: shiftLabel,
       };
-   }).filter(Boolean);
+    });
   } else {
     activities = getActivityFeed().filter((activity) => {
       return activity.workerId === CURRENT_USER.id;
@@ -3593,7 +3812,8 @@ function renderActivityFeed() {
   }
 
   activityFeedList.innerHTML = activities
-    .map((activity) => {
+  .filter(Boolean)
+  .map((activity) => {
       const activityTime = new Date(activity.createdAt).toLocaleString(
         "en-US",
         {
@@ -3721,6 +3941,168 @@ function renderCaughtShifts() {
     .join("");
 }
 
+async function loadAndRenderManagerDirectApprovals() {
+  if (
+    authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
+    !shiftBoardList
+  ) {
+    return;
+  }
+
+  const {
+    data: directApprovals,
+    error: directApprovalsError,
+  } = await supabaseClient.rpc(
+    "list_direct_offer_approvals"
+  );
+
+  if (directApprovalsError) {
+    console.error(
+      "Industry manager direct approvals load error:",
+      directApprovalsError
+    );
+    return;
+  }
+
+  console.log(
+    "Industry manager direct approvals loaded:",
+    directApprovals
+  );
+
+  shiftBoardList
+    .querySelectorAll(".direct-offer-approval-card")
+    .forEach((card) => card.remove());
+
+  (directApprovals || []).forEach((offer) => {
+    const shift = offer.shift_data || {};
+
+    const startDate = shift.starts_at
+      ? new Date(shift.starts_at)
+      : null;
+
+    const day = startDate
+      ? startDate.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        })
+      : "Shift";
+
+    const startTime = startDate
+      ? startDate.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        })
+      : "";
+
+    const endTime = shift.ends_at
+      ? new Date(shift.ends_at).toLocaleTimeString(
+          "en-US",
+          {
+            hour: "numeric",
+            minute: "2-digit",
+          }
+        )
+      : shift.end_label || "";
+
+    const approvalCard =
+      document.createElement("article");
+
+    approvalCard.className =
+      "stack-card shift-card direct-offer-approval-card";
+
+    approvalCard.innerHTML = `
+      <div class="stack-copy">
+        <p class="stack-kicker">
+          Direct offer awaiting approval
+        </p>
+
+        <h3>
+          ${offer.sender_name}
+          → ${offer.recipient_name}
+        </h3>
+
+        <p>${shift.role || "Shift"}</p>
+
+        <ul class="shift-meta">
+          <li>${day}</li>
+          ${
+            startTime
+              ? `<li>${startTime}${
+                  endTime ? ` – ${endTime}` : ""
+                }</li>`
+              : ""
+          }
+        </ul>
+
+        <p class="status-text">
+  ${offer.recipient_name} accepted this direct offer.
+</p>
+
+<button
+  type="button"
+  class="action-button direct-offer-approve-button"
+>
+  Approve Direct Offer
+</button>
+</div>
+`;
+
+const approveButton = approvalCard.querySelector(
+  ".direct-offer-approve-button"
+);
+
+if (approveButton) {
+  approveButton.addEventListener("click", async () => {
+    approveButton.disabled = true;
+    approveButton.textContent = "Approving…";
+
+    try {
+      const {
+        data: approvedShiftId,
+        error: approvalError,
+      } = await supabaseClient.rpc(
+        "approve_direct_shift_offer",
+        {
+          target_offer_id: offer.offer_id,
+        }
+      );
+
+      if (approvalError) {
+        throw approvalError;
+      }
+
+      console.log(
+        "Industry direct offer approved:",
+        {
+          offerId: offer.offer_id,
+          shiftId: approvedShiftId,
+        }
+      );
+
+      approvalCard.remove();
+
+      if (shiftBoardStatus) {
+        shiftBoardStatus.textContent =
+          `${offer.recipient_name} is now assigned to the shift.`;
+      }
+    } catch (error) {
+      console.error(
+        "Industry direct offer approval error:",
+        error
+      );
+
+      approveButton.disabled = false;
+      approveButton.textContent =
+        "Approve Direct Offer";
+    }
+  });
+}
+
+    shiftBoardList.appendChild(approvalCard);
+  });
+}
+
 function renderShiftBoard() {
   const isAuthenticatedCatchMode = Boolean(authenticatedUserId);
 
@@ -3749,6 +4131,12 @@ function renderShiftBoard() {
       });
 
   shiftBoardList.innerHTML = "";
+
+  if (
+  authenticatedWorkplaceRole?.toLowerCase() === "manager"
+) {
+  loadAndRenderManagerDirectApprovals();
+}
 
   if (shifts.length === 0) {
     const isManager = authenticatedWorkplaceRole?.toLowerCase() === "manager";
@@ -5277,13 +5665,157 @@ function renderAuthenticatedScheduleShifts(shifts) {
   }
 }
 
+async function loadAndRenderDirectShiftOffers() {
+  const {
+    data: directOffers,
+    error: directOffersError,
+  } = await supabaseClient.rpc("list_my_direct_shift_offers");
+
+  if (directOffersError) {
+    console.error(
+      "Industry direct offers load error:",
+      directOffersError
+    );
+    return;
+  }
+
+  console.log(
+    "Industry authenticated direct offers loaded:",
+    directOffers
+  );
+
+  (directOffers || []).forEach((offer) => {
+    const shift = offer.shift_data || {};
+
+    const offerCard = document.createElement("article");
+    offerCard.className = "stack-card shift-card direct-offer-card";
+
+    offerCard.innerHTML = `
+      <div class="stack-copy">
+        <p class="stack-kicker">Shift offered to you</p>
+
+        <h3>${offer.sender_name || "Coworker"}</h3>
+
+        <p>${shift.role || "Shift"}</p>
+
+        <p class="status-text">
+          ${
+            offer.offer_status === "accepted"
+              ? "You accepted this offer. Waiting for manager approval."
+              : "This coworker sent this shift directly to you."
+          }
+        </p>
+
+        ${
+          offer.offer_status === "pending"
+            ? `
+              <div class="direct-offer-actions">
+                <button
+                  type="button"
+                  class="action-button direct-offer-accept"
+                  data-offer-id="${offer.offer_id}"
+                >
+                  Accept
+                </button>
+
+                <button
+                  type="button"
+                  class="secondary-action direct-offer-decline"
+                  data-offer-id="${offer.offer_id}"
+                >
+                  Decline
+                </button>
+              </div>
+            `
+            : ""
+        }
+      </div>
+    `;
+
+    const acceptButton = offerCard.querySelector(
+  ".direct-offer-accept"
+);
+
+const declineButton = offerCard.querySelector(
+  ".direct-offer-decline"
+);
+
+const respondToDirectOffer = async (responseAction) => {
+  if (acceptButton) {
+    acceptButton.disabled = true;
+  }
+
+  if (declineButton) {
+    declineButton.disabled = true;
+  }
+
+  try {
+    const {
+      data: responseStatus,
+      error: responseError,
+    } = await supabaseClient.rpc(
+      "respond_to_direct_shift_offer",
+      {
+        target_offer_id: offer.offer_id,
+        response_action: responseAction,
+      }
+    );
+
+    if (responseError) {
+      throw responseError;
+    }
+
+    console.log(
+      "Industry direct offer response:",
+      {
+        offerId: offer.offer_id,
+        response: responseStatus,
+      }
+    );
+
+    renderImportedShifts(
+      authenticatedScheduleShifts
+    );
+  } catch (error) {
+    console.error(
+      "Industry direct offer response error:",
+      error
+    );
+
+    if (acceptButton) {
+      acceptButton.disabled = false;
+    }
+
+    if (declineButton) {
+      declineButton.disabled = false;
+    }
+  }
+};
+
+if (acceptButton) {
+  acceptButton.addEventListener("click", () => {
+    respondToDirectOffer("accept");
+  });
+}
+
+if (declineButton) {
+  declineButton.addEventListener("click", () => {
+    respondToDirectOffer("decline");
+  });
+}
+
+    importedShiftList.appendChild(offerCard);
+  });
+}
+
 function renderImportedShifts(backendShifts = authenticatedScheduleShifts) {
   importedShiftList.innerHTML = "";
 
   if (backendShifts !== undefined) {
-    renderAuthenticatedScheduleShifts(backendShifts);
-    return;
-  }
+  renderAuthenticatedScheduleShifts(backendShifts);
+  loadAndRenderDirectShiftOffers();
+  return;
+}
 
   const responses = getShiftResponses();
 
