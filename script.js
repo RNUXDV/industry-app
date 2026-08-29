@@ -2278,18 +2278,7 @@ if (releaseToBoardButton) {
         return;
       }
 
-      const { error: clearInterestsError } = await supabaseClient
-        .from("shift_interests")
-        .delete()
-        .eq("shift_id", selectedReleaseShift.id);
-
-      if (clearInterestsError) {
-        console.error(
-          "Industry clear old shift interests error:",
-          clearInterestsError,
-        );
-        return;
-      }
+      
 
       const { data: releasedShift, error: releaseError } =
         await supabaseClient.rpc("release_shift_for_coverage", {
@@ -2517,16 +2506,67 @@ availableCoworkers.forEach((member) => {
       }
 
       console.log(
-        "Industry direct offer created:",
-        offerId
-      );
+  "Industry direct offer created:",
+  offerId
+);
 
-      if (postShiftStatus) {
-        postShiftStatus.textContent =
-          `Direct offer sent to ${member.name}.`;
+if (postShiftStatus) {
+  postShiftStatus.textContent =
+    `Direct offer sent to ${member.name}.`;
+}
+
+const cancelOfferButton = document.createElement("button");
+
+cancelOfferButton.type = "button";
+cancelOfferButton.className = "secondary-action";
+cancelOfferButton.textContent = "Cancel Direct Offer";
+
+cancelOfferButton.addEventListener("click", async () => {
+  cancelOfferButton.disabled = true;
+  cancelOfferButton.textContent = "Canceling…";
+
+  try {
+    const {
+      data: cancelStatus,
+      error: cancelError,
+    } = await supabaseClient.rpc(
+      "cancel_direct_shift_offer",
+      {
+        target_offer_id: offerId,
       }
+    );
 
-      sendOfferButton.textContent = "Offer Sent";
+    if (cancelError) {
+      throw cancelError;
+    }
+
+    console.log(
+      "Industry direct offer canceled:",
+      {
+        offerId,
+        status: cancelStatus,
+      }
+    );
+
+    if (postShiftStatus) {
+      postShiftStatus.textContent =
+        `Direct offer to ${member.name} canceled.`;
+    }
+
+    cancelOfferButton.remove();
+  } catch (error) {
+    console.error(
+      "Industry direct offer cancel error:",
+      error
+    );
+
+    cancelOfferButton.disabled = false;
+    cancelOfferButton.textContent =
+      "Cancel Direct Offer";
+  }
+});
+
+sendOfferButton.replaceWith(cancelOfferButton);
     } catch (error) {
       console.error(
         "Industry direct offer send error:",
@@ -9341,6 +9381,7 @@ async function setupIndustryRealtime() {
           loadAuthenticatedCatchShifts(),
           loadAuthenticatedShiftInterests(),
           loadAuthenticatedCoverageEvents(),
+          loadAndRenderDirectShiftOffers(),
         ]);
 
         updateDashboardForRole();
