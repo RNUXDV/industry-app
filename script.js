@@ -2258,25 +2258,23 @@ if (releaseToBoardButton) {
         return;
       }
 
-      
-      
+      const { error: clearInterestsError } = await supabaseClient
+        .from("shift_interests")
+        .delete()
+        .eq("shift_id", selectedReleaseShift.id);
 
-const { error: clearInterestsError } = await supabaseClient
-  .from("shift_interests")
-  .delete()
-  .eq("shift_id", selectedReleaseShift.id);
+      if (clearInterestsError) {
+        console.error(
+          "Industry clear old shift interests error:",
+          clearInterestsError,
+        );
+        return;
+      }
 
-if (clearInterestsError) {
-  console.error("Industry clear old shift interests error:", clearInterestsError);
-  return;
-}
-
-      const { data: releasedShift, error: releaseError } = await supabaseClient.rpc(
-  "release_shift_for_coverage",
-  {
-    target_shift_id: selectedReleaseShift.id,
-  },
-);
+      const { data: releasedShift, error: releaseError } =
+        await supabaseClient.rpc("release_shift_for_coverage", {
+          target_shift_id: selectedReleaseShift.id,
+        });
 
       if (releaseError) {
         console.error("Industry release shift error:", releaseError);
@@ -3544,6 +3542,10 @@ function renderActivityFeed() {
             })
           : "Shift time unavailable";
 
+          if (event.event_type === "coverage_canceled") {
+  return null;
+}
+
       if (event.event_type === "shift_reassigned") {
         return {
           id: event.id,
@@ -3578,7 +3580,7 @@ function renderActivityFeed() {
         createdAt: event.created_at,
         workplace: shiftLabel,
       };
-    });
+   }).filter(Boolean);
   } else {
     activities = getActivityFeed().filter((activity) => {
       return activity.workerId === CURRENT_USER.id;
@@ -3964,16 +3966,16 @@ function renderShiftBoard() {
       )
       .join("");
     const boardButtonLabel = isConfirmed
-  ? "Coverage confirmed"
-  : isAccepted
-    ? "Waiting for approval"
-    : anotherWorkerSelected
-      ? "Another coworker selected"
-      : hasInterest
-        ? "Withdraw interest"
-        : isAuthenticatedCatchMode
-          ? "Catch shift"
-          : getBoardButtonLabel(shift);
+      ? "Coverage confirmed"
+      : isAccepted
+        ? "Waiting for approval"
+        : anotherWorkerSelected
+          ? "Another coworker selected"
+          : hasInterest
+            ? "Withdraw interest"
+            : isAuthenticatedCatchMode
+              ? "Catch shift"
+              : getBoardButtonLabel(shift);
     const hasInterestedCoworkers = interestedWorkers.length > 0;
     const responsePanel =
       hasInterest || hasInterestedCoworkers
@@ -4166,15 +4168,20 @@ function renderShiftBoard() {
       <div class="shift-action-row">
         ${
           isOwnCoverageRequest
-            ? `
-      <button
-        class="action-button"
-        type="button"
-        disabled
-      >
-        Your coverage request
-      </button>
-    `
+  ? `
+<button
+  class="action-button cancel-coverage-button"
+  type="button"
+  data-shift-id="${shift.id}"
+  ${shiftIsSelected || shiftIsConfirmed ? "disabled" : ""}
+>
+  ${
+    shiftIsSelected
+      ? "Coverage awaiting approval"
+      : "Cancel coverage request"
+  }
+</button>
+`
             : canManagerApprove
               ? `
         <button
@@ -4246,42 +4253,42 @@ function renderShiftBoard() {
         }
 
         const existingOwnInterest = authenticatedShiftInterests.find(
-  (interest) =>
-    interest.shift_id === shiftId &&
-    interest.profile_id === user.id &&
-    interest.status === "interested",
-);
+          (interest) =>
+            interest.shift_id === shiftId &&
+            interest.profile_id === user.id &&
+            interest.status === "interested",
+        );
 
-if (existingOwnInterest) {
-  button.textContent = "Withdrawing...";
+        if (existingOwnInterest) {
+          button.textContent = "Withdrawing...";
 
-  const { error: withdrawError } = await supabaseClient.rpc(
-    "withdraw_shift_interest",
-    {
-      p_shift_id: shiftId,
-    },
-  );
+          const { error: withdrawError } = await supabaseClient.rpc(
+            "withdraw_shift_interest",
+            {
+              p_shift_id: shiftId,
+            },
+          );
 
-  if (withdrawError) {
-    console.error(
-      "Industry withdraw shift interest error:",
-      withdrawError,
-    );
+          if (withdrawError) {
+            console.error(
+              "Industry withdraw shift interest error:",
+              withdrawError,
+            );
 
-    button.disabled = false;
-    button.textContent = originalButtonText;
-    return;
-  }
+            button.disabled = false;
+            button.textContent = originalButtonText;
+            return;
+          }
 
-  console.log(
-    "Industry shift interest withdrawn:",
-    existingOwnInterest,
-  );
+          console.log(
+            "Industry shift interest withdrawn:",
+            existingOwnInterest,
+          );
 
-  await loadAuthenticatedShiftInterests();
-  await loadAuthenticatedCatchShifts();
-  return;
-}
+          await loadAuthenticatedShiftInterests();
+          await loadAuthenticatedCatchShifts();
+          return;
+        }
 
         const { data: interest, error: interestError } = await supabaseClient
           .from("shift_interests")
@@ -4312,6 +4319,55 @@ if (existingOwnInterest) {
         await loadAuthenticatedShiftInterests();
       } catch (error) {
         console.error("Industry Catch unexpected error:", error);
+
+        button.disabled = false;
+        button.textContent = originalButtonText;
+      }
+    });
+  });
+
+  document.querySelectorAll(".cancel-coverage-button").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const shiftId = button.dataset.shiftId;
+
+      if (!shiftId) {
+        return;
+      }
+
+      const originalButtonText = button.textContent;
+
+      button.disabled = true;
+      button.textContent = "Canceling...";
+
+      try {
+        const { data: restoredShift, error: cancelError } =
+          await supabaseClient.rpc("cancel_coverage_request", {
+            p_shift_id: shiftId,
+          });
+
+        if (cancelError) {
+          console.error("Industry cancel coverage request error:", cancelError);
+
+          button.disabled = false;
+          button.textContent = originalButtonText;
+          return;
+        }
+
+        console.log("Industry coverage request canceled:", restoredShift);
+
+        await loadAuthenticatedShiftInterests();
+        await loadAuthenticatedCatchShifts();
+        await loadAuthenticatedSchedule();
+
+        setActiveSection("schedule");
+        setActiveScheduleView("my-shifts");
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      } catch (error) {
+        console.error("Industry cancel coverage unexpected error:", error);
 
         button.disabled = false;
         button.textContent = originalButtonText;
@@ -4362,13 +4418,13 @@ if (existingOwnInterest) {
       );
 
       const isManagerSelectingShift =
-  authenticatedWorkplaceRole?.toLowerCase() === "manager" &&
-  (shift?.status === "coverage_needed" ||
-    (shift?.status === "open" && !shift.owner));
+        authenticatedWorkplaceRole?.toLowerCase() === "manager" &&
+        (shift?.status === "coverage_needed" ||
+          (shift?.status === "open" && !shift.owner));
 
-if (!shift || !isManagerSelectingShift) {
-  return;
-}
+      if (!shift || !isManagerSelectingShift) {
+        return;
+      }
 
       const shiftInterests = authenticatedShiftInterests.filter(
         (interest) => interest.shift_id === shiftId,
@@ -8749,14 +8805,14 @@ async function setupIndustryRealtime() {
         console.log("Industry realtime coverage event:", payload);
 
         await Promise.all([
-  loadAuthenticatedSchedule(),
-  loadAuthenticatedCatchShifts(),
-  loadAuthenticatedShiftInterests(),
-  loadAuthenticatedCoverageEvents(),
-]);
+          loadAuthenticatedSchedule(),
+          loadAuthenticatedCatchShifts(),
+          loadAuthenticatedShiftInterests(),
+          loadAuthenticatedCoverageEvents(),
+        ]);
 
-updateDashboardForRole();
-renderActivityFeed();
+        updateDashboardForRole();
+        renderActivityFeed();
       },
     )
 
