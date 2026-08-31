@@ -2014,25 +2014,24 @@ if (managerSaveShiftButton) {
     let saveError = null;
 
     if (isEditing) {
-      const { data: updatedShift, error } = await supabaseClient
-        .from("shifts")
-        .update({
-          assigned_profile_id: assignedProfileId,
-          role,
-          starts_at: startsAtDate.toISOString(),
-          ends_at: endsAt,
-          end_label: endLabel,
-          status: "scheduled",
-        })
-        .eq("id", editingManagerShiftId)
-        .select("id")
-        .maybeSingle();
+  const { data: updatedShiftId, error } = await supabaseClient.rpc(
+    "manager_update_shift",
+    {
+      target_shift_id: editingManagerShiftId,
+      target_assigned_profile_id: assignedProfileId,
+      target_role: role,
+      target_starts_at: startsAtDate.toISOString(),
+      target_ends_at: endsAt,
+      target_end_label: endLabel,
+    }
+  );
 
-      saveError = error;
+  saveError = error;
 
-      if (!error && !updatedShift) {
-        saveError = new Error("Shift update did not return a row.");
-      }
+  if (!error && !updatedShiftId) {
+    saveError = new Error("Shift update did not return a shift id.");
+  }
+
     } else {
       const { error } = await supabaseClient.from("shifts").insert({
         workplace_id: authenticatedWorkplaceId,
@@ -3818,16 +3817,41 @@ function prefillReleaseForm(shift) {
 
   selectedReleaseShift = shift;
 
-  void restoreActiveDirectOfferForRelease(shift);
+  // Always begin Release Shift from a clean UI state.
+  if (releaseToBoardButton) {
+    releaseToBoardButton.disabled = false;
+  }
+
+  if (directReleaseButton) {
+    directReleaseButton.style.display = "";
+  }
+
+  if (directReleaseDivider) {
+    directReleaseDivider.style.display = "";
+  }
+
+  if (postShiftStatus) {
+    postShiftStatus.textContent = "";
+  }
+
+  document
+    .querySelectorAll(".direct-offer-cancel")
+    .forEach((button) => button.remove());
 
   releaseSummaryWorkplace.textContent =
     shift.workplace || "Workplace not provided";
 
-  releaseSummaryRole.textContent = shift.role || "Role not provided";
+  releaseSummaryRole.textContent =
+    shift.role || "Role not provided";
 
-  releaseSummaryDay.textContent = shift.day || "Date not provided";
+  releaseSummaryDay.textContent =
+    shift.day || "Date not provided";
 
-  releaseSummaryTime.textContent = shift.time || "Time not provided";
+  releaseSummaryTime.textContent =
+    shift.time || "Time not provided";
+
+  // After resetting the UI, restore an active offer only if Supabase has one.
+  void restoreActiveDirectOfferForRelease(shift);
 }
 
 function openShiftDetails(shift) {
@@ -9504,10 +9528,30 @@ async function setupIndustryRealtime() {
       async (payload) => {
         console.log("Industry realtime shift change:", payload);
 
+
+
         await Promise.all([
           loadAuthenticatedSchedule(),
           loadAuthenticatedCatchShifts(),
         ]);
+
+        if (
+  authenticatedWorkplaceRole?.toLowerCase() !== "manager" &&
+  selectedReleaseShift?.id &&
+  !authenticatedScheduleShifts.some(
+    (shift) => shift.id === selectedReleaseShift.id
+  )
+) {
+  selectedReleaseShift = null;
+
+  setActiveSection("schedule");
+  setActiveScheduleView("my-shifts");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
 
         if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {
           await loadAuthenticatedTeamSchedule();
@@ -9552,6 +9596,24 @@ async function setupIndustryRealtime() {
           loadAuthenticatedCoverageEvents(),
           loadAndRenderDirectShiftOffers(),
         ]);
+
+        if (
+  authenticatedWorkplaceRole?.toLowerCase() !== "manager" &&
+  selectedReleaseShift?.id &&
+  !authenticatedScheduleShifts.some(
+    (shift) => shift.id === selectedReleaseShift.id
+  )
+) {
+  selectedReleaseShift = null;
+
+  setActiveSection("schedule");
+  setActiveScheduleView("my-shifts");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
 
         updateDashboardForRole();
         renderActivityFeed();
