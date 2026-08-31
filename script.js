@@ -9615,6 +9615,19 @@ async function setupIndustryRealtime() {
   });
 }
 
+if (
+  selectedReleaseShift?.id &&
+  authenticatedScheduleShifts.some(
+    (shift) => shift.id === selectedReleaseShift.id
+  )
+) {
+  const refreshedShift = authenticatedScheduleShifts.find(
+    (shift) => shift.id === selectedReleaseShift.id
+  );
+
+  prefillReleaseForm(refreshedShift);
+}
+
         updateDashboardForRole();
         renderActivityFeed();
       },
