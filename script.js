@@ -540,6 +540,7 @@ let authenticatedShiftInterests = undefined;
 let authenticatedCoverageEvents = undefined;
 let authenticatedTeamScheduleShifts = undefined;
 let authenticatedManagerCrew = [];
+let authenticatedManagerDirectApprovals = [];
 let authenticatedWorkplaceId = null;
 let authenticatedWorkplaceRole = null;
 let authenticatedUserId = null;
@@ -4189,6 +4190,8 @@ async function loadAndRenderManagerDirectApprovals() {
     "list_direct_offer_approvals"
   );
 
+
+
   if (directApprovalsError) {
     console.error(
       "Industry manager direct approvals load error:",
@@ -4196,6 +4199,8 @@ async function loadAndRenderManagerDirectApprovals() {
     );
     return;
   }
+
+  authenticatedManagerDirectApprovals = directApprovals || [];
 
   console.log(
     "Industry manager direct approvals loaded:",
@@ -9241,9 +9246,15 @@ function updateDashboardForRole() {
       },
     ).length;
 
-    const coverageCount = (authenticatedTeamScheduleShifts || []).filter(
-      (shift) => shift.status === "coverage_needed",
-    ).length;
+    const coverageShiftCount = (authenticatedTeamScheduleShifts || []).filter(
+  (shift) => shift.status === "coverage_needed"
+).length;
+
+const directApprovalCount =
+  authenticatedManagerDirectApprovals?.length || 0;
+
+const coverageCount =
+  coverageShiftCount + directApprovalCount;
 
     const crewCount = authenticatedManagerCrew?.length || 0;
 
