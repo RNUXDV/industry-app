@@ -3875,38 +3875,57 @@ function openShiftDetails(shift) {
   shiftDetailsStatus.textContent = status;
   shiftDetailsNotes.textContent =
     shift.notes || shift.note || "No notes provided.";
-  const activityItems = [];
+  const crew = Array.isArray(authenticatedManagerCrew)
+  ? authenticatedManagerCrew
+  : [];
 
-  if (shift.source === "imported") {
-    activityItems.push("Imported from ScheduleFly");
-  }
+const shiftActivities = Array.isArray(authenticatedCoverageEvents)
+  ? authenticatedCoverageEvents
+      .filter((event) => event.shift_id === shift.id)
+      .map((event) => formatCoverageEvent(event, crew))
+      .filter(Boolean)
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() -
+          new Date(b.createdAt).getTime(),
+      )
+  : [];
 
-  if (shift.status === "Pending Coverage") {
-    activityItems.push("Released to Catch");
-  }
+if (shift.source === "imported") {
+  shiftActivities.unshift({
+    title: "Schedule imported",
+    message: "Imported from ScheduleFly.",
+    createdAt: null,
+  });
+}
 
-  if (shift.transferredAt) {
-    activityItems.push(
-      `Coverage transferred to ${shift.ownerName || "another worker"}`,
-    );
-  }
+shiftDetailsActivity.innerHTML =
+  shiftActivities.length > 0
+    ? shiftActivities
+        .map((activity) => {
+          const activityTime = activity.createdAt
+            ? new Date(activity.createdAt).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+              })
+            : "";
 
-  if (shift.previousOwner) {
-    activityItems.push("Ownership updated through Catch");
-  }
-
-  shiftDetailsActivity.innerHTML =
-    activityItems.length > 0
-      ? activityItems
-          .map(
-            (item) => `
+          return `
             <p class="shift-activity-item">
-              ${item}
+              <strong>${activity.title}</strong>
+              ${
+                activityTime
+                  ? `<br><span>${activityTime}</span>`
+                  : ""
+              }
+              <br>${activity.message}
             </p>
-          `,
-          )
-          .join("")
-      : "<p>No activity recorded.</p>";
+          `;
+        })
+        .join("")
+    : "<p>No activity recorded.</p>";
 
   shiftDetailsCrewButton.dataset.shiftId = shift.id;
   shiftDetailsReleaseButton.dataset.shiftId = shift.id;
@@ -3951,6 +3970,125 @@ if (shiftDetailsReleaseButton) {
   });
 }
 
+function formatCoverageEvent(event, crew = []) {
+  if (!event) {
+    return null;
+  }
+
+  const getCrewName = (profileId) => {
+    if (!profileId) return null;
+
+    const crewMember = crew.find(
+      (member) => member.id === profileId
+    );
+
+    return crewMember?.name || "Coworker";
+  };
+
+  const previousWorker = getCrewName(
+    event.previous_profile_id
+  );
+
+  const newWorker = getCrewName(
+    event.new_profile_id
+  );
+
+  const shiftStartsAt = event.shift?.starts_at
+    ? new Date(event.shift.starts_at)
+    : null;
+
+  const shiftLabel =
+    shiftStartsAt &&
+    !Number.isNaN(shiftStartsAt.getTime())
+      ? shiftStartsAt.toLocaleString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        })
+      : "Shift";
+
+  const baseActivity = {
+    id: event.id,
+    type: event.event_type,
+    createdAt: event.created_at,
+    workplace: shiftLabel,
+  };
+
+  switch (event.event_type) {
+    case "direct_offer_sent":
+      return {
+        ...baseActivity,
+        title: "Direct offer sent",
+        message: `${previousWorker || "Coworker"} → ${
+          newWorker || "Coworker"
+        }`,
+      };
+
+    case "direct_offer_accepted":
+      return {
+        ...baseActivity,
+        title: "Direct offer accepted",
+        message: `${
+          newWorker || "Coworker"
+        } accepted the shift.`,
+      };
+
+    case "direct_offer_approved":
+      return {
+        ...baseActivity,
+        title: "Direct offer approved",
+        message: `${
+          newWorker || "Coworker"
+        } was assigned to the shift.`,
+      };
+
+    case "direct_offer_declined":
+      return {
+        ...baseActivity,
+        title: "Direct offer declined",
+        message: `${
+          newWorker || "Coworker"
+        } declined the shift.`,
+      };
+
+    case "direct_offer_canceled":
+      return {
+        ...baseActivity,
+        title: "Direct offer canceled",
+        message: `${
+          previousWorker || "Coworker"
+        } canceled the direct offer.`,
+      };
+
+    case "manager_reassigned":
+      return {
+        ...baseActivity,
+        title: "Shift reassigned",
+        message: `${
+          previousWorker || "Unassigned"
+        } → ${newWorker || "Unassigned"}`,
+      };
+
+    case "coverage_canceled":
+      return {
+        ...baseActivity,
+        title: "Coverage canceled",
+        message: `${
+          previousWorker || "Coworker"
+        } canceled the coverage request.`,
+      };
+
+    default:
+      return {
+        ...baseActivity,
+        title: "Schedule activity",
+        message: "Schedule activity recorded.",
+      };
+  }
+}
+
 function renderActivityFeed() {
   if (!activityFeedList) {
     return;
@@ -3967,73 +4105,9 @@ function renderActivityFeed() {
       ? authenticatedManagerCrew
       : [];
 
-    const getCrewName = (profileId) => {
-      if (!profileId) return null;
-
-      const crewMember = crew.find((member) => member.id === profileId);
-
-      return crewMember?.name || "Coworker";
-    };
-
-    activities = authenticatedCoverageEvents.map((event) => {
-      const previousWorker = getCrewName(event.previous_profile_id);
-
-      const newWorker = getCrewName(event.new_profile_id);
-
-      const shiftStartsAt = event.shift?.starts_at
-        ? new Date(event.shift.starts_at)
-        : null;
-
-      const shiftLabel =
-        shiftStartsAt && !Number.isNaN(shiftStartsAt.getTime())
-          ? shiftStartsAt.toLocaleString("en-US", {
-              weekday: "short",
-              month: "short",
-              day: "numeric",
-              hour: "numeric",
-              minute: "2-digit",
-            })
-          : "Shift time unavailable";
-
-          if (event.event_type === "coverage_canceled") {
-  return null;
-}
-
-      if (event.event_type === "shift_reassigned") {
-        return {
-          id: event.id,
-          type: "shift-reassigned",
-          title: "Shift reassigned",
-          message: `${previousWorker || "Unassigned"} → ${
-            newWorker || "Unassigned"
-          }`,
-          createdAt: event.created_at,
-          workplace: shiftLabel,
-        };
-      }
-
-      if (event.event_type === "coverage_confirmed") {
-        return {
-          id: event.id,
-          type: "coverage-confirmed",
-          title: "Coverage confirmed",
-          message: previousWorker
-            ? `${previousWorker} → ${newWorker || "Coworker"}`
-            : `${newWorker || "Coworker"} picked up an open shift`,
-          createdAt: event.created_at,
-          workplace: shiftLabel,
-        };
-      }
-
-      return {
-        id: event.id,
-        type: event.event_type,
-        title: "Schedule activity",
-        message: "Schedule activity recorded",
-        createdAt: event.created_at,
-        workplace: shiftLabel,
-      };
-    });
+    activities = authenticatedCoverageEvents.map((event) =>
+      formatCoverageEvent(event, crew)
+    );
   } else {
     activities = getActivityFeed().filter((activity) => {
       return activity.workerId === CURRENT_USER.id;
@@ -4041,7 +4115,8 @@ function renderActivityFeed() {
   }
 
   if (activities.length === 0) {
-    activityFeedList.innerHTML = `<p class="status-text">No activity yet.</p>`;
+    activityFeedList.innerHTML =
+      `<p class="status-text">No activity yet.</p>`;
     return;
   }
 
@@ -9637,6 +9712,26 @@ if (
   );
 
   prefillReleaseForm(refreshedShift);
+}
+
+const isShiftDetailsOpen = Array.from(scheduleSubviews).some(
+  (subview) =>
+    subview.dataset.scheduleSubview === "shift-details" &&
+    subview.classList.contains("active")
+);
+
+if (isShiftDetailsOpen) {
+  const openShiftId =
+    shiftDetailsReleaseButton?.dataset.shiftId ||
+    shiftDetailsCrewButton?.dataset.shiftId;
+
+  const refreshedShift = authenticatedScheduleShifts.find(
+    (shift) => shift.id === openShiftId
+  );
+
+  if (refreshedShift) {
+    openShiftDetails(refreshedShift);
+  }
 }
 
         updateDashboardForRole();
