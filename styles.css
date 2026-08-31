@@ -9830,3 +9830,56 @@ body.onboarding-home-active #home-logo-button {
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+#release-to-board-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Direct offer actions */
+
+.direct-offer-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.direct-offer-actions .action-button,
+.direct-offer-actions .secondary-action {
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 700;
+}
+
+.direct-offer-decline,
+.direct-offer-cancel {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  opacity: 0.82;
+  min-height: 52px;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 700;
+}
+
+.direct-offer-cancel {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.direct-offer-decline:hover,
+.direct-offer-cancel:hover {
+  opacity: 1;
+}
+
+.direct-offer-decline:disabled,
+.direct-offer-cancel:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
