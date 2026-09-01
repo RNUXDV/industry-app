@@ -22,4 +22,6 @@ The source code, interface designs, written content, visual assets, and other or
 
 ## Development Status
 
-Industry is currently a front-end prototype. Production authentication, account security, backend infrastructure, and production data storage have not yet been implemented.
+Industry is currently a backend-integrated prototype preparing for pilot testing. The Schedule pillar uses Supabase authentication, role-aware workplace data, realtime coverage workflows, and database migrations. Jobs and People remain front-end usability-testing prototypes with browser-local state.
+
+See [INDUSTRY_STATUS.md](INDUSTRY_STATUS.md) for the reconciled product history, current implementation boundary, active checkpoint, and recommended next steps.
