@@ -2509,6 +2509,8 @@ availableCoworkers.forEach((member) => {
         throw offerError;
       }
 
+      await loadAuthenticatedCoverageEvents();
+
       if (releaseToBoardButton) {
   releaseToBoardButton.disabled = true;
 }
@@ -3726,20 +3728,17 @@ async function restoreActiveDirectOfferForRelease(shift) {
     directReleaseButton.style.display = "none";
 
     if (directReleaseDivider) {
-  directReleaseDivider.style.display = "none";
-}
-
-
+      directReleaseDivider.style.display = "none";
+    }
 
     if (activeOffer.offer_status === "accepted") {
       postShiftStatus.textContent =
         `${activeOffer.recipient_name} accepted this direct offer. ` +
         "Waiting for manager approval.";
-      return;
+    } else {
+      postShiftStatus.textContent =
+        `Direct offer sent to ${activeOffer.recipient_name}.`;
     }
-
-    postShiftStatus.textContent =
-      `Direct offer sent to ${activeOffer.recipient_name}.`;
 
     const cancelOfferButton = document.createElement("button");
 
@@ -4102,8 +4101,8 @@ function renderActivityFeed() {
   let activities;
 
   if (isAuthenticatedActivityMode) {
-    const crew = Array.isArray(authenticatedManagerCrew)
-      ? authenticatedManagerCrew
+    const crew = Array.isArray(authenticatedWorkplaceCrew)
+      ? authenticatedWorkplaceCrew
       : [];
 
     activities = authenticatedCoverageEvents
@@ -9725,6 +9724,7 @@ async function setupIndustryRealtime() {
           loadAuthenticatedShiftInterests(),
           loadAuthenticatedCoverageEvents(),
           loadAndRenderDirectShiftOffers(),
+          loadAndRenderManagerDirectApprovals(),
         ]);
 
         if (
