@@ -540,6 +540,7 @@ let authenticatedShiftInterests = undefined;
 let authenticatedCoverageEvents = undefined;
 let authenticatedTeamScheduleShifts = undefined;
 let authenticatedManagerCrew = [];
+let authenticatedWorkplaceCrew = [];
 let authenticatedManagerDirectApprovals = [];
 let authenticatedWorkplaceId = null;
 let authenticatedWorkplaceRole = null;
@@ -3875,8 +3876,8 @@ function openShiftDetails(shift) {
   shiftDetailsStatus.textContent = status;
   shiftDetailsNotes.textContent =
     shift.notes || shift.note || "No notes provided.";
-  const crew = Array.isArray(authenticatedManagerCrew)
-  ? authenticatedManagerCrew
+  const crew = Array.isArray(authenticatedWorkplaceCrew)
+  ? authenticatedWorkplaceCrew
   : [];
 
 const shiftActivities = Array.isArray(authenticatedCoverageEvents)
@@ -9583,6 +9584,44 @@ async function loadAuthenticatedIndustryProfile() {
   const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 
   authenticatedDisplayName = displayName;
+
+  const {
+  data: workplaceCoworkers,
+  error: workplaceCoworkersError,
+} = await supabaseClient.rpc("get_direct_release_coworkers");
+
+if (workplaceCoworkersError) {
+  console.error(
+    "Industry workplace crew load error:",
+    workplaceCoworkersError,
+  );
+
+  authenticatedWorkplaceCrew = [
+    {
+      id: authenticatedUserId,
+      name: fullName,
+      role: authenticatedWorkplaceRole || "",
+    },
+  ];
+} else {
+  authenticatedWorkplaceCrew = [
+    {
+      id: authenticatedUserId,
+      name: fullName,
+      role: authenticatedWorkplaceRole || "",
+    },
+    ...(workplaceCoworkers || []).map((coworker) => ({
+      id: coworker.profile_id,
+      name: coworker.full_name || "Crew member",
+      role: coworker.role || "",
+    })),
+  ];
+}
+
+console.log(
+  "Industry authenticated workplace crew loaded:",
+  authenticatedWorkplaceCrew,
+);
 
   updateIndustryDashboardGreeting();
 
