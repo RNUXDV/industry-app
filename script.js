@@ -3885,10 +3885,10 @@ const shiftActivities = Array.isArray(authenticatedCoverageEvents)
       .map((event) => formatCoverageEvent(event, crew))
       .filter(Boolean)
       .sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() -
-          new Date(b.createdAt).getTime(),
-      )
+  (a, b) =>
+    new Date(b.createdAt).getTime() -
+    new Date(a.createdAt).getTime(),
+)
   : [];
 
 if (shift.source === "imported") {
@@ -4105,9 +4105,14 @@ function renderActivityFeed() {
       ? authenticatedManagerCrew
       : [];
 
-    activities = authenticatedCoverageEvents.map((event) =>
-      formatCoverageEvent(event, crew)
-    );
+    activities = authenticatedCoverageEvents
+  .map((event) => formatCoverageEvent(event, crew))
+  .filter(Boolean)
+  .sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() -
+      new Date(a.createdAt).getTime(),
+  );
   } else {
     activities = getActivityFeed().filter((activity) => {
       return activity.workerId === CURRENT_USER.id;
@@ -9766,7 +9771,7 @@ async function enterAuthenticatedIndustry() {
     loadAuthenticatedTeamSchedule(),
     loadAuthenticatedManagerCrew(),
   ]);
-
+renderActivityFeed();
   updateDashboardForRole();
 
   // Make the final Schedule destination role-aware.
