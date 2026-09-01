@@ -9810,7 +9810,12 @@ async function enterAuthenticatedIndustry() {
     loadAuthenticatedTeamSchedule(),
     loadAuthenticatedManagerCrew(),
   ]);
-renderActivityFeed();
+
+  if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {
+    await loadAndRenderManagerDirectApprovals();
+  }
+
+  renderActivityFeed();
   updateDashboardForRole();
 
   // Make the final Schedule destination role-aware.
