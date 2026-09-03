@@ -35,6 +35,10 @@ const dashboardShiftWorkplace = document.querySelector(
   "#dashboard-shift-workplace",
 );
 
+const dashboardNextShiftPanel = document.getElementById(
+  "dashboard-next-shift-panel",
+);
+
 const myShiftsNextCard = document.querySelector("#my-shifts-next-card");
 
 const myShiftsNextTime = document.querySelector("#my-shifts-next-time");
@@ -556,7 +560,7 @@ let industryRealtimeChannel = null;
 function setActiveScheduleView(viewName) {
   const resolvedViewName =
     viewName === "my-shifts" &&
-    authenticatedWorkplaceRole?.toLowerCase() === "manager"
+      authenticatedWorkplaceRole?.toLowerCase() === "manager"
       ? "manager-schedule"
       : viewName;
 
@@ -824,6 +828,9 @@ async function loadAuthenticatedSchedule() {
       `
     id,
     assigned_profile_id,
+        manager_profile:profiles!shifts_manager_profile_id_fkey (
+      full_name
+    ),
     role,
     starts_at,
     ends_at,
@@ -852,6 +859,9 @@ async function loadAuthenticatedSchedule() {
       `
       id,
       assigned_profile_id,
+          manager_profile:profiles!shifts_manager_profile_id_fkey (
+      full_name
+    ),
       role,
       starts_at,
       ends_at,
@@ -921,6 +931,7 @@ start_time_source,
       return {
         id: shift.id,
         owner: shift.assigned_profile_id,
+        manager: shift.manager_profile?.full_name || "",
         day,
         time: endText ? `${startTime} – ${endText}` : startTime,
         role: shift.role || "",
@@ -975,23 +986,24 @@ start_time_source,
 
     const clockedOutTime = shift.reported_ended_at
       ? new Date(shift.reported_ended_at).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          timeZone,
-        })
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone,
+      })
       : "";
 
     const recordedInIndustryTime = shift.end_recorded_at
       ? new Date(shift.end_recorded_at).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          timeZone,
-        })
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone,
+      })
       : "";
 
     return {
       id: shift.id,
       owner: shift.assigned_profile_id,
+      manager: shift.manager_profile?.full_name || "",
       day,
       time: endText ? `${startTime} – ${endText}` : startTime,
       role: shift.role || "",
@@ -1232,6 +1244,9 @@ coverage_stage,
     assigned_profile:profiles!shifts_assigned_profile_id_fkey (
       full_name
     ),
+     manager_profile:profiles!shifts_manager_profile_id_fkey (
+      full_name
+    ),
     workplace:workplaces (
       name,
       time_zone
@@ -1281,18 +1296,18 @@ coverage_stage,
 
       const clockedOutTime = shift.reported_ended_at
         ? new Date(shift.reported_ended_at).toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-            timeZone,
-          })
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone,
+        })
         : "";
 
       const recordedInIndustryTime = shift.end_recorded_at
         ? new Date(shift.end_recorded_at).toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-            timeZone,
-          })
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone,
+        })
         : "";
 
       return {
@@ -1384,16 +1399,15 @@ function renderAuthenticatedTeamSchedule() {
             <strong>${shift.clockedOutTime}</strong>
           </p>
 
-          ${
-            shift.recordedInIndustryTime
-              ? `
+          ${shift.recordedInIndustryTime
+          ? `
                 <p>
                   <span>Recorded in Industry</span>
                   <strong>${shift.recordedInIndustryTime}</strong>
                 </p>
               `
-              : ""
-          }
+          : ""
+        }
         </div>
       `
         : "";
@@ -1404,17 +1418,16 @@ function renderAuthenticatedTeamSchedule() {
     shiftCard.innerHTML = `
     <div class="stack-copy">
       <p class="stack-kicker">
-       ${
-         hasEnded
-           ? "Shift ended"
-           : needsCoverage
-             ? "Coverage requested"
-             : isCurrent
-               ? "Current shift"
-               : isUnassigned
-                 ? "Unassigned shift"
-                 : "Scheduled shift"
-       }
+       ${hasEnded
+        ? "Shift ended"
+        : needsCoverage
+          ? "Coverage requested"
+          : isCurrent
+            ? "Current shift"
+            : isUnassigned
+              ? "Unassigned shift"
+              : "Scheduled shift"
+      }
       </p>
 
       <h3>${shift.workerName}</h3>
@@ -1432,9 +1445,8 @@ function renderAuthenticatedTeamSchedule() {
 
       ${endedShiftDetails}
 
-${
-  canManageShift
-    ? `
+${canManageShift
+        ? `
       <button
         class="secondary-action"
         type="button"
@@ -1443,8 +1455,8 @@ ${
         Manage Shift
       </button>
     `
-    : ""
-}
+        : ""
+      }
 </div>
 `;
 
@@ -1573,10 +1585,10 @@ async function loadAuthenticatedCatchShifts() {
 
     const endText = shift.ends_at
       ? new Date(shift.ends_at).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          timeZone,
-        })
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone,
+      })
       : shift.end_label || "";
 
     return {
@@ -1714,10 +1726,10 @@ function renderDashboardShift(backendShift = undefined) {
     backendShift !== undefined
       ? backendShift
       : getShiftStore()
-          .filter((shift) => shift.owner === CURRENT_USER.id)
-          .sort((shiftA, shiftB) => {
-            return getShiftDateValue(shiftA) - getShiftDateValue(shiftB);
-          })[0];
+        .filter((shift) => shift.owner === CURRENT_USER.id)
+        .sort((shiftA, shiftB) => {
+          return getShiftDateValue(shiftA) - getShiftDateValue(shiftB);
+        })[0];
 
   if (!upcomingShift) {
     dashboardShiftDetailsButton.hidden = true;
@@ -2001,6 +2013,7 @@ if (managerSaveShiftButton) {
     console.log("Industry manager create shift payload:", {
       workplace_id: authenticatedWorkplaceId,
       assigned_profile_id: assignedProfileId,
+      manager_profile_id: authenticatedUserId,
       role,
       date,
       startTime,
@@ -2016,23 +2029,23 @@ if (managerSaveShiftButton) {
     let saveError = null;
 
     if (isEditing) {
-  const { data: updatedShiftId, error } = await supabaseClient.rpc(
-    "manager_update_shift",
-    {
-      target_shift_id: editingManagerShiftId,
-      target_assigned_profile_id: assignedProfileId,
-      target_role: role,
-      target_starts_at: startsAtDate.toISOString(),
-      target_ends_at: endsAt,
-      target_end_label: endLabel,
-    }
-  );
+      const { data: updatedShiftId, error } = await supabaseClient.rpc(
+        "manager_update_shift",
+        {
+          target_shift_id: editingManagerShiftId,
+          target_assigned_profile_id: assignedProfileId,
+          target_role: role,
+          target_starts_at: startsAtDate.toISOString(),
+          target_ends_at: endsAt,
+          target_end_label: endLabel,
+        }
+      );
 
-  saveError = error;
+      saveError = error;
 
-  if (!error && !updatedShiftId) {
-    saveError = new Error("Shift update did not return a shift id.");
-  }
+      if (!error && !updatedShiftId) {
+        saveError = new Error("Shift update did not return a shift id.");
+      }
 
     } else {
       const { error } = await supabaseClient.from("shifts").insert({
@@ -2377,39 +2390,39 @@ if (directReleaseButton) {
     directReleaseButton.textContent = "Loading coworkers...";
 
     try {
-     const {
-  data: directReleaseCoworkers,
-  error: directReleaseCoworkersError,
-} = await supabaseClient.rpc("get_direct_release_coworkers");
+      const {
+        data: directReleaseCoworkers,
+        error: directReleaseCoworkersError,
+      } = await supabaseClient.rpc("get_direct_release_coworkers");
 
-if (directReleaseCoworkersError) {
-  console.error(
-    "Industry direct release coworkers error:",
-    directReleaseCoworkersError
-  );
-  throw directReleaseCoworkersError;
-}
+      if (directReleaseCoworkersError) {
+        console.error(
+          "Industry direct release coworkers error:",
+          directReleaseCoworkersError
+        );
+        throw directReleaseCoworkersError;
+      }
 
-const availableCoworkers = (directReleaseCoworkers || []).map(
-  (coworker) => ({
-    id: coworker.profile_id,
-    name: coworker.full_name || "Crew member",
-    role: coworker.role || "",
-  })
-);
+      const availableCoworkers = (directReleaseCoworkers || []).map(
+        (coworker) => ({
+          id: coworker.profile_id,
+          name: coworker.full_name || "Crew member",
+          role: coworker.role || "",
+        })
+      );
 
-console.log(
-  "Industry direct release coworkers:",
-  availableCoworkers
-);
+      console.log(
+        "Industry direct release coworkers:",
+        availableCoworkers
+      );
 
-if (directReleaseCoworkersError) {
-  console.error(
-    "Industry direct release coworkers error:",
-    directReleaseCoworkersError
-  );
-  return;
-}
+      if (directReleaseCoworkersError) {
+        console.error(
+          "Industry direct release coworkers error:",
+          directReleaseCoworkersError
+        );
+        return;
+      }
 
       console.log(
         "Industry direct release coworkers:",
@@ -2417,220 +2430,220 @@ if (directReleaseCoworkersError) {
       );
 
       const existingCoworkerList = document.getElementById(
-  "direct-release-coworker-list"
-);
+        "direct-release-coworker-list"
+      );
 
-if (existingCoworkerList) {
-  existingCoworkerList.remove();
-}
+      if (existingCoworkerList) {
+        existingCoworkerList.remove();
+      }
 
-if (!availableCoworkers.length) {
-  if (postShiftStatus) {
-    postShiftStatus.textContent =
-      "No other workplace coworkers are available.";
-  }
-
-  return;
-}
-
-if (postShiftStatus) {
-  postShiftStatus.textContent =
-    `Choose a coworker for this shift:`;
-}
-
-const coworkerList = document.createElement("div");
-coworkerList.id = "direct-release-coworker-list";
-coworkerList.className = "direct-release-coworker-list";
-
-availableCoworkers.forEach((member) => {
-  const coworkerButton = document.createElement("button");
-
-  coworkerButton.type = "button";
-  coworkerButton.className =
-    "secondary-action direct-release-coworker-option";
-
-  coworkerButton.dataset.profileId = member.id;
-
-  coworkerButton.textContent = member.role
-    ? `${member.name} · ${member.role}`
-    : member.name;
-
-  coworkerButton.addEventListener("click", () => {
-  coworkerList
-    .querySelectorAll(".direct-release-coworker-option")
-    .forEach((button) => {
-      button.setAttribute("aria-pressed", "false");
-    });
-
-  coworkerButton.setAttribute("aria-pressed", "true");
-
-  const existingSendButton = document.getElementById(
-    "direct-release-send-button"
-  );
-
-  if (existingSendButton) {
-    existingSendButton.remove();
-  }
-
-  if (postShiftStatus) {
-    postShiftStatus.textContent =
-      `${member.name} selected for direct offer.`;
-  }
-
-  console.log(
-    "Industry direct release selected coworker:",
-    member
-  );
-
-  const sendOfferButton = document.createElement("button");
-
-  sendOfferButton.type = "button";
-  sendOfferButton.id = "direct-release-send-button";
-  sendOfferButton.className = "action-button";
-  sendOfferButton.textContent = `Send Direct Offer to ${member.name}`;
-
-  sendOfferButton.addEventListener("click", async () => {
-    sendOfferButton.disabled = true;
-    sendOfferButton.textContent = "Sending offer…";
-
-    try {
-      const {
-        data: offerId,
-        error: offerError,
-      } = await supabaseClient.rpc(
-        "send_direct_shift_offer",
-        {
-          target_shift_id: selectedReleaseShift.id,
-          target_recipient_profile_id: member.id,
+      if (!availableCoworkers.length) {
+        if (postShiftStatus) {
+          postShiftStatus.textContent =
+            "No other workplace coworkers are available.";
         }
-      );
 
-      if (offerError) {
-        throw offerError;
+        return;
       }
-
-      await loadAuthenticatedCoverageEvents();
-
-      if (releaseToBoardButton) {
-  releaseToBoardButton.disabled = true;
-}
-
-     directReleaseButton.style.display = "none";
-
-     if (directReleaseDivider) {
-  directReleaseDivider.style.display = "none";
-}
-
-
-coworkerList.style.display = "none";
-      console.log(
-  "Industry direct offer created:",
-  offerId
-);
-
-if (postShiftStatus) {
-  postShiftStatus.textContent =
-    `Direct offer sent to ${member.name}.`;
-}
-
-const cancelOfferButton = document.createElement("button");
-
-cancelOfferButton.type = "button";
-cancelOfferButton.className = "secondary-action direct-offer-cancel";
-cancelOfferButton.textContent = "Cancel Direct Offer";
-
-cancelOfferButton.addEventListener("click", async () => {
-  cancelOfferButton.disabled = true;
-  cancelOfferButton.textContent = "Canceling…";
-
-  try {
-    const {
-      data: cancelStatus,
-      error: cancelError,
-    } = await supabaseClient.rpc(
-      "cancel_direct_shift_offer",
-      {
-        target_offer_id: offerId,
-      }
-    );
-
-    if (cancelError) {
-      throw cancelError;
-    }
-
-    console.log(
-      "Industry direct offer canceled:",
-      {
-        offerId,
-        status: cancelStatus,
-      }
-    );
-
-    if (postShiftStatus) {
-      postShiftStatus.textContent =
-        `Direct offer to ${member.name} canceled.`;
-    }
-
-    cancelOfferButton.remove();
-
-    if (releaseToBoardButton) {
-  releaseToBoardButton.disabled = false;
-}
-
-directReleaseButton.style.display = "";
-
-
-if (directReleaseDivider) {
-  directReleaseDivider.style.display = "";
-}
-
-coworkerList.style.display = "";
-
-} catch (error) {
-    console.error(
-      "Industry direct offer cancel error:",
-      error
-    );
-
-    cancelOfferButton.disabled = false;
-    cancelOfferButton.textContent =
-      "Cancel Direct Offer";
-  }
-});
-
-sendOfferButton.replaceWith(cancelOfferButton);
-    } catch (error) {
-      console.error(
-        "Industry direct offer send error:",
-        error
-      );
 
       if (postShiftStatus) {
         postShiftStatus.textContent =
-          "Unable to send direct offer.";
+          `Choose a coworker for this shift:`;
       }
 
-      sendOfferButton.disabled = false;
-      sendOfferButton.textContent =
-        `Send Direct Offer to ${member.name}`;
-    }
-  });
+      const coworkerList = document.createElement("div");
+      coworkerList.id = "direct-release-coworker-list";
+      coworkerList.className = "direct-release-coworker-list";
 
-  coworkerList.insertAdjacentElement(
-    "afterend",
-    sendOfferButton
-  );
-});
+      availableCoworkers.forEach((member) => {
+        const coworkerButton = document.createElement("button");
 
-  coworkerList.appendChild(coworkerButton);
-});
+        coworkerButton.type = "button";
+        coworkerButton.className =
+          "secondary-action direct-release-coworker-option";
 
-if (postShiftStatus) {
-  postShiftStatus.insertAdjacentElement(
-    "afterend",
-    coworkerList
-  );
-}
+        coworkerButton.dataset.profileId = member.id;
+
+        coworkerButton.textContent = member.role
+          ? `${member.name} · ${member.role}`
+          : member.name;
+
+        coworkerButton.addEventListener("click", () => {
+          coworkerList
+            .querySelectorAll(".direct-release-coworker-option")
+            .forEach((button) => {
+              button.setAttribute("aria-pressed", "false");
+            });
+
+          coworkerButton.setAttribute("aria-pressed", "true");
+
+          const existingSendButton = document.getElementById(
+            "direct-release-send-button"
+          );
+
+          if (existingSendButton) {
+            existingSendButton.remove();
+          }
+
+          if (postShiftStatus) {
+            postShiftStatus.textContent =
+              `${member.name} selected for direct offer.`;
+          }
+
+          console.log(
+            "Industry direct release selected coworker:",
+            member
+          );
+
+          const sendOfferButton = document.createElement("button");
+
+          sendOfferButton.type = "button";
+          sendOfferButton.id = "direct-release-send-button";
+          sendOfferButton.className = "action-button";
+          sendOfferButton.textContent = `Send Direct Offer to ${member.name}`;
+
+          sendOfferButton.addEventListener("click", async () => {
+            sendOfferButton.disabled = true;
+            sendOfferButton.textContent = "Sending offer…";
+
+            try {
+              const {
+                data: offerId,
+                error: offerError,
+              } = await supabaseClient.rpc(
+                "send_direct_shift_offer",
+                {
+                  target_shift_id: selectedReleaseShift.id,
+                  target_recipient_profile_id: member.id,
+                }
+              );
+
+              if (offerError) {
+                throw offerError;
+              }
+
+              await loadAuthenticatedCoverageEvents();
+
+              if (releaseToBoardButton) {
+                releaseToBoardButton.disabled = true;
+              }
+
+              directReleaseButton.style.display = "none";
+
+              if (directReleaseDivider) {
+                directReleaseDivider.style.display = "none";
+              }
+
+
+              coworkerList.style.display = "none";
+              console.log(
+                "Industry direct offer created:",
+                offerId
+              );
+
+              if (postShiftStatus) {
+                postShiftStatus.textContent =
+                  `Direct offer sent to ${member.name}.`;
+              }
+
+              const cancelOfferButton = document.createElement("button");
+
+              cancelOfferButton.type = "button";
+              cancelOfferButton.className = "secondary-action direct-offer-cancel";
+              cancelOfferButton.textContent = "Cancel Direct Offer";
+
+              cancelOfferButton.addEventListener("click", async () => {
+                cancelOfferButton.disabled = true;
+                cancelOfferButton.textContent = "Canceling…";
+
+                try {
+                  const {
+                    data: cancelStatus,
+                    error: cancelError,
+                  } = await supabaseClient.rpc(
+                    "cancel_direct_shift_offer",
+                    {
+                      target_offer_id: offerId,
+                    }
+                  );
+
+                  if (cancelError) {
+                    throw cancelError;
+                  }
+
+                  console.log(
+                    "Industry direct offer canceled:",
+                    {
+                      offerId,
+                      status: cancelStatus,
+                    }
+                  );
+
+                  if (postShiftStatus) {
+                    postShiftStatus.textContent =
+                      `Direct offer to ${member.name} canceled.`;
+                  }
+
+                  cancelOfferButton.remove();
+
+                  if (releaseToBoardButton) {
+                    releaseToBoardButton.disabled = false;
+                  }
+
+                  directReleaseButton.style.display = "";
+
+
+                  if (directReleaseDivider) {
+                    directReleaseDivider.style.display = "";
+                  }
+
+                  coworkerList.style.display = "";
+
+                } catch (error) {
+                  console.error(
+                    "Industry direct offer cancel error:",
+                    error
+                  );
+
+                  cancelOfferButton.disabled = false;
+                  cancelOfferButton.textContent =
+                    "Cancel Direct Offer";
+                }
+              });
+
+              sendOfferButton.replaceWith(cancelOfferButton);
+            } catch (error) {
+              console.error(
+                "Industry direct offer send error:",
+                error
+              );
+
+              if (postShiftStatus) {
+                postShiftStatus.textContent =
+                  "Unable to send direct offer.";
+              }
+
+              sendOfferButton.disabled = false;
+              sendOfferButton.textContent =
+                `Send Direct Offer to ${member.name}`;
+            }
+          });
+
+          coworkerList.insertAdjacentElement(
+            "afterend",
+            sendOfferButton
+          );
+        });
+
+        coworkerList.appendChild(coworkerButton);
+      });
+
+      if (postShiftStatus) {
+        postShiftStatus.insertAdjacentElement(
+          "afterend",
+          coworkerList
+        );
+      }
     } catch (error) {
       console.error(
         "Industry direct release crew error:",
@@ -3652,9 +3665,9 @@ function renderPresenceCard(worker, workerIndex, shiftId) {
             aria-pressed="${worker.selected}"
         >
             ${renderAvatar({
-              label: worker.name,
-              selected: worker.selected,
-            })}
+    label: worker.name,
+    selected: worker.selected,
+  })}
 
             <div>
                 <p class="interested-worker-name">
@@ -3667,9 +3680,9 @@ function renderPresenceCard(worker, workerIndex, shiftId) {
                     </p>
 
                     ${renderStatusPill(
-                      worker.availability.label,
-                      worker.availability.status,
-                    )}
+    worker.availability.label,
+    worker.availability.status,
+  )}
                 </div>
             </div>
         </div>
@@ -3717,8 +3730,8 @@ async function restoreActiveDirectOfferForRelease(shift) {
     }
 
     if (releaseToBoardButton) {
-  releaseToBoardButton.disabled = true;
-}
+      releaseToBoardButton.disabled = true;
+    }
 
     console.log(
       "Industry restored active sent direct offer:",
@@ -3773,14 +3786,14 @@ async function restoreActiveDirectOfferForRelease(shift) {
         cancelOfferButton.remove();
 
         if (releaseToBoardButton) {
-  releaseToBoardButton.disabled = false;
-}
+          releaseToBoardButton.disabled = false;
+        }
 
-directReleaseButton.style.display = "";
+        directReleaseButton.style.display = "";
 
-if (directReleaseDivider) {
-  directReleaseDivider.style.display = "";
-}
+        if (directReleaseDivider) {
+          directReleaseDivider.style.display = "";
+        }
 
 
 
@@ -3876,56 +3889,55 @@ function openShiftDetails(shift) {
   shiftDetailsNotes.textContent =
     shift.notes || shift.note || "No notes provided.";
   const crew = Array.isArray(authenticatedWorkplaceCrew)
-  ? authenticatedWorkplaceCrew
-  : [];
+    ? authenticatedWorkplaceCrew
+    : [];
 
-const shiftActivities = Array.isArray(authenticatedCoverageEvents)
-  ? authenticatedCoverageEvents
+  const shiftActivities = Array.isArray(authenticatedCoverageEvents)
+    ? authenticatedCoverageEvents
       .filter((event) => event.shift_id === shift.id)
       .map((event) => formatCoverageEvent(event, crew))
       .filter(Boolean)
       .sort(
-  (a, b) =>
-    new Date(b.createdAt).getTime() -
-    new Date(a.createdAt).getTime(),
-)
-  : [];
+        (a, b) =>
+          new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime(),
+      )
+    : [];
 
-if (shift.source === "imported") {
-  shiftActivities.unshift({
-    title: "Schedule imported",
-    message: "Imported from ScheduleFly.",
-    createdAt: null,
-  });
-}
+  if (shift.source === "imported") {
+    shiftActivities.unshift({
+      title: "Schedule imported",
+      message: "Imported from ScheduleFly.",
+      createdAt: null,
+    });
+  }
 
-shiftDetailsActivity.innerHTML =
-  shiftActivities.length > 0
-    ? shiftActivities
+  shiftDetailsActivity.innerHTML =
+    shiftActivities.length > 0
+      ? shiftActivities
         .map((activity) => {
           const activityTime = activity.createdAt
             ? new Date(activity.createdAt).toLocaleString("en-US", {
-                month: "short",
-                day: "numeric",
-                hour: "numeric",
-                minute: "2-digit",
-              })
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+            })
             : "";
 
           return `
             <p class="shift-activity-item">
               <strong>${activity.title}</strong>
-              ${
-                activityTime
-                  ? `<br><span>${activityTime}</span>`
-                  : ""
-              }
+              ${activityTime
+              ? `<br><span>${activityTime}</span>`
+              : ""
+            }
               <br>${activity.message}
             </p>
           `;
         })
         .join("")
-    : "<p>No activity recorded.</p>";
+      : "<p>No activity recorded.</p>";
 
   shiftDetailsCrewButton.dataset.shiftId = shift.id;
   shiftDetailsReleaseButton.dataset.shiftId = shift.id;
@@ -3999,14 +4011,14 @@ function formatCoverageEvent(event, crew = []) {
 
   const shiftLabel =
     shiftStartsAt &&
-    !Number.isNaN(shiftStartsAt.getTime())
+      !Number.isNaN(shiftStartsAt.getTime())
       ? shiftStartsAt.toLocaleString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-        })
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      })
       : "Shift";
 
   const baseActivity = {
@@ -4021,63 +4033,65 @@ function formatCoverageEvent(event, crew = []) {
       return {
         ...baseActivity,
         title: "Direct offer sent",
-        message: `${previousWorker || "Coworker"} → ${
-          newWorker || "Coworker"
-        }`,
+        message: `${previousWorker || "Coworker"} → ${newWorker || "Coworker"
+          }`,
       };
 
     case "direct_offer_accepted":
       return {
         ...baseActivity,
         title: "Direct offer accepted",
-        message: `${
-          newWorker || "Coworker"
-        } accepted the shift.`,
+        message: `${newWorker || "Coworker"
+          } accepted the shift.`,
       };
 
     case "direct_offer_approved":
       return {
         ...baseActivity,
         title: "Direct offer approved",
-        message: `${
-          newWorker || "Coworker"
-        } was assigned to the shift.`,
+        message: `${newWorker || "Coworker"
+          } was assigned to the shift.`,
       };
 
     case "direct_offer_declined":
       return {
         ...baseActivity,
         title: "Direct offer declined",
-        message: `${
-          newWorker || "Coworker"
-        } declined the shift.`,
+        message: `${newWorker || "Coworker"
+          } declined the shift.`,
       };
 
     case "direct_offer_canceled":
       return {
         ...baseActivity,
         title: "Direct offer canceled",
-        message: `${
-          previousWorker || "Coworker"
-        } canceled the direct offer.`,
+        message: `${previousWorker || "Coworker"
+          } canceled the direct offer.`,
       };
 
     case "manager_reassigned":
       return {
         ...baseActivity,
         title: "Shift reassigned",
-        message: `${
-          previousWorker || "Unassigned"
-        } → ${newWorker || "Unassigned"}`,
+        message: `${previousWorker || "Unassigned"
+          } → ${newWorker || "Unassigned"}`,
+      };
+
+    case "coverage_confirmed":
+      return {
+        ...baseActivity,
+        title: "Coverage confirmed",
+        message: previousWorker
+          ? `${previousWorker} → ${newWorker || "Coworker"}`
+          : `${newWorker || "Coworker"} picked up an open shift`,
       };
 
     case "coverage_canceled":
       return {
         ...baseActivity,
         title: "Coverage canceled",
-        message: `${
-          previousWorker || "Coworker"
-        } canceled the coverage request.`,
+        message: `${previousWorker || "Coworker"
+          } canceled the coverage request.`,
       };
 
     default:
@@ -4106,13 +4120,13 @@ function renderActivityFeed() {
       : [];
 
     activities = authenticatedCoverageEvents
-  .map((event) => formatCoverageEvent(event, crew))
-  .filter(Boolean)
-  .sort(
-    (a, b) =>
-      new Date(b.createdAt).getTime() -
-      new Date(a.createdAt).getTime(),
-  );
+      .map((event) => formatCoverageEvent(event, crew))
+      .filter(Boolean)
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime(),
+      );
   } else {
     activities = getActivityFeed().filter((activity) => {
       return activity.workerId === CURRENT_USER.id;
@@ -4126,8 +4140,8 @@ function renderActivityFeed() {
   }
 
   activityFeedList.innerHTML = activities
-  .filter(Boolean)
-  .map((activity) => {
+    .filter(Boolean)
+    .map((activity) => {
       const activityTime = new Date(activity.createdAt).toLocaleString(
         "en-US",
         {
@@ -4300,27 +4314,27 @@ async function loadAndRenderManagerDirectApprovals() {
 
     const day = startDate
       ? startDate.toLocaleDateString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-        })
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      })
       : "Shift";
 
     const startTime = startDate
       ? startDate.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        })
+        hour: "numeric",
+        minute: "2-digit",
+      })
       : "";
 
     const endTime = shift.ends_at
       ? new Date(shift.ends_at).toLocaleTimeString(
-          "en-US",
-          {
-            hour: "numeric",
-            minute: "2-digit",
-          }
-        )
+        "en-US",
+        {
+          hour: "numeric",
+          minute: "2-digit",
+        }
+      )
       : shift.end_label || "";
 
     const approvalCard =
@@ -4344,13 +4358,11 @@ async function loadAndRenderManagerDirectApprovals() {
 
         <ul class="shift-meta">
           <li>${day}</li>
-          ${
-            startTime
-              ? `<li>${startTime}${
-                  endTime ? ` – ${endTime}` : ""
-                }</li>`
-              : ""
-          }
+          ${startTime
+        ? `<li>${startTime}${endTime ? ` – ${endTime}` : ""
+        }</li>`
+        : ""
+      }
         </ul>
 
         <p class="status-text">
@@ -4366,56 +4378,56 @@ async function loadAndRenderManagerDirectApprovals() {
 </div>
 `;
 
-const approveButton = approvalCard.querySelector(
-  ".direct-offer-approve-button"
-);
+    const approveButton = approvalCard.querySelector(
+      ".direct-offer-approve-button"
+    );
 
-if (approveButton) {
-  approveButton.addEventListener("click", async () => {
-    approveButton.disabled = true;
-    approveButton.textContent = "Approving…";
+    if (approveButton) {
+      approveButton.addEventListener("click", async () => {
+        approveButton.disabled = true;
+        approveButton.textContent = "Approving…";
 
-    try {
-      const {
-        data: approvedShiftId,
-        error: approvalError,
-      } = await supabaseClient.rpc(
-        "approve_direct_shift_offer",
-        {
-          target_offer_id: offer.offer_id,
+        try {
+          const {
+            data: approvedShiftId,
+            error: approvalError,
+          } = await supabaseClient.rpc(
+            "approve_direct_shift_offer",
+            {
+              target_offer_id: offer.offer_id,
+            }
+          );
+
+          if (approvalError) {
+            throw approvalError;
+          }
+
+          console.log(
+            "Industry direct offer approved:",
+            {
+              offerId: offer.offer_id,
+              shiftId: approvedShiftId,
+            }
+          );
+
+          approvalCard.remove();
+
+          if (shiftBoardStatus) {
+            shiftBoardStatus.textContent =
+              `${offer.recipient_name} is now assigned to the shift.`;
+          }
+        } catch (error) {
+          console.error(
+            "Industry direct offer approval error:",
+            error
+          );
+
+          approveButton.disabled = false;
+          approveButton.textContent =
+            "Approve Direct Offer";
         }
-      );
-
-      if (approvalError) {
-        throw approvalError;
-      }
-
-      console.log(
-        "Industry direct offer approved:",
-        {
-          offerId: offer.offer_id,
-          shiftId: approvedShiftId,
-        }
-      );
-
-      approvalCard.remove();
-
-      if (shiftBoardStatus) {
-        shiftBoardStatus.textContent =
-          `${offer.recipient_name} is now assigned to the shift.`;
-      }
-    } catch (error) {
-      console.error(
-        "Industry direct offer approval error:",
-        error
-      );
-
-      approveButton.disabled = false;
-      approveButton.textContent =
-        "Approve Direct Offer";
+      });
     }
-  });
-}
 
     shiftBoardList.appendChild(approvalCard);
   });
@@ -4430,31 +4442,31 @@ function renderShiftBoard() {
   const shifts = isAuthenticatedCatchMode
     ? (authenticatedCatchShifts ?? [])
     : getAllShifts().filter((shift) => {
-        const displayedStatus = getDisplayedShiftStatus(shift, responses);
+      const displayedStatus = getDisplayedShiftStatus(shift, responses);
 
-        const isCatchOpportunity =
-          shift.source === "catch-board" ||
-          sampleShifts.some((sampleShift) => sampleShift.id === shift.id);
+      const isCatchOpportunity =
+        shift.source === "catch-board" ||
+        sampleShifts.some((sampleShift) => sampleShift.id === shift.id);
 
-        const hasBeenScheduled = scheduledShifts.some(
-          (scheduledShift) => scheduledShift.sourceBoardShiftId === shift.id,
-        );
+      const hasBeenScheduled = scheduledShifts.some(
+        (scheduledShift) => scheduledShift.sourceBoardShiftId === shift.id,
+      );
 
-        const isCompletedOpportunity =
-          displayedStatus === "Confirmed" || displayedStatus === "Scheduled";
+      const isCompletedOpportunity =
+        displayedStatus === "Confirmed" || displayedStatus === "Scheduled";
 
-        return (
-          isCatchOpportunity && !hasBeenScheduled && !isCompletedOpportunity
-        );
-      });
+      return (
+        isCatchOpportunity && !hasBeenScheduled && !isCompletedOpportunity
+      );
+    });
 
   shiftBoardList.innerHTML = "";
 
   if (
-  authenticatedWorkplaceRole?.toLowerCase() === "manager"
-) {
-  loadAndRenderManagerDirectApprovals();
-}
+    authenticatedWorkplaceRole?.toLowerCase() === "manager"
+  ) {
+    loadAndRenderManagerDirectApprovals();
+  }
 
   if (shifts.length === 0) {
     const isManager = authenticatedWorkplaceRole?.toLowerCase() === "manager";
@@ -4462,19 +4474,17 @@ function renderShiftBoard() {
     shiftBoardList.innerHTML = `
     <div class="catch-empty-state">
       <p class="catch-empty-title">
-        ${
-          isManager
-            ? "No coverage activity right now."
-            : "New coverage activity will appear here."
-        }
+        ${isManager
+        ? "No coverage activity right now."
+        : "New coverage activity will appear here."
+      }
       </p>
 
       <p class="catch-empty-text">
-        ${
-          isManager
-            ? "New coverage activity will appear here."
-            : "Available shifts will appear here."
-        }
+        ${isManager
+        ? "New coverage activity will appear here."
+        : "Available shifts will appear here."
+      }
       </p>
     </div>
   `;
@@ -4488,8 +4498,8 @@ function renderShiftBoard() {
 
     const backendInterests = isAuthenticatedCatchMode
       ? (authenticatedShiftInterests ?? []).filter(
-          (interest) => interest.shift_id === shift.id,
-        )
+        (interest) => interest.shift_id === shift.id,
+      )
       : [];
 
     const legacyResponse = isAuthenticatedCatchMode
@@ -4518,23 +4528,23 @@ function renderShiftBoard() {
 
     const interestedWorkers = isAuthenticatedCatchMode
       ? backendInterests.map((interest) => ({
-          id: interest.profile_id,
-          name: interest.profile?.full_name || "Coworker",
-          role: "Coworker",
-          availability: {
-            label:
-              interest.status === "confirmed"
-                ? "Confirmed"
-                : interest.status === "selected"
-                  ? "Selected"
-                  : "Interested",
-            status: "available",
-          },
-          selected:
-            interest.status === "selected" || interest.status === "confirmed",
-          interestId: interest.id,
-          interestStatus: interest.status,
-        }))
+        id: interest.profile_id,
+        name: interest.profile?.full_name || "Coworker",
+        role: "Coworker",
+        availability: {
+          label:
+            interest.status === "confirmed"
+              ? "Confirmed"
+              : interest.status === "selected"
+                ? "Selected"
+                : "Interested",
+          status: "available",
+        },
+        selected:
+          interest.status === "selected" || interest.status === "confirmed",
+        interestId: interest.id,
+        interestStatus: interest.status,
+      }))
       : legacyResponse?.interestedWorkers || [];
     const confirmedBackendInterest = isAuthenticatedCatchMode
       ? (backendInterests.find((interest) => interest.status === "confirmed") ??
@@ -4551,9 +4561,9 @@ function renderShiftBoard() {
 
     const isAccepted = isAuthenticatedCatchMode
       ? backendInterests.some(
-          (interest) =>
-            interest.status === "selected" || interest.status === "confirmed",
-        )
+        (interest) =>
+          interest.status === "selected" || interest.status === "confirmed",
+      )
       : Boolean(legacyResponse?.accepted);
 
     const catchTimeline = getCatchTimeline(
@@ -4571,21 +4581,21 @@ function renderShiftBoard() {
 
     const shiftHasInterest = isAuthenticatedCatchMode
       ? ["interest", "selected", "confirmed"].includes(publicCoverageStage) ||
-        backendInterests.some((interest) =>
-          ["interested", "selected", "confirmed"].includes(interest.status),
-        )
+      backendInterests.some((interest) =>
+        ["interested", "selected", "confirmed"].includes(interest.status),
+      )
       : hasAnyInterest;
 
     const shiftIsSelected = isAuthenticatedCatchMode
       ? ["selected", "confirmed"].includes(publicCoverageStage) ||
-        backendInterests.some((interest) =>
-          ["selected", "confirmed"].includes(interest.status),
-        )
+      backendInterests.some((interest) =>
+        ["selected", "confirmed"].includes(interest.status),
+      )
       : isAccepted;
 
     const shiftIsConfirmed = isAuthenticatedCatchMode
       ? publicCoverageStage === "confirmed" ||
-        backendInterests.some((interest) => interest.status === "confirmed")
+      backendInterests.some((interest) => interest.status === "confirmed")
       : isConfirmed;
 
     const anotherWorkerSelected =
@@ -4614,15 +4624,15 @@ function renderShiftBoard() {
 
         <div class="interested-workers-list">
           ${renderPresenceCard(
-            {
-              ...confirmedWorker,
-              selected: true,
-            },
-            interestedWorkers.findIndex(
-              (worker) => worker.id === confirmedWorker.id,
-            ),
-            shift.id,
-          )}
+          {
+            ...confirmedWorker,
+            selected: true,
+          },
+          interestedWorkers.findIndex(
+            (worker) => worker.id === confirmedWorker.id,
+          ),
+          shift.id,
+        )}
         </div>
 
         <p class="shift-helper-text">
@@ -4638,10 +4648,10 @@ function renderShiftBoard() {
 
         <div class="interested-workers-list">
           ${interestedWorkers
-            .map((worker, workerIndex) =>
-              renderPresenceCard(worker, workerIndex, shift.id),
-            )
-            .join("")}
+          .map((worker, workerIndex) =>
+            renderPresenceCard(worker, workerIndex, shift.id),
+          )
+          .join("")}
         </div>
       </section>
     `
@@ -4656,9 +4666,8 @@ function renderShiftBoard() {
       .map(
         (event, index) => `
       <div
-        class="catch-timeline-event ${
-          index === catchTimeline.length - 1 ? "is-current" : ""
-        }"
+        class="catch-timeline-event ${index === catchTimeline.length - 1 ? "is-current" : ""
+          }"
       >
         <span class="catch-timeline-marker" aria-hidden="true"></span>
 
@@ -4688,25 +4697,23 @@ function renderShiftBoard() {
         ? `
         <div class="response-panel">
          ${interestedWorkersMarkup}
-         ${
-           hasInterest
-             ? `
+         ${hasInterest
+          ? `
       <div class="catch-timeline">
         <h4 class="catch-timeline-heading">Coverage History</h4>
 
         ${catchTimelineMarkup}
       </div>
     `
-             : ""
-         }
+          : ""
+        }
           <p class="status-text">Keep messages tied to the shift so coverage decisions stay clear.</p>
           <div class="message-preview">
             <p>I can take this if manager approves.</p>
             <p>Perfect. I'll mark it as pending.</p>
           </div>
-         ${
-           isConfirmed
-             ? `
+         ${isConfirmed
+          ? `
       <div class="schedule-action-panel">
         <p class="status-text">Coverage confirmed.</p>
         <p class="shift-helper-text">
@@ -4721,8 +4728,8 @@ function renderShiftBoard() {
         </button>
       </div>
     `
-             : isAccepted
-               ? `
+          : isAccepted
+            ? `
         <div class="schedule-action-panel">
           <p class="status-text">Worker selected.</p>
           <p class="shift-helper-text">Awaiting manager approval.</p>
@@ -4743,19 +4750,18 @@ function renderShiftBoard() {
           </button>
         </div>
       `
-               : isAuthenticatedCatchMode
-                 ? `
+            : isAuthenticatedCatchMode
+              ? `
       <div class="schedule-action-panel">
         <p class="status-text">
-          ${
-            hasInterestedCoworkers
-              ? "Select an interested coworker above."
-              : "Waiting for coworker interest."
-          }
+          ${hasInterestedCoworkers
+                ? "Select an interested coworker above."
+                : "Waiting for coworker interest."
+              }
         </p>
       </div>
     `
-                 : `
+              : `
       <div class="shift-action-row">
         <button
           class="action-button secondary-action shift-message-button"
@@ -4781,7 +4787,7 @@ function renderShiftBoard() {
         </button>
       </div>
     `
-         }
+        }
         </div>
       `
         : "";
@@ -4824,15 +4830,14 @@ function renderShiftBoard() {
     <li>${shift.time}</li>
   </ul>
 
-  ${
-    shift.neighborhood
-      ? `
+  ${shift.neighborhood
+        ? `
       <ul class="shift-meta">
         <li>${shift.neighborhood}</li>
       </ul>
     `
-      : ""
-  }
+        : ""
+      }
 
   <p class="shift-release-time">
   ${releasedTimeLabel}
@@ -4846,23 +4851,20 @@ function renderShiftBoard() {
  <span>${coverageStatusLabel}</span>
 </div>
 <div class="catch-progress ${statusClass}" aria-label="Shift coverage progress">
-  <div class="catch-progress-step ${shiftHasInterest ? "is-complete" : ""} ${
-    shiftHasInterest && !shiftIsSelected ? "is-current" : ""
-  }">
+  <div class="catch-progress-step ${shiftHasInterest ? "is-complete" : ""} ${shiftHasInterest && !shiftIsSelected ? "is-current" : ""
+      }">
     <span class="catch-progress-dot"></span>
     <span>Interest</span>
   </div>
 
-  <div class="catch-progress-step ${shiftIsSelected ? "is-complete" : ""} ${
-    shiftIsSelected && !shiftIsConfirmed ? "is-current" : ""
-  }">
+  <div class="catch-progress-step ${shiftIsSelected ? "is-complete" : ""} ${shiftIsSelected && !shiftIsConfirmed ? "is-current" : ""
+      }">
     <span class="catch-progress-dot"></span>
     <span>Selected</span>
   </div>
 
-  <div class="catch-progress-step ${
-    shiftIsConfirmed ? "is-complete is-current" : ""
-  }">
+  <div class="catch-progress-step ${shiftIsConfirmed ? "is-complete is-current" : ""
+      }">
     <span class="catch-progress-dot"></span>
     <span>Confirmed</span>
   </div>
@@ -4872,24 +4874,22 @@ function renderShiftBoard() {
 <p>${shift.notes || shift.note || "No additional notes."}</p>
 </div>
       <div class="shift-action-row">
-        ${
-          isOwnCoverageRequest
-  ? `
+        ${isOwnCoverageRequest
+        ? `
 <button
   class="action-button cancel-coverage-button"
   type="button"
   data-shift-id="${shift.id}"
   ${shiftIsSelected || shiftIsConfirmed ? "disabled" : ""}
 >
-  ${
-    shiftIsSelected
-      ? "Coverage awaiting approval"
-      : "Cancel coverage request"
-  }
+  ${shiftIsSelected
+          ? "Coverage awaiting approval"
+          : "Cancel coverage request"
+        }
 </button>
 `
-            : canManagerApprove
-              ? `
+        : canManagerApprove
+          ? `
         <button
           class="action-button manager-approve-button"
           type="button"
@@ -4899,9 +4899,9 @@ function renderShiftBoard() {
           Approve Coverage
         </button>
       `
-              : authenticatedWorkplaceRole?.toLowerCase() === "manager"
-                ? ""
-                : `
+          : authenticatedWorkplaceRole?.toLowerCase() === "manager"
+            ? ""
+            : `
 <button
   class="action-button board-action-button"
   type="button"
@@ -4911,11 +4911,10 @@ function renderShiftBoard() {
   ${boardButtonLabel}
 </button>
 `
-        }
-        ${
-          isConfirmed
-            ? ""
-            : `
+      }
+        ${isConfirmed
+        ? ""
+        : `
       <button
         class="action-button secondary-action view-crew-button"
         type="button"
@@ -4924,7 +4923,7 @@ function renderShiftBoard() {
         View shift crew
       </button>
     `
-        }
+      }
       </div>
       ${responsePanel}
     `;
@@ -5367,9 +5366,8 @@ function renderTipAnalytics(entries) {
   tipWeekTotal.textContent = formatMoney(weekTotal);
   tipMonthTotal.textContent = formatMoney(monthTotal);
   tipBestShiftTotal.textContent = formatMoney(bestShift.total);
-  tipBestShiftDetail.textContent = `${
-    bestShift.workplace || "Workplace not added"
-  } · ${formatSavedDate(bestShift.date)}`;
+  tipBestShiftDetail.textContent = `${bestShift.workplace || "Workplace not added"
+    } · ${formatSavedDate(bestShift.date)}`;
 }
 
 function renderTipEntries() {
@@ -5413,9 +5411,8 @@ function renderTipEntries() {
 
   tipSummaryPanel.classList.remove("hidden-panel");
   tipSummaryTotal.textContent = formatMoney(totalEarned);
-  tipSummaryDetail.textContent = `${entries.length} saved ${
-    entries.length === 1 ? "shift" : "shifts"
-  }.`;
+  tipSummaryDetail.textContent = `${entries.length} saved ${entries.length === 1 ? "shift" : "shifts"
+    }.`;
 
   entries.forEach((entry) => {
     const entryTotal = entry.cashTips + entry.creditTips;
@@ -5520,8 +5517,7 @@ function renderTipEntries() {
       }
 
       const confirmed = window.confirm(
-        `Delete the ${formatSavedDate(entryToDelete.date)} shift from ${
-          entryToDelete.workplace || "this workplace"
+        `Delete the ${formatSavedDate(entryToDelete.date)} shift from ${entryToDelete.workplace || "this workplace"
         }?`,
       );
 
@@ -5669,16 +5665,16 @@ function renderMockCalendar() {
     .map((day) => {
       const shiftBlocks = day.shifts.length
         ? day.shifts
-            .map(
-              (shift) => `
+          .map(
+            (shift) => `
                 <div class="mock-calendar-shift">
                   <strong>${shift.role}</strong>
                   <span>${shift.time}</span>
                   <span>${shift.workplace}</span>
                 </div>
               `,
-            )
-            .join("")
+          )
+          .join("")
         : `<p class="mock-calendar-empty">No shift</p>`;
 
       return `
@@ -5862,13 +5858,12 @@ function renderAuthenticatedScheduleShifts(shifts) {
     shiftCard.innerHTML = `
       <div class="stack-copy">
         <p class="stack-kicker">
-          ${
-            isCoverageNeeded
-              ? "Coverage requested"
-              : isCurrent
-                ? "Current shift"
-                : "Scheduled shift"
-          }
+          ${isCoverageNeeded
+        ? "Coverage requested"
+        : isCurrent
+          ? "Current shift"
+          : "Scheduled shift"
+      }
         </p>
 
         <h3>${shift.day}</h3>
@@ -5942,16 +5937,15 @@ function renderAuthenticatedScheduleShifts(shifts) {
                 <strong>${shift.clockedOutTime}</strong>
               </p>
 
-              ${
-                shift.recordedInIndustryTime
-                  ? `
+              ${shift.recordedInIndustryTime
+          ? `
                     <p>
                       <span>Recorded in Industry</span>
                       <strong>${shift.recordedInIndustryTime}</strong>
                     </p>
                   `
-                  : ""
-              }
+          : ""
+        }
             </div>
           `
         : "";
@@ -6017,16 +6011,14 @@ async function loadAndRenderDirectShiftOffers() {
         <p>${shift.role || "Shift"}</p>
 
         <p class="status-text">
-          ${
-            offer.offer_status === "accepted"
-              ? "You accepted this offer. Waiting for manager approval."
-              : "This coworker sent this shift directly to you."
-          }
+          ${offer.offer_status === "accepted"
+        ? "You accepted this offer. Waiting for manager approval."
+        : "This coworker sent this shift directly to you."
+      }
         </p>
 
-        ${
-          offer.offer_status === "pending"
-            ? `
+        ${offer.offer_status === "pending"
+        ? `
               <div class="direct-offer-actions">
                 <button
                   type="button"
@@ -6045,82 +6037,82 @@ async function loadAndRenderDirectShiftOffers() {
                 </button>
               </div>
             `
-            : ""
-        }
+        : ""
+      }
       </div>
     `;
 
     const acceptButton = offerCard.querySelector(
-  ".direct-offer-accept"
-);
+      ".direct-offer-accept"
+    );
 
-const declineButton = offerCard.querySelector(
-  ".direct-offer-decline"
-);
+    const declineButton = offerCard.querySelector(
+      ".direct-offer-decline"
+    );
 
-const respondToDirectOffer = async (responseAction) => {
-  if (acceptButton) {
-    acceptButton.disabled = true;
-  }
-
-  if (declineButton) {
-    declineButton.disabled = true;
-  }
-
-  try {
-    const {
-      data: responseStatus,
-      error: responseError,
-    } = await supabaseClient.rpc(
-      "respond_to_direct_shift_offer",
-      {
-        target_offer_id: offer.offer_id,
-        response_action: responseAction,
+    const respondToDirectOffer = async (responseAction) => {
+      if (acceptButton) {
+        acceptButton.disabled = true;
       }
-    );
 
-    if (responseError) {
-      throw responseError;
-    }
-
-    console.log(
-      "Industry direct offer response:",
-      {
-        offerId: offer.offer_id,
-        response: responseStatus,
+      if (declineButton) {
+        declineButton.disabled = true;
       }
-    );
 
-    renderImportedShifts(
-      authenticatedScheduleShifts
-    );
-  } catch (error) {
-    console.error(
-      "Industry direct offer response error:",
-      error
-    );
+      try {
+        const {
+          data: responseStatus,
+          error: responseError,
+        } = await supabaseClient.rpc(
+          "respond_to_direct_shift_offer",
+          {
+            target_offer_id: offer.offer_id,
+            response_action: responseAction,
+          }
+        );
+
+        if (responseError) {
+          throw responseError;
+        }
+
+        console.log(
+          "Industry direct offer response:",
+          {
+            offerId: offer.offer_id,
+            response: responseStatus,
+          }
+        );
+
+        renderImportedShifts(
+          authenticatedScheduleShifts
+        );
+      } catch (error) {
+        console.error(
+          "Industry direct offer response error:",
+          error
+        );
+
+        if (acceptButton) {
+          acceptButton.disabled = false;
+        }
+
+        if (declineButton) {
+          declineButton.disabled = false;
+        }
+      }
+    };
 
     if (acceptButton) {
-      acceptButton.disabled = false;
+      acceptButton.addEventListener("click", () => {
+        respondToDirectOffer("accept");
+      });
     }
 
     if (declineButton) {
-      declineButton.disabled = false;
+      declineButton.addEventListener("click", () => {
+        respondToDirectOffer("decline");
+      });
     }
-  }
-};
-
-if (acceptButton) {
-  acceptButton.addEventListener("click", () => {
-    respondToDirectOffer("accept");
-  });
-}
-
-if (declineButton) {
-  declineButton.addEventListener("click", () => {
-    respondToDirectOffer("decline");
-  });
-}
 
     importedShiftList.appendChild(offerCard);
   });
@@ -6130,10 +6122,10 @@ function renderImportedShifts(backendShifts = authenticatedScheduleShifts) {
   importedShiftList.innerHTML = "";
 
   if (backendShifts !== undefined) {
-  renderAuthenticatedScheduleShifts(backendShifts);
-  loadAndRenderDirectShiftOffers();
-  return;
-}
+    renderAuthenticatedScheduleShifts(backendShifts);
+    loadAndRenderDirectShiftOffers();
+    return;
+  }
 
   const responses = getShiftResponses();
 
@@ -8389,9 +8381,8 @@ window.addEventListener("hashchange", applyHashSection);
     if (overallMessage) {
       overallMessage.textContent = allSectionsReady
         ? "Your profile, preferences, availability, and resume are ready to support future applications."
-        : `${incompleteCount} ${
-            incompleteCount === 1 ? "item needs" : "items need"
-          } attention before your application tools are complete.`;
+        : `${incompleteCount} ${incompleteCount === 1 ? "item needs" : "items need"
+        } attention before your application tools are complete.`;
     }
   }
 
@@ -8543,9 +8534,8 @@ window.addEventListener("hashchange", applyHashSection);
     if (jumpReadinessMessage) {
       jumpReadinessMessage.textContent = allSectionsReady
         ? "Industry can now use your saved information to support your search and future applications."
-        : `${incompleteCount} ${
-            incompleteCount === 1 ? "item needs" : "items need"
-          } attention before you are ready to jump.`;
+        : `${incompleteCount} ${incompleteCount === 1 ? "item needs" : "items need"
+        } attention before you are ready to jump.`;
     }
 
     if (jumpReadinessAction) {
@@ -8727,14 +8717,14 @@ window.addEventListener("hashchange", applyHashSection);
       const employmentMatches =
         Boolean(preferences.employmentType) &&
         normalizeMatchValue(preferences.employmentType) ===
-          normalizeMatchValue(card.dataset.opportunityEmployment);
+        normalizeMatchValue(card.dataset.opportunityEmployment);
 
       const shiftMatches = valuesMatch(preferredShifts, opportunityShifts);
 
       const locationMatches =
         Boolean(preferences.searchLocation) &&
         normalizeMatchValue(preferences.searchLocation) ===
-          normalizeMatchValue(card.dataset.opportunityLocation);
+        normalizeMatchValue(card.dataset.opportunityLocation);
 
       const matchScore = [
         roleMatches,
@@ -9079,8 +9069,7 @@ const SUPABASE_PUBLISHABLE_KEY = IS_LOCAL_INDUSTRY
   : "sb_publishable_I4zjPUH_5zqN0x2cV_n1iQ_-gUwPS2H";
 
 console.log(
-  `Industry Supabase environment: ${
-    IS_LOCAL_INDUSTRY ? "LOCAL" : "PRODUCTION"
+  `Industry Supabase environment: ${IS_LOCAL_INDUSTRY ? "LOCAL" : "PRODUCTION"
   }`,
 );
 
@@ -9286,6 +9275,8 @@ window.addEventListener("focus", () => {
 function updateDashboardForRole() {
   const isManager = authenticatedWorkplaceRole?.toLowerCase() === "manager";
 
+  dashboardNextShiftPanel?.toggleAttribute("hidden", isManager);
+
   if (resetDemoDataButton) {
     resetDemoDataButton.hidden = true;
   }
@@ -9327,14 +9318,14 @@ function updateDashboardForRole() {
     ).length;
 
     const coverageShiftCount = (authenticatedTeamScheduleShifts || []).filter(
-  (shift) => shift.status === "coverage_needed"
-).length;
+      (shift) => shift.status === "coverage_needed"
+    ).length;
 
-const directApprovalCount =
-  authenticatedManagerDirectApprovals?.length || 0;
+    const directApprovalCount =
+      authenticatedManagerDirectApprovals?.length || 0;
 
-const coverageCount =
-  coverageShiftCount + directApprovalCount;
+    const coverageCount =
+      coverageShiftCount + directApprovalCount;
 
     const crewCount = authenticatedManagerCrew?.length || 0;
 
@@ -9585,42 +9576,42 @@ async function loadAuthenticatedIndustryProfile() {
   authenticatedDisplayName = displayName;
 
   const {
-  data: workplaceCoworkers,
-  error: workplaceCoworkersError,
-} = await supabaseClient.rpc("get_direct_release_coworkers");
+    data: workplaceCoworkers,
+    error: workplaceCoworkersError,
+  } = await supabaseClient.rpc("get_direct_release_coworkers");
 
-if (workplaceCoworkersError) {
-  console.error(
-    "Industry workplace crew load error:",
-    workplaceCoworkersError,
+  if (workplaceCoworkersError) {
+    console.error(
+      "Industry workplace crew load error:",
+      workplaceCoworkersError,
+    );
+
+    authenticatedWorkplaceCrew = [
+      {
+        id: authenticatedUserId,
+        name: fullName,
+        role: authenticatedWorkplaceRole || "",
+      },
+    ];
+  } else {
+    authenticatedWorkplaceCrew = [
+      {
+        id: authenticatedUserId,
+        name: fullName,
+        role: authenticatedWorkplaceRole || "",
+      },
+      ...(workplaceCoworkers || []).map((coworker) => ({
+        id: coworker.profile_id,
+        name: coworker.full_name || "Crew member",
+        role: coworker.role || "",
+      })),
+    ];
+  }
+
+  console.log(
+    "Industry authenticated workplace crew loaded:",
+    authenticatedWorkplaceCrew,
   );
-
-  authenticatedWorkplaceCrew = [
-    {
-      id: authenticatedUserId,
-      name: fullName,
-      role: authenticatedWorkplaceRole || "",
-    },
-  ];
-} else {
-  authenticatedWorkplaceCrew = [
-    {
-      id: authenticatedUserId,
-      name: fullName,
-      role: authenticatedWorkplaceRole || "",
-    },
-    ...(workplaceCoworkers || []).map((coworker) => ({
-      id: coworker.profile_id,
-      name: coworker.full_name || "Crew member",
-      role: coworker.role || "",
-    })),
-  ];
-}
-
-console.log(
-  "Industry authenticated workplace crew loaded:",
-  authenticatedWorkplaceCrew,
-);
 
   updateIndustryDashboardGreeting();
 
@@ -9665,22 +9656,22 @@ async function setupIndustryRealtime() {
         ]);
 
         if (
-  authenticatedWorkplaceRole?.toLowerCase() !== "manager" &&
-  selectedReleaseShift?.id &&
-  !authenticatedScheduleShifts.some(
-    (shift) => shift.id === selectedReleaseShift.id
-  )
-) {
-  selectedReleaseShift = null;
+          authenticatedWorkplaceRole?.toLowerCase() !== "manager" &&
+          selectedReleaseShift?.id &&
+          !authenticatedScheduleShifts.some(
+            (shift) => shift.id === selectedReleaseShift.id
+          )
+        ) {
+          selectedReleaseShift = null;
 
-  setActiveSection("schedule");
-  setActiveScheduleView("my-shifts");
+          setActiveSection("schedule");
+          setActiveScheduleView("my-shifts");
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-}
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }
 
         if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {
           await loadAuthenticatedTeamSchedule();
@@ -9728,55 +9719,55 @@ async function setupIndustryRealtime() {
         ]);
 
         if (
-  authenticatedWorkplaceRole?.toLowerCase() !== "manager" &&
-  selectedReleaseShift?.id &&
-  !authenticatedScheduleShifts.some(
-    (shift) => shift.id === selectedReleaseShift.id
-  )
-) {
-  selectedReleaseShift = null;
+          authenticatedWorkplaceRole?.toLowerCase() !== "manager" &&
+          selectedReleaseShift?.id &&
+          !authenticatedScheduleShifts.some(
+            (shift) => shift.id === selectedReleaseShift.id
+          )
+        ) {
+          selectedReleaseShift = null;
 
-  setActiveSection("schedule");
-  setActiveScheduleView("my-shifts");
+          setActiveSection("schedule");
+          setActiveScheduleView("my-shifts");
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-}
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }
 
-if (
-  selectedReleaseShift?.id &&
-  authenticatedScheduleShifts.some(
-    (shift) => shift.id === selectedReleaseShift.id
-  )
-) {
-  const refreshedShift = authenticatedScheduleShifts.find(
-    (shift) => shift.id === selectedReleaseShift.id
-  );
+        if (
+          selectedReleaseShift?.id &&
+          authenticatedScheduleShifts.some(
+            (shift) => shift.id === selectedReleaseShift.id
+          )
+        ) {
+          const refreshedShift = authenticatedScheduleShifts.find(
+            (shift) => shift.id === selectedReleaseShift.id
+          );
 
-  prefillReleaseForm(refreshedShift);
-}
+          prefillReleaseForm(refreshedShift);
+        }
 
-const isShiftDetailsOpen = Array.from(scheduleSubviews).some(
-  (subview) =>
-    subview.dataset.scheduleSubview === "shift-details" &&
-    subview.classList.contains("active")
-);
+        const isShiftDetailsOpen = Array.from(scheduleSubviews).some(
+          (subview) =>
+            subview.dataset.scheduleSubview === "shift-details" &&
+            subview.classList.contains("active")
+        );
 
-if (isShiftDetailsOpen) {
-  const openShiftId =
-    shiftDetailsReleaseButton?.dataset.shiftId ||
-    shiftDetailsCrewButton?.dataset.shiftId;
+        if (isShiftDetailsOpen) {
+          const openShiftId =
+            shiftDetailsReleaseButton?.dataset.shiftId ||
+            shiftDetailsCrewButton?.dataset.shiftId;
 
-  const refreshedShift = authenticatedScheduleShifts.find(
-    (shift) => shift.id === openShiftId
-  );
+          const refreshedShift = authenticatedScheduleShifts.find(
+            (shift) => shift.id === openShiftId
+          );
 
-  if (refreshedShift) {
-    openShiftDetails(refreshedShift);
-  }
-}
+          if (refreshedShift) {
+            openShiftDetails(refreshedShift);
+          }
+        }
 
         updateDashboardForRole();
         renderActivityFeed();
