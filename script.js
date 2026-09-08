@@ -2051,6 +2051,7 @@ if (managerSaveShiftButton) {
       const { error } = await supabaseClient.from("shifts").insert({
         workplace_id: authenticatedWorkplaceId,
         assigned_profile_id: assignedProfileId,
+        manager_profile_id: authenticatedUserId,
         role,
         starts_at: startsAtDate.toISOString(),
         ends_at: endsAt,
