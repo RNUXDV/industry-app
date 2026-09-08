@@ -1678,6 +1678,9 @@ async function loadAuthenticatedCoverageEvents() {
       previous_profile_id,
       new_profile_id,
       created_at,
+      shift_starts_at,
+      shift_ends_at,
+      shift_role,
       shift:shifts (
         starts_at,
         ends_at,
@@ -4006,8 +4009,11 @@ function formatCoverageEvent(event, crew = []) {
     event.new_profile_id
   );
 
-  const shiftStartsAt = event.shift?.starts_at
-    ? new Date(event.shift.starts_at)
+  const shiftStartsAtValue =
+    event.shift_starts_at || event.shift?.starts_at;
+
+  const shiftStartsAt = shiftStartsAtValue
+    ? new Date(shiftStartsAtValue)
     : null;
 
   const shiftLabel =
