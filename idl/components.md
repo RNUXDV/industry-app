@@ -262,7 +262,7 @@ Status: Active
 
 ### Purpose
 
-Displays persistent worker-specific updates related to shift releases, Catch approvals, ownership changes, and future schedule events.
+Displays persistent workplace Schedule updates related to Catch, Direct Send, manager reassignment, and ownership changes.
 
 ### Entry Point
 
@@ -270,48 +270,43 @@ My Shifts → Quick Tools → Activity
 
 ### Data Source
 
-Local storage key:
+Authenticated mode reads `public.coverage_events` through Supabase. Each event stores the associated shift ID plus a safe date/time/role snapshot so the record remains understandable when RLS later removes access to the live shift.
 
-`industry-v2-activity`
+The original `industry-v2-activity` local-storage feed remains only as a fallback for the unauthenticated demo layer.
 
 Rendered through:
 
-- `getActivityFeed()`
-- `addActivity(activity)`
+- `loadAuthenticatedCoverageEvents()`
+- `formatCoverageEvent()`
 - `renderActivityFeed()`
+- `renderShiftDetailsActivity()`
 
 ### Current Event Types
 
-#### Shift Released
-
-Shown to the worker who released the shift.
-
-Fields used:
-
-- `type`
-- `title`
-- `message`
-- `workerId`
-- `shiftId`
-- `workplace`
-- `createdAt`
-
-#### Coverage Approved
-
-Shown to the worker approved for the shift.
-
-Additional field:
-
-- `approvedBy`
+- `coverage_confirmed`
+- `coverage_canceled`
+- `direct_offer_sent`
+- `direct_offer_accepted`
+- `direct_offer_approved`
+- `direct_offer_declined`
+- `direct_offer_canceled`
+- `manager_reassigned`
 
 ### Behavior
 
-- Filters events using `CURRENT_USER.id`
+- Authenticated workplace members receive the workplace event stream under RLS
+- Direct Send offer controls remain recipient-specific even though their current event history is workplace-visible
 - Displays newest events first
-- Persists through local storage
-- Clears when demo data is reset
+- Persists in PostgreSQL across refresh, relogin, and ownership changes
+- Updates through the `coverage_events` realtime subscription
+- Refreshes the full Activity feed and the embedded Shift Details Activity panel from the same loaded event data
+- Uses the event snapshot when the live shift row is no longer visible
 - Opens as the `activity-feed` Schedule subview
 - Returns to My Shifts through the existing back navigation
+
+### Pilot Decision
+
+Before hosted pilot migration, confirm whether Direct Send Activity should remain workplace-visible or be limited to the sender, recipient, and managers.
 
 ### Visual Structure
 
@@ -321,37 +316,20 @@ Each activity card contains:
 - event title
 - timestamp
 - event message
-- optional approval detail
-- workplace
+- shift date and start time
 
 ---
 
-Last Updated: 2026-07-30
-Sprint: 002
-Status: Active
+Last Updated: 2026-09-08
+Milestone: Local Schedule stabilization
+Status: Implemented and locally verified
 
 ---
 
 ### Multi-Worker Behavior
 
-The Catch workflow is driven by `CURRENT_USER`.
+Authenticated identity comes from Supabase Auth and workplace membership rather than a hardcoded demo worker. Catch and Direct Send preserve the original owner until manager approval, then update ownership and broadcast the resulting Schedule and Activity state to affected sessions.
 
-When a worker selects “I Can Take This,” the system stores the active worker’s:
-
-- `id`
-- `name`
-- `role`
-
-The approval flow then transfers the shift to that worker and creates worker-specific activity.
-
-Supported demo workers:
-
-- Maya Chen
-- Chris Hall
-- Sam Ortiz
-
-No worker is hardcoded into the Catch or approval logic.
-
-Last Updated: 2026-07-30
-Sprint: 003
-Status: Active
+Last Updated: 2026-09-08
+Milestone: Local Schedule stabilization
+Status: Implemented and locally verified

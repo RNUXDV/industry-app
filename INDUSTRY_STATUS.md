@@ -1,6 +1,6 @@
 # Industry: Product and Development Status
 
-Last reconciled: September 1, 2026
+Last reconciled: September 8, 2026
 
 Active development branch: `backend-schedule`
 
@@ -104,7 +104,17 @@ Emotional direction by pillar:
 - Active offers restore after navigation or reload, and successful approval reassigns the shift.
 - Realtime listeners refresh offer state, manager approvals, schedules, Catch, and activity.
 - Activity naming and newest-first ordering were refined.
-- The current local change permits the sender to cancel an accepted Direct Send before manager approval.
+- Senders can cancel pending or accepted Direct Sends before manager approval.
+
+### Phase 8 — Local Schedule stabilization: September 8
+
+- The final local Schedule matrix was exercised across Robert, Worker B, Worker C, and Manager C in isolated browser sessions.
+- Public Catch passed release, multiple interests, withdrawal, selection, manager approval, ownership transfer, cancellation, refresh/relogin persistence, and realtime synchronization.
+- Direct Send passed private delivery, acceptance, decline, sender cancellation before approval, manager approval, ownership transfer, and persistence.
+- Manager-created shifts now retain their creating manager so Shift Details shows the correct manager.
+- Activity events now preserve a shift date/time/role snapshot after RLS removes access to the live shift row.
+- The full Activity page and the embedded Shift Details Activity panel now update from the same realtime data.
+- Safari restored an authenticated Schedule session after a hard refresh.
 
 ## 4. What is implemented now
 
@@ -169,7 +179,7 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 ### Repository and branches
 
 - Active branch: `backend-schedule`.
-- The accepted-offer cancellation and realtime checkpoint is recorded in commit `0b6d6ff`.
+- The September 8 local stabilization checkpoint ends at commit `3d0cd42`.
 - `backend-schedule` contains the backend work developed after `main` and has not diverged from it.
 - `main` remains at the August 10 front-end usability-testing checkpoint.
 - Earlier `backend-dev` and `ux-refinement` branches record intermediate backend/auth work; they are not the active development branch.
@@ -196,26 +206,22 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 
 ## 6. Latest completed checkpoint
 
-Commit `0b6d6ff` checkpoints the completed Direct Send work:
+September 8 produced three reviewed and pushed fixes:
 
-1. `script.js` changes that:
-   - refresh coverage activity after sending a Direct Send;
-   - preserve the Cancel Direct Offer control after the recipient accepts and while manager approval is pending;
-   - use the authenticated workplace crew when resolving activity names;
-   - refresh manager Direct Send approvals after relevant realtime events.
-2. `supabase/migrations/20260901103000_allow_cancel_accepted_direct_offer.sql`, which allows the sender to cancel either a pending or accepted Direct Send and records the cancellation as a coverage event.
+1. Commit `b22f3b5` persists the creating manager on manager-created shifts.
+2. Commit `d7e1743` adds immutable shift context to coverage events and renders that snapshot when RLS hides the live shift row.
+3. Commit `3d0cd42` keeps the embedded Shift Details Activity panel synchronized with incoming realtime events.
 
-Local verification completed:
+Local verification completed across four authenticated roles:
 
-- The apparent stale-script problem was an unsaved VS Code buffer, not a duplicate `script.js`, wrong branch, or incorrect Live Server root.
-- Saving the active file made the browser load the current function.
-- A pending offer displayed its cancel control and canceled successfully.
-- An accepted offer restored after switching accounts with its status and Cancel Direct Offer button.
-- Before the migration, cancellation correctly failed because the old RPC only allowed pending offers.
-- After the local migration, accepted-offer cancellation passed.
-- A separate accepted offer completed through manager approval and reassigned the shift to Worker C.
-- Manager Team Schedule and Activity reflected the reassignment with correct worker names and newest-first ordering.
-- The authenticated manager session restored after a browser reload with no console errors.
+- Manager-created shifts appeared immediately for the assigned worker and displayed the correct manager.
+- Public Catch completed from release through confirmed reassignment with multiple coworkers, withdrawal, selection, approval, and realtime updates.
+- Public coverage cancellation restored the original scheduled shift and removed the Catch request everywhere.
+- Direct Send controls were delivered only to the selected recipient, did not appear on the public Catch Board, could be accepted or declined, and required manager approval before ownership changed.
+- Senders could cancel pending or accepted Direct Sends before approval.
+- Activity names, event order, event type, and shift date/time remained correct across ownership and permission changes.
+- The Activity page and Shift Details Activity panel updated in realtime.
+- Hard refresh, sign-out/sign-in, and Safari authentication restoration preserved the expected state.
 
 No production change was made.
 
@@ -223,14 +229,16 @@ No production change was made.
 
 The next development milestone should remain **Schedule backend stabilization and pilot readiness**. Jobs and People should be preserved as validated product directions, but moving them to a backend now would widen the surface area before the first live operational system is dependable.
 
-Recommended order:
+The final local Schedule regression and independent Safari refresh check passed on September 8. One product-policy decision remains: `coverage_events` is currently workplace-visible, so Direct Send history appears in every member's Activity feed even though the offer and its controls are recipient-only. Confirm the intended Activity audience before pilot migration.
 
-1. **Run one final Schedule regression matrix.** Test worker A, worker B, worker C, and manager across refresh/relogin, Catch, Direct Send, manager approval, cancellation, reassignment, Activity, and realtime updates.
-2. **Resolve the known Safari auth reload concern.** The in-app browser restored the manager session successfully; confirm the behavior independently in Safari.
-3. **Reconcile hosted Supabase deliberately.** Inventory the hosted schema, decide the migration path, apply only reviewed migrations, and repeat the Schedule regression against the hosted environment.
-4. **Bring the remaining IDL records current.** Update stale entries that still describe local-only Schedule state or incomplete Catch implementation.
+Recommended order from this checkpoint:
+
+1. **Confirm the Activity audience.** Decide whether Direct Send history remains workplace-visible or is limited to the sender, recipient, and managers.
+2. **Inventory hosted Supabase without changing it.** Compare hosted migrations, tables, functions, policies, publications, and test data with the reviewed local system.
+3. **Plan and apply hosted reconciliation deliberately.** Back up first, resolve any drift, apply only reviewed migrations, and keep a rollback path.
+4. **Repeat the Schedule regression against the hosted environment.** Do not infer hosted readiness from the local pass.
 5. **Prepare a small Portland pilot.** Define the first workplace, participants, data/reset policy, support process, and success measures.
-6. **Choose the next backend pillar only after Schedule is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
+6. **Choose the next backend pillar only after hosted Schedule is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
 
 ## 8. Working method to preserve
 
@@ -259,10 +267,10 @@ When records disagree, use this order:
 4. IDL documents for enduring design intent and reusable patterns.
 5. Prior conversations for exploration, rationale, and historical context.
 
-The current README and several IDL entries were written before the backend work and may still describe Schedule as a browser-only prototype. Those statements are historical unless they are repeated here.
+Historical IDL sprint records preserve the browser-only Schedule behavior that existed when those audits were written. Treat those statements as historical unless they are repeated in the current component, flow, registry, or status records.
 
 ## 10. Definition of the current stage
 
-Industry is no longer only a front-end concept. It is a substantial, backend-integrated prototype with one operational pillar—Schedule—under active hardening and two well-developed prototype pillars—Jobs and People—waiting for later backend work.
+Industry is no longer only a front-end concept. It is a substantial, backend-integrated prototype with one locally stabilized operational pillar—Schedule—and two well-developed prototype pillars—Jobs and People—waiting for later backend work.
 
 It should not yet be called production-ready. The next threshold is a stable, secure, hosted Schedule pilot with environment parity, repeatable regression tests, and a small real-world cohort.

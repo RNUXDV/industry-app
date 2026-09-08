@@ -6,7 +6,7 @@ Industry is an early-stage product prototype designed to explore tools and conne
 
 This repository contains an active usability-testing prototype. Features, workflows, interface designs, simulated data, and product concepts are subject to change.
 
-The current prototype uses simulated workers, workplaces, shifts, jobs, events, and activity for testing purposes.
+The Schedule pillar uses local Supabase test accounts and seeded workplace data during development. Jobs, People, and parts of the older demo layer still use simulated content and browser-local state.
 
 ## Usability Testing
 

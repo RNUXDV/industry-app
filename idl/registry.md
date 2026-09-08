@@ -139,15 +139,17 @@ Current Flows
 
 ### Shift Transfer Flow
 
-Status: Defined (Implementation in Progress)
+Status: Implemented and locally verified
 
 Purpose
 
 - Release an entire scheduled shift.
 - Route the shift to either:
   - The Catch Board (public)
-  - A specific coworker (private)
+  - A specific coworker through Direct Send (private)
 - Define the complete lifecycle of a transferred shift.
+- Preserve ownership until manager approval.
+- Synchronize affected Schedule and Activity surfaces through Supabase Realtime.
 
 Key Concepts
 
@@ -181,9 +183,9 @@ When adding new work:
 
 **Description**
 
-Established the first synchronized workflow between My Shifts and the Catch Board.
+Established synchronized backend state between My Shifts and the Catch Board.
 
-A released shift now creates a public Catch Board request while preserving the worker's original shift inside My Shifts. Both records remain synchronized through the Shift Store.
+A released shift preserves the worker's ownership while exposing the same authoritative Supabase shift through the workplace Catch workflow. My Shifts, Catch, manager coverage tools, and Activity remain synchronized through database state and Realtime.
 
 **Related**
 
@@ -196,15 +198,9 @@ A released shift now creates a public Catch Board request while preserving the w
 
 ---
 
-Last Updated: 2026-07-28
-Sprint: 002
-Status: Active
-
----
-
-Last Updated
-
-Schedule V1 Milestone
+Last Updated: 2026-09-08
+Milestone: Local Schedule stabilization
+Status: Implemented and locally verified
 
 ---
 
@@ -214,9 +210,9 @@ Schedule V1 Milestone
 
 **Category:** Schedule / Updates
 
-**Status:** Active
+**Status:** Implemented and locally verified
 
-**Sprint:** 002
+**Milestone:** Local Schedule stabilization
 
 **Entry Point:** My Shifts → Quick Tools → Activity
 
@@ -226,52 +222,57 @@ Schedule V1 Milestone
 
 - `index.html`
 - `script.js`
-- `style.css`
+- `styles.css`
 - `idl/components.md`
+- `supabase/migrations/20260821030708_add_coverage_events.sql`
+- `supabase/migrations/20260908130000_snapshot_coverage_event_shift.sql`
 
 **Primary Functions:**
 
-- `getActivityFeed()`
-- `saveActivityFeed(feed)`
-- `addActivity(activity)`
-- `clearActivityFeed()`
+- `loadAuthenticatedCoverageEvents()`
+- `formatCoverageEvent()`
 - `renderActivityFeed()`
+- `renderShiftDetailsActivity()`
 
-**Storage Key:**
+**Primary Data Source:** `public.coverage_events`
 
-`industry-v2-activity`
+**Demo Fallback:** `industry-v2-activity`
 
 **Current Event Types:**
 
-- `shift-released`
-- `shift-approved`
+- `coverage_confirmed`
+- `coverage_canceled`
+- `direct_offer_sent`
+- `direct_offer_accepted`
+- `direct_offer_approved`
+- `direct_offer_declined`
+- `direct_offer_canceled`
+- `manager_reassigned`
 
 **Dependencies:**
 
-- `CURRENT_USER`
+- Supabase Auth
+- workplace membership RLS
+- `coverage_events` realtime publication
 - shift ownership state
 - Catch approval workflow
+- Direct Send workflow
 - Schedule subview navigation
-- demo-data reset
+- coverage-event shift snapshots
 
-**Last Updated:** 2026-07-30
-
-**Identity Model:** `CURRENT_USER`
-
-**Supported Demo Users:**
-
-- `worker-maya`
-- `worker-chris`
-- `worker-sam`
+**Identity Model:** Authenticated profile plus workplace membership
 
 **Behavior:**
 
-- Catch requests use the active worker
-- Approval transfers ownership to the selected worker
-- Activity is filtered by worker ID
-- No worker-specific fallback is used
+- Events persist in PostgreSQL and display newest first
+- Workplace members receive permitted events through RLS and Realtime
+- Direct Send controls are recipient-specific while current event history is workplace-visible
+- Catch and Direct Send approvals transfer ownership only after manager approval
+- The Activity page and Shift Details panel use the same authenticated event data
+- Snapshot fields preserve shift context when the live shift is no longer visible
+- Direct Send Activity audience must be confirmed before hosted pilot migration
 
-**Last Updated:** 2026-07-30
+**Last Updated:** 2026-09-08
 
 ## Registry Rules
 
