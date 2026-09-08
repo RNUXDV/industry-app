@@ -3872,26 +3872,11 @@ function prefillReleaseForm(shift) {
   void restoreActiveDirectOfferForRelease(shift);
 }
 
-function openShiftDetails(shift) {
-  if (!shift) {
+function renderShiftDetailsActivity(shift) {
+  if (!shiftDetailsActivity || !shift) {
     return;
   }
 
-  const responses = getShiftResponses();
-  const response = responses[shift.id];
-
-  const status = response?.confirmed
-    ? "Confirmed Catch"
-    : shift.status || "Scheduled";
-
-  shiftDetailsTime.textContent = `${shift.day} · ${shift.time}`;
-  shiftDetailsRole.textContent = shift.role || "Role not provided";
-  shiftDetailsWorkplace.textContent =
-    shift.workplace || "Workplace not provided";
-  shiftDetailsManager.textContent = shift.manager || "Manager not provided";
-  shiftDetailsStatus.textContent = status;
-  shiftDetailsNotes.textContent =
-    shift.notes || shift.note || "No notes provided.";
   const crew = Array.isArray(authenticatedWorkplaceCrew)
     ? authenticatedWorkplaceCrew
     : [];
@@ -3942,6 +3927,30 @@ function openShiftDetails(shift) {
         })
         .join("")
       : "<p>No activity recorded.</p>";
+}
+
+function openShiftDetails(shift) {
+  if (!shift) {
+    return;
+  }
+
+  const responses = getShiftResponses();
+  const response = responses[shift.id];
+
+  const status = response?.confirmed
+    ? "Confirmed Catch"
+    : shift.status || "Scheduled";
+
+  shiftDetailsTime.textContent = `${shift.day} · ${shift.time}`;
+  shiftDetailsRole.textContent = shift.role || "Role not provided";
+  shiftDetailsWorkplace.textContent =
+    shift.workplace || "Workplace not provided";
+  shiftDetailsManager.textContent = shift.manager || "Manager not provided";
+  shiftDetailsStatus.textContent = status;
+  shiftDetailsNotes.textContent =
+    shift.notes || shift.note || "No notes provided.";
+
+  renderShiftDetailsActivity(shift);
 
   shiftDetailsCrewButton.dataset.shiftId = shift.id;
   shiftDetailsReleaseButton.dataset.shiftId = shift.id;
@@ -9756,24 +9765,16 @@ async function setupIndustryRealtime() {
           prefillReleaseForm(refreshedShift);
         }
 
-        const isShiftDetailsOpen = Array.from(scheduleSubviews).some(
-          (subview) =>
-            subview.dataset.scheduleSubview === "shift-details" &&
-            subview.classList.contains("active")
+        const openShiftId =
+          shiftDetailsReleaseButton?.dataset.shiftId ||
+          shiftDetailsCrewButton?.dataset.shiftId;
+
+        const refreshedOpenShift = authenticatedScheduleShifts.find(
+          (shift) => shift.id === openShiftId
         );
 
-        if (isShiftDetailsOpen) {
-          const openShiftId =
-            shiftDetailsReleaseButton?.dataset.shiftId ||
-            shiftDetailsCrewButton?.dataset.shiftId;
-
-          const refreshedShift = authenticatedScheduleShifts.find(
-            (shift) => shift.id === openShiftId
-          );
-
-          if (refreshedShift) {
-            openShiftDetails(refreshedShift);
-          }
+        if (refreshedOpenShift) {
+          renderShiftDetailsActivity(refreshedOpenShift);
         }
 
         updateDashboardForRole();
