@@ -105,7 +105,7 @@ Pending recipient response
 
 - Only the selected recipient receives the actionable offer.
 - The offer does not appear as a public Catch shift.
-- Under the current local policy, Direct Send history is still visible in the workplace Activity feed.
+- Direct Send history is visible only to the sender, recipient, and workplace managers.
 - The recipient can accept or decline while the offer is pending.
 - The sender can cancel a pending or accepted offer before manager approval.
 - Acceptance does not transfer ownership by itself.
@@ -128,7 +128,7 @@ The authenticated Activity system:
 - updates the full Activity page and the embedded Shift Details Activity panel in realtime;
 - persists across refresh, relogin, cancellation, and ownership changes.
 
-Before hosted pilot migration, confirm whether Direct Send Activity remains workplace-visible or becomes participant-and-manager-only.
+Direct Send Activity is participant-and-manager-only; general Catch and Schedule events remain available according to workplace RLS.
 
 ---
 

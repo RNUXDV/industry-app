@@ -113,6 +113,7 @@ Emotional direction by pillar:
 - Direct Send passed private delivery, acceptance, decline, sender cancellation before approval, manager approval, ownership transfer, and persistence.
 - Manager-created shifts now retain their creating manager so Shift Details shows the correct manager.
 - Activity events now preserve a shift date/time/role snapshot after RLS removes access to the live shift row.
+- Direct Send Activity is limited to the sender, recipient, and workplace managers; unrelated workers do not receive those events.
 - The full Activity page and the embedded Shift Details Activity panel now update from the same realtime data.
 - Safari restored an authenticated Schedule session after a hard refresh.
 
@@ -220,6 +221,7 @@ Local verification completed across four authenticated roles:
 - Direct Send controls were delivered only to the selected recipient, did not appear on the public Catch Board, could be accepted or declined, and required manager approval before ownership changed.
 - Senders could cancel pending or accepted Direct Sends before approval.
 - Activity names, event order, event type, and shift date/time remained correct across ownership and permission changes.
+- Direct Send Activity RLS was verified through the authenticated local API for Robert, Worker B, Worker C, and Manager C.
 - The Activity page and Shift Details Activity panel updated in realtime.
 - Hard refresh, sign-out/sign-in, and Safari authentication restoration preserved the expected state.
 
@@ -229,16 +231,15 @@ No production change was made.
 
 The next development milestone should remain **Schedule backend stabilization and pilot readiness**. Jobs and People should be preserved as validated product directions, but moving them to a backend now would widen the surface area before the first live operational system is dependable.
 
-The final local Schedule regression and independent Safari refresh check passed on September 8. One product-policy decision remains: `coverage_events` is currently workplace-visible, so Direct Send history appears in every member's Activity feed even though the offer and its controls are recipient-only. Confirm the intended Activity audience before pilot migration.
+The final local Schedule regression and independent Safari refresh check passed on September 8. Direct Send Activity privacy was subsequently hardened so only the sender, recipient, and workplace managers can view its history.
 
 Recommended order from this checkpoint:
 
-1. **Confirm the Activity audience.** Decide whether Direct Send history remains workplace-visible or is limited to the sender, recipient, and managers.
-2. **Inventory hosted Supabase without changing it.** Compare hosted migrations, tables, functions, policies, publications, and test data with the reviewed local system.
-3. **Plan and apply hosted reconciliation deliberately.** Back up first, resolve any drift, apply only reviewed migrations, and keep a rollback path.
-4. **Repeat the Schedule regression against the hosted environment.** Do not infer hosted readiness from the local pass.
-5. **Prepare a small Portland pilot.** Define the first workplace, participants, data/reset policy, support process, and success measures.
-6. **Choose the next backend pillar only after hosted Schedule is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
+1. **Inventory hosted Supabase without changing it.** Compare hosted migrations, tables, functions, policies, publications, and test data with the reviewed local system.
+2. **Plan and apply hosted reconciliation deliberately.** Back up first, resolve any drift, apply only reviewed migrations, and keep a rollback path.
+3. **Repeat the Schedule regression against the hosted environment.** Do not infer hosted readiness from the local pass.
+4. **Prepare a small Portland pilot.** Define the first workplace, participants, data/reset policy, support process, and success measures.
+5. **Choose the next backend pillar only after hosted Schedule is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
 
 ## 8. Working method to preserve
 

@@ -226,6 +226,7 @@ Status: Implemented and locally verified
 - `idl/components.md`
 - `supabase/migrations/20260821030708_add_coverage_events.sql`
 - `supabase/migrations/20260908130000_snapshot_coverage_event_shift.sql`
+- `supabase/migrations/20260908160000_limit_direct_offer_activity_visibility.sql`
 
 **Primary Functions:**
 
@@ -266,11 +267,11 @@ Status: Implemented and locally verified
 
 - Events persist in PostgreSQL and display newest first
 - Workplace members receive permitted events through RLS and Realtime
-- Direct Send controls are recipient-specific while current event history is workplace-visible
+- Direct Send controls and event history are limited to the sender and recipient, with manager oversight
 - Catch and Direct Send approvals transfer ownership only after manager approval
 - The Activity page and Shift Details panel use the same authenticated event data
 - Snapshot fields preserve shift context when the live shift is no longer visible
-- Direct Send Activity audience must be confirmed before hosted pilot migration
+- Unrelated workers cannot load Direct Send Activity
 
 **Last Updated:** 2026-09-08
 

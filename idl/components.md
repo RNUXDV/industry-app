@@ -294,8 +294,8 @@ Rendered through:
 
 ### Behavior
 
-- Authenticated workplace members receive the workplace event stream under RLS
-- Direct Send offer controls remain recipient-specific even though their current event history is workplace-visible
+- Authenticated workplace members receive general Schedule events under RLS
+- Direct Send offer controls and event history are limited to the sender and recipient, with manager oversight
 - Displays newest events first
 - Persists in PostgreSQL across refresh, relogin, and ownership changes
 - Updates through the `coverage_events` realtime subscription
@@ -304,9 +304,9 @@ Rendered through:
 - Opens as the `activity-feed` Schedule subview
 - Returns to My Shifts through the existing back navigation
 
-### Pilot Decision
+### Privacy Rule
 
-Before hosted pilot migration, confirm whether Direct Send Activity should remain workplace-visible or be limited to the sender, recipient, and managers.
+Direct Send events are visible only to the sender, recipient, and workplace managers. Unrelated workers must not receive or load those events.
 
 ### Visual Structure
 
