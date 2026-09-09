@@ -139,7 +139,7 @@ Current Flows
 
 ### Shift Transfer Flow
 
-Status: Implemented and locally verified
+Status: Implemented and locally verified; hosted schema deployed, hosted role regression pending
 
 Purpose
 
@@ -199,8 +199,8 @@ A released shift preserves the worker's ownership while exposing the same author
 ---
 
 Last Updated: 2026-09-08
-Milestone: Local Schedule stabilization
-Status: Implemented and locally verified
+Milestone: Hosted Schedule schema reconciliation
+Status: Implemented and locally verified; hosted schema deployed, hosted role regression pending
 
 ---
 
@@ -210,9 +210,9 @@ Status: Implemented and locally verified
 
 **Category:** Schedule / Updates
 
-**Status:** Implemented and locally verified
+**Status:** Implemented and locally verified; hosted schema deployed, hosted role regression pending
 
-**Milestone:** Local Schedule stabilization
+**Milestone:** Hosted Schedule schema reconciliation
 
 **Entry Point:** My Shifts → Quick Tools → Activity
 
@@ -227,6 +227,7 @@ Status: Implemented and locally verified
 - `supabase/migrations/20260821030708_add_coverage_events.sql`
 - `supabase/migrations/20260908130000_snapshot_coverage_event_shift.sql`
 - `supabase/migrations/20260908160000_limit_direct_offer_activity_visibility.sql`
+- `supabase/migrations/20260908183000_remove_legacy_list_workplace_coworkers.sql`
 
 **Primary Functions:**
 

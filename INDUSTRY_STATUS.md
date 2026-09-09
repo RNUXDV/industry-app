@@ -117,6 +117,17 @@ Emotional direction by pillar:
 - The full Activity page and the embedded Shift Details Activity panel now update from the same realtime data.
 - Safari restored an authenticated Schedule session after a hard refresh.
 
+### Phase 9 — Hosted Schedule schema reconciliation: September 8
+
+- The existing `industry-backend` Supabase project was recovered, linked to the repository, and confirmed healthy in `us-west-2`.
+- Hosted migration history matched the reviewed local history through `20260829022918_broadcast_coverage_cancellation.sql`; there were no unknown hosted-only migrations.
+- Private pre-reconciliation schema and public-data dumps were created before any hosted change.
+- Twelve reviewed Schedule migrations were dry-run and applied in ledger order without seeds, roles, or Vault changes.
+- A legacy, unused `list_workplace_coworkers()` function was preserved in the backup and removed through `20260908183000_remove_legacy_list_workplace_coworkers.sql`.
+- The hosted migration queue is empty, hosted database lint reports no schema errors, and the hosted and reviewed local structural schema dumps match exactly after excluding platform-managed ownership and ACL statements.
+- Hosted Auth health passed, all Schedule tables and Direct Send read endpoints are present, and anonymous access is rejected.
+- Full hosted role/workflow regression remains pending because the hosted project has no workplace, membership, shift, coverage, or interest rows, and its six existing profiles are not the four local seeded test identities.
+
 ## 4. What is implemented now
 
 ### Shared foundation
@@ -180,8 +191,8 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 ### Repository and branches
 
 - Active branch: `backend-schedule`.
-- The September 8 local stabilization checkpoint ends at commit `3d0cd42`.
-- `backend-schedule` contains the backend work developed after `main` and has not diverged from it.
+- The September 8 local stabilization checkpoint ends at commit `3d0cd42`; Direct Send Activity privacy is recorded in commit `0836b9c`.
+- `backend-schedule` extends the August 10 `main` baseline with the authenticated Schedule backend and is intentionally ahead of `main`.
 - `main` remains at the August 10 front-end usability-testing checkpoint.
 - Earlier `backend-dev` and `ux-refinement` branches record intermediate backend/auth work; they are not the active development branch.
 
@@ -203,11 +214,13 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 
 - Local Industry and the hosted site use different Supabase projects.
 - A local test passing does **not** prove the hosted database has the same schema or migrations.
-- The current hosted/production database is behind the local Direct Send schema. Do not apply migrations or describe the hosted app as current until its schema is deliberately reconciled and tested.
+- The hosted `industry-backend` database is structurally reconciled with the reviewed local Schedule migrations as of September 8.
+- The public GitHub Pages frontend still serves the August 10 `main` version, so it does not expose the current authenticated Schedule implementation.
+- Hosted operational Schedule data and a full hosted multi-role regression are still pending. Do not describe the hosted app as pilot-ready until a controlled test cohort and current frontend deployment have passed that regression.
 
 ## 6. Latest completed checkpoint
 
-September 8 produced three reviewed and pushed fixes:
+September 8 produced three reviewed and pushed local stabilization fixes:
 
 1. Commit `b22f3b5` persists the creating manager on manager-created shifts.
 2. Commit `d7e1743` adds immutable shift context to coverage events and renders that snapshot when RLS hides the live shift row.
@@ -225,7 +238,17 @@ Local verification completed across four authenticated roles:
 - The Activity page and Shift Details Activity panel updated in realtime.
 - Hard refresh, sign-out/sign-in, and Safari authentication restoration preserved the expected state.
 
-No production change was made.
+The same day, Direct Send Activity visibility was hardened to the sender, recipient, and workplace managers, then verified locally across all four roles. The hosted Supabase schema was subsequently backed up, reconciled through all reviewed migrations, cleaned of one unused legacy function, linted, and structurally compared with the local migration-built schema.
+
+Hosted evidence:
+
+- Project: existing `industry-backend` project, active and healthy in `us-west-2`.
+- Pre-change backup: public schema plus public data, stored privately outside the repository.
+- Pre-change data: 6 profiles; 0 workplaces, workplace memberships, shifts, coverage events, and shift interests.
+- Migration result: local and hosted ledgers match through `20260908183000_remove_legacy_list_workplace_coworkers.sql`; the dry-run queue is empty.
+- Structural result: hosted and local normalized structural schema hashes match.
+- Runtime surface: Auth health returned success; Schedule tables and Direct Send read RPCs are present and reject anonymous access.
+- Remaining gate: create a deliberate hosted test workplace/cohort, deploy the current frontend to a controlled hosted target, and repeat the full four-role regression.
 
 ## 7. Recommended development direction
 
@@ -235,10 +258,10 @@ The final local Schedule regression and independent Safari refresh check passed 
 
 Recommended order from this checkpoint:
 
-1. **Inventory hosted Supabase without changing it.** Compare hosted migrations, tables, functions, policies, publications, and test data with the reviewed local system.
-2. **Plan and apply hosted reconciliation deliberately.** Back up first, resolve any drift, apply only reviewed migrations, and keep a rollback path.
-3. **Repeat the Schedule regression against the hosted environment.** Do not infer hosted readiness from the local pass.
-4. **Prepare a small Portland pilot.** Define the first workplace, participants, data/reset policy, support process, and success measures.
+1. **Define the hosted test cohort and data policy.** Select or create explicit hosted test accounts, create one test workplace, and document reset/retention rules; do not upload the local-only seed wholesale.
+2. **Publish the current frontend to a controlled hosted target.** Review and deliberately merge or stage `backend-schedule`; the public `main` site is still the August 10 build.
+3. **Repeat the complete Schedule regression against hosted Supabase.** Cover worker, alternate-worker, unrelated-worker, and manager roles; verify refresh/relogin, Realtime, Catch, Direct Send, Activity privacy, and rollback behavior.
+4. **Prepare a small Portland pilot.** Define the first workplace, participants, support process, success measures, and recovery procedure.
 5. **Choose the next backend pillar only after hosted Schedule is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
 
 ## 8. Working method to preserve
@@ -272,6 +295,6 @@ Historical IDL sprint records preserve the browser-only Schedule behavior that e
 
 ## 10. Definition of the current stage
 
-Industry is no longer only a front-end concept. It is a substantial, backend-integrated prototype with one locally stabilized operational pillar—Schedule—and two well-developed prototype pillars—Jobs and People—waiting for later backend work.
+Industry is no longer only a front-end concept. It is a substantial, backend-integrated prototype with one locally stabilized and hosted-schema-reconciled operational pillar—Schedule—and two well-developed prototype pillars—Jobs and People—waiting for later backend work.
 
-It should not yet be called production-ready. The next threshold is a stable, secure, hosted Schedule pilot with environment parity, repeatable regression tests, and a small real-world cohort.
+It should not yet be called production-ready. The next threshold is a stable, secure, hosted Schedule pilot with a current frontend deployment, deliberate hosted test data, repeatable multi-role regression tests, and a small real-world cohort.

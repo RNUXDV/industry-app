@@ -321,8 +321,8 @@ Each activity card contains:
 ---
 
 Last Updated: 2026-09-08
-Milestone: Local Schedule stabilization
-Status: Implemented and locally verified
+Milestone: Hosted Schedule schema reconciliation
+Status: Implemented and locally verified; hosted schema deployed, hosted role regression pending
 
 ---
 
@@ -331,5 +331,5 @@ Status: Implemented and locally verified
 Authenticated identity comes from Supabase Auth and workplace membership rather than a hardcoded demo worker. Catch and Direct Send preserve the original owner until manager approval, then update ownership and broadcast the resulting Schedule and Activity state to affected sessions.
 
 Last Updated: 2026-09-08
-Milestone: Local Schedule stabilization
-Status: Implemented and locally verified
+Milestone: Hosted Schedule schema reconciliation
+Status: Implemented and locally verified; hosted schema deployed, hosted role regression pending

@@ -10,7 +10,7 @@ User flows describe how workers move between screens, make decisions, and comple
 
 ## Status
 
-Implemented and locally verified — September 8, 2026
+Implemented and locally verified; hosted schema deployed, hosted role regression pending — September 8, 2026
 
 ## Purpose
 
@@ -133,5 +133,5 @@ Direct Send Activity is participant-and-manager-only; general Catch and Schedule
 ---
 
 Last Updated: 2026-09-08
-Milestone: Local Schedule stabilization
-Status: Implemented and locally verified
+Milestone: Hosted Schedule schema reconciliation
+Status: Implemented and locally verified; hosted schema deployed, hosted role regression pending

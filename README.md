@@ -6,7 +6,7 @@ Industry is an early-stage product prototype designed to explore tools and conne
 
 This repository contains an active usability-testing prototype. Features, workflows, interface designs, simulated data, and product concepts are subject to change.
 
-The Schedule pillar uses local Supabase test accounts and seeded workplace data during development. Jobs, People, and parts of the older demo layer still use simulated content and browser-local state.
+The Schedule pillar uses Supabase authentication and database migrations. Local development uses seeded test accounts and workplace data. The hosted Schedule schema is reconciled, but its controlled test cohort and full hosted workflow regression are still pending. Jobs, People, and parts of the older demo layer continue to use simulated content and browser-local state.
 
 ## Usability Testing
 
@@ -23,5 +23,7 @@ The source code, interface designs, written content, visual assets, and other or
 ## Development Status
 
 Industry is currently a backend-integrated prototype preparing for pilot testing. The Schedule pillar uses Supabase authentication, role-aware workplace data, realtime coverage workflows, and database migrations. Jobs and People remain front-end usability-testing prototypes with browser-local state.
+
+The active `backend-schedule` branch contains the current Schedule implementation. The public GitHub Pages site still reflects the older August 10 `main` baseline and should not yet be treated as the hosted Schedule pilot.
 
 See [INDUSTRY_STATUS.md](INDUSTRY_STATUS.md) for the reconciled product history, current implementation boundary, active checkpoint, and recommended next steps.
