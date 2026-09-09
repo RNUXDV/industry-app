@@ -9072,9 +9072,14 @@ const dashboardQuickActionsGrid = document.getElementById(
 // GitHub Pages uses production Supabase.
 // =========================================================
 
+const INDUSTRY_SUPABASE_OVERRIDE = new URLSearchParams(
+  window.location.search,
+).get("supabase");
+
 const IS_LOCAL_INDUSTRY =
-  window.location.hostname === "127.0.0.1" ||
-  window.location.hostname === "localhost";
+  INDUSTRY_SUPABASE_OVERRIDE !== "hosted" &&
+  (window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "localhost");
 
 const SUPABASE_URL = IS_LOCAL_INDUSTRY
   ? "http://127.0.0.1:54321"

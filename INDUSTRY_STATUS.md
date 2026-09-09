@@ -126,6 +126,7 @@ Emotional direction by pillar:
 - A legacy, unused `list_workplace_coworkers()` function was preserved in the backup and removed through `20260908183000_remove_legacy_list_workplace_coworkers.sql`.
 - The hosted migration queue is empty, hosted database lint reports no schema errors, and the hosted and reviewed local structural schema dumps match exactly after excluding platform-managed ownership and ACL statements.
 - Hosted Auth health passed, all Schedule tables and Direct Send read endpoints are present, and anonymous access is rejected.
+- A controlled current-branch preview verified that `?supabase=hosted` selects the hosted project while ordinary localhost continues to select local Supabase.
 - Full hosted role/workflow regression remains pending because the hosted project has no workplace, membership, shift, coverage, or interest rows, and its six existing profiles are not the four local seeded test identities.
 
 ## 4. What is implemented now
@@ -202,6 +203,7 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 - `people-*.html` plus `people-pages.js` contain the People experiences.
 - `styles.css` and `script.js` are large, mature prototype files and now carry multiple product systems.
 - There is no bundler or framework build step; the app is served directly during local development.
+- Localhost uses local Supabase by default; adding `?supabase=hosted` provides an explicit current-branch preview against hosted Supabase without deploying or changing `main`.
 
 ### Backend
 

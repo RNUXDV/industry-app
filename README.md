@@ -26,4 +26,6 @@ Industry is currently a backend-integrated prototype preparing for pilot testing
 
 The active `backend-schedule` branch contains the current Schedule implementation. The public GitHub Pages site still reflects the older August 10 `main` baseline and should not yet be treated as the hosted Schedule pilot.
 
+For a controlled hosted-backend check without deploying the branch, serve the repository locally and add `?supabase=hosted` to the localhost URL. Localhost continues to use local Supabase by default.
+
 See [INDUSTRY_STATUS.md](INDUSTRY_STATUS.md) for the reconciled product history, current implementation boundary, active checkpoint, and recommended next steps.
