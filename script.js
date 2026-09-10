@@ -9857,7 +9857,19 @@ recoveryForm?.addEventListener("submit", async (event) => {
 
   recoveryStatus.textContent = "Sending reset link…";
 
-  const redirectTo = `${window.location.origin}${window.location.pathname}`;
+  const recoveryRedirectUrl = new URL(
+    window.location.pathname,
+    window.location.origin,
+  );
+
+  // Keep the controlled hosted-backend switch when password recovery starts
+  // from a localhost preview. Without it, the email link silently falls back
+  // to the local Supabase project after the page reloads.
+  if (INDUSTRY_SUPABASE_OVERRIDE === "hosted") {
+    recoveryRedirectUrl.searchParams.set("supabase", "hosted");
+  }
+
+  const redirectTo = recoveryRedirectUrl.toString();
 
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
     redirectTo,
@@ -9905,7 +9917,15 @@ updatePasswordForm?.addEventListener("submit", async (event) => {
 
   passwordRecoveryActive = false;
 
-  window.history.replaceState({}, document.title, window.location.pathname);
+  // Remove recovery tokens from the address bar without dropping the
+  // controlled hosted-backend switch (or any other safe query parameters).
+  // Dropping `?supabase=hosted` here would reconnect the localhost preview to
+  // the local Supabase project immediately after a hosted password reset.
+  window.history.replaceState(
+    {},
+    document.title,
+    `${window.location.pathname}${window.location.search}`,
+  );
 
   enterAuthenticatedIndustry();
 });

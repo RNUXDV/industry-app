@@ -127,7 +127,16 @@ Emotional direction by pillar:
 - The hosted migration queue is empty, hosted database lint reports no schema errors, and the hosted and reviewed local structural schema dumps match exactly after excluding platform-managed ownership and ACL statements.
 - Hosted Auth health passed, all Schedule tables and Direct Send read endpoints are present, and anonymous access is rejected.
 - A controlled current-branch preview verified that `?supabase=hosted` selects the hosted project while ordinary localhost continues to select local Supabase.
-- Full hosted role/workflow regression remains pending because the hosted project has no workplace, membership, shift, coverage, or interest rows, and its six existing profiles are not the four local seeded test identities.
+- The hosted project initially had no operational Schedule data, so no local seed data or test identities were copied into it during reconciliation.
+
+### Phase 10 — Hosted Schedule workflow regression: September 9
+
+- A deliberate, temporary hosted cohort was created with one test workplace, four explicit role accounts, and three reversible test shifts; the broad local seed was not uploaded.
+- The current `backend-schedule` frontend was exercised through the controlled `?supabase=hosted` preview without changing the public `main` site.
+- Hosted Schedule passed manager-created shifts, Realtime updates, public Catch interest/withdrawal/selection/approval/cancellation, Direct Send acceptance/decline/cancellation, Activity rendering, and role-aware privacy checks.
+- Robert's hosted membership and assigned shift were independently verified through the same authenticated row-level permissions used by the app.
+- Password recovery was corrected so the controlled hosted-backend switch survives both the reset-email redirect and post-reset URL cleanup.
+- A fresh hosted sign-in loaded the expected Sep 10 shift, and Command–R restored the same session and data without another sign-in.
 
 ## 4. What is implemented now
 
@@ -218,7 +227,8 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 - A local test passing does **not** prove the hosted database has the same schema or migrations.
 - The hosted `industry-backend` database is structurally reconciled with the reviewed local Schedule migrations as of September 8.
 - The public GitHub Pages frontend still serves the August 10 `main` version, so it does not expose the current authenticated Schedule implementation.
-- Hosted operational Schedule data and a full hosted multi-role regression are still pending. Do not describe the hosted app as pilot-ready until a controlled test cohort and current frontend deployment have passed that regression.
+- A controlled hosted test cohort and multi-role Schedule regression passed on September 9 through the current-branch preview.
+- Do not describe the hosted app as pilot-ready until the current frontend is published to a controlled hosted target and receives a final deployed smoke test.
 
 ## 6. Latest completed checkpoint
 
@@ -250,7 +260,9 @@ Hosted evidence:
 - Migration result: local and hosted ledgers match through `20260908183000_remove_legacy_list_workplace_coworkers.sql`; the dry-run queue is empty.
 - Structural result: hosted and local normalized structural schema hashes match.
 - Runtime surface: Auth health returned success; Schedule tables and Direct Send read RPCs are present and reject anonymous access.
-- Remaining gate: create a deliberate hosted test workplace/cohort, deploy the current frontend to a controlled hosted target, and repeat the full four-role regression.
+- Hosted cohort: one temporary workplace, four explicit role accounts, and three reversible test shifts; local seed data was not copied.
+- Hosted workflow result: the multi-role Schedule matrix passed through the controlled current-branch preview, including Realtime, Catch, Direct Send, Activity privacy, sign-in, and reload restoration.
+- Remaining gate: publish the current frontend to a controlled hosted target, repeat a focused deployed smoke test, and define the first small pilot and recovery procedure.
 
 ## 7. Recommended development direction
 
@@ -260,11 +272,11 @@ The final local Schedule regression and independent Safari refresh check passed 
 
 Recommended order from this checkpoint:
 
-1. **Define the hosted test cohort and data policy.** Select or create explicit hosted test accounts, create one test workplace, and document reset/retention rules; do not upload the local-only seed wholesale.
-2. **Publish the current frontend to a controlled hosted target.** Review and deliberately merge or stage `backend-schedule`; the public `main` site is still the August 10 build.
-3. **Repeat the complete Schedule regression against hosted Supabase.** Cover worker, alternate-worker, unrelated-worker, and manager roles; verify refresh/relogin, Realtime, Catch, Direct Send, Activity privacy, and rollback behavior.
+1. **Publish the current frontend to a controlled hosted target.** Review and deliberately merge or stage `backend-schedule`; the public `main` site is still the August 10 build.
+2. **Run a focused deployed smoke test.** Verify hosted sign-in/reload, one manager-created shift, one Catch path, one Direct Send path, Realtime, and Activity privacy on the published build.
+3. **Close or retain the temporary cohort deliberately.** Use the documented cleanup path if the cohort is no longer needed, or label and retain it only for repeatable regression work.
 4. **Prepare a small Portland pilot.** Define the first workplace, participants, support process, success measures, and recovery procedure.
-5. **Choose the next backend pillar only after hosted Schedule is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
+5. **Choose the next backend pillar only after the deployed Schedule build is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
 
 ## 8. Working method to preserve
 
