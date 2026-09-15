@@ -6,7 +6,7 @@ Industry is an early-stage product prototype designed to explore tools and conne
 
 This repository contains an active usability-testing prototype. Features, workflows, interface designs, simulated data, and product concepts are subject to change.
 
-The Schedule pillar uses Supabase authentication and database migrations. Local development uses seeded test accounts and workplace data. The hosted Schedule schema is reconciled, but its controlled test cohort and full hosted workflow regression are still pending. Jobs, People, and parts of the older demo layer continue to use simulated content and browser-local state.
+The Schedule pillar uses Supabase authentication and database migrations. Local development uses seeded test accounts and workplace data. The hosted Schedule schema, live multi-role workflow, isolated Realtime behavior, and account recovery path have passed controlled verification. Jobs, People, and parts of the older demo layer continue to use simulated content and browser-local state.
 
 ## Usability Testing
 
@@ -29,3 +29,5 @@ The active `backend-schedule` branch contains the current Schedule implementatio
 For a controlled hosted-backend check without deploying the branch, serve the repository locally and add `?supabase=hosted` to the localhost URL. Localhost continues to use local Supabase by default.
 
 See [INDUSTRY_STATUS.md](INDUSTRY_STATUS.md) for the reconciled product history, current implementation boundary, active checkpoint, and recommended next steps.
+
+Use [PILOT_ACCESS.md](PILOT_ACCESS.md) for the controlled pilot sign-in, password-recovery, wrong-account, support, and cleanup procedure.

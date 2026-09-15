@@ -4,7 +4,7 @@ Last reconciled: September 15, 2026
 
 Active development branch: `backend-schedule`
 
-Current stage: backend-integrated prototype / pre-pilot
+Current stage: backend-integrated prototype / controlled-pilot ready
 
 This document is the durable handoff for Industry. It reconciles the current repository, Git history, Industry Design Language (IDL), database migrations, and the major product-development conversations. Use it to understand what Industry is, how it reached its current state, what is genuinely implemented, and what should happen next.
 
@@ -152,7 +152,8 @@ Emotional direction by pillar:
 - Hosted migration `20260915122500_limit_all_activity_visibility.sql` applies the corrected Activity visibility rule; the remote migration ledger is current and hosted database lint reports no schema errors.
 - Live Realtime passed an isolated simultaneous-session check across separate manager, releasing-worker, and interested-worker browser sessions. Shift creation, release, interest, selection, approval, ownership transfer, and prior-owner removal all appeared in the affected sessions without manual refresh.
 - Static stylesheet and application-script URLs now include an explicit deployment version so previously opened pilot browsers fetch the current interface after a publish instead of retaining an older cached bundle.
-- The pilot access/recovery procedure still remains to be finalized before the build is considered pilot-ready.
+- The controlled pilot access and recovery procedure is finalized in `PILOT_ACCESS.md`, including role verification, password recovery, wrong-account handling, support evidence, and test-data cleanup.
+- With the isolated Realtime gate, cache-safe deployment, and access/recovery runbook complete, the Schedule build is ready for a small controlled pilot. It is not production-ready.
 
 ## 4. What is implemented now
 
@@ -245,7 +246,7 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 - The public GitHub Pages frontend still serves the August 10 `main` version, so it does not expose the current authenticated Schedule implementation.
 - A controlled hosted test cohort and multi-role Schedule regression passed on September 9 through the current-branch preview.
 - The current frontend is now available through the controlled Industry Hosted Pilot. Live manager/worker sign-in, reload restoration, manager-created shifts, Catch, Direct Send, manager approval, reassignment, and persisted Activity history passed on September 15.
-- Do not describe the hosted app as pilot-ready until Realtime is verified with simultaneous isolated sessions and the pilot access/recovery procedure is finalized.
+- The hosted Schedule build may be described as ready for a small controlled pilot. It should not be described as production-ready.
 
 ## 6. Latest completed checkpoint
 
@@ -284,7 +285,7 @@ Hosted evidence:
 - Live mutation result: the manager created shifts for Robert; Catch transferred one shift to Worker B after interest, manager selection, and approval; Direct Send transferred another shift to Worker C after acceptance and manager approval; manager and participant schedules reflected final ownership; and Activity preserved the event history.
 - Live regression corrections: worker Catch cards are read-only outside the manager role, Direct Send offer cards are de-duplicated before rendering, manager Coverage Requests keeps empty and active states mutually exclusive, and coverage Activity is restricted to involved workers and workplace managers by frontend filtering plus RLS.
 - Hosted safety result: migration `20260915122500_limit_all_activity_visibility.sql` was the only pending remote change, applied successfully, and passed hosted database lint.
-- Remaining gate: verify Realtime with simultaneous isolated sessions, then define the first small pilot and recovery procedure.
+- Pilot-readiness result: isolated simultaneous-session Realtime passed, temporary regression data was removed, and the access/recovery runbook is documented in `PILOT_ACCESS.md`.
 
 ## 7. Recommended development direction
 
@@ -294,10 +295,10 @@ The final local Schedule regression and independent Safari refresh check passed 
 
 Recommended order from this checkpoint:
 
-1. **Complete the isolated Realtime check.** Run manager and worker accounts simultaneously in separate browser sessions and verify schedule, coverage, and Activity updates without reloads.
-2. **Close or retain the temporary cohort deliberately.** Use the documented cleanup path if the cohort is no longer needed, or label and retain it only for repeatable regression work.
-3. **Prepare a small Portland pilot.** Define the first workplace, participants, support process, success measures, and recovery procedure.
-4. **Choose the next backend pillar only after the deployed Schedule build is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
+1. **Prepare the first small Portland pilot.** Select one workplace and a deliberately small participant group; set the session dates, organizer, support contact, and success measures.
+2. **Use the access runbook for every participant.** Follow `PILOT_ACCESS.md` for invitation, sign-in, role verification, password recovery, wrong-account handling, and cleanup.
+3. **Run a short pre-session regression.** Verify manager and worker sign-in, one Schedule read, and one controlled Realtime update before inviting participants.
+4. **Choose the next backend pillar only after the controlled pilot is reviewed.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
 
 ## 8. Working method to preserve
 
