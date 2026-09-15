@@ -1,6 +1,6 @@
 # Industry: Product and Development Status
 
-Last reconciled: September 8, 2026
+Last reconciled: September 15, 2026
 
 Active development branch: `backend-schedule`
 
@@ -138,6 +138,17 @@ Emotional direction by pillar:
 - Password recovery was corrected so the controlled hosted-backend switch survives both the reset-email redirect and post-reset URL cleanup.
 - A fresh hosted sign-in loaded the expected Sep 10 shift, and Command–R restored the same session and data without another sign-in.
 
+### Phase 11 — Controlled pilot hosting and live authentication: September 9–15
+
+- The current `backend-schedule` frontend was published as the controlled **Industry Hosted Pilot** through ChatGPT Sites without changing the older GitHub Pages `main` deployment.
+- The hosted build uses the reconciled `industry-backend` Supabase project and preserves Industry's own email/password authentication as the application access layer.
+- Site-level sharing was changed from owner-restricted access to public link access so pilot visitors can reach Industry's landing and sign-in screens without an additional ChatGPT account gate.
+- The live Site loaded successfully in a browser outside the Sites editor.
+- A hosted manager account authenticated into the manager dashboard with the expected role-specific controls and crew data; Command–R restored the manager session.
+- After signing out, Robert authenticated into the worker dashboard with manager-only controls absent; Command–R restored the worker session and role.
+- Robert's empty upcoming-shift state was expected because the retained hosted regression shift had already passed.
+- The focused live authentication smoke test is complete. Live manager-created shift, Catch, Direct Send, Realtime, and Activity privacy workflows still need a final deployed regression before the pilot is considered ready.
+
 ## 4. What is implemented now
 
 ### Shared foundation
@@ -212,7 +223,8 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 - `people-*.html` plus `people-pages.js` contain the People experiences.
 - `styles.css` and `script.js` are large, mature prototype files and now carry multiple product systems.
 - There is no bundler or framework build step; the app is served directly during local development.
-- Localhost uses local Supabase by default; adding `?supabase=hosted` provides an explicit current-branch preview against hosted Supabase without deploying or changing `main`.
+- Localhost uses local Supabase by default; adding `?supabase=hosted` provides an explicit current-branch preview against hosted Supabase without changing `main`.
+- The current `backend-schedule` frontend is also published as the controlled **Industry Hosted Pilot** through ChatGPT Sites.
 
 ### Backend
 
@@ -228,7 +240,8 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 - The hosted `industry-backend` database is structurally reconciled with the reviewed local Schedule migrations as of September 8.
 - The public GitHub Pages frontend still serves the August 10 `main` version, so it does not expose the current authenticated Schedule implementation.
 - A controlled hosted test cohort and multi-role Schedule regression passed on September 9 through the current-branch preview.
-- Do not describe the hosted app as pilot-ready until the current frontend is published to a controlled hosted target and receives a final deployed smoke test.
+- The current frontend is now available through the controlled Industry Hosted Pilot, and live manager/worker sign-in plus reload restoration passed on September 15.
+- Do not describe the hosted app as pilot-ready until the remaining deployed Schedule workflows receive their focused live regression and the pilot access/recovery procedure is finalized.
 
 ## 6. Latest completed checkpoint
 
@@ -262,7 +275,9 @@ Hosted evidence:
 - Runtime surface: Auth health returned success; Schedule tables and Direct Send read RPCs are present and reject anonymous access.
 - Hosted cohort: one temporary workplace, four explicit role accounts, and three reversible test shifts; local seed data was not copied.
 - Hosted workflow result: the multi-role Schedule matrix passed through the controlled current-branch preview, including Realtime, Catch, Direct Send, Activity privacy, sign-in, and reload restoration.
-- Remaining gate: publish the current frontend to a controlled hosted target, repeat a focused deployed smoke test, and define the first small pilot and recovery procedure.
+- Controlled deployment: the current `backend-schedule` frontend is published through ChatGPT Sites as **Industry Hosted Pilot**; public Site access leads to Industry's own Supabase-backed sign-in.
+- Live authentication result: manager and worker role routing, data loading, role separation, sign-out/sign-in, and Command–R session restoration passed on the published Site.
+- Remaining gate: repeat the core Schedule mutation workflows on the published Site, then define the first small pilot and recovery procedure.
 
 ## 7. Recommended development direction
 
@@ -272,11 +287,10 @@ The final local Schedule regression and independent Safari refresh check passed 
 
 Recommended order from this checkpoint:
 
-1. **Publish the current frontend to a controlled hosted target.** Review and deliberately merge or stage `backend-schedule`; the public `main` site is still the August 10 build.
-2. **Run a focused deployed smoke test.** Verify hosted sign-in/reload, one manager-created shift, one Catch path, one Direct Send path, Realtime, and Activity privacy on the published build.
-3. **Close or retain the temporary cohort deliberately.** Use the documented cleanup path if the cohort is no longer needed, or label and retain it only for repeatable regression work.
-4. **Prepare a small Portland pilot.** Define the first workplace, participants, support process, success measures, and recovery procedure.
-5. **Choose the next backend pillar only after the deployed Schedule build is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
+1. **Complete the deployed Schedule workflow smoke test.** Live manager and worker authentication already pass; now verify one manager-created shift, one Catch path, one Direct Send path, Realtime, and Activity privacy on the published build.
+2. **Close or retain the temporary cohort deliberately.** Use the documented cleanup path if the cohort is no longer needed, or label and retain it only for repeatable regression work.
+3. **Prepare a small Portland pilot.** Define the first workplace, participants, support process, success measures, and recovery procedure.
+4. **Choose the next backend pillar only after the deployed Schedule build is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
 
 ## 8. Working method to preserve
 
@@ -309,6 +323,6 @@ Historical IDL sprint records preserve the browser-only Schedule behavior that e
 
 ## 10. Definition of the current stage
 
-Industry is no longer only a front-end concept. It is a substantial, backend-integrated prototype with one locally stabilized and hosted-schema-reconciled operational pillar—Schedule—and two well-developed prototype pillars—Jobs and People—waiting for later backend work.
+Industry is no longer only a front-end concept. It is a substantial, backend-integrated prototype with one locally stabilized, hosted-schema-reconciled, and controlled-deployed operational pillar—Schedule—and two well-developed prototype pillars—Jobs and People—waiting for later backend work.
 
-It should not yet be called production-ready. The next threshold is a stable, secure, hosted Schedule pilot with a current frontend deployment, deliberate hosted test data, repeatable multi-role regression tests, and a small real-world cohort.
+It should not yet be called production-ready. The next threshold is a stable, secure hosted Schedule pilot with the remaining live mutation workflows verified, deliberate hosted test data, repeatable multi-role regression tests, and a small real-world cohort.
