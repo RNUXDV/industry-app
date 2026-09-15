@@ -3658,15 +3658,26 @@ function renderStatusPill(label, status) {
 // States: default, hover, selected
 // Composes: Avatar, Status Pill
 
-function renderPresenceCard(worker, workerIndex, shiftId) {
-  return `
-        <div
-            class="interested-worker ${worker.selected ? "is-selected" : ""}"
-            data-shift-id="${shiftId}"
-            data-worker-index="${workerIndex}"
+function renderPresenceCard(
+  worker,
+  workerIndex,
+  shiftId,
+  { selectable = false } = {},
+) {
+  const interactionAttributes = selectable
+    ? `
             role="button"
             tabindex="0"
             aria-pressed="${worker.selected}"
+      `
+    : "";
+
+  return `
+        <div
+            class="interested-worker ${selectable ? "is-selectable" : ""} ${worker.selected ? "is-selected" : ""}"
+            data-shift-id="${shiftId}"
+            data-worker-index="${workerIndex}"
+            ${interactionAttributes}
         >
             ${renderAvatar({
     label: worker.name,
@@ -4134,8 +4145,17 @@ function renderActivityFeed() {
     const crew = Array.isArray(authenticatedWorkplaceCrew)
       ? authenticatedWorkplaceCrew
       : [];
+    const isManager =
+      authenticatedWorkplaceRole?.toLowerCase() === "manager";
+    const visibleEvents = isManager
+      ? authenticatedCoverageEvents
+      : authenticatedCoverageEvents.filter(
+        (event) =>
+          event.previous_profile_id === authenticatedUserId ||
+          event.new_profile_id === authenticatedUserId,
+      );
 
-    activities = authenticatedCoverageEvents
+    activities = visibleEvents
       .map((event) => formatCoverageEvent(event, crew))
       .filter(Boolean)
       .sort(
@@ -4427,6 +4447,11 @@ async function loadAndRenderManagerDirectApprovals() {
           );
 
           approvalCard.remove();
+          authenticatedManagerDirectApprovals =
+            authenticatedManagerDirectApprovals.filter(
+              (pendingOffer) => pendingOffer.offer_id !== offer.offer_id,
+            );
+          syncShiftBoardEmptyState();
 
           if (shiftBoardStatus) {
             shiftBoardStatus.textContent =
@@ -4447,6 +4472,55 @@ async function loadAndRenderManagerDirectApprovals() {
 
     shiftBoardList.appendChild(approvalCard);
   });
+
+  syncShiftBoardEmptyState();
+}
+
+function getShiftBoardEmptyStateMarkup() {
+  const isManager =
+    authenticatedWorkplaceRole?.toLowerCase() === "manager";
+  const title = isManager
+    ? "No coverage activity right now."
+    : "New coverage activity will appear here.";
+  const message = isManager
+    ? "New coverage activity will appear here."
+    : "Available shifts will appear here.";
+
+  return `
+    <div class="catch-empty-state">
+      <p class="catch-empty-title">
+        ${title}
+      </p>
+
+      <p class="catch-empty-text">
+        ${message}
+      </p>
+    </div>
+  `;
+}
+
+function syncShiftBoardEmptyState() {
+  if (!shiftBoardList) {
+    return;
+  }
+
+  const existingEmptyState =
+    shiftBoardList.querySelector(".catch-empty-state");
+  const hasShiftCards = Boolean(
+    shiftBoardList.querySelector(".shift-card"),
+  );
+
+  if (hasShiftCards) {
+    existingEmptyState?.remove();
+    return;
+  }
+
+  if (!existingEmptyState) {
+    shiftBoardList.insertAdjacentHTML(
+      "beforeend",
+      getShiftBoardEmptyStateMarkup(),
+    );
+  }
 }
 
 function renderShiftBoard() {
@@ -4485,25 +4559,7 @@ function renderShiftBoard() {
   }
 
   if (shifts.length === 0) {
-    const isManager = authenticatedWorkplaceRole?.toLowerCase() === "manager";
-
-    shiftBoardList.innerHTML = `
-    <div class="catch-empty-state">
-      <p class="catch-empty-title">
-        ${isManager
-        ? "No coverage activity right now."
-        : "New coverage activity will appear here."
-      }
-      </p>
-
-      <p class="catch-empty-text">
-        ${isManager
-        ? "New coverage activity will appear here."
-        : "Available shifts will appear here."
-      }
-      </p>
-    </div>
-  `;
+    shiftBoardList.innerHTML = getShiftBoardEmptyStateMarkup();
 
     return;
   }
@@ -4631,6 +4687,11 @@ function renderShiftBoard() {
       authenticatedWorkplaceRole?.toLowerCase() === "manager" &&
       Boolean(selectedBackendInterest) &&
       !isConfirmed;
+    const canManagerSelectInterestedWorkers =
+      isAuthenticatedCatchMode &&
+      authenticatedWorkplaceRole?.toLowerCase() === "manager" &&
+      !shiftIsSelected &&
+      !shiftIsConfirmed;
 
     const interestedWorkersMarkup = interestedWorkers.length
       ? isConfirmed && confirmedWorker
@@ -4665,7 +4726,9 @@ function renderShiftBoard() {
         <div class="interested-workers-list">
           ${interestedWorkers
           .map((worker, workerIndex) =>
-            renderPresenceCard(worker, workerIndex, shift.id),
+            renderPresenceCard(worker, workerIndex, shift.id, {
+              selectable: canManagerSelectInterestedWorkers,
+            }),
           )
           .join("")}
         </div>
@@ -4770,9 +4833,13 @@ function renderShiftBoard() {
               ? `
       <div class="schedule-action-panel">
         <p class="status-text">
-          ${hasInterestedCoworkers
-                ? "Select an interested coworker above."
-                : "Waiting for coworker interest."
+          ${authenticatedWorkplaceRole?.toLowerCase() === "manager"
+                ? hasInterestedCoworkers
+                  ? "Select an interested coworker above."
+                  : "Waiting for coworker interest."
+                : hasInterestedCoworkers
+                  ? "Waiting for manager selection."
+                  : "Waiting for coworker interest."
               }
         </p>
       </div>
@@ -5125,68 +5192,77 @@ function renderShiftBoard() {
     });
   });
 
-  document.querySelectorAll(".interested-worker").forEach((workerRow) => {
-    const selectWorker = async () => {
-      const shiftId = workerRow.dataset.shiftId;
-      const workerIndex = Number(workerRow.dataset.workerIndex);
+  document
+    .querySelectorAll(".interested-worker.is-selectable")
+    .forEach((workerRow) => {
+      const selectWorker = async () => {
+        const shiftId = workerRow.dataset.shiftId;
+        const workerIndex = Number(workerRow.dataset.workerIndex);
 
-      if (authenticatedShiftInterests === undefined || !authenticatedUserId) {
-        return;
-      }
+        if (
+          authenticatedShiftInterests === undefined ||
+          !authenticatedUserId
+        ) {
+          return;
+        }
 
-      const shift = authenticatedCatchShifts?.find(
-        (catchShift) => catchShift.id === shiftId,
-      );
+        const shift = authenticatedCatchShifts?.find(
+          (catchShift) => catchShift.id === shiftId,
+        );
 
-      const isManagerSelectingShift =
-        authenticatedWorkplaceRole?.toLowerCase() === "manager" &&
-        (shift?.status === "coverage_needed" ||
-          (shift?.status === "open" && !shift.owner));
+        const isManagerSelectingShift =
+          authenticatedWorkplaceRole?.toLowerCase() === "manager" &&
+          (shift?.status === "coverage_needed" ||
+            (shift?.status === "open" && !shift.owner));
 
-      if (!shift || !isManagerSelectingShift) {
-        return;
-      }
+        if (!shift || !isManagerSelectingShift) {
+          return;
+        }
 
-      const shiftInterests = authenticatedShiftInterests.filter(
-        (interest) => interest.shift_id === shiftId,
-      );
+        const shiftInterests = authenticatedShiftInterests.filter(
+          (interest) => interest.shift_id === shiftId,
+        );
 
-      const selectedInterest = shiftInterests[workerIndex];
+        const selectedInterest = shiftInterests[workerIndex];
 
-      if (!selectedInterest) {
-        console.error("Industry: unable to find selected shift interest.", {
-          shiftId,
-          workerIndex,
-          shiftInterests,
-        });
-        return;
-      }
+        if (!selectedInterest) {
+          console.error("Industry: unable to find selected shift interest.", {
+            shiftId,
+            workerIndex,
+            shiftInterests,
+          });
+          return;
+        }
 
-      const { data: updatedInterest, error: updateError } = await supabaseClient
-        .rpc("select_shift_interest", {
-          p_interest_id: selectedInterest.id,
-        })
-        .single();
+        const { data: updatedInterest, error: updateError } =
+          await supabaseClient
+            .rpc("select_shift_interest", {
+              p_interest_id: selectedInterest.id,
+            })
+            .single();
 
-      if (updateError) {
-        console.error("Industry shift interest selection error:", updateError);
-        return;
-      }
+        if (updateError) {
+          console.error(
+            "Industry shift interest selection error:",
+            updateError,
+          );
+          return;
+        }
 
-      console.log("Industry worker selected for coverage:", updatedInterest);
+        console.log("Industry worker selected for coverage:", updatedInterest);
 
-      await loadAuthenticatedShiftInterests();
-    };
+        await loadAuthenticatedShiftInterests();
+      };
 
-    workerRow.addEventListener("click", selectWorker);
+      workerRow.addEventListener("click", selectWorker);
 
-    workerRow.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        selectWorker();
-      }
+      workerRow.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectWorker();
+        }
+      });
     });
-  });
 
   document.querySelectorAll(".manager-approve-button").forEach((button) => {
     button.addEventListener("click", async () => {
@@ -6011,6 +6087,10 @@ async function loadAndRenderDirectShiftOffers() {
     "Industry authenticated direct offers loaded:",
     directOffers
   );
+
+  importedShiftList
+    .querySelectorAll(".direct-offer-card")
+    .forEach((card) => card.remove());
 
   (directOffers || []).forEach((offer) => {
     const shift = offer.shift_data || {};

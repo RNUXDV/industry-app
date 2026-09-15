@@ -148,7 +148,8 @@ Emotional direction by pillar:
 - After signing out, Robert authenticated into the worker dashboard with manager-only controls absent; Command–R restored the worker session and role.
 - Robert's empty upcoming-shift state was expected because the retained hosted regression shift had already passed.
 - The published Site passed live manager-created shift, Catch, and Direct Send workflows across the manager, Robert, Worker B, and Worker C accounts, including manager approval, final ownership, and persisted Activity history.
-- The deployed regression exposed four follow-up defects: worker Catch interest cards imply the releasing worker can select a replacement even though selection is manager-only; Worker C briefly received a duplicate Direct Send offer card; the manager Coverage Requests page rendered an empty state alongside an active request; and Worker C could see an unrelated Robert-to-Worker-B coverage event in Activity.
+- The deployed regression exposed and then closed four follow-up defects: worker Catch interest cards no longer imply worker-side selection, Direct Send refreshes replace prior offer cards instead of duplicating them, manager Coverage Requests suppresses its empty state while a request is present, and coverage Activity is limited to the involved workers and workplace managers in both the interface and database policy.
+- Hosted migration `20260915122500_limit_all_activity_visibility.sql` applies the corrected Activity visibility rule; the remote migration ledger is current and hosted database lint reports no schema errors.
 - Live Realtime behavior still needs an isolated simultaneous-session check. The pilot access/recovery procedure also remains to be finalized before the build is considered pilot-ready.
 
 ## 4. What is implemented now
@@ -171,7 +172,6 @@ Worker capabilities:
 - Worker-reported shift start and end times.
 - Release a shift to the public Catch Board.
 - Express or withdraw interest in a Catch shift.
-- Select a coworker for a worker-owned coverage request.
 - Cancel a public coverage request before completion.
 - Direct Send to an eligible coworker.
 - Accept or decline an incoming Direct Send.
@@ -243,7 +243,7 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 - The public GitHub Pages frontend still serves the August 10 `main` version, so it does not expose the current authenticated Schedule implementation.
 - A controlled hosted test cohort and multi-role Schedule regression passed on September 9 through the current-branch preview.
 - The current frontend is now available through the controlled Industry Hosted Pilot. Live manager/worker sign-in, reload restoration, manager-created shifts, Catch, Direct Send, manager approval, reassignment, and persisted Activity history passed on September 15.
-- Do not describe the hosted app as pilot-ready until the deployed worker Activity privacy regression and UI inconsistencies are fixed, Realtime is verified with simultaneous isolated sessions, and the pilot access/recovery procedure is finalized.
+- Do not describe the hosted app as pilot-ready until Realtime is verified with simultaneous isolated sessions and the pilot access/recovery procedure is finalized.
 
 ## 6. Latest completed checkpoint
 
@@ -280,8 +280,9 @@ Hosted evidence:
 - Controlled deployment: the current `backend-schedule` frontend is published through ChatGPT Sites as **Industry Hosted Pilot**; public Site access leads to Industry's own Supabase-backed sign-in.
 - Live authentication result: manager and worker role routing, data loading, role separation, sign-out/sign-in, and Command–R session restoration passed on the published Site.
 - Live mutation result: the manager created shifts for Robert; Catch transferred one shift to Worker B after interest, manager selection, and approval; Direct Send transferred another shift to Worker C after acceptance and manager approval; manager and participant schedules reflected final ownership; and Activity preserved the event history.
-- Live defects observed: misleading worker-side selection affordance in Catch, a duplicate incoming Direct Send card before acceptance, a contradictory empty state on Coverage Requests, and unrelated workplace coverage history visible to Worker C.
-- Remaining gate: fix and rerun the observed privacy/UI regressions, verify Realtime with simultaneous isolated sessions, then define the first small pilot and recovery procedure.
+- Live regression corrections: worker Catch cards are read-only outside the manager role, Direct Send offer cards are de-duplicated before rendering, manager Coverage Requests keeps empty and active states mutually exclusive, and coverage Activity is restricted to involved workers and workplace managers by frontend filtering plus RLS.
+- Hosted safety result: migration `20260915122500_limit_all_activity_visibility.sql` was the only pending remote change, applied successfully, and passed hosted database lint.
+- Remaining gate: verify Realtime with simultaneous isolated sessions, then define the first small pilot and recovery procedure.
 
 ## 7. Recommended development direction
 
@@ -291,11 +292,10 @@ The final local Schedule regression and independent Safari refresh check passed 
 
 Recommended order from this checkpoint:
 
-1. **Fix the deployed regression findings.** Scope worker Activity to relevant events, remove duplicate Direct Send rendering, suppress contradictory empty states, and align Catch selection affordances with manager-only behavior.
-2. **Complete the isolated Realtime check.** Run manager and worker accounts simultaneously in separate browser sessions and verify schedule, coverage, and Activity updates without reloads.
-3. **Close or retain the temporary cohort deliberately.** Use the documented cleanup path if the cohort is no longer needed, or label and retain it only for repeatable regression work.
-4. **Prepare a small Portland pilot.** Define the first workplace, participants, support process, success measures, and recovery procedure.
-5. **Choose the next backend pillar only after the deployed Schedule build is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
+1. **Complete the isolated Realtime check.** Run manager and worker accounts simultaneously in separate browser sessions and verify schedule, coverage, and Activity updates without reloads.
+2. **Close or retain the temporary cohort deliberately.** Use the documented cleanup path if the cohort is no longer needed, or label and retain it only for repeatable regression work.
+3. **Prepare a small Portland pilot.** Define the first workplace, participants, support process, success measures, and recovery procedure.
+4. **Choose the next backend pillar only after the deployed Schedule build is stable.** Jobs is the stronger next candidate because its user journey and front-end state model are already extensively defined; People should remain privacy-led and require a separate trust/safety plan.
 
 ## 8. Working method to preserve
 

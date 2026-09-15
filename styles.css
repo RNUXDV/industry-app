@@ -3099,7 +3099,6 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
   align-items: center;
   gap: 0.875rem;
 
-  cursor: pointer;
   border: 1px solid transparent;
   border-radius: 14px;
   padding: 0.75rem;
@@ -3109,7 +3108,12 @@ body:has(.jobs-application-prep.is-active) .home-logo-button {
     border-color 180ms ease;
 }
 
-.interested-worker:hover {
+.interested-worker.is-selectable {
+  cursor: pointer;
+}
+
+.interested-worker.is-selectable:hover,
+.interested-worker.is-selectable:focus-visible {
   background: rgba(255, 255, 255, 0.035);
   border-color: rgba(255, 255, 255, 0.08);
 }
