@@ -150,7 +150,9 @@ Emotional direction by pillar:
 - The published Site passed live manager-created shift, Catch, and Direct Send workflows across the manager, Robert, Worker B, and Worker C accounts, including manager approval, final ownership, and persisted Activity history.
 - The deployed regression exposed and then closed four follow-up defects: worker Catch interest cards no longer imply worker-side selection, Direct Send refreshes replace prior offer cards instead of duplicating them, manager Coverage Requests suppresses its empty state while a request is present, and coverage Activity is limited to the involved workers and workplace managers in both the interface and database policy.
 - Hosted migration `20260915122500_limit_all_activity_visibility.sql` applies the corrected Activity visibility rule; the remote migration ledger is current and hosted database lint reports no schema errors.
-- Live Realtime behavior still needs an isolated simultaneous-session check. The pilot access/recovery procedure also remains to be finalized before the build is considered pilot-ready.
+- Live Realtime passed an isolated simultaneous-session check across separate manager, releasing-worker, and interested-worker browser sessions. Shift creation, release, interest, selection, approval, ownership transfer, and prior-owner removal all appeared in the affected sessions without manual refresh.
+- Static stylesheet and application-script URLs now include an explicit deployment version so previously opened pilot browsers fetch the current interface after a publish instead of retaining an older cached bundle.
+- The pilot access/recovery procedure still remains to be finalized before the build is considered pilot-ready.
 
 ## 4. What is implemented now
 
