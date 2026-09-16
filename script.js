@@ -93,6 +93,19 @@ const managerTeamScheduleList = document.getElementById(
 
 const managerCrewList = document.getElementById("manager-crew-list");
 
+const managerInviteForm = document.getElementById("manager-invite-form");
+const managerInviteEmail = document.getElementById("manager-invite-email");
+const managerInviteRole = document.getElementById("manager-invite-role");
+const managerInviteStatus = document.getElementById("manager-invite-status");
+const managerInviteResult = document.getElementById("manager-invite-result");
+const managerInviteResultCopy = document.getElementById(
+  "manager-invite-result-copy",
+);
+const managerCopyInviteButton = document.getElementById(
+  "manager-copy-invite-button",
+);
+const managerInviteList = document.getElementById("manager-invite-list");
+
 const managerShiftWorkerSelect = document.getElementById(
   "manager-shift-worker",
 );
@@ -1203,6 +1216,225 @@ function renderAuthenticatedManagerCrew(crew = authenticatedManagerCrew) {
   });
 }
 
+function formatInvitationDate(dateValue) {
+  return new Date(dateValue).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function showManagerInviteResult(invitation) {
+  currentManagerInviteUrl = buildIndustryInviteUrl(invitation.invite_token);
+
+  if (managerInviteResultCopy) {
+    managerInviteResultCopy.textContent =
+      `Send this link privately to ${invitation.invited_email}. It expires ${formatInvitationDate(invitation.expires_at)}.`;
+  }
+
+  if (managerInviteResult) {
+    managerInviteResult.hidden = false;
+  }
+}
+
+async function createManagerWorkplaceInvitation(email, role) {
+  if (managerInviteStatus) {
+    managerInviteStatus.textContent = "Creating a secure invitation…";
+  }
+
+  const { data, error } = await supabaseClient.rpc(
+    "create_workplace_invitation",
+    {
+      target_email: email,
+      target_role: role,
+    },
+  );
+
+  if (error || !data?.length) {
+    console.error("Industry manager invitation error:", error);
+
+    if (managerInviteStatus) {
+      managerInviteStatus.textContent =
+        error?.message || "Unable to create this invitation.";
+    }
+
+    return null;
+  }
+
+  showManagerInviteResult(data[0]);
+
+  if (managerInviteStatus) {
+    managerInviteStatus.textContent =
+      "Invitation created. Copy the link and send it privately.";
+  }
+
+  await loadWorkplaceInvitations();
+  return data[0];
+}
+
+function renderWorkplaceInvitations(invitations = []) {
+  if (!managerInviteList) {
+    return;
+  }
+
+  managerInviteList.innerHTML = "";
+
+  if (!invitations.length) {
+    const emptyCard = document.createElement("article");
+    emptyCard.className = "stack-card shift-card";
+    emptyCard.innerHTML = `
+      <div class="stack-copy">
+        <p class="stack-kicker">Invitations</p>
+        <h3>No invitations yet</h3>
+        <p>Create a private invite when you are ready to add a worker.</p>
+      </div>
+    `;
+    managerInviteList.appendChild(emptyCard);
+    return;
+  }
+
+  invitations.forEach((invitation) => {
+    const card = document.createElement("article");
+    card.className = "stack-card shift-card";
+
+    const copy = document.createElement("div");
+    copy.className = "stack-copy";
+
+    const status = document.createElement("span");
+    status.className = `manager-invite-status-badge is-${invitation.invitation_status}`;
+    status.textContent = invitation.invitation_status;
+
+    const name = document.createElement("h3");
+    name.textContent = invitation.invited_email;
+
+    const meta = document.createElement("ul");
+    meta.className = "shift-meta";
+
+    const roleItem = document.createElement("li");
+    roleItem.textContent = invitation.invited_role;
+
+    const dateItem = document.createElement("li");
+    dateItem.textContent =
+      invitation.invitation_status === "pending"
+        ? `Expires ${formatInvitationDate(invitation.expires_at)}`
+        : `Created ${formatInvitationDate(invitation.created_at)}`;
+
+    meta.append(roleItem, dateItem);
+    copy.append(status, name, meta);
+    card.appendChild(copy);
+
+    if (invitation.invitation_status === "pending") {
+      const actions = document.createElement("div");
+      actions.className = "manager-invite-card-actions";
+
+      const replaceButton = document.createElement("button");
+      replaceButton.className = "action-button secondary-action";
+      replaceButton.type = "button";
+      replaceButton.textContent = "Create new link";
+      replaceButton.addEventListener("click", () => {
+        createManagerWorkplaceInvitation(
+          invitation.invited_email,
+          invitation.invited_role,
+        );
+      });
+
+      const revokeButton = document.createElement("button");
+      revokeButton.className = "action-button secondary-action";
+      revokeButton.type = "button";
+      revokeButton.textContent = "Revoke";
+      revokeButton.addEventListener("click", async () => {
+        revokeButton.disabled = true;
+
+        const { data, error } = await supabaseClient.rpc(
+          "revoke_workplace_invitation",
+          { target_invitation_id: invitation.invitation_id },
+        );
+
+        if (error || !data) {
+          console.error("Industry revoke invitation error:", error);
+          revokeButton.disabled = false;
+
+          if (managerInviteStatus) {
+            managerInviteStatus.textContent =
+              error?.message || "Unable to revoke this invitation.";
+          }
+
+          return;
+        }
+
+        if (managerInviteStatus) {
+          managerInviteStatus.textContent = "Invitation revoked.";
+        }
+
+        await loadWorkplaceInvitations();
+      });
+
+      actions.append(replaceButton, revokeButton);
+      card.appendChild(actions);
+    }
+
+    managerInviteList.appendChild(card);
+  });
+}
+
+async function loadWorkplaceInvitations() {
+  if (
+    authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
+    !managerInviteList
+  ) {
+    return [];
+  }
+
+  const { data, error } = await supabaseClient.rpc(
+    "list_workplace_invitations",
+  );
+
+  if (error) {
+    console.error("Industry invitation list error:", error);
+    managerInviteList.innerHTML = `
+      <article class="stack-card shift-card">
+        <div class="stack-copy">
+          <p class="stack-kicker">Invitations</p>
+          <h3>Unable to load invitations</h3>
+          <p>Try again before inviting a worker.</p>
+        </div>
+      </article>
+    `;
+    return [];
+  }
+
+  renderWorkplaceInvitations(data || []);
+  return data || [];
+}
+
+managerInviteForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = managerInviteEmail.value.trim();
+  const role = managerInviteRole.value;
+  const invitation = await createManagerWorkplaceInvitation(email, role);
+
+  if (invitation) {
+    managerInviteForm.reset();
+  }
+});
+
+managerCopyInviteButton?.addEventListener("click", async () => {
+  if (!currentManagerInviteUrl) {
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(currentManagerInviteUrl);
+    managerInviteStatus.textContent =
+      "Invite link copied. Send it only to the person named in the invitation.";
+  } catch (error) {
+    console.error("Industry copy invitation error:", error);
+    managerInviteStatus.textContent =
+      "Copy failed. Create a new link and try again in a secure browser window.";
+  }
+});
+
 async function loadAuthenticatedTeamSchedule() {
   if (
     authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
@@ -1910,7 +2142,10 @@ if (managerCreateShiftButton) {
 
 if (managerCrewButton) {
   managerCrewButton.addEventListener("click", async () => {
-    const crew = await loadAuthenticatedManagerCrew();
+    const [crew] = await Promise.all([
+      loadAuthenticatedManagerCrew(),
+      loadWorkplaceInvitations(),
+    ]);
 
     renderAuthenticatedManagerCrew(crew ?? authenticatedManagerCrew);
 
@@ -3120,6 +3355,7 @@ dashboardLinks.forEach((link) => {
         authenticatedWorkplaceRole?.toLowerCase() === "manager"
       ) {
         renderAuthenticatedManagerCrew(authenticatedManagerCrew);
+        loadWorkplaceInvitations();
       }
 
       setActiveScheduleView(scheduleView);
@@ -8983,7 +9219,7 @@ function completeOnboarding() {
 }
 
 startOnboardingButton?.addEventListener("click", () => {
-  openIndustryAuth("signup");
+  openIndustryAuth(activePilotInvitation ? "signup" : "login");
 });
 skipOnboardingButton?.addEventListener("click", () => {
   completeOnboarding();
@@ -9099,6 +9335,30 @@ const updatePasswordStatus = document.querySelector("#update-password-status");
 
 const authSwitch = document.querySelector(".industry-auth-switch");
 
+const industryInviteSummary = document.querySelector(
+  "#industry-invite-summary",
+);
+const industryInviteWorkplace = document.querySelector(
+  "#industry-invite-workplace",
+);
+const industryInviteDetails = document.querySelector(
+  "#industry-invite-details",
+);
+
+const INDUSTRY_INVITE_STORAGE_KEY = "industry-pilot-invite";
+const inviteQueryToken = new URLSearchParams(window.location.search).get(
+  "invite",
+);
+
+if (inviteQueryToken) {
+  localStorage.setItem(INDUSTRY_INVITE_STORAGE_KEY, inviteQueryToken);
+}
+
+let activePilotInviteToken =
+  inviteQueryToken || localStorage.getItem(INDUSTRY_INVITE_STORAGE_KEY) || "";
+let activePilotInvitation = null;
+let currentManagerInviteUrl = "";
+
 const dashboardGreeting = document.querySelector("#dashboard-greeting");
 const dashboardDate = document.querySelector("#dashboard-date");
 const dashboardClock = document.querySelector("#dashboard-clock");
@@ -9179,6 +9439,119 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_PUBLISHABLE_KEY,
 );
 
+function buildIndustryInviteUrl(inviteToken) {
+  const inviteUrl = new URL(window.location.pathname, window.location.origin);
+
+  if (INDUSTRY_SUPABASE_OVERRIDE === "hosted") {
+    inviteUrl.searchParams.set("supabase", "hosted");
+  }
+
+  inviteUrl.searchParams.set("invite", inviteToken);
+  return inviteUrl.toString();
+}
+
+function clearPilotInvitation() {
+  activePilotInviteToken = "";
+  activePilotInvitation = null;
+  localStorage.removeItem(INDUSTRY_INVITE_STORAGE_KEY);
+
+  const cleanUrl = new URL(window.location.href);
+  cleanUrl.searchParams.delete("invite");
+  window.history.replaceState(
+    {},
+    document.title,
+    `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`,
+  );
+
+  if (industryInviteSummary) {
+    industryInviteSummary.hidden = true;
+  }
+}
+
+function renderPilotInvitation() {
+  if (!industryInviteSummary) {
+    return;
+  }
+
+  if (!activePilotInvitation) {
+    industryInviteSummary.hidden = true;
+    return;
+  }
+
+  industryInviteSummary.hidden = false;
+  industryInviteWorkplace.textContent = activePilotInvitation.workplace_name;
+  industryInviteDetails.textContent = `${activePilotInvitation.invited_role} invitation for ${activePilotInvitation.invited_email}`;
+
+  const signupEmail = document.querySelector("#signup-email");
+  const loginEmail = document.querySelector("#login-email");
+
+  if (signupEmail) {
+    signupEmail.value = activePilotInvitation.invited_email;
+    signupEmail.readOnly = true;
+  }
+
+  if (loginEmail && !loginEmail.value) {
+    loginEmail.value = activePilotInvitation.invited_email;
+  }
+}
+
+async function loadPilotInvitation() {
+  if (!activePilotInviteToken) {
+    activePilotInvitation = null;
+    renderPilotInvitation();
+    return null;
+  }
+
+  const { data, error } = await supabaseClient.rpc("get_pilot_invitation", {
+    invite_token: activePilotInviteToken,
+  });
+
+  if (error || !data?.length) {
+    console.error("Industry invitation lookup error:", error);
+    clearPilotInvitation();
+    return null;
+  }
+
+  activePilotInvitation = data[0];
+  renderPilotInvitation();
+  return activePilotInvitation;
+}
+
+async function acceptPendingPilotInvitation() {
+  if (!activePilotInviteToken) {
+    return true;
+  }
+
+  if (!activePilotInvitation) {
+    await loadPilotInvitation();
+  }
+
+  if (!activePilotInvitation) {
+    return false;
+  }
+
+  const { error } = await supabaseClient.rpc("accept_pilot_invitation", {
+    invite_token: activePilotInviteToken,
+  });
+
+  if (error) {
+    console.error("Industry invitation acceptance error:", error);
+
+    if (loginStatus) {
+      loginStatus.textContent = error.message;
+    }
+
+    if (signupStatus) {
+      signupStatus.textContent = error.message;
+    }
+
+    return false;
+  }
+
+  clearPilotInvitation();
+  return true;
+}
+
 const recoveryHashParams = new URLSearchParams(
   window.location.hash.replace(/^#/, ""),
 );
@@ -9200,12 +9573,17 @@ supabaseClient.auth.onAuthStateChange((event) => {
 });
 
 function setIndustryAuthMode(mode = "signup") {
+  if (mode === "signup" && !activePilotInvitation) {
+    mode = "login";
+  }
+
   signupForm.hidden = true;
   loginForm.hidden = true;
   recoveryForm.hidden = true;
   updatePasswordForm.hidden = true;
 
   authSwitch.hidden = false;
+  authSwitchButton.hidden = false;
 
   if (mode === "login") {
     loginForm.hidden = false;
@@ -9213,8 +9591,13 @@ function setIndustryAuthMode(mode = "signup") {
     industryAuthTitle.textContent = "Welcome back";
     industryAuthCopy.textContent = "Sign in to your space.";
 
-    authSwitchCopy.textContent = "New to Industry?";
-    authSwitchButton.textContent = "Create account";
+    if (activePilotInvitation) {
+      authSwitchCopy.textContent = "Using a new invitation?";
+      authSwitchButton.textContent = "Create account";
+    } else {
+      authSwitchCopy.textContent = "New accounts require a private invitation.";
+      authSwitchButton.hidden = true;
+    }
   } else if (mode === "recovery") {
     recoveryForm.hidden = false;
 
@@ -9233,7 +9616,7 @@ function setIndustryAuthMode(mode = "signup") {
     signupForm.hidden = false;
 
     industryAuthTitle.textContent = "Create your account";
-    industryAuthCopy.textContent = "Your space starts here.";
+    industryAuthCopy.textContent = `Join ${activePilotInvitation.workplace_name} with your private invitation.`;
 
     authSwitchCopy.textContent = "Already have an account?";
     authSwitchButton.textContent = "Sign in";
@@ -9242,6 +9625,7 @@ function setIndustryAuthMode(mode = "signup") {
   }
 
   industryAuthScreen.dataset.mode = mode;
+  renderPilotInvitation();
 }
 function openIndustryAuth(mode = "signup") {
   setIndustryAuthMode(mode);
@@ -9294,7 +9678,13 @@ async function restoreIndustrySession() {
 
   if (!session) {
     console.log("Industry: no saved session.");
-    showSignedOutIndustry();
+
+    if (activePilotInvitation) {
+      openIndustryAuth("signup");
+    } else {
+      showSignedOutIndustry();
+    }
+
     return;
   }
 
@@ -9303,7 +9693,12 @@ async function restoreIndustrySession() {
   await enterAuthenticatedIndustry();
 }
 
-restoreIndustrySession();
+async function initializeIndustryAuth() {
+  await loadPilotInvitation();
+  await restoreIndustrySession();
+}
+
+initializeIndustryAuth();
 
 async function signOutOfIndustry() {
   const { error } = await supabaseClient.auth.signOut();
@@ -9315,6 +9710,18 @@ async function signOutOfIndustry() {
 
   console.log("Industry: signed out.");
 
+  authenticatedUserId = null;
+  authenticatedWorkplaceId = null;
+  authenticatedWorkplaceRole = null;
+  authenticatedDisplayName = "";
+  authenticatedManagerCrew = [];
+  authenticatedWorkplaceCrew = [];
+
+  if (industryRealtimeChannel) {
+    await supabaseClient.removeChannel(industryRealtimeChannel);
+    industryRealtimeChannel = null;
+  }
+
   onboardingHelpPanel?.classList.add("is-hidden");
 
   signupForm?.reset();
@@ -9323,7 +9730,7 @@ async function signOutOfIndustry() {
   signupStatus.textContent = "";
   loginStatus.textContent = "";
 
-  setIndustryAuthMode("signup");
+  setIndustryAuthMode(activePilotInvitation ? "signup" : "login");
 
   showSignedOutIndustry();
 }
@@ -9613,12 +10020,12 @@ async function loadAuthenticatedIndustryProfile() {
 
   if (userError) {
     console.error("Industry user lookup error:", userError);
-    return;
+    return false;
   }
 
   if (!user) {
     console.log("Industry: no authenticated user for profile.");
-    return;
+    return false;
   }
 
   authenticatedUserId = user.id;
@@ -9631,7 +10038,7 @@ async function loadAuthenticatedIndustryProfile() {
 
   if (profileError) {
     console.error("Industry profile lookup error:", profileError);
-    return;
+    return false;
   }
 
   const { data: membership, error: membershipError } = await supabaseClient
@@ -9662,12 +10069,17 @@ async function loadAuthenticatedIndustryProfile() {
     });
   }
 
+  if (!authenticatedWorkplaceId || !authenticatedWorkplaceRole) {
+    console.warn("Industry: authenticated account has no workplace access.");
+    return false;
+  }
+
   const fullName = profile?.full_name?.trim();
 
   if (!fullName) {
     authenticatedDisplayName = "";
     updateIndustryDashboardGreeting();
-    return;
+    return true;
   }
 
   const firstName = fullName.split(/\s+/)[0];
@@ -9724,6 +10136,7 @@ async function loadAuthenticatedIndustryProfile() {
   renderShiftBoard();
 
   await setupIndustryRealtime();
+  return true;
 }
 
 async function setupIndustryRealtime() {
@@ -9873,6 +10286,25 @@ async function setupIndustryRealtime() {
 }
 
 async function enterAuthenticatedIndustry() {
+  const invitationAccepted = await acceptPendingPilotInvitation();
+
+  if (!invitationAccepted) {
+    openIndustryAuth(activePilotInvitation ? "login" : "signup");
+    return;
+  }
+
+  // Establish authenticated identity and workplace role first.
+  const hasWorkplaceAccess = await loadAuthenticatedIndustryProfile();
+
+  if (!hasWorkplaceAccess) {
+    await supabaseClient.auth.signOut();
+    showSignedOutIndustry();
+    openIndustryAuth("login");
+    loginStatus.textContent =
+      "This account is not connected to a workplace. Ask your pilot organizer for a private invitation.";
+    return;
+  }
+
   industryAuthScreen?.classList.remove("is-active");
   industryAuthScreen?.setAttribute("aria-hidden", "true");
 
@@ -9882,9 +10314,6 @@ async function enterAuthenticatedIndustry() {
   updateIndustryDashboardDate();
   updateIndustryDashboardClock();
 
-  // Establish authenticated identity and workplace role first.
-  await loadAuthenticatedIndustryProfile();
-
   // Then load the user's Schedule/Catch data.
   await Promise.all([
     loadAuthenticatedSchedule(),
@@ -9893,6 +10322,9 @@ async function enterAuthenticatedIndustry() {
     loadAuthenticatedCoverageEvents(),
     loadAuthenticatedTeamSchedule(),
     loadAuthenticatedManagerCrew(),
+    authenticatedWorkplaceRole?.toLowerCase() === "manager"
+      ? loadWorkplaceInvitations()
+      : Promise.resolve(),
   ]);
 
   if (authenticatedWorkplaceRole?.toLowerCase() === "manager") {
@@ -10017,11 +10449,23 @@ updatePasswordForm?.addEventListener("submit", async (event) => {
 signupForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  if (!activePilotInvitation || !activePilotInviteToken) {
+    signupStatus.textContent =
+      "A valid private invitation is required to create an account.";
+    return;
+  }
+
   const fullName = document.querySelector("#signup-name").value.trim();
 
   const email = document.querySelector("#signup-email").value.trim();
 
   const password = document.querySelector("#signup-password").value;
+
+  if (email.toLowerCase() !== activePilotInvitation.invited_email) {
+    signupStatus.textContent =
+      "Use the email address that received this invitation.";
+    return;
+  }
 
   signupStatus.textContent = "Creating your account…";
 
@@ -10029,6 +10473,7 @@ signupForm?.addEventListener("submit", async (event) => {
     email,
     password,
     options: {
+      emailRedirectTo: buildIndustryInviteUrl(activePilotInviteToken),
       data: {
         full_name: fullName,
       },
@@ -10045,7 +10490,7 @@ signupForm?.addEventListener("submit", async (event) => {
 
   if (!data.session) {
     signupStatus.textContent =
-      "Account created. Check your email to confirm your account.";
+      "Account created. Confirm your email, then return to this invitation to finish joining.";
     return;
   }
 

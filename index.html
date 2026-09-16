@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20260915.3" />
+    <link rel="stylesheet" href="styles.css?v=20260915.4" />
   </head>
   <body data-theme="dark">
 
@@ -97,6 +97,17 @@
         Your space starts here.
       </p>
     </header>
+
+    <section
+      class="industry-invite-summary"
+      id="industry-invite-summary"
+      aria-live="polite"
+      hidden
+    >
+      <p class="industry-invite-eyebrow">PRIVATE INVITATION</p>
+      <h3 id="industry-invite-workplace">Your workplace</h3>
+      <p id="industry-invite-details"></p>
+    </section>
 
     <!-- CREATE ACCOUNT -->
     <form
@@ -1781,6 +1792,77 @@
     class="today-panel"
     aria-label="Workplace crew"
   >
+    <section class="manager-invite-panel" aria-labelledby="manager-invite-title">
+      <div class="panel-heading">
+        <p class="section-label">Private invitations</p>
+        <h3 id="manager-invite-title">Invite a crew member</h3>
+        <p>
+          Each link works once, is tied to one email address, and expires in seven days.
+        </p>
+      </div>
+
+      <form class="manager-invite-form" id="manager-invite-form">
+        <label class="field-group">
+          <span class="field-label">Worker email</span>
+          <input
+            class="tip-input"
+            id="manager-invite-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="worker@email.com"
+            required
+          />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">Worker role</span>
+          <select class="tip-input" id="manager-invite-role" name="role" required>
+            <option value="">Choose a role</option>
+            <option>Server</option>
+            <option>Bartender</option>
+            <option>Host</option>
+            <option>Busser</option>
+            <option>Cook</option>
+            <option>Dishwasher</option>
+            <option>Barback</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <button class="action-button" type="submit">
+          Create private invite
+        </button>
+
+        <p class="status-text" id="manager-invite-status" aria-live="polite"></p>
+      </form>
+
+      <div class="manager-invite-result" id="manager-invite-result" hidden>
+        <p class="section-label">Ready to send</p>
+        <p id="manager-invite-result-copy"></p>
+        <div class="manager-invite-actions">
+          <button class="action-button" id="manager-copy-invite-button" type="button">
+            Copy invite link
+          </button>
+        </div>
+      </div>
+
+      <div class="manager-invite-history">
+        <div class="panel-heading">
+          <p class="section-label">Invitation history</p>
+          <h3>Pending and recent invites</h3>
+        </div>
+        <div class="stack-list shift-list" id="manager-invite-list" aria-live="polite">
+          <article class="stack-card shift-card">
+            <div class="stack-copy">
+              <p class="stack-kicker">Invitations</p>
+              <h3>Loading invitations...</h3>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <div class="panel-heading">
       <p class="section-label">Workplace Crew</p>
       <h3>Your team</h3>
@@ -5520,6 +5602,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-    <script src="script.js?v=20260915.3"></script>
+    <script src="script.js?v=20260915.4"></script>
   </body>
 </html>

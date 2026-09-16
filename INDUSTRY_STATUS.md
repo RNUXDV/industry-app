@@ -4,7 +4,7 @@ Last reconciled: September 15, 2026
 
 Active development branch: `backend-schedule`
 
-Current stage: backend-integrated prototype / controlled-pilot ready
+Current stage: backend-integrated prototype / invitation-controlled pilot ready
 
 This document is the durable handoff for Industry. It reconciles the current repository, Git history, Industry Design Language (IDL), database migrations, and the major product-development conversations. Use it to understand what Industry is, how it reached its current state, what is genuinely implemented, and what should happen next.
 
@@ -154,6 +154,16 @@ Emotional direction by pillar:
 - Static stylesheet and application-script URLs now include an explicit deployment version so previously opened pilot browsers fetch the current interface after a publish instead of retaining an older cached bundle.
 - The controlled pilot access and recovery procedure is finalized in `PILOT_ACCESS.md`, including role verification, password recovery, wrong-account handling, support evidence, and test-data cleanup.
 - With the isolated Realtime gate, cache-safe deployment, and access/recovery runbook complete, the Schedule build is ready for a small controlled pilot. It is not production-ready.
+
+### Phase 12 — Invitation-controlled pilot onboarding: September 15
+
+- Public self-enrollment was replaced with invitation-only workplace onboarding while preserving sign-in and password recovery for existing members.
+- One-time invitation tokens are stored only as secure hashes, expire after seven days, and are bound to one workplace, email address, and role.
+- The database—not browser state—validates invitation status, authenticated email, existing memberships, and final role assignment.
+- Workplace managers can create, copy, replace, revoke, and review worker invitations from the Crew view. Manager-created invitations are limited to approved worker roles.
+- The first manager invitation is service-only so a public visitor or ordinary manager cannot claim the initial manager role.
+- Unaffiliated authenticated accounts are denied entry and directed to request a private invitation from the pilot organizer.
+- Invitation creation and acceptance are auditable without storing raw invite tokens or participant passwords.
 
 ## 4. What is implemented now
 

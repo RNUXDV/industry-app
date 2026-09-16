@@ -2376,6 +2376,71 @@ body:has(.people-loop-view) .home-logo-button {
   font-weight: 700;
 }
 
+.manager-invite-panel {
+  display: grid;
+  gap: 22px;
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.manager-invite-form,
+.manager-invite-result,
+.manager-invite-history {
+  display: grid;
+  gap: 14px;
+}
+
+.manager-invite-form .tip-input {
+  min-height: 52px;
+  font: inherit;
+}
+
+.manager-invite-result {
+  padding: 18px;
+  border: 1px solid rgba(182, 84, 46, 0.5);
+  border-radius: var(--radius-md);
+  background: var(--highlight-soft);
+}
+
+.manager-invite-result[hidden] {
+  display: none;
+}
+
+.manager-invite-result p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.manager-invite-actions,
+.manager-invite-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.manager-invite-card-actions .action-button {
+  width: auto;
+}
+
+.manager-invite-status-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.manager-invite-status-badge.is-pending {
+  border-color: rgba(214, 95, 50, 0.5);
+  color: var(--accent);
+}
+
 .shift-list,
 .form-grid,
 .workplace-list {
@@ -9394,6 +9459,39 @@ body.onboarding-home-active #home-logo-button {
   display: none;
 }
 
+.industry-invite-summary {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 22px;
+  padding: 18px;
+  border: 1px solid rgba(214, 95, 50, 0.48);
+  border-radius: 18px;
+  background: rgba(214, 95, 50, 0.1);
+  text-align: left;
+}
+
+.industry-invite-summary[hidden] {
+  display: none;
+}
+
+.industry-invite-summary h3,
+.industry-invite-summary p {
+  margin: 0;
+}
+
+.industry-invite-eyebrow {
+  color: #ef7a4c;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+#industry-invite-details {
+  color: rgba(245, 241, 232, 0.72);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .industry-auth-field {
   display: grid;
   gap: 8px;
@@ -9501,6 +9599,16 @@ body.onboarding-home-active #home-logo-button {
   font-weight: 800;
 
   cursor: pointer;
+}
+
+.industry-auth-primary:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.industry-auth-field input[readonly] {
+  color: rgba(245, 241, 232, 0.8);
+  cursor: not-allowed;
 }
 
 .industry-auth-status {
