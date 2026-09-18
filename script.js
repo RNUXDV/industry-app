@@ -620,6 +620,10 @@ let authenticatedWorkplaceId = null;
 let authenticatedWorkplaceRole = null;
 let authenticatedUserId = null;
 let authenticatedDisplayName = "";
+let activePilotObserverWorkplace = null;
+let pilotObserverRealtimeChannel = null;
+let pilotObserverAuthorizationTimer = null;
+let pilotObserverStaleTimer = null;
 let selectedScheduleSource = "";
 let activeScheduleAction = null;
 let selectedReleaseShift = null;
@@ -9275,6 +9279,34 @@ const leavePilotConfirmation = document.querySelector(
 );
 const leavePilotButton = document.querySelector("#leave-pilot-button");
 const leavePilotStatus = document.querySelector("#leave-pilot-status");
+const pilotMonitorScreen = document.querySelector("#pilot-monitor-screen");
+const pilotMonitorWorkplace = document.querySelector("#pilot-monitor-workplace");
+const pilotMonitorEnvironment = document.querySelector("#pilot-monitor-environment");
+const pilotMonitorRetention = document.querySelector("#pilot-monitor-retention");
+const pilotMonitorStatusTitle = document.querySelector(
+  "#pilot-monitor-status-title",
+);
+const pilotMonitorSummary = document.querySelector("#pilot-monitor-summary");
+const pilotMonitorState = document.querySelector("#pilot-monitor-state");
+const pilotMonitorEvents = document.querySelector("#pilot-monitor-events");
+const pilotMonitorConnectionDot = document.querySelector(
+  "#pilot-monitor-connection-dot",
+);
+const pilotMonitorConnectionText = document.querySelector(
+  "#pilot-monitor-connection-text",
+);
+const pilotMonitorEventFilter = document.querySelector(
+  "#pilot-monitor-event-filter",
+);
+const pilotMonitorOutcomeFilter = document.querySelector(
+  "#pilot-monitor-outcome-filter",
+);
+const pilotMonitorTimeFilter = document.querySelector(
+  "#pilot-monitor-time-filter",
+);
+const pilotMonitorFilters = document.querySelector("#pilot-monitor-filters");
+const pilotMonitorRefresh = document.querySelector("#pilot-monitor-refresh");
+const pilotMonitorSignout = document.querySelector("#pilot-monitor-signout");
 
 const INDUSTRY_INVITE_STORAGE_KEY = "industry-pilot-invite";
 const inviteQueryToken = new URLSearchParams(window.location.search).get(
@@ -9642,6 +9674,334 @@ async function initializeIndustryAuth() {
 
 initializeIndustryAuth();
 
+const PILOT_MONITOR_EVENT_LABELS = Object.freeze({
+  invitation_created: "Invitation created",
+  invitation_replaced: "Invitation replaced",
+  invitation_revoked: "Invitation revoked",
+  invitation_accepted: "Invitation accepted",
+  participant_joined: "Participant joined",
+  participant_left: "Participant left",
+  participant_removed: "Participant removed",
+  shift_created: "Shift created",
+  shift_updated: "Shift updated",
+  shift_released: "Shift released",
+  shift_reassigned: "Shift reassigned",
+  shift_cancelled: "Shift cancelled",
+  shift_deleted: "Shift deleted",
+  interest_expressed: "Interest expressed",
+  interest_withdrawn: "Interest withdrawn",
+  candidate_selected: "Candidate selected",
+  coverage_approved: "Coverage approved",
+  coverage_cancelled: "Coverage cancelled",
+  direct_offer_sent: "Direct offer sent",
+  direct_offer_accepted: "Direct offer accepted",
+  direct_offer_declined: "Direct offer declined",
+  direct_offer_approved: "Direct offer approved",
+  direct_offer_cancelled: "Direct offer cancelled",
+  observer_granted: "Observer access granted",
+  observer_revoked: "Observer access revoked",
+  retention_configured: "Retention configured",
+});
+
+function setPilotMonitorConnection(state, message) {
+  if (pilotMonitorConnectionDot) {
+    pilotMonitorConnectionDot.dataset.state = state;
+  }
+  if (pilotMonitorConnectionText) {
+    pilotMonitorConnectionText.textContent = message;
+  }
+}
+
+function setPilotMonitorState(message, state = "loading") {
+  if (!pilotMonitorState || !pilotMonitorEvents) {
+    return;
+  }
+  pilotMonitorState.hidden = false;
+  pilotMonitorState.dataset.state = state;
+  pilotMonitorState.textContent = message;
+  pilotMonitorEvents.hidden = true;
+}
+
+function makePilotMonitorMetric(label, value) {
+  const card = document.createElement("article");
+  card.className = "pilot-monitor-metric";
+
+  const labelElement = document.createElement("span");
+  labelElement.textContent = label;
+
+  const valueElement = document.createElement("strong");
+  valueElement.textContent = String(value ?? 0);
+
+  card.append(labelElement, valueElement);
+  return card;
+}
+
+function renderPilotMonitorSummary(summary) {
+  if (!pilotMonitorSummary) {
+    return;
+  }
+
+  const metrics = [
+    ["Pending invitations", summary?.invitations?.pending],
+    ["Accepted invitations", summary?.invitations?.accepted],
+    ["Revoked invitations", summary?.invitations?.revoked],
+    ["Expired invitations", summary?.invitations?.expired],
+    ["Active participants", summary?.participants?.active],
+    ["Inactive participants", summary?.participants?.inactive],
+    ["Scheduled shifts", summary?.shifts?.scheduled],
+    ["Open shifts", summary?.shifts?.open],
+    ["Coverage needed", summary?.shifts?.coverage_needed],
+    ["Completed shifts", summary?.shifts?.completed],
+    ["Cancelled shifts", summary?.shifts?.cancelled],
+    ["Interested", summary?.coverage?.interested],
+    ["Selected", summary?.coverage?.selected],
+    ["Confirmed", summary?.coverage?.confirmed],
+    ["Open direct offers", summary?.coverage?.direct_offers_open],
+    ["Events in 7 days", summary?.audit?.recent_events],
+  ];
+
+  pilotMonitorSummary.replaceChildren(
+    ...metrics.map(([label, value]) => makePilotMonitorMetric(label, value)),
+  );
+}
+
+function getPilotMonitorEventDetail(event) {
+  const details = [];
+  if (event.subject_code) details.push(`Participant ${event.subject_code}`);
+  if (event.object_code) details.push(`Shift ${event.object_code}`);
+  if (!details.length && event.actor_code) details.push(`Actor ${event.actor_code}`);
+  return details.join(" · ") || "Workplace event";
+}
+
+function renderPilotMonitorEvents(events) {
+  if (!pilotMonitorEvents || !pilotMonitorState) {
+    return;
+  }
+
+  pilotMonitorEvents.replaceChildren();
+
+  if (!events?.length) {
+    setPilotMonitorState(
+      "No retained events match these filters.",
+      "empty",
+    );
+    return;
+  }
+
+  events.forEach((event) => {
+    const item = document.createElement("li");
+    item.className = "pilot-monitor-event";
+
+    const eventName = document.createElement("strong");
+    eventName.textContent =
+      PILOT_MONITOR_EVENT_LABELS[event.event_type] || "Pilot event";
+
+    const outcome = document.createElement("span");
+    outcome.className = "pilot-monitor-outcome";
+    outcome.textContent = event.outcome || "info";
+
+    const detail = document.createElement("span");
+    detail.className = "pilot-monitor-event-code";
+    detail.textContent = getPilotMonitorEventDetail(event);
+
+    const timestamp = document.createElement("time");
+    const occurredAt = new Date(event.occurred_at);
+    timestamp.dateTime = Number.isNaN(occurredAt.getTime())
+      ? ""
+      : occurredAt.toISOString();
+    timestamp.textContent = Number.isNaN(occurredAt.getTime())
+      ? "Time unavailable"
+      : occurredAt.toLocaleString();
+
+    item.append(eventName, outcome, detail, timestamp);
+    pilotMonitorEvents.appendChild(item);
+  });
+
+  pilotMonitorState.hidden = true;
+  pilotMonitorEvents.hidden = false;
+}
+
+function getPilotMonitorSinceFilter() {
+  const hours = Number(pilotMonitorTimeFilter?.value);
+  if (!hours) {
+    return null;
+  }
+  return new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+}
+
+function schedulePilotMonitorStaleState() {
+  window.clearTimeout(pilotObserverStaleTimer);
+  pilotObserverStaleTimer = window.setTimeout(() => {
+    if (activePilotObserverWorkplace) {
+      setPilotMonitorConnection("stale", "Connected · data may be stale");
+    }
+  }, 90000);
+}
+
+async function loadPilotMonitorData() {
+  if (!activePilotObserverWorkplace) {
+    return false;
+  }
+
+  setPilotMonitorState("Loading privacy-safe pilot data…");
+
+  const [summaryResult, eventResult] = await Promise.all([
+    supabaseClient.rpc("get_pilot_monitor_summary", {
+      target_workplace_id: activePilotObserverWorkplace.workplace_id,
+    }),
+    supabaseClient.rpc("list_pilot_monitor_events", {
+      target_workplace_id: activePilotObserverWorkplace.workplace_id,
+      event_type_filter: pilotMonitorEventFilter?.value || null,
+      outcome_filter: pilotMonitorOutcomeFilter?.value || null,
+      since_filter: getPilotMonitorSinceFilter(),
+      result_limit: 100,
+    }),
+  ]);
+
+  if (summaryResult.error || eventResult.error) {
+    setPilotMonitorState(
+      "Pilot data is unavailable. Access may have changed; refresh or sign in again.",
+      "error",
+    );
+    setPilotMonitorConnection("error", "Unable to refresh");
+    return false;
+  }
+
+  renderPilotMonitorSummary(summaryResult.data || {});
+  renderPilotMonitorEvents(eventResult.data || []);
+  setPilotMonitorConnection("connected", "Live and read only");
+  schedulePilotMonitorStaleState();
+  return true;
+}
+
+async function loadPilotObserverAuthorization() {
+  const { data, error } = await supabaseClient.rpc(
+    "list_my_observer_workplaces",
+  );
+
+  if (error || !data?.length) {
+    activePilotObserverWorkplace = null;
+    return false;
+  }
+
+  activePilotObserverWorkplace = data[0];
+  return true;
+}
+
+async function verifyPilotObserverAuthorization() {
+  if (!activePilotObserverWorkplace) {
+    return;
+  }
+
+  const activeWorkplaceId = activePilotObserverWorkplace.workplace_id;
+  const authorized = await loadPilotObserverAuthorization();
+
+  if (!authorized || activePilotObserverWorkplace.workplace_id !== activeWorkplaceId) {
+    await signOutOfIndustry();
+    openIndustryAuth("login");
+    loginStatus.textContent =
+      "Observer access is no longer active. Contact the pilot organizer if this is unexpected.";
+  }
+}
+
+async function setupPilotObserverRealtime() {
+  if (!activePilotObserverWorkplace) {
+    return;
+  }
+
+  if (pilotObserverRealtimeChannel) {
+    await supabaseClient.removeChannel(pilotObserverRealtimeChannel);
+  }
+
+  setPilotMonitorConnection("connecting", "Connecting…");
+  pilotObserverRealtimeChannel = supabaseClient
+    .channel(`pilot-monitor-${activePilotObserverWorkplace.workplace_id}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "pilot_audit_events",
+        filter: `workplace_id=eq.${activePilotObserverWorkplace.workplace_id}`,
+      },
+      async () => {
+        await loadPilotMonitorData();
+      },
+    )
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED") {
+        setPilotMonitorConnection("connected", "Live and read only");
+      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        setPilotMonitorConnection("error", "Live updates unavailable");
+      } else if (status === "CLOSED") {
+        setPilotMonitorConnection("disconnected", "Disconnected");
+      }
+    });
+}
+
+async function enterPilotObserverMode() {
+  if (!activePilotObserverWorkplace || !pilotMonitorScreen) {
+    return false;
+  }
+
+  document.body.classList.add("pilot-observer-active");
+  industryAuthScreen?.classList.remove("is-active");
+  industryAuthScreen?.setAttribute("aria-hidden", "true");
+  pilotMonitorScreen.hidden = false;
+
+  pilotMonitorWorkplace.textContent = activePilotObserverWorkplace.workplace_name;
+  pilotMonitorEnvironment.textContent = IS_LOCAL_INDUSTRY
+    ? "LOCAL TEST ENVIRONMENT · no production data"
+    : "HOSTED PILOT ENVIRONMENT · read-only observer";
+  const pilotEndsAt = activePilotObserverWorkplace.pilot_ends_at
+    ? new Date(activePilotObserverWorkplace.pilot_ends_at)
+    : null;
+  const retentionDays = activePilotObserverWorkplace.retention_days || 90;
+  const retentionEligibleAt = pilotEndsAt
+    ? new Date(pilotEndsAt.getTime() + retentionDays * 24 * 60 * 60 * 1000)
+    : null;
+
+  if (!pilotEndsAt || Number.isNaN(pilotEndsAt.getTime())) {
+    pilotMonitorStatusTitle.textContent = "Pilot active · end not configured";
+    pilotMonitorRetention.textContent =
+      "Cleanup is locked until a pilot end is explicitly configured, followed by at least 90 days.";
+  } else if (pilotEndsAt > new Date()) {
+    pilotMonitorStatusTitle.textContent = "Pilot active";
+    pilotMonitorRetention.textContent =
+      `Pilot end: ${pilotEndsAt.toLocaleString()} · ${retentionDays}-day retention.`;
+  } else if (retentionEligibleAt > new Date()) {
+    pilotMonitorStatusTitle.textContent = "Pilot ended · records retained";
+    pilotMonitorRetention.textContent =
+      `Event-level cleanup remains locked until ${retentionEligibleAt.toLocaleString()}.`;
+  } else {
+    pilotMonitorStatusTitle.textContent = "Pilot ended · retention eligible";
+    pilotMonitorRetention.textContent =
+      "Authorized service cleanup may now preserve aggregates and remove event-level linkage.";
+  }
+
+  await loadPilotMonitorData();
+  await setupPilotObserverRealtime();
+
+  window.clearInterval(pilotObserverAuthorizationTimer);
+  pilotObserverAuthorizationTimer = window.setInterval(
+    verifyPilotObserverAuthorization,
+    15000,
+  );
+  return true;
+}
+
+pilotMonitorFilters?.addEventListener("change", () => {
+  loadPilotMonitorData();
+});
+
+pilotMonitorRefresh?.addEventListener("click", () => {
+  loadPilotMonitorData();
+});
+
+pilotMonitorSignout?.addEventListener("click", () => {
+  signOutOfIndustry();
+});
+
 async function signOutOfIndustry() {
   const { error } = await supabaseClient.auth.signOut();
 
@@ -9655,6 +10015,22 @@ async function signOutOfIndustry() {
   authenticatedDisplayName = "";
   authenticatedManagerCrew = [];
   authenticatedWorkplaceCrew = [];
+  activePilotObserverWorkplace = null;
+
+  window.clearInterval(pilotObserverAuthorizationTimer);
+  window.clearTimeout(pilotObserverStaleTimer);
+  pilotObserverAuthorizationTimer = null;
+  pilotObserverStaleTimer = null;
+
+  if (pilotObserverRealtimeChannel) {
+    await supabaseClient.removeChannel(pilotObserverRealtimeChannel);
+    pilotObserverRealtimeChannel = null;
+  }
+
+  if (pilotMonitorScreen) {
+    pilotMonitorScreen.hidden = true;
+  }
+  document.body.classList.remove("pilot-observer-active");
 
   if (industryRealtimeChannel) {
     await supabaseClient.removeChannel(industryRealtimeChannel);
@@ -10255,6 +10631,13 @@ async function enterAuthenticatedIndustry() {
   const hasWorkplaceAccess = await loadAuthenticatedIndustryProfile();
 
   if (!hasWorkplaceAccess) {
+    const hasObserverAccess = await loadPilotObserverAuthorization();
+
+    if (hasObserverAccess) {
+      await enterPilotObserverMode();
+      return;
+    }
+
     await supabaseClient.auth.signOut();
     showSignedOutIndustry();
     openIndustryAuth("login");

@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20260918.1" />
+    <link rel="stylesheet" href="styles.css?v=20260918.2" />
   </head>
   <body data-theme="dark">
 
@@ -5648,9 +5648,121 @@
     </div>
   </section>
 </div>
+
+<main id="pilot-monitor-screen" class="pilot-monitor-screen" hidden>
+  <header class="pilot-monitor-header">
+    <div>
+      <p class="pilot-monitor-kicker">INDUSTRY PILOT MONITOR</p>
+      <h1>Pilot Monitor — Read only</h1>
+      <p id="pilot-monitor-workplace" class="pilot-monitor-workplace"></p>
+    </div>
+    <button id="pilot-monitor-signout" class="pilot-monitor-signout" type="button">
+      Sign out
+    </button>
+  </header>
+
+  <div id="pilot-monitor-environment" class="pilot-monitor-environment" role="status"></div>
+
+  <section class="pilot-monitor-status-card" aria-labelledby="pilot-monitor-status-title">
+    <div>
+      <p class="pilot-monitor-kicker">PILOT STATUS</p>
+      <h2 id="pilot-monitor-status-title">Access confirmed</h2>
+      <p id="pilot-monitor-retention"></p>
+    </div>
+    <div class="pilot-monitor-connection">
+      <span id="pilot-monitor-connection-dot" aria-hidden="true"></span>
+      <span id="pilot-monitor-connection-text">Connecting…</span>
+    </div>
+  </section>
+
+  <section aria-labelledby="pilot-monitor-summary-title">
+    <div class="pilot-monitor-section-heading">
+      <div>
+        <p class="pilot-monitor-kicker">AT A GLANCE</p>
+        <h2 id="pilot-monitor-summary-title">Operational summary</h2>
+      </div>
+      <button id="pilot-monitor-refresh" class="pilot-monitor-refresh" type="button">
+        Refresh
+      </button>
+    </div>
+    <div id="pilot-monitor-summary" class="pilot-monitor-summary" aria-live="polite"></div>
+  </section>
+
+  <section aria-labelledby="pilot-monitor-events-title">
+    <div class="pilot-monitor-section-heading">
+      <div>
+        <p class="pilot-monitor-kicker">AUDIT HISTORY</p>
+        <h2 id="pilot-monitor-events-title">Privacy-safe lifecycle events</h2>
+      </div>
+    </div>
+
+    <form id="pilot-monitor-filters" class="pilot-monitor-filters">
+      <label>
+        Event
+        <select id="pilot-monitor-event-filter">
+          <option value="">All events</option>
+          <option value="invitation_created">Invitation created</option>
+          <option value="invitation_replaced">Invitation replaced</option>
+          <option value="invitation_accepted">Invitation accepted</option>
+          <option value="invitation_revoked">Invitation revoked</option>
+          <option value="participant_joined">Participant joined</option>
+          <option value="participant_left">Participant left</option>
+          <option value="participant_removed">Participant removed</option>
+          <option value="shift_created">Shift created</option>
+          <option value="shift_updated">Shift updated</option>
+          <option value="shift_released">Shift released</option>
+          <option value="shift_reassigned">Shift reassigned</option>
+          <option value="shift_cancelled">Shift cancelled</option>
+          <option value="shift_deleted">Shift deleted</option>
+          <option value="interest_expressed">Interest expressed</option>
+          <option value="interest_withdrawn">Interest withdrawn</option>
+          <option value="candidate_selected">Candidate selected</option>
+          <option value="coverage_approved">Coverage approved</option>
+          <option value="coverage_cancelled">Coverage cancelled</option>
+          <option value="direct_offer_sent">Direct offer sent</option>
+          <option value="direct_offer_accepted">Direct offer accepted</option>
+          <option value="direct_offer_declined">Direct offer declined</option>
+          <option value="direct_offer_approved">Direct offer approved</option>
+          <option value="direct_offer_cancelled">Direct offer cancelled</option>
+          <option value="observer_granted">Observer granted</option>
+          <option value="observer_revoked">Observer revoked</option>
+          <option value="retention_configured">Retention configured</option>
+        </select>
+      </label>
+      <label>
+        Outcome
+        <select id="pilot-monitor-outcome-filter">
+          <option value="">All outcomes</option>
+          <option value="success">Success</option>
+          <option value="blocked">Blocked</option>
+          <option value="info">Information</option>
+        </select>
+      </label>
+      <label>
+        Time range
+        <select id="pilot-monitor-time-filter">
+          <option value="24">Last 24 hours</option>
+          <option value="168" selected>Last 7 days</option>
+          <option value="720">Last 30 days</option>
+          <option value="">All retained events</option>
+        </select>
+      </label>
+    </form>
+
+    <div id="pilot-monitor-state" class="pilot-monitor-state" role="status" aria-live="polite">
+      Loading pilot events…
+    </div>
+    <ol id="pilot-monitor-events" class="pilot-monitor-events" hidden></ol>
+  </section>
+
+  <p class="pilot-monitor-privacy-note">
+    Participant and shift labels are random codes. This view does not show names,
+    email addresses, phone numbers, passwords, tokens, notes, payroll, tips, or message content.
+  </p>
+</main>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="security.js?v=20260917.1"></script>
-    <script src="script.js?v=20260918.1"></script>
+    <script src="script.js?v=20260918.2"></script>
   </body>
 </html>

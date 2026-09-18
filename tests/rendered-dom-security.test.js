@@ -282,6 +282,107 @@ test("real schedule and Catch renderers safely display dates, notes, and nullish
   assert.doesNotMatch(result.catchHtml, /&amp;(?:amp|lt|gt|quot|#39);/);
 });
 
+test("pilot monitor renders ordinary and hostile backend values as inert text", async () => {
+  const payload = `<img src=x onerror="window.__pilotMonitorXss=true"><script>window.__pilotMonitorXss=true<\/script>`;
+
+  const result = await page.evaluate((hostileValue) => {
+    window.__pilotMonitorXss = false;
+
+    renderPilotMonitorSummary({
+      invitations: { pending: 2, accepted: 1 },
+      participants: { active: 3, inactive: 1 },
+      shifts: { scheduled: 4, open: 1, coverage_needed: 1 },
+      coverage: {
+        interested: 1,
+        selected: 1,
+        confirmed: 0,
+        direct_offers_open: 1,
+      },
+      audit: { recent_events: 9 },
+    });
+
+    renderPilotMonitorEvents([
+      {
+        event_type: hostileValue,
+        outcome: hostileValue,
+        subject_code: `P-ABCDEF123456${hostileValue}`,
+        object_code: `S-ABCDEF123456${hostileValue}`,
+        actor_code: "O-ABCDEF123456",
+        metadata: {
+          notes: hostileValue,
+          email: "private@example.test",
+        },
+        occurred_at: "2026-09-18T18:00:00.000Z",
+      },
+      {
+        event_type: "participant_joined",
+        outcome: "success",
+        subject_code: "P-A1B2C3D4E5F6",
+        object_code: null,
+        occurred_at: "",
+      },
+    ]);
+
+    const monitor = document.querySelector("#pilot-monitor-screen");
+    const events = document.querySelector("#pilot-monitor-events");
+    const summary = document.querySelector("#pilot-monitor-summary");
+
+    return {
+      executed: window.__pilotMonitorXss,
+      injectedElements: events.querySelectorAll("img, script, svg").length,
+      eventText: events.textContent,
+      eventHtml: events.innerHTML,
+      summaryText: summary.textContent,
+      mutationControls: monitor.querySelectorAll(
+        "button:not(#pilot-monitor-signout):not(#pilot-monitor-refresh)",
+      ).length,
+    };
+  }, payload);
+
+  assert.equal(result.executed, false);
+  assert.equal(result.injectedElements, 0);
+  assert.match(result.eventText, /<img src=x onerror=/);
+  assert.match(result.eventText, /P-ABCDEF123456/);
+  assert.match(result.eventText, /Participant joined/);
+  assert.doesNotMatch(result.eventText, /private@example\.test/);
+  assert.doesNotMatch(result.eventText, /notes/);
+  assert.match(result.eventHtml, /&lt;img src=x onerror=/);
+  assert.doesNotMatch(result.eventHtml, /&amp;lt;/);
+  assert.match(result.summaryText, /Pending invitations2/);
+  assert.equal(result.mutationControls, 0);
+});
+
+test("pilot monitor exposes clear loading, empty, stale, disconnected, and error states", async () => {
+  const result = await page.evaluate(() => {
+    const observed = {};
+    setPilotMonitorState("Loading pilot events…", "loading");
+    observed.loading = document.querySelector("#pilot-monitor-state").dataset.state;
+
+    renderPilotMonitorEvents([]);
+    observed.empty = document.querySelector("#pilot-monitor-state").dataset.state;
+
+    setPilotMonitorConnection("stale", "Connected · data may be stale");
+    observed.stale = document.querySelector("#pilot-monitor-connection-dot").dataset.state;
+
+    setPilotMonitorConnection("disconnected", "Disconnected");
+    observed.disconnected = document.querySelector("#pilot-monitor-connection-dot").dataset.state;
+
+    setPilotMonitorState("Pilot data is unavailable.", "error");
+    observed.error = document.querySelector("#pilot-monitor-state").dataset.state;
+    observed.errorText = document.querySelector("#pilot-monitor-state").textContent;
+    return observed;
+  });
+
+  assert.deepEqual(result, {
+    loading: "loading",
+    empty: "empty",
+    stale: "stale",
+    disconnected: "disconnected",
+    error: "error",
+    errorText: "Pilot data is unavailable.",
+  });
+});
+
 test("pilot consent and departure copy render as optional and account-safe", async () => {
   const result = await page.evaluate(() => {
     activePilotInvitation = {

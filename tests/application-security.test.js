@@ -29,8 +29,21 @@ const accessMigrationSource = fs.readFileSync(
   ),
   "utf8",
 );
+const observerMigrationSource = fs.readFileSync(
+  path.join(
+    projectRoot,
+    "supabase",
+    "migrations",
+    "20260918170000_add_pilot_observer_audit.sql",
+  ),
+  "utf8",
+);
 const localAuthTestSource = fs.readFileSync(
   path.join(projectRoot, "tests", "local-gotrue-invitation.integration.test.js"),
+  "utf8",
+);
+const localObserverTestSource = fs.readFileSync(
+  path.join(projectRoot, "tests", "local-observer-audit.integration.test.js"),
   "utf8",
 );
 const { escapeHtml } = require(path.join(projectRoot, "security.js"));
@@ -243,4 +256,133 @@ test("the real Local GoTrue test discovers credentials without printing them", (
   assert.doesNotMatch(localAuthTestSource, /response\.text\(|JSON\.stringify\(local/);
   assert.match(localAuthTestSource, /\/auth\/v1\/signup/);
   assert.match(localAuthTestSource, /\/auth\/v1\/recover/);
+});
+
+test("observer authorization is separate, service-managed, and immediately revocable", () => {
+  assert.match(observerMigrationSource, /create table public\.workplace_observers/);
+  assert.match(
+    observerMigrationSource,
+    /Observer authorization must be separate from membership/,
+  );
+  assert.match(
+    observerMigrationSource,
+    /grant execute on function public\.grant_pilot_observer\(uuid, uuid\) to service_role/,
+  );
+  assert.match(
+    observerMigrationSource,
+    /grant execute on function public\.revoke_pilot_observer\(uuid, uuid\) to service_role/,
+  );
+  assert.doesNotMatch(
+    observerMigrationSource,
+    /grant execute on function public\.(?:grant|revoke)_pilot_observer[^;]+to authenticated/,
+  );
+  assert.match(
+    observerMigrationSource,
+    /access\.observer_profile_id = auth\.uid\(\)[\s\S]*access\.revoked_at is null/,
+  );
+  assert.match(
+    observerMigrationSource,
+    /Active workplace managers can read privacy-safe audit events[\s\S]*is_manager_for_workplace\(workplace_id\)/,
+  );
+});
+
+test("the durable audit surface stores opaque codes and constrained metadata only", () => {
+  assert.match(observerMigrationSource, /create table public\.pilot_audit_events/);
+  assert.match(observerMigrationSource, /participant_code ~ '\^P-/);
+  assert.match(observerMigrationSource, /shift_code ~ '\^S-/);
+  assert.match(observerMigrationSource, /observer_code ~ '\^O-/);
+  assert.match(
+    observerMigrationSource,
+    /encode\(extensions\.gen_random_bytes\(6\), 'hex'\)/,
+  );
+  assert.match(observerMigrationSource, /create or replace function public\.safe_pilot_audit_metadata/);
+  assert.match(observerMigrationSource, /Pilot audit records are append-only/);
+  assert.match(observerMigrationSource, /'invitation_replaced'/);
+  assert.doesNotMatch(
+    observerMigrationSource.match(
+      /create table public\.pilot_audit_events \([\s\S]*?\n\);/,
+    )?.[0] || "",
+    /\b(?:profile_id|shift_id|email|name|phone|notes|token|password)\b/,
+  );
+});
+
+test("observer UI uses only privacy-safe read RPCs and DOM text rendering", () => {
+  assert.match(indexSource, /Pilot Monitor — Read only/);
+  assert.match(scriptSource, /LOCAL TEST ENVIRONMENT · no production data/);
+  assert.match(scriptSource, /HOSTED PILOT ENVIRONMENT · read-only observer/);
+  assert.match(
+    scriptSource,
+    /rpc\(\s*"list_my_observer_workplaces"/,
+  );
+  assert.match(scriptSource, /rpc\("get_pilot_monitor_summary"/);
+  assert.match(scriptSource, /rpc\("list_pilot_monitor_events"/);
+  assert.doesNotMatch(
+    scriptSource,
+    /rpc\("(?:grant|revoke)_pilot_observer"/,
+  );
+
+  const observerRendering = scriptSource.match(
+    /function makePilotMonitorMetric[\s\S]*?async function loadPilotObserverAuthorization/,
+  )?.[0];
+  assert.ok(observerRendering);
+  assert.doesNotMatch(observerRendering, /innerHTML|insertAdjacentHTML|outerHTML/);
+  assert.match(observerRendering, /textContent/);
+  assert.doesNotMatch(observerRendering, /event\.metadata|full_name|email|phone|notes/);
+});
+
+test("observer mode does not load operational manager or worker data", () => {
+  const observerBranch = scriptSource.match(
+    /if \(!hasWorkplaceAccess\) \{[\s\S]*?await supabaseClient\.auth\.signOut\(\);/,
+  )?.[0];
+  assert.ok(observerBranch);
+  assert.match(observerBranch, /loadPilotObserverAuthorization/);
+  assert.match(observerBranch, /enterPilotObserverMode/);
+  assert.match(observerBranch, /return;/);
+  assert.doesNotMatch(
+    observerBranch,
+    /loadAuthenticatedSchedule|loadAuthenticatedManagerCrew|loadAuthenticatedTeamSchedule/,
+  );
+});
+
+test("retention cleanup is service-only and refuses premature execution", () => {
+  assert.match(
+    observerMigrationSource,
+    /current_setting\('industry\.audit_retention_operation', true\)[\s\S]*is distinct from 'allowed'[\s\S]*auth\.role\(\) is distinct from 'service_role'/,
+  );
+  assert.match(
+    observerMigrationSource,
+    /now\(\) < setting\.pilot_ends_at \+ make_interval\(days => setting\.retention_days\)/,
+  );
+  assert.match(
+    observerMigrationSource,
+    /raise exception 'Pilot audit retention period has not elapsed'/,
+  );
+  assert.match(
+    observerMigrationSource,
+    /insert into public\.pilot_audit_aggregates[\s\S]*delete from public\.pilot_audit_events/,
+  );
+  assert.match(
+    observerMigrationSource,
+    /delete from public\.workplace_participant_codes[\s\S]*delete from public\.workplace_shift_codes/,
+  );
+  assert.match(
+    observerMigrationSource,
+    /grant execute on function public\.cleanup_eligible_pilot_audit\(uuid\)[\s\S]*to service_role/,
+  );
+  assert.doesNotMatch(
+    observerMigrationSource,
+    /grant execute on function public\.cleanup_eligible_pilot_audit\(uuid\)[\s\S]{0,80}to authenticated/,
+  );
+});
+
+test("the real local observer integration test keeps runtime secrets out of output", () => {
+  assert.match(localObserverTestSource, /supabase", \["status", "-o", "env"\]/);
+  assert.match(localObserverTestSource, /stdio: \["ignore", "pipe", "ignore"\]/);
+  assert.doesNotMatch(
+    localObserverTestSource,
+    /console\.(?:log|warn|error|debug)|response\.text\(|JSON\.stringify\(local/,
+  );
+  assert.match(localObserverTestSource, /grant_pilot_observer/);
+  assert.match(localObserverTestSource, /revoke_pilot_observer/);
+  assert.match(localObserverTestSource, /hiddenEventsResponse/);
 });
