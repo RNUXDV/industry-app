@@ -242,8 +242,6 @@ function loadLoopState() {
       samStatus: parsedLoopState.samStatus === "sent" ? "sent" : "suggested",
     };
   } catch (error) {
-    console.warn("Unable to load the saved My Loop state.", error);
-
     return { ...defaultLoopState };
   }
 }
@@ -591,8 +589,6 @@ renderLoopState();
           eventStates: loadedEventStates,
         };
       } catch (error) {
-        console.warn("Unable to load the saved Events state.", error);
-
         return {
           ...defaultPeopleEventsState,
 
@@ -1627,7 +1623,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       return Array.isArray(parsedValue) ? parsedValue : [];
     } catch (error) {
-      console.warn("Unable to load saved resources:", error);
       return [];
     }
   }
@@ -1635,9 +1630,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function storeSavedResources(savedResources) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(savedResources));
-    } catch (error) {
-      console.warn("Unable to save resources:", error);
-    }
+    } catch (error) {}
   }
 
   function getResourceTitle(button) {

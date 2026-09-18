@@ -1,3 +1,5 @@
+const { escapeHtml } = window.IndustrySecurity;
+
 const navButtons = document.querySelectorAll(".nav-item");
 const appSections = document.querySelectorAll(".app-section");
 const navCards = document.querySelectorAll(".nav-card");
@@ -64,6 +66,16 @@ const caughtShiftsList = document.querySelector("#caught-shifts-list");
 
 const shiftBoardStatus = document.querySelector("#shift-board-status");
 const postShiftStatus = document.querySelector("#post-shift-status");
+
+function showActionFailure(target, message) {
+  if (!target) {
+    return;
+  }
+
+  target.textContent = message;
+  target.hidden = false;
+}
+
 const shiftWorkplaceSelect = document.querySelector("#shift-workplace");
 const workplacePreviewPanel = document.querySelector(
   "#workplace-preview-panel",
@@ -716,7 +728,6 @@ async function loadAuthenticatedDashboardShift() {
   } = await supabaseClient.auth.getUser();
 
   if (userError || !user) {
-    console.error("Industry dashboard user error:", userError);
     return;
   }
 
@@ -753,12 +764,10 @@ actual_ended_at,
     .maybeSingle();
 
   if (error) {
-    console.error("Industry dashboard shift error:", error);
     return;
   }
 
   if (!data) {
-    console.log("Industry: no upcoming authenticated shift.");
     renderDashboardShift(null);
     return;
   }
@@ -810,8 +819,6 @@ actual_ended_at,
     actualEndedAt: data.actual_ended_at || null,
   };
 
-  console.log("Industry dashboard shift loaded:", dashboardShift);
-
   renderDashboardShift(dashboardShift);
 }
 
@@ -822,7 +829,6 @@ async function loadAuthenticatedSchedule() {
   } = await supabaseClient.auth.getUser();
 
   if (userError || !user) {
-    console.error("Industry schedule user error:", userError);
     return;
   }
 
@@ -900,13 +906,10 @@ start_time_source,
     .order("actual_ended_at", { ascending: false });
 
   if (error) {
-    console.error("Industry authenticated schedule error:", error);
     return;
   }
 
   if (endedError) {
-    console.error("Industry authenticated ended schedule error:", endedError);
-
     authenticatedEndedScheduleShifts = [];
   }
 
@@ -1035,11 +1038,6 @@ start_time_source,
     };
   });
 
-  console.log(
-    "Industry authenticated schedule loaded:",
-    authenticatedScheduleShifts,
-  );
-
   renderAuthenticatedNextShiftSummary(authenticatedScheduleShifts);
   renderImportedShifts(authenticatedScheduleShifts);
 
@@ -1063,11 +1061,6 @@ async function loadAuthenticatedWorkplaceCrew() {
       .eq("workplace_id", authenticatedWorkplaceId);
 
   if (membershipError) {
-    console.error(
-      "Industry workplace crew membership error:",
-      membershipError
-    );
-
     throw membershipError;
   }
 
@@ -1086,11 +1079,6 @@ async function loadAuthenticatedWorkplaceCrew() {
       .in("id", profileIds);
 
   if (profileError) {
-    console.error(
-      "Industry workplace crew profile error:",
-      profileError
-    );
-
     throw profileError;
   }
 
@@ -1155,12 +1143,8 @@ async function loadAuthenticatedManagerCrew() {
         : "No workplace members found.";
     }
 
-    console.log("Industry manager crew loaded:", crew);
-
     return crew;
   } catch (error) {
-    console.error("Industry manager crew load error:", error);
-
     authenticatedManagerCrew = [];
 
     if (managerCreateShiftStatus) {
@@ -1204,10 +1188,10 @@ function renderAuthenticatedManagerCrew(crew = authenticatedManagerCrew) {
           ${isManager ? "Manager" : "Crew member"}
         </p>
 
-        <h3>${member.name}</h3>
+        <h3>${escapeHtml(member.name)}</h3>
 
         <ul class="shift-meta">
-          <li>${member.role || "Role not set"}</li>
+          <li>${escapeHtml(member.role || "Role not set")}</li>
         </ul>
       </div>
     `;
@@ -1251,8 +1235,6 @@ async function createManagerWorkplaceInvitation(email, role) {
   );
 
   if (error || !data?.length) {
-    console.error("Industry manager invitation error:", error);
-
     if (managerInviteStatus) {
       managerInviteStatus.textContent =
         error?.message || "Unable to create this invitation.";
@@ -1351,7 +1333,6 @@ function renderWorkplaceInvitations(invitations = []) {
         );
 
         if (error || !data) {
-          console.error("Industry revoke invitation error:", error);
           revokeButton.disabled = false;
 
           if (managerInviteStatus) {
@@ -1390,7 +1371,6 @@ async function loadWorkplaceInvitations() {
   );
 
   if (error) {
-    console.error("Industry invitation list error:", error);
     managerInviteList.innerHTML = `
       <article class="stack-card shift-card">
         <div class="stack-copy">
@@ -1429,7 +1409,6 @@ managerCopyInviteButton?.addEventListener("click", async () => {
     managerInviteStatus.textContent =
       "Invite link copied. Send it only to the person named in the invitation.";
   } catch (error) {
-    console.error("Industry copy invitation error:", error);
     managerInviteStatus.textContent =
       "Copy failed. Create a new link and try again in a secure browser window.";
   }
@@ -1491,7 +1470,6 @@ coverage_stage,
     .order("starts_at", { ascending: true });
 
   if (error) {
-    console.error("Industry manager team schedule error:", error);
     return;
   }
 
@@ -1582,10 +1560,6 @@ coverage_stage,
       return start > now || isCurrentShift(shift);
     });
 
-  console.log(
-    "Industry manager team schedule loaded:",
-    authenticatedTeamScheduleShifts,
-  );
   renderAuthenticatedTeamSchedule();
 }
 function renderAuthenticatedTeamSchedule() {
@@ -1628,14 +1602,14 @@ function renderAuthenticatedTeamSchedule() {
         <div class="shift-end-details">
           <p>
             <span>Clocked out</span>
-            <strong>${shift.clockedOutTime}</strong>
+            <strong>${escapeHtml(shift.clockedOutTime)}</strong>
           </p>
 
           ${shift.recordedInIndustryTime
           ? `
                 <p>
                   <span>Recorded in Industry</span>
-                  <strong>${shift.recordedInIndustryTime}</strong>
+                  <strong>${escapeHtml(shift.recordedInIndustryTime)}</strong>
                 </p>
               `
           : ""
@@ -1662,17 +1636,17 @@ function renderAuthenticatedTeamSchedule() {
       }
       </p>
 
-      <h3>${shift.workerName}</h3>
+      <h3>${escapeHtml(shift.workerName)}</h3>
 
-      <p>${shift.role}</p>
+      <p>${escapeHtml(shift.role)}</p>
 
       <ul class="shift-meta">
-        <li>${shift.day}</li>
-        <li>${shift.time}</li>
+        <li>${escapeHtml(shift.day)}</li>
+        <li>${escapeHtml(shift.time)}</li>
       </ul>
 
       <ul class="shift-meta">
-        <li>${shift.workplace}</li>
+        <li>${escapeHtml(shift.workplace)}</li>
       </ul>
 
       ${endedShiftDetails}
@@ -1682,7 +1656,7 @@ ${canManageShift
       <button
         class="secondary-action"
         type="button"
-        data-manager-manage-shift="${shift.id}"
+        data-manager-manage-shift="${escapeHtml(shift.id)}"
       >
         Manage Shift
       </button>
@@ -1762,7 +1736,6 @@ async function loadAuthenticatedCatchShifts() {
   } = await supabaseClient.auth.getUser();
 
   if (userError || !user) {
-    console.error("Industry Catch user error:", userError);
     return;
   }
 
@@ -1791,7 +1764,6 @@ async function loadAuthenticatedCatchShifts() {
     .order("starts_at", { ascending: true });
 
   if (error) {
-    console.error("Industry Catch shift error:", error);
     return;
   }
 
@@ -1838,10 +1810,6 @@ async function loadAuthenticatedCatchShifts() {
     };
   });
 
-  console.log(
-    "Industry authenticated Catch shifts loaded:",
-    authenticatedCatchShifts,
-  );
   renderShiftBoard();
 }
 
@@ -1852,7 +1820,6 @@ async function loadAuthenticatedShiftInterests() {
   } = await supabaseClient.auth.getUser();
 
   if (userError || !user) {
-    console.error("Industry shift interests user error:", userError);
     return;
   }
 
@@ -1869,16 +1836,10 @@ async function loadAuthenticatedShiftInterests() {
 `);
 
   if (error) {
-    console.error("Industry shift interests load error:", error);
     return;
   }
 
   authenticatedShiftInterests = data || [];
-
-  console.log(
-    "Industry authenticated shift interests loaded:",
-    authenticatedShiftInterests,
-  );
 
   renderShiftBoard();
 }
@@ -1889,12 +1850,10 @@ async function loadAuthenticatedCoverageEvents() {
   } = await supabaseClient.auth.getUser();
 
   if (userError || !user) {
-    console.error("Industry coverage events user error:", userError);
     return;
   }
 
   if (!authenticatedWorkplaceId) {
-    console.log("Industry coverage events skipped: no workplace selected.");
     authenticatedCoverageEvents = [];
     return;
   }
@@ -1925,16 +1884,11 @@ async function loadAuthenticatedCoverageEvents() {
     .limit(50);
 
   if (error) {
-    console.error("Industry coverage events load error:", error);
     return;
   }
 
   authenticatedCoverageEvents = data ?? [];
 
-  console.log(
-    "Industry authenticated coverage events loaded:",
-    authenticatedCoverageEvents,
-  );
 }
 
 function renderDashboardShift(backendShift = undefined) {
@@ -2083,8 +2037,6 @@ if (managerCancelShiftButton) {
       .maybeSingle();
 
     if (error || !cancelledShift) {
-      console.error("Industry manager cancel shift error:", error);
-
       if (managerCreateShiftStatus) {
         managerCreateShiftStatus.textContent = "Unable to cancel this shift.";
       }
@@ -2093,8 +2045,6 @@ if (managerCancelShiftButton) {
       managerCancelShiftButton.textContent = originalButtonText;
       return;
     }
-
-    console.log("Industry manager shift cancelled.");
 
     editingManagerShiftId = null;
     setManagerShiftFormMode("create");
@@ -2248,20 +2198,6 @@ if (managerSaveShiftButton) {
     managerSaveShiftButton.textContent = "Creating…";
     managerCreateShiftStatus.textContent = "Creating shift…";
 
-    console.log("Industry manager create shift payload:", {
-      workplace_id: authenticatedWorkplaceId,
-      assigned_profile_id: assignedProfileId,
-      manager_profile_id: authenticatedUserId,
-      role,
-      date,
-      startTime,
-      endTime,
-      starts_at: startsAtDate.toISOString(),
-      ends_at: endsAt,
-      end_label: endLabel,
-      status: "scheduled",
-    });
-
     const isEditing = Boolean(editingManagerShiftId);
 
     let saveError = null;
@@ -2302,7 +2238,6 @@ if (managerSaveShiftButton) {
     }
 
     if (saveError) {
-      console.error("Industry manager shift save error:", saveError);
       managerCreateShiftStatus.textContent = isEditing
         ? "Unable to update this shift."
         : "Unable to create this shift.";
@@ -2310,12 +2245,6 @@ if (managerSaveShiftButton) {
       managerSaveShiftButton.textContent = originalButtonText;
       return;
     }
-
-    console.log(
-      isEditing
-        ? "Industry manager shift updated."
-        : "Industry manager shift created.",
-    );
 
     managerCreateShiftStatus.textContent = isEditing
       ? "Shift updated."
@@ -2473,7 +2402,6 @@ if (dashboardShiftDetailsButton) {
     const shift = authenticatedShift || demoShift;
 
     if (!shift) {
-      console.warn("Industry dashboard shift not found:", shiftId);
       return;
     }
 
@@ -2524,8 +2452,6 @@ if (releaseToBoardButton) {
       } = await supabaseClient.auth.getUser();
 
       if (userError || !user) {
-        console.error("Industry release user error:", userError);
-
         if (postShiftStatus) {
           postShiftStatus.textContent =
             "Unable to verify your account. Please try again.";
@@ -2542,8 +2468,6 @@ if (releaseToBoardButton) {
         });
 
       if (releaseError) {
-        console.error("Industry release shift error:", releaseError);
-
         if (postShiftStatus) {
           postShiftStatus.textContent =
             "We couldn't release this shift. Please try again.";
@@ -2553,18 +2477,12 @@ if (releaseToBoardButton) {
       }
 
       if (!releasedShift) {
-        console.error(
-          "Industry release shift error: no matching shift was updated.",
-        );
-
         if (postShiftStatus) {
           postShiftStatus.textContent = "This shift could not be released.";
         }
 
         return;
       }
-
-      console.log("Industry shift released to Catch:", releasedShift);
 
       selectedReleaseShift = {
         ...selectedReleaseShift,
@@ -2603,8 +2521,6 @@ if (releaseToBoardButton) {
         behavior: "smooth",
       });
     } catch (error) {
-      console.error("Industry release unexpected error:", error);
-
       if (postShiftStatus) {
         postShiftStatus.textContent =
           "Something went wrong while releasing this shift.";
@@ -2619,7 +2535,6 @@ if (releaseToBoardButton) {
 if (directReleaseButton) {
   directReleaseButton.addEventListener("click", async () => {
     if (!selectedReleaseShift) {
-      console.error("Industry direct release: no selected shift.");
       return;
     }
 
@@ -2635,10 +2550,6 @@ if (directReleaseButton) {
       } = await supabaseClient.rpc("get_direct_release_coworkers");
 
       if (directReleaseCoworkersError) {
-        console.error(
-          "Industry direct release coworkers error:",
-          directReleaseCoworkersError
-        );
         throw directReleaseCoworkersError;
       }
 
@@ -2648,24 +2559,6 @@ if (directReleaseButton) {
           name: coworker.full_name || "Crew member",
           role: coworker.role || "",
         })
-      );
-
-      console.log(
-        "Industry direct release coworkers:",
-        availableCoworkers
-      );
-
-      if (directReleaseCoworkersError) {
-        console.error(
-          "Industry direct release coworkers error:",
-          directReleaseCoworkersError
-        );
-        return;
-      }
-
-      console.log(
-        "Industry direct release coworkers:",
-        availableCoworkers
       );
 
       const existingCoworkerList = document.getElementById(
@@ -2729,11 +2622,6 @@ if (directReleaseButton) {
               `${member.name} selected for direct offer.`;
           }
 
-          console.log(
-            "Industry direct release selected coworker:",
-            member
-          );
-
           const sendOfferButton = document.createElement("button");
 
           sendOfferButton.type = "button";
@@ -2775,11 +2663,6 @@ if (directReleaseButton) {
 
 
               coworkerList.style.display = "none";
-              console.log(
-                "Industry direct offer created:",
-                offerId
-              );
-
               if (postShiftStatus) {
                 postShiftStatus.textContent =
                   `Direct offer sent to ${member.name}.`;
@@ -2796,10 +2679,7 @@ if (directReleaseButton) {
                 cancelOfferButton.textContent = "Canceling…";
 
                 try {
-                  const {
-                    data: cancelStatus,
-                    error: cancelError,
-                  } = await supabaseClient.rpc(
+                  const { error: cancelError } = await supabaseClient.rpc(
                     "cancel_direct_shift_offer",
                     {
                       target_offer_id: offerId,
@@ -2809,14 +2689,6 @@ if (directReleaseButton) {
                   if (cancelError) {
                     throw cancelError;
                   }
-
-                  console.log(
-                    "Industry direct offer canceled:",
-                    {
-                      offerId,
-                      status: cancelStatus,
-                    }
-                  );
 
                   if (postShiftStatus) {
                     postShiftStatus.textContent =
@@ -2839,11 +2711,10 @@ if (directReleaseButton) {
                   coworkerList.style.display = "";
 
                 } catch (error) {
-                  console.error(
-                    "Industry direct offer cancel error:",
-                    error
+                  showActionFailure(
+                    postShiftStatus,
+                    "We couldn't cancel this direct offer. Please try again.",
                   );
-
                   cancelOfferButton.disabled = false;
                   cancelOfferButton.textContent =
                     "Cancel Direct Offer";
@@ -2852,11 +2723,6 @@ if (directReleaseButton) {
 
               sendOfferButton.replaceWith(cancelOfferButton);
             } catch (error) {
-              console.error(
-                "Industry direct offer send error:",
-                error
-              );
-
               if (postShiftStatus) {
                 postShiftStatus.textContent =
                   "Unable to send direct offer.";
@@ -2884,11 +2750,6 @@ if (directReleaseButton) {
         );
       }
     } catch (error) {
-      console.error(
-        "Industry direct release crew error:",
-        error
-      );
-
       if (postShiftStatus) {
         postShiftStatus.textContent =
           "Unable to load workplace coworkers.";
@@ -2911,33 +2772,30 @@ async function endAuthenticatedShift(
   const reportedEndDate = new Date(reportedEndAt);
 
   if (Number.isNaN(reportedEndDate.getTime())) {
-    console.error("Industry end shift error: invalid reported end time");
     return false;
   }
 
-  const { error } = await supabaseClient.rpc("report_assigned_shift_end", {
-    target_shift_id: shiftId,
-    reported_end_at: reportedEndDate.toISOString(),
-  });
+  try {
+    const { error } = await supabaseClient.rpc("report_assigned_shift_end", {
+      target_shift_id: shiftId,
+      reported_end_at: reportedEndDate.toISOString(),
+    });
 
-  if (error) {
-    console.error("Industry end shift error:", error);
+    if (error) {
+      return false;
+    }
+
+    await Promise.all([
+      loadAuthenticatedSchedule(),
+      loadAuthenticatedDashboardShift(),
+    ]);
+
+    updateDashboardForRole();
+
+    return true;
+  } catch (error) {
     return false;
   }
-
-  console.log("Industry shift end reported:", {
-    shiftId,
-    reportedEndAt: reportedEndDate.toISOString(),
-  });
-
-  await Promise.all([
-    loadAuthenticatedSchedule(),
-    loadAuthenticatedDashboardShift(),
-  ]);
-
-  updateDashboardForRole();
-
-  return true;
 }
 
 const startShiftOverlay = document.getElementById("start-shift-overlay");
@@ -3008,33 +2866,30 @@ async function startAuthenticatedShift(
   const reportedStartDate = new Date(reportedStartAt);
 
   if (Number.isNaN(reportedStartDate.getTime())) {
-    console.error("Industry start shift error: invalid reported start time");
     return false;
   }
 
-  const { error } = await supabaseClient.rpc("report_assigned_shift_start", {
-    target_shift_id: shiftId,
-    reported_start_at: reportedStartDate.toISOString(),
-  });
+  try {
+    const { error } = await supabaseClient.rpc("report_assigned_shift_start", {
+      target_shift_id: shiftId,
+      reported_start_at: reportedStartDate.toISOString(),
+    });
 
-  if (error) {
-    console.error("Industry start shift error:", error);
+    if (error) {
+      return false;
+    }
+
+    await Promise.all([
+      loadAuthenticatedSchedule(),
+      loadAuthenticatedDashboardShift(),
+    ]);
+
+    updateDashboardForRole();
+
+    return true;
+  } catch (error) {
     return false;
   }
-
-  console.log("Industry shift start reported:", {
-    shiftId,
-    reportedStartAt: reportedStartDate.toISOString(),
-  });
-
-  await Promise.all([
-    loadAuthenticatedSchedule(),
-    loadAuthenticatedDashboardShift(),
-  ]);
-
-  updateDashboardForRole();
-
-  return true;
 }
 
 startShiftCancelButton?.addEventListener("click", () => {
@@ -3062,6 +2917,11 @@ startShiftNowButton?.addEventListener("click", async () => {
 
   if (success) {
     closeStartShiftDialog();
+  } else {
+    showActionFailure(
+      startShiftError,
+      "We couldn't start this shift. Please try again.",
+    );
   }
 });
 
@@ -3134,6 +2994,11 @@ startShiftSaveTimeButton?.addEventListener("click", async () => {
 
   if (success) {
     closeStartShiftDialog();
+  } else {
+    showActionFailure(
+      startShiftError,
+      "We couldn't save the shift start. Please try again.",
+    );
   }
 });
 
@@ -3200,6 +3065,11 @@ endShiftNowButton?.addEventListener("click", async () => {
 
   if (success) {
     closeEndShiftDialog();
+  } else {
+    showActionFailure(
+      endShiftError,
+      "We couldn't end this shift. Please try again.",
+    );
   }
 });
 
@@ -3279,6 +3149,11 @@ endShiftSaveTimeButton?.addEventListener("click", async () => {
 
   if (success) {
     closeEndShiftDialog();
+  } else {
+    showActionFailure(
+      endShiftError,
+      "We couldn't save the shift end. Please try again.",
+    );
   }
 });
 
@@ -3693,12 +3568,12 @@ function renderCrewMembers(listElement, members, actionLabel) {
       <button
         class="action-button secondary-action crew-member-action-button"
         type="button"
-        data-action-label="${actionLabel}"
-        data-member-name="${member.name}"
-        data-member-position="${member.position}"
+        data-action-label="${escapeHtml(actionLabel)}"
+        data-member-name="${escapeHtml(member.name)}"
+        data-member-position="${escapeHtml(member.position)}"
         ${isDisabled ? "disabled" : ""}
       >
-        ${buttonLabel}
+        ${escapeHtml(buttonLabel)}
       </button>
     `
         : "";
@@ -3706,9 +3581,9 @@ function renderCrewMembers(listElement, members, actionLabel) {
       return `
         <article class="stack-card crew-member-card">
           <div class="stack-copy">
-            <h3>${member.name}</h3>
-            <p>${member.position}</p>
-            <p>Status: ${member.status}</p>
+            <h3>${escapeHtml(member.name)}</h3>
+            <p>${escapeHtml(member.position)}</p>
+            <p>Status: ${escapeHtml(member.status)}</p>
           </div>
 
           ${actionButtonMarkup}
@@ -3866,7 +3741,7 @@ function renderAvatar({ label, selected = false }) {
             class="interested-worker-avatar"
             aria-hidden="true"
         >
-            ${selected ? "✓" : initial}
+            ${selected ? "✓" : escapeHtml(initial)}
         </span>
     `;
 }
@@ -3878,13 +3753,13 @@ function renderAvatar({ label, selected = false }) {
 
 function renderStatusPill(label, status) {
   return `
-        <span class="interested-worker-availability status-${status}">
+        <span class="interested-worker-availability status-${escapeHtml(status)}">
             <span
                 class="interested-worker-availability-dot"
                 aria-hidden="true"
             ></span>
 
-            ${label}
+            ${escapeHtml(label)}
         </span>
     `;
 }
@@ -3911,8 +3786,8 @@ function renderPresenceCard(
   return `
         <div
             class="interested-worker ${selectable ? "is-selectable" : ""} ${worker.selected ? "is-selected" : ""}"
-            data-shift-id="${shiftId}"
-            data-worker-index="${workerIndex}"
+            data-shift-id="${escapeHtml(shiftId)}"
+            data-worker-index="${escapeHtml(workerIndex)}"
             ${interactionAttributes}
         >
             ${renderAvatar({
@@ -3922,12 +3797,12 @@ function renderPresenceCard(
 
             <div>
                 <p class="interested-worker-name">
-                    ${worker.name}
+                    ${escapeHtml(worker.name)}
                 </p>
 
                 <div class="interested-worker-meta">
                     <p class="interested-worker-role">
-                        ${worker.role}
+                        ${escapeHtml(worker.role)}
                     </p>
 
                     ${renderStatusPill(
@@ -3984,11 +3859,6 @@ async function restoreActiveDirectOfferForRelease(shift) {
       releaseToBoardButton.disabled = true;
     }
 
-    console.log(
-      "Industry restored active sent direct offer:",
-      activeOffer,
-    );
-
     directReleaseButton.style.display = "none";
 
     if (directReleaseDivider) {
@@ -4026,11 +3896,6 @@ async function restoreActiveDirectOfferForRelease(shift) {
           throw cancelError;
         }
 
-        console.log(
-          "Industry restored direct offer canceled:",
-          activeOffer.offer_id,
-        );
-
         postShiftStatus.textContent =
           `Direct offer to ${activeOffer.recipient_name} canceled.`;
 
@@ -4050,11 +3915,6 @@ async function restoreActiveDirectOfferForRelease(shift) {
 
 
       } catch (error) {
-        console.error(
-          "Industry restored direct offer cancel error:",
-          error,
-        );
-
         postShiftStatus.textContent =
           "Unable to cancel direct offer.";
 
@@ -4068,10 +3928,7 @@ async function restoreActiveDirectOfferForRelease(shift) {
       cancelOfferButton,
     );
   } catch (error) {
-    console.error(
-      "Industry active sent direct offer restore error:",
-      error,
-    );
+    postShiftStatus.textContent = "Unable to restore the active direct offer.";
   }
 }
 
@@ -4163,12 +4020,12 @@ function renderShiftDetailsActivity(shift) {
 
           return `
             <p class="shift-activity-item">
-              <strong>${activity.title}</strong>
+              <strong>${escapeHtml(activity.title)}</strong>
               ${activityTime
               ? `<br><span>${activityTime}</span>`
               : ""
             }
-              <br>${activity.message}
+              <br>${escapeHtml(activity.message)}
             </p>
           `;
         })
@@ -4428,7 +4285,7 @@ function renderActivityFeed() {
         !isAuthenticatedActivityMode && activity.type === "shift-approved"
           ? `
               <p class="activity-feed-detail">
-                Approved by ${activity.approvedBy || "Manager"}
+                Approved by ${escapeHtml(activity.approvedBy || "Manager")}
               </p>
             `
           : "";
@@ -4443,7 +4300,7 @@ function renderActivityFeed() {
           <div class="activity-feed-content">
             <div class="activity-feed-header">
               <p class="activity-feed-type">
-                ${activity.title}
+                ${escapeHtml(activity.title)}
               </p>
 
               <p class="activity-feed-time">
@@ -4451,12 +4308,12 @@ function renderActivityFeed() {
               </p>
             </div>
 
-            <h3>${activity.message}</h3>
+            <h3>${escapeHtml(activity.message)}</h3>
 
             ${approvalMarkup}
 
             <p class="activity-feed-meta">
-              ${activity.workplace || "Workplace not provided"}
+              ${escapeHtml(activity.workplace || "Workplace not provided")}
             </p>
           </div>
         </article>
@@ -4521,19 +4378,19 @@ function renderCaughtShifts() {
         <article class="stack-card shift-card caught-shift-card">
           <div class="stack-copy">
             <p class="stack-kicker">
-              ${shift.displayStatus}
+              ${escapeHtml(shift.displayStatus)}
             </p>
 
-            <h3>${shift.workplace}</h3>
+            <h3>${escapeHtml(shift.workplace)}</h3>
 
-            <p>${shift.role}</p>
+            <p>${escapeHtml(shift.role)}</p>
 
             <ul class="shift-meta">
-              <li>${shift.day}</li>
-              <li>${shift.time}</li>
+              <li>${escapeHtml(shift.day)}</li>
+              <li>${escapeHtml(shift.time)}</li>
             </ul>
 
-            <p>Status: ${shift.displayStatus}</p>
+            <p>Status: ${escapeHtml(shift.displayStatus)}</p>
           </div>
         </article>
       `,
@@ -4559,19 +4416,10 @@ async function loadAndRenderManagerDirectApprovals() {
 
 
   if (directApprovalsError) {
-    console.error(
-      "Industry manager direct approvals load error:",
-      directApprovalsError
-    );
     return;
   }
 
   authenticatedManagerDirectApprovals = directApprovals || [];
-
-  console.log(
-    "Industry manager direct approvals loaded:",
-    directApprovals
-  );
 
   shiftBoardList
     .querySelectorAll(".direct-offer-approval-card")
@@ -4622,23 +4470,23 @@ async function loadAndRenderManagerDirectApprovals() {
         </p>
 
         <h3>
-          ${offer.sender_name}
-          → ${offer.recipient_name}
+          ${escapeHtml(offer.sender_name)}
+          → ${escapeHtml(offer.recipient_name)}
         </h3>
 
-        <p>${shift.role || "Shift"}</p>
+        <p>${escapeHtml(shift.role || "Shift")}</p>
 
         <ul class="shift-meta">
-          <li>${day}</li>
+          <li>${escapeHtml(day)}</li>
           ${startTime
-        ? `<li>${startTime}${endTime ? ` – ${endTime}` : ""
+        ? `<li>${escapeHtml(startTime)}${endTime ? ` – ${escapeHtml(endTime)}` : ""
         }</li>`
         : ""
       }
         </ul>
 
         <p class="status-text">
-  ${offer.recipient_name} accepted this direct offer.
+  ${escapeHtml(offer.recipient_name)} accepted this direct offer.
 </p>
 
 <button
@@ -4660,10 +4508,7 @@ async function loadAndRenderManagerDirectApprovals() {
         approveButton.textContent = "Approving…";
 
         try {
-          const {
-            data: approvedShiftId,
-            error: approvalError,
-          } = await supabaseClient.rpc(
+          const { error: approvalError } = await supabaseClient.rpc(
             "approve_direct_shift_offer",
             {
               target_offer_id: offer.offer_id,
@@ -4673,14 +4518,6 @@ async function loadAndRenderManagerDirectApprovals() {
           if (approvalError) {
             throw approvalError;
           }
-
-          console.log(
-            "Industry direct offer approved:",
-            {
-              offerId: offer.offer_id,
-              shiftId: approvedShiftId,
-            }
-          );
 
           approvalCard.remove();
           authenticatedManagerDirectApprovals =
@@ -4694,11 +4531,10 @@ async function loadAndRenderManagerDirectApprovals() {
               `${offer.recipient_name} is now assigned to the shift.`;
           }
         } catch (error) {
-          console.error(
-            "Industry direct offer approval error:",
-            error
+          showActionFailure(
+            shiftBoardStatus,
+            "We couldn't approve this direct offer. Please try again.",
           );
-
           approveButton.disabled = false;
           approveButton.textContent =
             "Approve Direct Offer";
@@ -4987,9 +4823,9 @@ function renderShiftBoard() {
         <span class="catch-timeline-marker" aria-hidden="true"></span>
 
         <div>
-  <p class="catch-timeline-time">${event.time}</p>
-  <p class="catch-timeline-label">${event.label}</p>
-  <p class="catch-timeline-detail">${event.detail}</p>
+  <p class="catch-timeline-time">${escapeHtml(event.time)}</p>
+  <p class="catch-timeline-label">${escapeHtml(event.label)}</p>
+  <p class="catch-timeline-detail">${escapeHtml(event.detail)}</p>
 </div>
       </div>
     `,
@@ -5052,7 +4888,7 @@ function renderShiftBoard() {
           <button
             class="action-button manager-approve-button"
             type="button"
-            data-shift-id="${shift.id}"
+            data-shift-id="${escapeHtml(shift.id)}"
           >
             Approve coverage
           </button>
@@ -5092,7 +4928,7 @@ function renderShiftBoard() {
         <button
           class="action-button accept-button"
           type="button"
-          data-shift-id="${shift.id}"
+          data-shift-id="${escapeHtml(shift.id)}"
         >
           Accept
         </button>
@@ -5100,7 +4936,7 @@ function renderShiftBoard() {
         <button
           class="action-button secondary-action decline-button"
           type="button"
-          data-shift-id="${shift.id}"
+          data-shift-id="${escapeHtml(shift.id)}"
         >
           Decline
         </button>
@@ -5139,27 +4975,27 @@ function renderShiftBoard() {
 
     shiftCard.innerHTML = `
       <div class="stack-copy">
-  <p class="stack-kicker">${getBoardRequestLabel(shift)}</p>
-  <h3>${shift.workplace}</h3>
+  <p class="stack-kicker">${escapeHtml(getBoardRequestLabel(shift))}</p>
+  <h3>${escapeHtml(shift.workplace)}</h3>
 <p class="detail-label">Position</p>
-<p>${shift.role}</p>
+<p>${escapeHtml(shift.role)}</p>
 
   <ul class="shift-meta">
-    <li>${shift.day}</li>
-    <li>${shift.time}</li>
+    <li>${escapeHtml(shift.day)}</li>
+    <li>${escapeHtml(shift.time)}</li>
   </ul>
 
   ${shift.neighborhood
         ? `
       <ul class="shift-meta">
-        <li>${shift.neighborhood}</li>
+        <li>${escapeHtml(shift.neighborhood)}</li>
       </ul>
     `
         : ""
       }
 
   <p class="shift-release-time">
-  ${releasedTimeLabel}
+  ${escapeHtml(releasedTimeLabel)}
 </p>
 
 
@@ -5167,7 +5003,7 @@ function renderShiftBoard() {
 
  <div class="catch-status-chip ${statusClass}">
   <span class="catch-status-dot" aria-hidden="true"></span>
- <span>${coverageStatusLabel}</span>
+ <span>${escapeHtml(coverageStatusLabel)}</span>
 </div>
 <div class="catch-progress ${statusClass}" aria-label="Shift coverage progress">
   <div class="catch-progress-step ${shiftHasInterest ? "is-complete" : ""} ${shiftHasInterest && !shiftIsSelected ? "is-current" : ""
@@ -5189,8 +5025,8 @@ function renderShiftBoard() {
   </div>
 </div>
 
-<p>Shared with ${shift.postedTo || "Workplace crew"}</p>
-<p>${shift.notes || shift.note || "No additional notes."}</p>
+<p>Shared with ${escapeHtml(shift.postedTo || "Workplace crew")}</p>
+<p>${escapeHtml(shift.notes || shift.note || "No additional notes.")}</p>
 </div>
       <div class="shift-action-row">
         ${isOwnCoverageRequest
@@ -5198,7 +5034,7 @@ function renderShiftBoard() {
 <button
   class="action-button cancel-coverage-button"
   type="button"
-  data-shift-id="${shift.id}"
+  data-shift-id="${escapeHtml(shift.id)}"
   ${shiftIsSelected || shiftIsConfirmed ? "disabled" : ""}
 >
   ${shiftIsSelected
@@ -5212,8 +5048,8 @@ function renderShiftBoard() {
         <button
           class="action-button manager-approve-button"
           type="button"
-          data-shift-id="${shift.id}"
-          data-profile-id="${selectedBackendInterest.profile_id}"
+          data-shift-id="${escapeHtml(shift.id)}"
+          data-profile-id="${escapeHtml(selectedBackendInterest.profile_id)}"
         >
           Approve Coverage
         </button>
@@ -5224,7 +5060,7 @@ function renderShiftBoard() {
 <button
   class="action-button board-action-button"
   type="button"
-  data-shift-id="${shift.id}"
+  data-shift-id="${escapeHtml(shift.id)}"
  ${isConfirmed || isAccepted || anotherWorkerSelected ? "disabled" : ""}
   >
   ${boardButtonLabel}
@@ -5237,7 +5073,7 @@ function renderShiftBoard() {
       <button
         class="action-button secondary-action view-crew-button"
         type="button"
-        data-shift-id="${shift.id}"
+        data-shift-id="${escapeHtml(shift.id)}"
       >
         View shift crew
       </button>
@@ -5264,13 +5100,20 @@ function renderShiftBoard() {
       button.textContent = "Catching...";
 
       try {
+        if (shiftBoardStatus) {
+          shiftBoardStatus.textContent = "";
+        }
+
         const {
           data: { user },
           error: userError,
         } = await supabaseClient.auth.getUser();
 
         if (userError || !user) {
-          console.error("Industry Catch user error:", userError);
+          showActionFailure(
+            shiftBoardStatus,
+            "We couldn't verify your account. Please sign in and try again.",
+          );
           button.disabled = false;
           button.textContent = originalButtonText;
           return;
@@ -5294,27 +5137,21 @@ function renderShiftBoard() {
           );
 
           if (withdrawError) {
-            console.error(
-              "Industry withdraw shift interest error:",
-              withdrawError,
+            showActionFailure(
+              shiftBoardStatus,
+              "We couldn't withdraw your interest. Please try again.",
             );
-
             button.disabled = false;
             button.textContent = originalButtonText;
             return;
           }
-
-          console.log(
-            "Industry shift interest withdrawn:",
-            existingOwnInterest,
-          );
 
           await loadAuthenticatedShiftInterests();
           await loadAuthenticatedCatchShifts();
           return;
         }
 
-        const { data: interest, error: interestError } = await supabaseClient
+        const { error: interestError } = await supabaseClient
           .from("shift_interests")
           .insert({
             shift_id: shiftId,
@@ -5331,19 +5168,21 @@ function renderShiftBoard() {
             return;
           }
 
-          console.error("Industry Catch interest error:", interestError);
-
           button.disabled = false;
           button.textContent = originalButtonText;
+          showActionFailure(
+            shiftBoardStatus,
+            "We couldn't record your interest. Please try again.",
+          );
           return;
         }
 
-        console.log("Industry shift interest created:", interest);
-
         await loadAuthenticatedShiftInterests();
       } catch (error) {
-        console.error("Industry Catch unexpected error:", error);
-
+        showActionFailure(
+          shiftBoardStatus,
+          "We couldn't update your interest. Please try again.",
+        );
         button.disabled = false;
         button.textContent = originalButtonText;
       }
@@ -5364,20 +5203,24 @@ function renderShiftBoard() {
       button.textContent = "Canceling...";
 
       try {
-        const { data: restoredShift, error: cancelError } =
+        if (shiftBoardStatus) {
+          shiftBoardStatus.textContent = "";
+        }
+
+        const { error: cancelError } =
           await supabaseClient.rpc("cancel_coverage_request", {
             p_shift_id: shiftId,
           });
 
         if (cancelError) {
-          console.error("Industry cancel coverage request error:", cancelError);
-
+          showActionFailure(
+            shiftBoardStatus,
+            "We couldn't cancel this coverage request. Please try again.",
+          );
           button.disabled = false;
           button.textContent = originalButtonText;
           return;
         }
-
-        console.log("Industry coverage request canceled:", restoredShift);
 
         await loadAuthenticatedShiftInterests();
         await loadAuthenticatedCatchShifts();
@@ -5391,8 +5234,10 @@ function renderShiftBoard() {
           behavior: "smooth",
         });
       } catch (error) {
-        console.error("Industry cancel coverage unexpected error:", error);
-
+        showActionFailure(
+          shiftBoardStatus,
+          "We couldn't cancel this coverage request. Please try again.",
+        );
         button.disabled = false;
         button.textContent = originalButtonText;
       }
@@ -5462,32 +5307,32 @@ function renderShiftBoard() {
         const selectedInterest = shiftInterests[workerIndex];
 
         if (!selectedInterest) {
-          console.error("Industry: unable to find selected shift interest.", {
-            shiftId,
-            workerIndex,
-            shiftInterests,
-          });
           return;
         }
 
-        const { data: updatedInterest, error: updateError } =
-          await supabaseClient
-            .rpc("select_shift_interest", {
-              p_interest_id: selectedInterest.id,
-            })
-            .single();
+        try {
+          const { error: updateError } =
+            await supabaseClient
+              .rpc("select_shift_interest", {
+                p_interest_id: selectedInterest.id,
+              })
+              .single();
 
-        if (updateError) {
-          console.error(
-            "Industry shift interest selection error:",
-            updateError,
+          if (updateError) {
+            showActionFailure(
+              shiftBoardStatus,
+              "We couldn't select this coworker. Please try again.",
+            );
+            return;
+          }
+
+          await loadAuthenticatedShiftInterests();
+        } catch (error) {
+          showActionFailure(
+            shiftBoardStatus,
+            "We couldn't select this coworker. Please try again.",
           );
-          return;
         }
-
-        console.log("Industry worker selected for coverage:", updatedInterest);
-
-        await loadAuthenticatedShiftInterests();
       };
 
       workerRow.addEventListener("click", selectWorker);
@@ -5506,10 +5351,6 @@ function renderShiftBoard() {
       const selectedProfileId = button.dataset.profileId;
 
       if (!shiftId || !selectedProfileId) {
-        console.error("Industry manager approval missing shift or worker.", {
-          shiftId,
-          selectedProfileId,
-        });
         return;
       }
 
@@ -5518,29 +5359,35 @@ function renderShiftBoard() {
       button.disabled = true;
       button.textContent = "Approving...";
 
-      const { error } = await supabaseClient.rpc("confirm_shift_coverage", {
-        target_shift_id: shiftId,
-        selected_profile_id: selectedProfileId,
-      });
+      try {
+        const { error } = await supabaseClient.rpc("confirm_shift_coverage", {
+          target_shift_id: shiftId,
+          selected_profile_id: selectedProfileId,
+        });
 
-      if (error) {
-        console.error("Industry coverage approval error:", error);
+        if (error) {
+          showActionFailure(
+            shiftBoardStatus,
+            "We couldn't approve this coverage request. Please try again.",
+          );
+          button.disabled = false;
+          button.textContent = originalButtonText;
+          return;
+        }
 
+        shiftBoardStatus.textContent = "Coverage confirmed.";
+
+        await loadAuthenticatedShiftInterests();
+        await loadAuthenticatedCatchShifts();
+        await loadAuthenticatedSchedule();
+      } catch (error) {
+        showActionFailure(
+          shiftBoardStatus,
+          "We couldn't approve this coverage request. Please try again.",
+        );
         button.disabled = false;
         button.textContent = originalButtonText;
-        return;
       }
-
-      console.log("Industry coverage confirmed:", {
-        shiftId,
-        selectedProfileId,
-      });
-
-      shiftBoardStatus.textContent = "Coverage confirmed.";
-
-      await loadAuthenticatedShiftInterests();
-      await loadAuthenticatedCatchShifts();
-      await loadAuthenticatedSchedule();
     });
   });
 
@@ -5750,40 +5597,40 @@ function renderTipEntries() {
 
     card.innerHTML = `
   <div class="stack-copy">
-    <p class="stack-kicker">${formatSavedDate(entry.date)}</p>
+    <p class="stack-kicker">${escapeHtml(formatSavedDate(entry.date))}</p>
     <h3 class="tip-entry-workplace">
   <span aria-hidden="true">📍</span>
-  ${entry.workplace || "Workplace not added"}
+  ${escapeHtml(entry.workplace || "Workplace not added")}
 </h3>
 
 <p class="tip-entry-role">
   <span aria-hidden="true">👤</span>
-  ${entry.role || "Role not added"}
+  ${escapeHtml(entry.role || "Role not added")}
 </p>
     <div class="tip-entry-breakdown">
       <div>
         <span><span aria-hidden="true">💵</span> Cash</span>
-        <strong>${formatMoney(entry.cashTips)}</strong>
+        <strong>${escapeHtml(formatMoney(entry.cashTips))}</strong>
       </div>
 
       <div>
         <span><span aria-hidden="true">💳</span> Credit</span>
-        <strong>${formatMoney(entry.creditTips)}</strong>
+        <strong>${escapeHtml(formatMoney(entry.creditTips))}</strong>
       </div>
     </div>
 
    <div class="tip-entry-total">
   <span>Shift Total</span>
-  <strong>${formatMoney(entryTotal)}</strong>
+  <strong>${escapeHtml(formatMoney(entryTotal))}</strong>
 </div>
 
-    ${entry.notes ? `<p>${entry.notes}</p>` : ""}
+    ${entry.notes ? `<p>${escapeHtml(entry.notes)}</p>` : ""}
 
     <div class="tip-entry-actions">
   <button
     class="action-button secondary-action edit-tip-entry-button"
     type="button"
-    data-entry-id="${entry.id}"
+    data-entry-id="${escapeHtml(entry.id)}"
   >
     Edit entry
   </button>
@@ -5791,7 +5638,7 @@ function renderTipEntries() {
   <button
     class="action-button secondary-action delete-tip-entry-button"
     type="button"
-    data-entry-id="${entry.id}"
+    data-entry-id="${escapeHtml(entry.id)}"
   >
     Delete entry
   </button>
@@ -5996,9 +5843,9 @@ function renderMockCalendar() {
           .map(
             (shift) => `
                 <div class="mock-calendar-shift">
-                  <strong>${shift.role}</strong>
-                  <span>${shift.time}</span>
-                  <span>${shift.workplace}</span>
+                  <strong>${escapeHtml(shift.role)}</strong>
+                  <span>${escapeHtml(shift.time)}</span>
+                  <span>${escapeHtml(shift.workplace)}</span>
                 </div>
               `,
           )
@@ -6194,15 +6041,15 @@ function renderAuthenticatedScheduleShifts(shifts) {
       }
         </p>
 
-        <h3>${shift.day}</h3>
-        <p>${shift.role}</p>
+        <h3>${escapeHtml(shift.day)}</h3>
+        <p>${escapeHtml(shift.role)}</p>
 
         <ul class="shift-meta">
-          <li>${shift.time}</li>
+          <li>${escapeHtml(shift.time)}</li>
         </ul>
 
         <ul class="shift-meta">
-          <li>${shift.workplace}</li>
+          <li>${escapeHtml(shift.workplace)}</li>
         </ul>
       </div>
     `;
@@ -6262,14 +6109,14 @@ function renderAuthenticatedScheduleShifts(shifts) {
             <div class="shift-end-details">
               <p>
                 <span>Clocked out</span>
-                <strong>${shift.clockedOutTime}</strong>
+                <strong>${escapeHtml(shift.clockedOutTime)}</strong>
               </p>
 
               ${shift.recordedInIndustryTime
           ? `
                     <p>
                       <span>Recorded in Industry</span>
-                      <strong>${shift.recordedInIndustryTime}</strong>
+                      <strong>${escapeHtml(shift.recordedInIndustryTime)}</strong>
                     </p>
                   `
           : ""
@@ -6285,15 +6132,15 @@ function renderAuthenticatedScheduleShifts(shifts) {
         <div class="stack-copy">
           <p class="stack-kicker">Shift ended</p>
 
-          <h3>${shift.day}</h3>
-          <p>${shift.role}</p>
+          <h3>${escapeHtml(shift.day)}</h3>
+          <p>${escapeHtml(shift.role)}</p>
 
           <ul class="shift-meta">
-            <li>${shift.time}</li>
+            <li>${escapeHtml(shift.time)}</li>
           </ul>
 
           <ul class="shift-meta">
-            <li>${shift.workplace}</li>
+            <li>${escapeHtml(shift.workplace)}</li>
           </ul>
 
           ${endedShiftDetails}
@@ -6312,17 +6159,8 @@ async function loadAndRenderDirectShiftOffers() {
   } = await supabaseClient.rpc("list_my_direct_shift_offers");
 
   if (directOffersError) {
-    console.error(
-      "Industry direct offers load error:",
-      directOffersError
-    );
     return;
   }
-
-  console.log(
-    "Industry authenticated direct offers loaded:",
-    directOffers
-  );
 
   importedShiftList
     .querySelectorAll(".direct-offer-card")
@@ -6338,9 +6176,9 @@ async function loadAndRenderDirectShiftOffers() {
       <div class="stack-copy">
         <p class="stack-kicker">Shift offered to you</p>
 
-        <h3>${offer.sender_name || "Coworker"}</h3>
+        <h3>${escapeHtml(offer.sender_name || "Coworker")}</h3>
 
-        <p>${shift.role || "Shift"}</p>
+        <p>${escapeHtml(shift.role || "Shift")}</p>
 
         <p class="status-text">
           ${offer.offer_status === "accepted"
@@ -6355,7 +6193,7 @@ async function loadAndRenderDirectShiftOffers() {
                 <button
                   type="button"
                   class="action-button direct-offer-accept"
-                  data-offer-id="${offer.offer_id}"
+                  data-offer-id="${escapeHtml(offer.offer_id)}"
                 >
                   Accept
                 </button>
@@ -6363,7 +6201,7 @@ async function loadAndRenderDirectShiftOffers() {
                 <button
                   type="button"
                   class="secondary-action direct-offer-decline"
-                  data-offer-id="${offer.offer_id}"
+                  data-offer-id="${escapeHtml(offer.offer_id)}"
                 >
                   Decline
                 </button>
@@ -6382,6 +6220,8 @@ async function loadAndRenderDirectShiftOffers() {
       ".direct-offer-decline"
     );
 
+    const offerStatus = offerCard.querySelector(".status-text");
+
     const respondToDirectOffer = async (responseAction) => {
       if (acceptButton) {
         acceptButton.disabled = true;
@@ -6392,10 +6232,7 @@ async function loadAndRenderDirectShiftOffers() {
       }
 
       try {
-        const {
-          data: responseStatus,
-          error: responseError,
-        } = await supabaseClient.rpc(
+        const { error: responseError } = await supabaseClient.rpc(
           "respond_to_direct_shift_offer",
           {
             target_offer_id: offer.offer_id,
@@ -6407,21 +6244,13 @@ async function loadAndRenderDirectShiftOffers() {
           throw responseError;
         }
 
-        console.log(
-          "Industry direct offer response:",
-          {
-            offerId: offer.offer_id,
-            response: responseStatus,
-          }
-        );
-
         renderImportedShifts(
           authenticatedScheduleShifts
         );
       } catch (error) {
-        console.error(
-          "Industry direct offer response error:",
-          error
+        showActionFailure(
+          offerStatus,
+          "We couldn't update this direct offer. Please try again.",
         );
 
         if (acceptButton) {
@@ -6482,7 +6311,7 @@ function renderImportedShifts(backendShifts = authenticatedScheduleShifts) {
       ? `
         <div class="schedule-action-panel">
           <p class="status-text">Post this shift to your workplace crew?</p>
-          <button class="action-button post-to-crew-button" type="button" data-shift-id="${shift.id}">
+          <button class="action-button post-to-crew-button" type="button" data-shift-id="${escapeHtml(shift.id)}">
             Post to crew
           </button>
         </div>
@@ -6503,10 +6332,12 @@ function renderImportedShifts(backendShifts = authenticatedScheduleShifts) {
         : shift.status === "Pending Coverage"
           ? "Pending Coverage"
           : "Imported shift";
-    const stationMarkup = shift.station ? `<li>${shift.station}</li>` : "";
+    const stationMarkup = shift.station
+      ? `<li>${escapeHtml(shift.station)}</li>`
+      : "";
 
     const managerMarkup = shift.manager
-      ? `<p>Manager: ${shift.manager}</p>`
+      ? `<p>Manager: ${escapeHtml(shift.manager)}</p>`
       : "";
     const notes = shift.notes || shift.note || "No notes provided.";
 
@@ -6522,29 +6353,29 @@ function renderImportedShifts(backendShifts = authenticatedScheduleShifts) {
     shiftCard.className = "stack-card shift-card";
     shiftCard.innerHTML = `
       <div class="stack-copy">
-       <p class="stack-kicker">${shiftSourceLabel}</p>
-        <h3>${shift.day}</h3>
+       <p class="stack-kicker">${escapeHtml(shiftSourceLabel)}</p>
+        <h3>${escapeHtml(shift.day)}</h3>
 
-<p>${shift.role}</p>
+<p>${escapeHtml(shift.role)}</p>
 
 ${transferContextMarkup}
         <ul class="shift-meta">
-  <li>${shift.time}</li>
-  <li>${shift.neighborhood}</li>
+  <li>${escapeHtml(shift.time)}</li>
+  <li>${escapeHtml(shift.neighborhood)}</li>
 </ul>
 <ul class="shift-meta">
-  <li>${shift.workplace}</li>
+  <li>${escapeHtml(shift.workplace)}</li>
   ${stationMarkup}
 </ul>
 
 ${managerMarkup}
-<p>${notes}</p>
+<p>${escapeHtml(notes)}</p>
       </div>
       <div class="shift-action-row">
     <button
   class="action-button imported-details-button"
   type="button"
-  data-shift-id="${shift.id}"
+  data-shift-id="${escapeHtml(shift.id)}"
 >
   View details
 
@@ -7099,8 +6930,6 @@ window.addEventListener("hashchange", applyHashSection);
         ...parsedState,
       };
     } catch (error) {
-      console.warn("Industry could not load the saved application.", error);
-
       return { ...contextualDefaultState };
     }
   }
@@ -7158,8 +6987,6 @@ window.addEventListener("hashchange", applyHashSection);
 
       return Boolean(parsedReadiness.resumeReady);
     } catch (error) {
-      console.warn("Unable to load global resume readiness.", error);
-
       return null;
     }
   }
@@ -7170,9 +6997,7 @@ window.addEventListener("hashchange", applyHashSection);
     try {
       existingReadiness =
         JSON.parse(localStorage.getItem(READINESS_STORAGE_KEY)) || {};
-    } catch (error) {
-      console.warn("Unable to read existing resume readiness.", error);
-    }
+    } catch (error) {}
 
     localStorage.setItem(
       READINESS_STORAGE_KEY,
@@ -7801,8 +7626,6 @@ window.addEventListener("hashchange", applyHashSection);
     try {
       return JSON.parse(savedApplication);
     } catch (error) {
-      console.warn("Industry could not load a tracked application.", error);
-
       return null;
     }
   }
@@ -8077,8 +7900,6 @@ window.addEventListener("hashchange", applyHashSection);
         ...JSON.parse(savedProfile),
       };
     } catch (error) {
-      console.warn("Unable to load Industry profile.", error);
-
       return { ...defaultProfileState };
     }
   }
@@ -8233,8 +8054,6 @@ window.addEventListener("hashchange", applyHashSection);
         ...JSON.parse(savedPreferences),
       };
     } catch (error) {
-      console.warn("Unable to load Industry preferences.", error);
-
       return { ...defaultPreferencesState };
     }
   }
@@ -8404,8 +8223,6 @@ window.addEventListener("hashchange", applyHashSection);
         ...JSON.parse(savedAvailability),
       };
     } catch (error) {
-      console.warn("Unable to load Industry availability.", error);
-
       return { ...defaultAvailabilityState };
     }
   }
@@ -8593,8 +8410,6 @@ window.addEventListener("hashchange", applyHashSection);
 
       return savedValue ? JSON.parse(savedValue) : null;
     } catch (error) {
-      console.warn(`Unable to load ${storageKey}.`, error);
-
       return null;
     }
   }
@@ -8801,8 +8616,6 @@ window.addEventListener("hashchange", applyHashSection);
 
       return savedValue ? JSON.parse(savedValue) : null;
     } catch (error) {
-      console.warn(`Unable to load ${storageKey}.`, error);
-
       return null;
     }
   }
@@ -8966,8 +8779,6 @@ window.addEventListener("hashchange", applyHashSection);
 
       return savedValue ? JSON.parse(savedValue) : null;
     } catch (error) {
-      console.warn(`Unable to load ${storageKey}.`, error);
-
       return null;
     }
   }
@@ -9429,11 +9240,6 @@ const SUPABASE_PUBLISHABLE_KEY = IS_LOCAL_INDUSTRY
   ? "sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH"
   : "sb_publishable_I4zjPUH_5zqN0x2cV_n1iQ_-gUwPS2H";
 
-console.log(
-  `Industry Supabase environment: ${IS_LOCAL_INDUSTRY ? "LOCAL" : "PRODUCTION"
-  }`,
-);
-
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY,
@@ -9507,7 +9313,6 @@ async function loadPilotInvitation() {
   });
 
   if (error || !data?.length) {
-    console.error("Industry invitation lookup error:", error);
     clearPilotInvitation();
     return null;
   }
@@ -9535,8 +9340,6 @@ async function acceptPendingPilotInvitation() {
   });
 
   if (error) {
-    console.error("Industry invitation acceptance error:", error);
-
     if (loginStatus) {
       loginStatus.textContent = error.message;
     }
@@ -9564,8 +9367,6 @@ let passwordRecoveryActive =
 
 supabaseClient.auth.onAuthStateChange((event) => {
   if (event === "PASSWORD_RECOVERY") {
-    console.log("Industry: password recovery session detected.");
-
     passwordRecoveryActive = true;
 
     openIndustryAuth("update-password");
@@ -9662,7 +9463,6 @@ function showSignedOutIndustry() {
 
 async function restoreIndustrySession() {
   if (passwordRecoveryActive) {
-    console.log("Industry: recovery flow active.");
     return;
   }
   const {
@@ -9671,14 +9471,11 @@ async function restoreIndustrySession() {
   } = await supabaseClient.auth.getSession();
 
   if (error) {
-    console.error("Industry session restore error:", error);
     showSignedOutIndustry();
     return;
   }
 
   if (!session) {
-    console.log("Industry: no saved session.");
-
     if (activePilotInvitation) {
       openIndustryAuth("signup");
     } else {
@@ -9687,8 +9484,6 @@ async function restoreIndustrySession() {
 
     return;
   }
-
-  console.log("Industry: restored session for", session.user.email);
 
   await enterAuthenticatedIndustry();
 }
@@ -9704,11 +9499,8 @@ async function signOutOfIndustry() {
   const { error } = await supabaseClient.auth.signOut();
 
   if (error) {
-    console.error("Industry sign-out error:", error);
     return;
   }
-
-  console.log("Industry: signed out.");
 
   authenticatedUserId = null;
   authenticatedWorkplaceId = null;
@@ -10019,12 +9811,10 @@ async function loadAuthenticatedIndustryProfile() {
   } = await supabaseClient.auth.getUser();
 
   if (userError) {
-    console.error("Industry user lookup error:", userError);
     return false;
   }
 
   if (!user) {
-    console.log("Industry: no authenticated user for profile.");
     return false;
   }
 
@@ -10037,7 +9827,6 @@ async function loadAuthenticatedIndustryProfile() {
     .single();
 
   if (profileError) {
-    console.error("Industry profile lookup error:", profileError);
     return false;
   }
 
@@ -10048,10 +9837,8 @@ async function loadAuthenticatedIndustryProfile() {
     .maybeSingle();
 
   if (membershipError) {
-    console.error(
-      "Industry workplace membership lookup error:",
-      membershipError,
-    );
+    authenticatedWorkplaceId = null;
+    authenticatedWorkplaceRole = null;
   } else {
     authenticatedWorkplaceId = membership?.workplace_id || null;
     authenticatedWorkplaceRole = membership?.role || null;
@@ -10063,14 +9850,9 @@ async function loadAuthenticatedIndustryProfile() {
           : "← Back to My Shifts";
     });
 
-    console.log("Industry authenticated workplace membership:", {
-      workplaceId: authenticatedWorkplaceId,
-      role: authenticatedWorkplaceRole,
-    });
   }
 
   if (!authenticatedWorkplaceId || !authenticatedWorkplaceRole) {
-    console.warn("Industry: authenticated account has no workplace access.");
     return false;
   }
 
@@ -10094,11 +9876,6 @@ async function loadAuthenticatedIndustryProfile() {
   } = await supabaseClient.rpc("get_direct_release_coworkers");
 
   if (workplaceCoworkersError) {
-    console.error(
-      "Industry workplace crew load error:",
-      workplaceCoworkersError,
-    );
-
     authenticatedWorkplaceCrew = [
       {
         id: authenticatedUserId,
@@ -10120,11 +9897,6 @@ async function loadAuthenticatedIndustryProfile() {
       })),
     ];
   }
-
-  console.log(
-    "Industry authenticated workplace crew loaded:",
-    authenticatedWorkplaceCrew,
-  );
 
   updateIndustryDashboardGreeting();
 
@@ -10159,11 +9931,7 @@ async function setupIndustryRealtime() {
         schema: "public",
         table: "shifts",
       },
-      async (payload) => {
-        console.log("Industry realtime shift change:", payload);
-
-
-
+      async () => {
         await Promise.all([
           loadAuthenticatedSchedule(),
           loadAuthenticatedCatchShifts(),
@@ -10202,9 +9970,7 @@ async function setupIndustryRealtime() {
         schema: "public",
         table: "shift_interests",
       },
-      async (payload) => {
-        console.log("Industry realtime shift interest change:", payload);
-
+      async () => {
         await loadAuthenticatedShiftInterests();
 
         renderShiftBoard();
@@ -10220,9 +9986,7 @@ async function setupIndustryRealtime() {
         schema: "public",
         table: "coverage_events",
       },
-      async (payload) => {
-        console.log("Industry realtime coverage event:", payload);
-
+      async () => {
         await Promise.all([
           loadAuthenticatedSchedule(),
           loadAuthenticatedCatchShifts(),
@@ -10280,9 +10044,7 @@ async function setupIndustryRealtime() {
       },
     )
 
-    .subscribe((status) => {
-      console.log("Industry realtime status:", status);
-    });
+    .subscribe();
 }
 
 async function enterAuthenticatedIndustry() {
@@ -10388,7 +10150,6 @@ recoveryForm?.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    console.error("Industry password recovery error:", error);
     recoveryStatus.textContent = error.message;
     return;
   }
@@ -10420,7 +10181,6 @@ updatePasswordForm?.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    console.error("Industry password update error:", error);
     updatePasswordStatus.textContent = error.message;
     return;
   }
@@ -10481,12 +10241,9 @@ signupForm?.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    console.error("Industry signup error:", error);
     signupStatus.textContent = error.message;
     return;
   }
-
-  console.log("Industry signup result:", data);
 
   if (!data.session) {
     signupStatus.textContent =
@@ -10518,12 +10275,9 @@ loginForm?.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    console.error("Industry sign-in error:", error);
     loginStatus.textContent = error.message;
     return;
   }
-
-  console.log("Industry signed-in user:", data.user);
 
   loginStatus.textContent = "Welcome back.";
 
