@@ -2180,6 +2180,10 @@ body:has(.people-loop-view) .home-logo-button {
     0 14px 28px rgba(47, 26, 93, 0.3);
 }
 
+html.people-route-pending body {
+  visibility: hidden;
+}
+
 /* =========================================================
    MY LOOP: FOCUS STATES
 ========================================================= */
@@ -2623,6 +2627,52 @@ body:has(.people-loop-view) .home-logo-button {
   background: var(--nav-bg);
   box-shadow: var(--shadow);
   backdrop-filter: blur(14px);
+}
+
+body.pilot-schedule-only .bottom-nav {
+  grid-template-columns: 1fr;
+}
+
+body.pilot-schedule-only [data-pilot-excluded],
+body.pilot-schedule-only .pilot-excluded-feature,
+body.pilot-schedule-only .app-section[data-section="jobs"],
+body.pilot-schedule-only .app-section[data-section="people"],
+body.pilot-schedule-only [data-schedule-view="earnings-tools"],
+body.pilot-schedule-only [data-schedule-view="tip-out-calculator"],
+body.pilot-schedule-only [data-schedule-view="tip-tracker"],
+body.pilot-schedule-only [data-schedule-subview="earnings-tools"],
+body.pilot-schedule-only [data-schedule-subview="tip-out-calculator"],
+body.pilot-schedule-only [data-schedule-subview="tip-tracker"],
+body.pilot-schedule-only #developer-toggle,
+body.pilot-schedule-only #developer-switcher,
+body.pilot-schedule-only #reset-demo-data-button {
+  display: none !important;
+}
+
+body.pilot-schedule-only #onboarding-home-step,
+body.pilot-schedule-only #onboarding-lanes-step,
+body.pilot-schedule-only #onboarding-test-step {
+  display: none !important;
+}
+
+.pilot-schedule-scope-notice {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(182, 84, 46, 0.34);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: rgba(182, 84, 46, 0.09);
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.pilot-schedule-scope-notice[hidden] {
+  display: none;
+}
+
+.pilot-schedule-scope-notice strong {
+  color: var(--text);
 }
 
 .home-logo-button {

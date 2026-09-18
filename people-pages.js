@@ -1,3 +1,23 @@
+const peoplePageSearchParams = new URLSearchParams(window.location.search);
+const peoplePageSupabaseOverride = peoplePageSearchParams.get("supabase");
+const peoplePageSchedulePilot =
+  peoplePageSearchParams.get("pilot") === "schedule";
+const peoplePageIsLocal =
+  !peoplePageSchedulePilot &&
+  peoplePageSupabaseOverride !== "hosted" &&
+  (window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "localhost" ||
+    window.location.protocol === "file:");
+
+if (!peoplePageIsLocal) {
+  document.documentElement.hidden = true;
+  const schedulePilotUrl = new URL("index.html", window.location.href);
+  schedulePilotUrl.search = window.location.search;
+  schedulePilotUrl.hash = "schedule";
+  window.location.replace(schedulePilotUrl.toString());
+} else {
+document.documentElement.classList.remove("people-route-pending");
+
 const themeStorageKey = "industry-v2-theme";
 const nearbyStorageKey = "industry-v2-nearby";
 const nearbyVisibilityStorageKey = "industry-v2-nearby-visibility";
@@ -1704,3 +1724,5 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.replace("index.html#schedule");
   });
 })();
+
+}

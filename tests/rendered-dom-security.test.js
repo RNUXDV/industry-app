@@ -125,6 +125,96 @@ test("the local application loads with security.js before dependent rendering", 
   assert.deepEqual(pageErrors, []);
 });
 
+test("the hosted launch surface exposes Schedule only", async () => {
+  const state = await page.evaluate(() => {
+    const jobsNavigation = document.querySelector(
+      '.nav-item[data-target="jobs"]',
+    );
+    const peopleNavigation = document.querySelector(
+      '.nav-item[data-target="people"]',
+    );
+    const earningsDestination = document.querySelector(
+      '[data-schedule-view="earnings-tools"]',
+    );
+    const tipTracker = document.querySelector(
+      '[data-schedule-subview="tip-tracker"]',
+    );
+
+    setActiveSection("jobs");
+    setActiveScheduleView("tip-tracker");
+    updateDashboardForRole();
+
+    return {
+      scheduleOnly: isScheduleOnlyPilot,
+      bodyScoped: document.body.classList.contains("pilot-schedule-only"),
+      jobsDisplay: getComputedStyle(jobsNavigation).display,
+      peopleDisplay: getComputedStyle(peopleNavigation).display,
+      earningsDisplay: getComputedStyle(earningsDestination).display,
+      tipTrackerDisplay: getComputedStyle(tipTracker).display,
+      activeSection: document.querySelector(".app-section.active")?.dataset.section,
+      activeScheduleView: document.querySelector(
+        ".schedule-subview.active",
+      )?.dataset.scheduleSubview,
+      scopeText: document.querySelector(
+        "#pilot-schedule-scope-notice",
+      )?.textContent,
+      welcomeText: document.querySelector("#pilot-welcome-copy")?.textContent,
+      signupMinimum: document.querySelector("#signup-password")?.minLength,
+      updateMinimum: document.querySelector("#new-password")?.minLength,
+      activityHidden: document.querySelector(
+        "#dashboard-quick-quaternary",
+      )?.hidden,
+      activityLabel: document.querySelector(
+        "#dashboard-quick-quaternary-label",
+      )?.textContent,
+      oldTourDisplay: getComputedStyle(
+        document.querySelector("#onboarding-lanes-step"),
+      ).display,
+    };
+  });
+
+  assert.equal(state.scheduleOnly, true);
+  assert.equal(state.bodyScoped, true);
+  assert.equal(state.jobsDisplay, "none");
+  assert.equal(state.peopleDisplay, "none");
+  assert.equal(state.earningsDisplay, "none");
+  assert.equal(state.tipTrackerDisplay, "none");
+  assert.equal(state.activeSection, "schedule");
+  assert.equal(state.activeScheduleView, "my-shifts");
+  assert.match(state.scopeText, /Schedule pilot/);
+  assert.match(state.scopeText, /tip tools are not included/);
+  assert.match(state.welcomeText, /shifts, coverage, and workplace crew/);
+  assert.doesNotMatch(state.welcomeText, /earnings|opportunities|people/i);
+  assert.equal(state.signupMinimum, 10);
+  assert.equal(state.updateMinimum, 10);
+  assert.equal(state.activityHidden, false);
+  assert.equal(state.activityLabel, "Activity");
+  assert.equal(state.oldTourDisplay, "none");
+});
+
+test("standalone People routes redirect away from the hosted pilot", async () => {
+  const guardedPage = await browser.newPage();
+
+  await guardedPage.route("**/*", async (route) => {
+    if (route.request().url().startsWith("file:")) {
+      await route.continue();
+      return;
+    }
+
+    await route.abort();
+  });
+
+  const peopleUrl = `${pathToFileURL(
+    path.join(projectRoot, "people-events.html"),
+  ).href}?pilot=schedule`;
+
+  await guardedPage.goto(peopleUrl, { waitUntil: "domcontentloaded" });
+  await guardedPage.waitForURL(/index\.html\?pilot=schedule#schedule$/);
+
+  assert.match(guardedPage.url(), /index\.html\?pilot=schedule#schedule$/);
+  await guardedPage.close();
+});
+
 test("manager crew rendering displays ordinary text without double escaping", async () => {
   const result = await page.evaluate(() => {
     renderAuthenticatedManagerCrew([
