@@ -1,5 +1,12 @@
 const { escapeHtml } = window.IndustrySecurity;
 
+let isScheduleOnlyPilot = false;
+const PILOT_EXCLUDED_SCHEDULE_VIEWS = new Set([
+  "earnings-tools",
+  "tip-out-calculator",
+  "tip-tracker",
+]);
+
 const navButtons = document.querySelectorAll(".nav-item");
 const appSections = document.querySelectorAll(".app-section");
 const navCards = document.querySelectorAll(".nav-card");
@@ -632,11 +639,18 @@ let activeTipEntryId = "";
 let industryRealtimeChannel = null;
 
 function setActiveScheduleView(viewName) {
+  const pilotSafeViewName =
+    isScheduleOnlyPilot && PILOT_EXCLUDED_SCHEDULE_VIEWS.has(viewName)
+      ? authenticatedWorkplaceRole?.toLowerCase() === "manager"
+        ? "manager-schedule"
+        : "my-shifts"
+      : viewName;
+
   const resolvedViewName =
-    viewName === "my-shifts" &&
+    pilotSafeViewName === "my-shifts" &&
       authenticatedWorkplaceRole?.toLowerCase() === "manager"
       ? "manager-schedule"
-      : viewName;
+      : pilotSafeViewName;
 
   if (resolvedViewName === "my-shifts") {
     renderImportedShifts();
@@ -2463,17 +2477,22 @@ backToToolsButtons.forEach((button) => {
 });
 
 function setActiveSection(sectionName) {
+  const resolvedSectionName =
+    isScheduleOnlyPilot && ["jobs", "people"].includes(sectionName)
+      ? "schedule"
+      : sectionName;
+
   navButtons.forEach((button) => {
-    const isActive = button.dataset.target === sectionName;
+    const isActive = button.dataset.target === resolvedSectionName;
     button.classList.toggle("active", isActive);
   });
 
   if (homeLogoButton) {
-    homeLogoButton.classList.toggle("active", sectionName === "home");
+    homeLogoButton.classList.toggle("active", resolvedSectionName === "home");
   }
 
   appSections.forEach((section) => {
-    const isActive = section.dataset.section === sectionName;
+    const isActive = section.dataset.section === resolvedSectionName;
     section.classList.toggle("active", isActive);
   });
 }
@@ -9379,6 +9398,8 @@ const dashboardQuickActionsGrid = document.getElementById(
 const INDUSTRY_SUPABASE_OVERRIDE = new URLSearchParams(
   window.location.search,
 ).get("supabase");
+const INDUSTRY_PILOT_SCOPE_OVERRIDE =
+  new URLSearchParams(window.location.search).get("pilot") === "schedule";
 
 const IS_LOCAL_INDUSTRY =
   INDUSTRY_SUPABASE_OVERRIDE !== "hosted" &&
@@ -9392,6 +9413,65 @@ const SUPABASE_URL = IS_LOCAL_INDUSTRY
 const SUPABASE_PUBLISHABLE_KEY = IS_LOCAL_INDUSTRY
   ? "sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH"
   : "sb_publishable_I4zjPUH_5zqN0x2cV_n1iQ_-gUwPS2H";
+
+function applyPilotLaunchScope() {
+  isScheduleOnlyPilot = INDUSTRY_PILOT_SCOPE_OVERRIDE || !IS_LOCAL_INDUSTRY;
+  document.body.classList.toggle("pilot-schedule-only", isScheduleOnlyPilot);
+
+  if (!isScheduleOnlyPilot) {
+    const welcomeCopy = document.querySelector("#pilot-welcome-copy");
+    if (welcomeCopy) {
+      const spacePhrase = document.createElement("span");
+      spacePhrase.className = "onboarding-space-phrase";
+      spacePhrase.textContent = "all in your space.";
+      welcomeCopy.replaceChildren(
+        document.createTextNode(
+          "Schedule, earnings, opportunities and people — ",
+        ),
+        spacePhrase,
+      );
+    }
+
+    return;
+  }
+
+  const welcomeCopy = document.querySelector("#pilot-welcome-copy");
+  if (welcomeCopy) {
+    welcomeCopy.textContent =
+      "Your shifts, coverage, and workplace crew — all in one place.";
+  }
+
+  const scopeNotice = document.querySelector("#pilot-schedule-scope-notice");
+  if (scopeNotice) {
+    scopeNotice.hidden = false;
+  }
+
+  const helpTitle = document.querySelector("#onboarding-help-title");
+  if (helpTitle) {
+    helpTitle.textContent = "Schedule pilot help";
+  }
+
+  const helpIntro = document.querySelector("#pilot-help-intro");
+  if (helpIntro) {
+    helpIntro.textContent =
+      "Use this pilot to review shifts, request coverage, and follow workplace schedule activity.";
+  }
+
+  const helpClosing = document.querySelector("#pilot-help-closing");
+  if (helpClosing) {
+    helpClosing.textContent =
+      "Jobs, People, earnings, payroll, and tip tools are not part of this pilot.";
+  }
+
+  const activeSection = document.querySelector(".app-section.active");
+  if (["jobs", "people"].includes(activeSection?.dataset.section)) {
+    setActiveSection("schedule");
+    showScheduleHub();
+    window.history.replaceState(null, "", "#schedule");
+  }
+}
+
+applyPilotLaunchScope();
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -10255,26 +10335,9 @@ function updateDashboardForRole() {
   // Worker defaults
   dashboardQuickActionsGrid?.classList.remove("is-manager");
 
-  const yesterdayTipTotal = getYesterdayTipTotal();
-
-  dashboardSnapshotPrimaryIcon.textContent = "💵";
-  dashboardSnapshotPrimaryValue.textContent = formatMoney(yesterdayTipTotal);
-  dashboardSnapshotPrimaryLabel.textContent = "Yesterday’s tips";
-  dashboardSnapshotPrimary.dataset.dashboardSection = "schedule";
-  dashboardSnapshotPrimary.dataset.dashboardView = "earnings-tools";
-  dashboardSnapshotPrimary.dataset.scrollTarget = "tip-tracker-panel";
-
-  dashboardSnapshotSecondaryIcon.textContent = "📅";
   const openCatchCount = (authenticatedCatchShifts || []).filter(
     (shift) => shift.owner !== authenticatedUserId,
   ).length;
-
-  dashboardSnapshotSecondaryValue.textContent = String(openCatchCount);
-  dashboardSnapshotSecondaryLabel.textContent =
-    openCatchCount === 1 ? "Open catch" : "Open catches";
-  dashboardSnapshotSecondary.dataset.dashboardSection = "schedule";
-  dashboardSnapshotSecondary.dataset.dashboardView = "catch";
-  delete dashboardSnapshotSecondary.dataset.scrollTarget;
 
   const upcomingShiftCount = (authenticatedScheduleShifts || []).filter(
     (shift) =>
@@ -10283,26 +10346,81 @@ function updateDashboardForRole() {
       new Date(shift.startsAt) > new Date(),
   ).length;
 
-  dashboardSnapshotTertiaryIcon.textContent = "📅";
-  dashboardSnapshotTertiaryValue.textContent = String(upcomingShiftCount);
-  dashboardSnapshotTertiaryLabel.textContent =
-    upcomingShiftCount === 1 ? "Upcoming shift" : "Upcoming shifts";
+  if (isScheduleOnlyPilot) {
+    dashboardSnapshotPrimaryIcon.textContent = "📅";
+    dashboardSnapshotPrimaryValue.textContent = String(upcomingShiftCount);
+    dashboardSnapshotPrimaryLabel.textContent =
+      upcomingShiftCount === 1 ? "Upcoming shift" : "Upcoming shifts";
+    dashboardSnapshotPrimary.dataset.dashboardSection = "schedule";
+    dashboardSnapshotPrimary.dataset.dashboardView = "my-shifts";
+    delete dashboardSnapshotPrimary.dataset.scrollTarget;
+  } else {
+    const yesterdayTipTotal = getYesterdayTipTotal();
+
+    dashboardSnapshotPrimaryIcon.textContent = "💵";
+    dashboardSnapshotPrimaryValue.textContent = formatMoney(yesterdayTipTotal);
+    dashboardSnapshotPrimaryLabel.textContent = "Yesterday’s tips";
+    dashboardSnapshotPrimary.dataset.dashboardSection = "schedule";
+    dashboardSnapshotPrimary.dataset.dashboardView = "earnings-tools";
+    dashboardSnapshotPrimary.dataset.scrollTarget = "tip-tracker-panel";
+  }
+
+  dashboardSnapshotSecondaryIcon.textContent = "📅";
+
+  dashboardSnapshotSecondaryValue.textContent = String(openCatchCount);
+  dashboardSnapshotSecondaryLabel.textContent =
+    openCatchCount === 1 ? "Open catch" : "Open catches";
+  dashboardSnapshotSecondary.dataset.dashboardSection = "schedule";
+  dashboardSnapshotSecondary.dataset.dashboardView = "catch";
+  delete dashboardSnapshotSecondary.dataset.scrollTarget;
+
+  dashboardSnapshotTertiaryIcon.textContent = isScheduleOnlyPilot ? "👥" : "📅";
+  dashboardSnapshotTertiaryValue.textContent = String(
+    isScheduleOnlyPilot
+      ? authenticatedWorkplaceCrew?.length || 0
+      : upcomingShiftCount,
+  );
+  dashboardSnapshotTertiaryLabel.textContent = isScheduleOnlyPilot
+    ? "Crew"
+    : upcomingShiftCount === 1
+      ? "Upcoming shift"
+      : "Upcoming shifts";
 
   dashboardSnapshotTertiary.dataset.dashboardSection = "schedule";
-  dashboardSnapshotTertiary.dataset.dashboardView = "my-shifts";
+  dashboardSnapshotTertiary.dataset.dashboardView = isScheduleOnlyPilot
+    ? "shift-crew"
+    : "my-shifts";
   delete dashboardSnapshotTertiary.dataset.scrollTarget;
 
-  dashboardQuickPrimary.querySelector(".quick-action-icon").textContent = "💵";
-  dashboardQuickPrimaryLabel.textContent = "Tip Tracker";
+  dashboardQuickPrimary.querySelector(".quick-action-icon").textContent =
+    isScheduleOnlyPilot ? "📅" : "💵";
+  dashboardQuickPrimaryLabel.textContent = isScheduleOnlyPilot
+    ? "My Schedule"
+    : "Tip Tracker";
   dashboardQuickPrimary.dataset.dashboardSection = "schedule";
-  dashboardQuickPrimary.dataset.dashboardView = "earnings-tools";
-  dashboardQuickPrimary.dataset.scrollTarget = "tip-tracker-panel";
+  dashboardQuickPrimary.dataset.dashboardView = isScheduleOnlyPilot
+    ? "my-shifts"
+    : "earnings-tools";
+  if (isScheduleOnlyPilot) {
+    delete dashboardQuickPrimary.dataset.scrollTarget;
+  } else {
+    dashboardQuickPrimary.dataset.scrollTarget = "tip-tracker-panel";
+  }
 
   dashboardQuickSecondary.querySelector(".quick-action-icon").textContent =
     "👥";
   dashboardQuickSecondaryLabel.textContent = "View Crew";
   dashboardQuickSecondary.dataset.dashboardSection = "schedule";
   dashboardQuickSecondary.dataset.dashboardView = "shift-crew";
+
+  dashboardQuickQuaternary.hidden = !isScheduleOnlyPilot;
+  if (isScheduleOnlyPilot) {
+    dashboardQuickQuaternary.querySelector(".quick-action-icon").textContent =
+      "↻";
+    dashboardQuickQuaternaryLabel.textContent = "Activity";
+    dashboardQuickQuaternary.dataset.dashboardSection = "schedule";
+    dashboardQuickQuaternary.dataset.dashboardView = "activity-feed";
+  }
 
   const scheduledShifts = (authenticatedScheduleShifts || []).filter(
     (shift) => shift.status === "scheduled",
@@ -10347,7 +10465,7 @@ function updateDashboardForRole() {
   }
 
   dashboardQuickTertiary.hidden = !hasScheduledShift;
-  dashboardQuickQuaternary.hidden = true;
+  dashboardQuickQuaternary.hidden = !isScheduleOnlyPilot;
 }
 
 document.addEventListener("visibilitychange", () => {

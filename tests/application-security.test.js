@@ -16,6 +16,14 @@ const indexSource = fs.readFileSync(
   path.join(projectRoot, "index.html"),
   "utf8",
 );
+const standalonePeopleSources = [
+  "people-events.html",
+  "people-nearby.html",
+  "people-network.html",
+  "people-resources.html",
+].map((filename) =>
+  fs.readFileSync(path.join(projectRoot, filename), "utf8"),
+);
 const configSource = fs.readFileSync(
   path.join(projectRoot, "supabase", "config.toml"),
   "utf8",
@@ -75,6 +83,52 @@ test("sensitive browser debug logging is absent", () => {
   [scriptSource, peopleSource].forEach((source) => {
     assert.doesNotMatch(source, /console\.(?:log|warn|error|debug)\s*\(/);
   });
+});
+
+test("the hosted pilot is restricted to Schedule without financial entry paths", () => {
+  assert.match(
+    scriptSource,
+    /isScheduleOnlyPilot = INDUSTRY_PILOT_SCOPE_OVERRIDE \|\| !IS_LOCAL_INDUSTRY/,
+  );
+  assert.match(
+    scriptSource,
+    /get\("pilot"\) === "schedule"/,
+  );
+  assert.match(
+    scriptSource,
+    /PILOT_EXCLUDED_SCHEDULE_VIEWS = new Set\(\[[\s\S]*"earnings-tools"[\s\S]*"tip-out-calculator"[\s\S]*"tip-tracker"/,
+  );
+  assert.match(
+    scriptSource,
+    /isScheduleOnlyPilot && \["jobs", "people"\]\.includes\(sectionName\)/,
+  );
+  assert.match(
+    scriptSource,
+    /isScheduleOnlyPilot && PILOT_EXCLUDED_SCHEDULE_VIEWS\.has\(viewName\)/,
+  );
+  assert.match(
+    indexSource,
+    /Jobs, People, earnings, payroll, and tip tools are not included\./,
+  );
+  assert.match(indexSource, /id="signup-password"[\s\S]*?minlength="10"/);
+  assert.match(indexSource, /id="new-password"[\s\S]*?minlength="10"/);
+  assert.match(
+    peopleSource,
+    /if \(!peoplePageIsLocal\)[\s\S]*document\.documentElement\.hidden = true[\s\S]*window\.location\.replace/,
+  );
+  standalonePeopleSources.forEach((source) => {
+    assert.match(source, /<html[^>]*class="people-route-pending"/);
+    assert.match(source, /people-pages\.js\?v=20260918\.4/);
+  });
+  assert.match(indexSource, /<body class="pilot-schedule-only"/);
+  assert.match(
+    scriptSource,
+    /\["jobs", "people"\]\.includes\(activeSection\?\.dataset\.section\)[\s\S]*setActiveSection\("schedule"\)/,
+  );
+  assert.match(
+    peopleSource,
+    /schedulePilotUrl\.search = window\.location\.search/,
+  );
 });
 
 test("backend and user-controlled values use escaped rendering", () => {

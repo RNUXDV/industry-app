@@ -31,3 +31,10 @@ For a controlled hosted-backend check without deploying the branch, serve the re
 See [INDUSTRY_STATUS.md](INDUSTRY_STATUS.md) for the reconciled product history, current implementation boundary, active checkpoint, and recommended next steps.
 
 Use [PILOT_ACCESS.md](PILOT_ACCESS.md) for the controlled pilot sign-in, password-recovery, wrong-account, support, and cleanup procedure.
+
+The hosted Papa Haydn NW launch is intentionally Schedule-only. On hosted
+surfaces, the application hides Jobs, People, Tip Tracker, earnings, payroll,
+and developer/demo controls. Those prototype areas remain available only in
+ordinary localhost development. Merging this branch does not configure hosted
+Auth, email, redirects, migrations, or participant data; complete the
+production launch gate in `PILOT_ACCESS.md` before sending real invitations.

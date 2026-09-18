@@ -4,6 +4,50 @@ Use this procedure for the controlled Schedule pilot at:
 
 https://industry-pilot.hummingbirdeye.chatgpt.site
 
+## Pilot scope
+
+The Papa Haydn NW pilot is Schedule-only. Participants may use their shifts,
+coverage tools, crew information, and privacy-safe schedule activity. Jobs,
+People, Tip Tracker, tip-out, payroll, earnings, and financial tools are not
+part of this pilot and must remain unavailable on the hosted pilot surface.
+
+The local prototype may continue to expose those unfinished areas for product
+development. A localhost preview using `?pilot=schedule` must display the same
+Schedule-only scope while continuing to use Local Supabase. The separate
+`?supabase=hosted` override is not required for launch-readiness review.
+
+## Production launch gate
+
+Do not send a real invitation until all of the following are recorded as
+complete:
+
+1. Back up the hosted database and confirm the migration ledger is current.
+2. Dry-run and apply only the reviewed pilot migrations in timestamp order.
+3. Enable the hosted `before_user_created` Auth hook for
+   `enforce_pilot_invitation_before_user_created`.
+4. Set the exact hosted Site URL and exact password-recovery redirect URL.
+5. Configure a production email provider for password recovery and test one
+   organizer-owned account without exposing the reset link or session.
+6. Require passwords of at least 10 characters and retain Auth rate limits.
+7. Publish the reviewed `backend-schedule` frontend and verify that Jobs,
+   People, earnings, payroll, Tip Tracker, and the developer switcher are not
+   reachable on the hosted surface.
+8. Inventory old hosted test accounts and records. Keep them in a clearly
+   separate test workplace or remove them through an approved, ID-specific
+   cleanup. Never repurpose a test identity as a participant identity.
+9. Create the workplace with the exact display name **Papa Haydn NW**.
+10. Configure the pilot end date and a retention period of at least 90 days.
+11. Create Tassh's service-only Manager invitation only after she confirms the
+    email address and voluntary participation.
+12. Grant Robert observer access only through the service-only observer
+    operation. Robert must not be an active Papa Haydn NW workplace member.
+13. Complete a manager-and-observer rehearsal before Tassh invites workers.
+
+Email confirmation is not currently supported by the signup interface. Keep
+hosted email confirmation disabled for this small invitation-token pilot unless
+a confirmation-pending workflow is implemented and tested first. Invitations
+must be delivered privately to the consenting volunteer named by the manager.
+
 ## Before inviting a participant
 
 1. Confirm the participant's email address and intended worker role directly with them.
@@ -11,6 +55,8 @@ https://industry-pilot.hummingbirdeye.chatgpt.site
 3. Copy the one-time link and send it privately to the named participant. Do not post invitation links in a group chat or shared document.
 4. Invitations expire after seven days. Creating a new link for the same email revokes the previous pending link.
 5. The participant creates their own password. Managers and organizers must never create, request, store, or share participant passwords.
+6. Remind the participant that the pilot does not ask for tips, payroll data,
+   phone numbers, birth dates, or unrelated personal details.
 
 The first manager for a new pilot workplace is invited by the pilot organizer through the service-only `create_pilot_manager_invitation` database function. The browser application cannot create or claim a manager role.
 
@@ -68,3 +114,6 @@ Industry sign-in is separate from a ChatGPT account. If a ChatGPT confirmation s
 - Password recovery was tested only when required.
 - Temporary credentials were not saved on shared devices.
 - Temporary test accounts and records were removed.
+- Jobs, People, earnings, payroll, and tip-entry surfaces were not available.
+- Robert observed results through the read-only pilot monitor and did not use
+  or impersonate a participant account.
