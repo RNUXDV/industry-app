@@ -108,6 +108,9 @@ const managerCrewList = document.getElementById("manager-crew-list");
 const managerInviteForm = document.getElementById("manager-invite-form");
 const managerInviteEmail = document.getElementById("manager-invite-email");
 const managerInviteRole = document.getElementById("manager-invite-role");
+const managerVolunteerConfirmed = document.getElementById(
+  "manager-volunteer-confirmed",
+);
 const managerInviteStatus = document.getElementById("manager-invite-status");
 const managerInviteResult = document.getElementById("manager-invite-result");
 const managerInviteResultCopy = document.getElementById(
@@ -117,6 +120,48 @@ const managerCopyInviteButton = document.getElementById(
   "manager-copy-invite-button",
 );
 const managerInviteList = document.getElementById("manager-invite-list");
+
+const PILOT_CONSENT_VERSION = "pilot-privacy-v1";
+
+function getSafeAuthFailureMessage(action) {
+  const messages = {
+    login: "We couldn't sign you in. Check your details and try again.",
+    signup:
+      "We couldn't finish signup here. Check the private invitation, or sign in if you already have an account.",
+    recovery:
+      "We couldn't send a reset link right now. Please try again later.",
+    password:
+      "We couldn't update your password. Please check it and try again.",
+    invitation:
+      "We couldn't accept this invitation. Check the private link and signed-in email, then try again.",
+    createInvitation:
+      "We couldn't create this invitation. Check the details and try again.",
+    revokeInvitation:
+      "We couldn't revoke this invitation. Please try again.",
+  };
+
+  return messages[action] || "We couldn't complete that request. Please try again.";
+}
+
+function getMembershipBlockMessage(reason, action = "leave") {
+  const prefix = action === "remove" ? "This participant" : "You";
+  const timing = action === "remove"
+    ? "before they can be removed"
+    : "before leaving the pilot";
+  const messages = {
+    active_shift: `${prefix} must finish the active shift ${timing}.`,
+    future_shift: `${prefix} must resolve upcoming shifts ${timing}.`,
+    coverage_responsibility: `${prefix} must resolve open coverage ${timing}.`,
+    shift_interest: `${prefix} must withdraw or resolve shift interest ${timing}.`,
+    direct_offer: `${prefix} must resolve direct shift offers ${timing}.`,
+    last_manager: "The last active Manager cannot leave or be removed.",
+    use_leave_pilot: "Use Leave pilot to remove your own workplace access.",
+    no_active_membership: "This workplace membership is no longer active.",
+  };
+
+  return messages[reason] ||
+    "The workplace membership cannot be changed until outstanding schedule responsibilities are resolved.";
+}
 
 const managerShiftWorkerSelect = document.getElementById(
   "manager-shift-worker",
@@ -1058,7 +1103,8 @@ async function loadAuthenticatedWorkplaceCrew() {
     await supabaseClient
       .from("workplace_members")
       .select("profile_id, role")
-      .eq("workplace_id", authenticatedWorkplaceId);
+      .eq("workplace_id", authenticatedWorkplaceId)
+      .eq("membership_status", "active");
 
   if (membershipError) {
     throw membershipError;
@@ -1196,6 +1242,59 @@ function renderAuthenticatedManagerCrew(crew = authenticatedManagerCrew) {
       </div>
     `;
 
+    if (member.id && member.id !== authenticatedUserId) {
+      const actions = document.createElement("div");
+      actions.className = "manager-invite-card-actions";
+
+      const removeButton = document.createElement("button");
+      removeButton.className = "action-button secondary-action destructive-action";
+      removeButton.type = "button";
+      removeButton.textContent = "Remove from pilot";
+
+      const status = document.createElement("p");
+      status.className = "status-text";
+      status.setAttribute("aria-live", "polite");
+
+      removeButton.addEventListener("click", async () => {
+        const confirmed = window.confirm(
+          `Remove ${member.name || "this participant"} from this workplace pilot? Their Industry account will not be deleted.`,
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        removeButton.disabled = true;
+        status.textContent = "Checking schedule responsibilities…";
+
+        const { data, error } = await supabaseClient.rpc(
+          "remove_workplace_member",
+          { target_profile_id: member.id },
+        );
+        const result = data?.[0];
+
+        if (error || !result) {
+          removeButton.disabled = false;
+          status.textContent =
+            "We couldn't remove this participant. Please try again.";
+          return;
+        }
+
+        if (result.outcome !== "deactivated") {
+          removeButton.disabled = false;
+          status.textContent = getMembershipBlockMessage(result.reason, "remove");
+          return;
+        }
+
+        status.textContent = "Participant removed from this workplace pilot.";
+        const crew = await loadAuthenticatedManagerCrew();
+        renderAuthenticatedManagerCrew(crew ?? authenticatedManagerCrew);
+      });
+
+      actions.append(removeButton, status);
+      memberCard.appendChild(actions);
+    }
+
     managerCrewList.appendChild(memberCard);
   });
 }
@@ -1221,7 +1320,11 @@ function showManagerInviteResult(invitation) {
   }
 }
 
-async function createManagerWorkplaceInvitation(email, role) {
+async function createManagerWorkplaceInvitation(
+  email,
+  role,
+  volunteerConfirmed,
+) {
   if (managerInviteStatus) {
     managerInviteStatus.textContent = "Creating a secure invitation…";
   }
@@ -1231,13 +1334,14 @@ async function createManagerWorkplaceInvitation(email, role) {
     {
       target_email: email,
       target_role: role,
+      volunteer_confirmed: volunteerConfirmed,
     },
   );
 
   if (error || !data?.length) {
     if (managerInviteStatus) {
       managerInviteStatus.textContent =
-        error?.message || "Unable to create this invitation.";
+        getSafeAuthFailureMessage("createInvitation");
     }
 
     return null;
@@ -1312,12 +1416,14 @@ function renderWorkplaceInvitations(invitations = []) {
       const replaceButton = document.createElement("button");
       replaceButton.className = "action-button secondary-action";
       replaceButton.type = "button";
-      replaceButton.textContent = "Create new link";
+      replaceButton.textContent = "Prepare new link";
       replaceButton.addEventListener("click", () => {
-        createManagerWorkplaceInvitation(
-          invitation.invited_email,
-          invitation.invited_role,
-        );
+        managerInviteEmail.value = invitation.invited_email;
+        managerInviteRole.value = invitation.invited_role;
+        managerVolunteerConfirmed.checked = false;
+        managerInviteStatus.textContent =
+          "Confirm that participation is still voluntary, then create the new link.";
+        managerInviteForm.scrollIntoView({ behavior: "smooth", block: "center" });
       });
 
       const revokeButton = document.createElement("button");
@@ -1337,7 +1443,7 @@ function renderWorkplaceInvitations(invitations = []) {
 
           if (managerInviteStatus) {
             managerInviteStatus.textContent =
-              error?.message || "Unable to revoke this invitation.";
+              getSafeAuthFailureMessage("revokeInvitation");
           }
 
           return;
@@ -1392,7 +1498,12 @@ managerInviteForm?.addEventListener("submit", async (event) => {
 
   const email = managerInviteEmail.value.trim();
   const role = managerInviteRole.value;
-  const invitation = await createManagerWorkplaceInvitation(email, role);
+  const volunteerConfirmed = managerVolunteerConfirmed.checked;
+  const invitation = await createManagerWorkplaceInvitation(
+    email,
+    role,
+    volunteerConfirmed,
+  );
 
   if (invitation) {
     managerInviteForm.reset();
@@ -9155,6 +9266,15 @@ const industryInviteWorkplace = document.querySelector(
 const industryInviteDetails = document.querySelector(
   "#industry-invite-details",
 );
+const pilotConsentPanel = document.querySelector("#pilot-consent-panel");
+const pilotConsentCheckbox = document.querySelector(
+  "#pilot-consent-checkbox",
+);
+const leavePilotConfirmation = document.querySelector(
+  "#leave-pilot-confirmation",
+);
+const leavePilotButton = document.querySelector("#leave-pilot-button");
+const leavePilotStatus = document.querySelector("#leave-pilot-status");
 
 const INDUSTRY_INVITE_STORAGE_KEY = "industry-pilot-invite";
 const inviteQueryToken = new URLSearchParams(window.location.search).get(
@@ -9169,6 +9289,7 @@ let activePilotInviteToken =
   inviteQueryToken || localStorage.getItem(INDUSTRY_INVITE_STORAGE_KEY) || "";
 let activePilotInvitation = null;
 let currentManagerInviteUrl = "";
+let pendingPilotConsentAcknowledged = false;
 
 const dashboardGreeting = document.querySelector("#dashboard-greeting");
 const dashboardDate = document.querySelector("#dashboard-date");
@@ -9272,6 +9393,16 @@ function clearPilotInvitation() {
   if (industryInviteSummary) {
     industryInviteSummary.hidden = true;
   }
+
+  if (pilotConsentPanel) {
+    pilotConsentPanel.hidden = true;
+  }
+
+  if (pilotConsentCheckbox) {
+    pilotConsentCheckbox.checked = false;
+  }
+
+  pendingPilotConsentAcknowledged = false;
 }
 
 function renderPilotInvitation() {
@@ -9281,10 +9412,12 @@ function renderPilotInvitation() {
 
   if (!activePilotInvitation) {
     industryInviteSummary.hidden = true;
+    pilotConsentPanel.hidden = true;
     return;
   }
 
   industryInviteSummary.hidden = false;
+  pilotConsentPanel.hidden = false;
   industryInviteWorkplace.textContent = activePilotInvitation.workplace_name;
   industryInviteDetails.textContent = `${activePilotInvitation.invited_role} invitation for ${activePilotInvitation.invited_email}`;
 
@@ -9335,17 +9468,31 @@ async function acceptPendingPilotInvitation() {
     return false;
   }
 
+  if (!pendingPilotConsentAcknowledged) {
+    const message =
+      "Please acknowledge the optional pilot and privacy notice before joining.";
+    if (loginStatus) {
+      loginStatus.textContent = message;
+    }
+    if (signupStatus) {
+      signupStatus.textContent = message;
+    }
+    return false;
+  }
+
   const { error } = await supabaseClient.rpc("accept_pilot_invitation", {
     invite_token: activePilotInviteToken,
+    consent_acknowledged: true,
+    consent_version: PILOT_CONSENT_VERSION,
   });
 
   if (error) {
     if (loginStatus) {
-      loginStatus.textContent = error.message;
+      loginStatus.textContent = getSafeAuthFailureMessage("invitation");
     }
 
     if (signupStatus) {
-      signupStatus.textContent = error.message;
+      signupStatus.textContent = getSafeAuthFailureMessage("invitation");
     }
 
     return false;
@@ -9522,6 +9669,18 @@ async function signOutOfIndustry() {
   signupStatus.textContent = "";
   loginStatus.textContent = "";
 
+  if (leavePilotConfirmation) {
+    leavePilotConfirmation.checked = false;
+  }
+
+  if (leavePilotButton) {
+    leavePilotButton.disabled = false;
+  }
+
+  if (leavePilotStatus) {
+    leavePilotStatus.textContent = "";
+  }
+
   setIndustryAuthMode(activePilotInvitation ? "signup" : "login");
 
   showSignedOutIndustry();
@@ -9529,6 +9688,42 @@ async function signOutOfIndustry() {
 
 industrySignOutButton?.addEventListener("click", () => {
   signOutOfIndustry();
+});
+
+leavePilotButton?.addEventListener("click", async () => {
+  if (!leavePilotConfirmation?.checked) {
+    leavePilotStatus.textContent =
+      "Confirm that you understand the consequences before leaving.";
+    return;
+  }
+
+  leavePilotButton.disabled = true;
+  leavePilotStatus.textContent = "Checking schedule responsibilities…";
+
+  const { data, error } = await supabaseClient.rpc("leave_pilot");
+  const result = data?.[0];
+
+  if (error || !result) {
+    leavePilotButton.disabled = false;
+    leavePilotStatus.textContent =
+      "We couldn't leave the workplace pilot. Please try again.";
+    return;
+  }
+
+  if (result.outcome !== "deactivated") {
+    leavePilotButton.disabled = false;
+    leavePilotStatus.textContent = getMembershipBlockMessage(result.reason);
+    return;
+  }
+
+  leavePilotStatus.textContent =
+    "You left the workplace pilot. Your Industry account still exists.";
+  leavePilotConfirmation.checked = false;
+
+  await signOutOfIndustry();
+  openIndustryAuth("login");
+  loginStatus.textContent =
+    "You left the workplace pilot. Your Industry account still exists.";
 });
 
 // =========================================================
@@ -9834,6 +10029,7 @@ async function loadAuthenticatedIndustryProfile() {
     .from("workplace_members")
     .select("workplace_id, role")
     .eq("profile_id", user.id)
+    .eq("membership_status", "active")
     .maybeSingle();
 
   if (membershipError) {
@@ -10150,7 +10346,7 @@ recoveryForm?.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    recoveryStatus.textContent = error.message;
+    recoveryStatus.textContent = getSafeAuthFailureMessage("recovery");
     return;
   }
 
@@ -10181,7 +10377,7 @@ updatePasswordForm?.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    updatePasswordStatus.textContent = error.message;
+    updatePasswordStatus.textContent = getSafeAuthFailureMessage("password");
     return;
   }
 
@@ -10215,6 +10411,14 @@ signupForm?.addEventListener("submit", async (event) => {
     return;
   }
 
+  if (!pilotConsentCheckbox?.checked) {
+    signupStatus.textContent =
+      "Please acknowledge the optional pilot and privacy notice before creating your account.";
+    return;
+  }
+
+  pendingPilotConsentAcknowledged = true;
+
   const fullName = document.querySelector("#signup-name").value.trim();
 
   const email = document.querySelector("#signup-email").value.trim();
@@ -10236,18 +10440,19 @@ signupForm?.addEventListener("submit", async (event) => {
       emailRedirectTo: buildIndustryInviteUrl(activePilotInviteToken),
       data: {
         full_name: fullName,
+        pilot_consent_acknowledged: true,
+        pilot_consent_version: PILOT_CONSENT_VERSION,
       },
     },
   });
 
   if (error) {
-    signupStatus.textContent = error.message;
+    signupStatus.textContent = getSafeAuthFailureMessage("signup");
     return;
   }
 
   if (!data.session) {
-    signupStatus.textContent =
-      "Account created. Confirm your email, then return to this invitation to finish joining.";
+    signupStatus.textContent = getSafeAuthFailureMessage("signup");
     return;
   }
 
@@ -10267,6 +10472,16 @@ loginForm?.addEventListener("submit", async (event) => {
 
   const password = document.querySelector("#login-password").value;
 
+  if (activePilotInvitation && !pilotConsentCheckbox?.checked) {
+    loginStatus.textContent =
+      "Please acknowledge the optional pilot and privacy notice before joining.";
+    return;
+  }
+
+  pendingPilotConsentAcknowledged = Boolean(
+    activePilotInvitation && pilotConsentCheckbox?.checked,
+  );
+
   loginStatus.textContent = "Signing in…";
 
   const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -10275,7 +10490,7 @@ loginForm?.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    loginStatus.textContent = error.message;
+    loginStatus.textContent = getSafeAuthFailureMessage("login");
     return;
   }
 

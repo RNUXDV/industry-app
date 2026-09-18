@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20260915.4" />
+    <link rel="stylesheet" href="styles.css?v=20260918.1" />
   </head>
   <body data-theme="dark">
 
@@ -107,6 +107,23 @@
       <p class="industry-invite-eyebrow">PRIVATE INVITATION</p>
       <h3 id="industry-invite-workplace">Your workplace</h3>
       <p id="industry-invite-details"></p>
+    </section>
+
+    <section class="pilot-consent-panel" id="pilot-consent-panel" hidden>
+      <p>
+        Joining this pilot is optional. It is not connected to payroll,
+        discipline, performance review, or continued employment.
+      </p>
+      <p>
+        Pilot enrollment uses your name, personal email, workplace role, and
+        schedule activity only to operate and evaluate this pilot. The pilot
+        organizer will not ask for your password, phone number, payroll or tip
+        records, or birth date. Your password goes directly to secure sign-in.
+      </p>
+      <label class="consent-check">
+        <input id="pilot-consent-checkbox" type="checkbox" />
+        <span>I choose to participate and understand this short privacy notice.</span>
+      </label>
     </section>
 
     <!-- CREATE ACCOUNT -->
@@ -1830,6 +1847,14 @@
           </select>
         </label>
 
+        <label class="consent-check">
+          <input id="manager-volunteer-confirmed" type="checkbox" required />
+          <span>
+            I confirm this employee volunteered to try the pilot and understands
+            that participation is optional and unrelated to employment decisions.
+          </span>
+        </label>
+
         <button class="action-button" type="submit">
           Create private invite
         </button>
@@ -1868,6 +1893,11 @@
       <h3>Your team</h3>
       <p>
         Managers and crew members currently connected to this workplace.
+      </p>
+      <p>
+        Removing someone ends their workplace access but not their Industry
+        account. Removal is blocked until upcoming shifts, coverage, interests,
+        and direct offers are resolved.
       </p>
     </div>
 
@@ -5417,6 +5447,26 @@
 >
   Sign out
 </button>
+
+    <section class="pilot-membership-panel" aria-labelledby="leave-pilot-title">
+      <h2 id="leave-pilot-title">Leave workplace pilot</h2>
+      <p>
+        Leaving removes your access to this workplace but keeps historical
+        schedule records. It does not delete your Industry account.
+      </p>
+      <label class="consent-check">
+        <input id="leave-pilot-confirmation" type="checkbox" />
+        <span>I understand and want to leave this workplace pilot.</span>
+      </label>
+      <button
+        class="onboarding-secondary destructive-action"
+        id="leave-pilot-button"
+        type="button"
+      >
+        Leave pilot
+      </button>
+      <p class="status-text" id="leave-pilot-status" aria-live="polite"></p>
+    </section>
   </div>
 </section>
 </div>
@@ -5601,6 +5651,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="security.js?v=20260917.1"></script>
-    <script src="script.js?v=20260917.1"></script>
+    <script src="script.js?v=20260918.1"></script>
   </body>
 </html>

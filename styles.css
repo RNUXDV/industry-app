@@ -2423,6 +2423,10 @@ body:has(.people-loop-view) .home-logo-button {
   width: auto;
 }
 
+.manager-invite-card-actions .destructive-action {
+  margin-left: 0;
+}
+
 .manager-invite-status-badge {
   display: inline-flex;
   width: fit-content;
@@ -2439,6 +2443,42 @@ body:has(.people-loop-view) .home-logo-button {
 .manager-invite-status-badge.is-pending {
   border-color: rgba(214, 95, 50, 0.5);
   color: var(--accent);
+}
+
+.consent-check {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.consent-check input {
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  accent-color: var(--accent);
+}
+
+.pilot-membership-panel {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  text-align: left;
+}
+
+.pilot-membership-panel h2,
+.pilot-membership-panel p {
+  margin: 0;
+}
+
+.pilot-membership-panel .destructive-action {
+  margin-left: 0;
 }
 
 .shift-list,
@@ -9490,6 +9530,27 @@ body.onboarding-home-active #home-logo-button {
   color: rgba(245, 241, 232, 0.72);
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+.pilot-consent-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pilot-consent-panel[hidden] {
+  display: none;
+}
+
+.pilot-consent-panel p {
+  margin: 0;
+  color: rgba(245, 241, 232, 0.72);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  text-align: left;
 }
 
 .industry-auth-field {

@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(40);
+select plan(41);
 
 select is(
   (
@@ -43,13 +43,6 @@ values (
   'OR',
   'America/Los_Angeles',
   '4d842c8d-31d5-46d8-a628-b84ff4022210'
-);
-
-insert into public.workplace_members (workplace_id, profile_id, role)
-values (
-  '90000000-0000-4000-8000-0000000000b1',
-  'ecb9476f-b075-4b54-96f9-a0073d82d96e',
-  'Server'
 );
 
 insert into public.shifts (
@@ -144,11 +137,22 @@ select throws_ok($$ select public.release_shift_for_coverage('90000000-0000-4000
 
 select throws_ok($$ insert into public.shift_interests (shift_id, profile_id, status) values ('90000000-0000-4000-8000-000000000008', '79e3858d-923d-473a-b1ad-b2965c32231d', 'selected') $$, '42501', 'new row violates row-level security policy for table "shift_interests"', 'workers cannot create selected interests');
 select throws_ok($$ insert into public.shift_interests (shift_id, profile_id, status) values ('90000000-0000-4000-8000-000000000008', '79e3858d-923d-473a-b1ad-b2965c32231d', 'confirmed') $$, '42501', 'new row violates row-level security policy for table "shift_interests"', 'workers cannot create confirmed interests');
-select throws_ok($$ insert into public.shift_interests (shift_id, profile_id, status) values ('90000000-0000-4000-8000-000000000011', '79e3858d-923d-473a-b1ad-b2965c32231d', 'interested') $$, '42501', 'new row violates row-level security policy for table "shift_interests"', 'workers cannot express interest across workplaces');
+select throws_ok(
+  $$ insert into public.shift_interests (shift_id, profile_id, status) values ('90000000-0000-4000-8000-000000000011', '79e3858d-923d-473a-b1ad-b2965c32231d', 'interested') $$,
+  '42501', null,
+  'workers cannot express interest across workplaces'
+);
 select throws_ok($$ insert into public.shift_interests (shift_id, profile_id, status) values ('90000000-0000-4000-8000-000000000009', '79e3858d-923d-473a-b1ad-b2965c32231d', 'interested') $$, '42501', 'new row violates row-level security policy for table "shift_interests"', 'workers cannot express interest in their own shift');
 select lives_ok($$ insert into public.shift_interests (shift_id, profile_id, status) values ('90000000-0000-4000-8000-000000000008', '79e3858d-923d-473a-b1ad-b2965c32231d', 'interested') $$, 'a same-workplace worker can express interest in another worker coverage shift');
 
 reset role;
+select is(
+  (select count(*)::integer from public.shift_interests
+    where shift_id = '90000000-0000-4000-8000-000000000011'
+      and profile_id = '79e3858d-923d-473a-b1ad-b2965c32231d'),
+  0,
+  'a denied cross-workplace interest creates no row'
+);
 select is((select status from public.shift_interests where shift_id = '90000000-0000-4000-8000-000000000008' and profile_id = '79e3858d-923d-473a-b1ad-b2965c32231d'), 'interested', 'coverage interest begins at exactly interested');
 
 set local role authenticated;
