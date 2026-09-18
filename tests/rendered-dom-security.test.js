@@ -281,3 +281,87 @@ test("real schedule and Catch renderers safely display dates, notes, and nullish
   assert.doesNotMatch(result.scheduleHtml, /&amp;(?:amp|lt|gt|quot|#39);/);
   assert.doesNotMatch(result.catchHtml, /&amp;(?:amp|lt|gt|quot|#39);/);
 });
+
+test("pilot consent and departure copy render as optional and account-safe", async () => {
+  const result = await page.evaluate(() => {
+    activePilotInvitation = {
+      workplace_name: "Papa Haydn NW",
+      invited_role: "Server & Bartender",
+      invited_email: "o'connor@example.test",
+    };
+    renderPilotInvitation();
+
+    return {
+      workplace: document.querySelector("#industry-invite-workplace").textContent,
+      details: document.querySelector("#industry-invite-details").textContent,
+      consent: document.querySelector("#pilot-consent-panel").textContent,
+      consentVisible: !document.querySelector("#pilot-consent-panel").hidden,
+      leave: document.querySelector(".pilot-membership-panel").textContent,
+    };
+  });
+
+  assert.equal(result.workplace, "Papa Haydn NW");
+  assert.match(result.details, /Server & Bartender/);
+  assert.match(result.details, /o'connor@example\.test/);
+  assert.equal(result.consentVisible, true);
+  assert.match(result.consent, /optional/);
+  assert.match(result.consent, /not connected to payroll/);
+  assert.match(result.leave, /does not delete your Industry account/);
+  assert.doesNotMatch(result.details, /&(?:amp|#39);/);
+});
+
+test("manager removal controls safely render hostile participant values", async () => {
+  const payload = `<img src=x onerror="window.__industryXss = true"><script>window.__industryXss = true<\/script>`;
+  const result = await page.evaluate((hostileValue) => {
+    window.__industryXss = false;
+    authenticatedUserId = "manager-test-id";
+    renderAuthenticatedManagerCrew([
+      {
+        id: "worker-test-id",
+        name: `O'Connor & ${hostileValue}`,
+        role: `Host's Assistant & Server`,
+      },
+    ]);
+
+    const target = document.querySelector("#manager-crew-list");
+    return {
+      executed: window.__industryXss,
+      injectedElements: target.querySelectorAll("img, script").length,
+      text: target.textContent,
+      buttonText: target.querySelector("button").textContent,
+    };
+  }, payload);
+
+  assert.equal(result.executed, false);
+  assert.equal(result.injectedElements, 0);
+  assert.match(result.text, /O'Connor & <img/);
+  assert.match(result.text, /Host's Assistant & Server/);
+  assert.equal(result.buttonText, "Remove from pilot");
+  assert.doesNotMatch(result.text, /&(?:amp|lt|gt|quot|#39);/);
+});
+
+test("safe Auth messages do not expose hostile backend details", async () => {
+  const result = await page.evaluate(() => {
+    const hostileBackendMessage =
+      `user@example.test token=secret <img src=x onerror="window.__industryXss=true">`;
+    window.__industryXss = false;
+    const target = document.querySelector("#signup-status");
+    target.textContent = getSafeAuthFailureMessage("signup", hostileBackendMessage);
+
+    return {
+      executed: window.__industryXss,
+      html: target.innerHTML,
+      text: target.textContent,
+      imageCount: target.querySelectorAll("img").length,
+    };
+  });
+
+  assert.equal(result.executed, false);
+  assert.equal(result.imageCount, 0);
+  assert.doesNotMatch(result.text, /user@example\.test|token=secret|<img/);
+  assert.equal(
+    result.text,
+    "We couldn't finish signup here. Check the private invitation, or sign in if you already have an account.",
+  );
+  assert.equal(result.html, result.text);
+});
