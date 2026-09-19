@@ -106,6 +106,77 @@ Industry sign-in is separate from a ChatGPT account. If a ChatGPT confirmation s
 - Temporary regression accounts and shifts must be clearly labeled, verified by exact ID, and removed after the test.
 - Escalate repeated sign-in, recovery, role, or Realtime failures to the pilot organizer before continuing the affected workflow.
 
+## Manager-and-observer rehearsal
+
+Complete this rehearsal after the first Manager accepts the private invitation
+and before the Manager invites any workers.
+
+### Prerequisites
+
+- Confirm the Manager invitation is accepted and the Manager has an active
+  **Papa Haydn NW** membership with the **Manager** role.
+- Confirm Robert has an active service-only observer grant for Papa Haydn NW
+  and is not an active workplace member. The current hosted interface enters
+  observer mode only when the observer account has no active workplace
+  membership in any workplace.
+- Keep the old hosted test workplace and the real Papa Haydn NW pilot clearly
+  separated. Do not copy old test shifts, memberships, or identities into the
+  pilot workplace.
+- Use separate normal browser profiles or devices for the Manager and observer.
+  Neither person should share a password, invitation token, or authenticated
+  browser session.
+- Do not invite a real worker during the rehearsal.
+
+### 1. Verify the Manager session
+
+1. The Manager opens the live pilot URL and signs in with the account created
+   from the private Manager invitation.
+2. Confirm the workplace is **Papa Haydn NW** and the Manager sees **Team
+   Schedule**, **Create Shift**, **Coverage Requests**, and **Crew**.
+3. Confirm Jobs, People, earnings, payroll, Tip Tracker, and the developer
+   switcher are unavailable.
+4. Open **Schedule → Crew** and confirm the Manager can see invitation
+   controls, but do not create a worker invitation yet.
+
+### 2. Verify the observer session
+
+1. Robert opens the live pilot URL in a separate browser profile and signs in
+   with the observer account.
+2. Confirm the page identifies **Papa Haydn NW**, displays **Industry Pilot
+   Monitor**, and reports **Live and read only**.
+3. Confirm the monitor shows aggregate invitation, participant, shift,
+   coverage, and recent-event counts without participant names or email
+   addresses.
+4. Confirm audit entries use opaque participant, observer, and shift codes.
+5. Confirm the observer cannot open Schedule management, Crew, invitation, or
+   shift-mutation controls.
+
+### 3. Exercise one temporary shift lifecycle
+
+1. Record the observer's starting shift count and most recent audit event.
+2. The Manager creates one clearly temporary future shift assigned to herself.
+   Choose a time that cannot be confused with a real operating shift.
+3. The observer confirms the shift count increases and a privacy-safe **Shift
+   created** event appears. Use **Refresh** if the live update is delayed.
+4. The Manager changes the temporary shift time. The observer confirms a
+   **Shift updated** event appears without the Manager's name or email.
+5. The Manager cancels or deletes the temporary shift using the normal Manager
+   control. The observer confirms the corresponding privacy-safe event and the
+   operational summary update.
+6. Confirm no temporary active shift remains, then sign out both sessions.
+
+### Pass criteria and stop conditions
+
+The rehearsal passes only when Manager controls, observer read-only boundaries,
+privacy-safe audit data, live or manual refresh, Schedule-only scope, and
+temporary-shift cleanup all succeed.
+
+Stop the rehearsal if either account sees the wrong workplace or role, the
+observer sees a participant name or email, the observer can reach a mutation
+control, the Manager sees an excluded product area, or a temporary record
+cannot be cleaned up. Record the time, browser, screen, and visible error, then
+resolve the issue before inviting workers.
+
 ## Session completion checklist
 
 - The participant signed in as the intended person.

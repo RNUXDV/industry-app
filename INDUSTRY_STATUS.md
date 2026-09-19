@@ -1,10 +1,10 @@
 # Industry: Product and Development Status
 
-Last reconciled: September 15, 2026
+Last reconciled: September 19, 2026
 
 Active development branch: `backend-schedule`
 
-Current stage: backend-integrated prototype / invitation-controlled pilot ready
+Current stage: backend-integrated prototype / invitation-controlled live pilot setup
 
 This document is the durable handoff for Industry. It reconciles the current repository, Git history, Industry Design Language (IDL), database migrations, and the major product-development conversations. Use it to understand what Industry is, how it reached its current state, what is genuinely implemented, and what should happen next.
 
@@ -257,6 +257,33 @@ People is implemented across dedicated pages and uses simulated content plus `lo
 - A controlled hosted test cohort and multi-role Schedule regression passed on September 9 through the current-branch preview.
 - The current frontend is now available through the controlled Industry Hosted Pilot. Live manager/worker sign-in, reload restoration, manager-created shifts, Catch, Direct Send, manager approval, reassignment, and persisted Activity history passed on September 15.
 - The hosted Schedule build may be described as ready for a small controlled pilot. It should not be described as production-ready.
+
+### September 19 controlled pilot transition
+
+- The reviewed Schedule-only release remains published from `backend-schedule`
+  commit `9ee7318`. Jobs, People, earnings, payroll, Tip Tracker, and developer
+  controls remain outside the hosted pilot surface.
+- The original hosted regression environment remains isolated as **Industry
+  Hosted Pilot**. It currently retains three active test memberships, one
+  inactive test membership, five shifts, four coverage events, and one Direct
+  Send record. These records are historical regression evidence and are not
+  Papa Haydn NW participant data.
+- Robert Hosted's old Server membership was reversibly changed from active to
+  inactive after confirming that it had no active shift, future shift,
+  coverage, interest, or Direct Send responsibility. The account and all old
+  test records remain intact.
+- The real pilot workplace is **Papa Haydn NW**. It currently has no active
+  participants, no shifts, no coverage events, and no Direct Sends. One
+  volunteer-confirmed Manager invitation is pending for Tassh, and Robert has
+  one service-only, read-only observer authorization that is not a workplace
+  membership.
+- The hosted pilot retains three privacy-safe audit events for Papa Haydn NW,
+  including the Manager invitation, retention configuration, and observer
+  authorization. The pilot end is October 31, 2026 at 11:59 PM Pacific, with
+  event-level retention locked for 90 additional days.
+- The final launch gate is the Manager-and-observer rehearsal documented in
+  `PILOT_ACCESS.md`. It begins only after Tassh accepts the Manager invitation
+  and must pass before any worker invitations are issued.
 
 ## 6. Latest completed checkpoint
 
