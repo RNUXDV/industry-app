@@ -6,6 +6,14 @@ Active development branch: `backend-schedule`
 
 Current stage: backend-integrated prototype / invitation-controlled live pilot setup
 
+September 25, 2026 signup follow-up: hosted email confirmation creates the
+invited Auth account without immediately returning a session. The signup UI now
+recognizes that expected state, clears the password field, and directs the
+participant to the newest confirmation email, Spam if needed, and the same
+private invitation for sign-in and acceptance. The access runbook now documents
+that recovery path so participants are not told to create duplicate accounts or
+replacement invitations.
+
 This document is the durable handoff for Industry. It reconciles the current repository, Git history, Industry Design Language (IDL), database migrations, and the major product-development conversations. Use it to understand what Industry is, how it reached its current state, what is genuinely implemented, and what should happen next.
 
 ## 1. Product identity

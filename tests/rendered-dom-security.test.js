@@ -501,6 +501,56 @@ test("pilot consent and departure copy render as optional and account-safe", asy
   assert.doesNotMatch(result.details, /&(?:amp|#39);/);
 });
 
+test("confirmation-required signup tells an invited worker how to continue", async () => {
+  const result = await page.evaluate(async () => {
+    activePilotInviteToken = "a".repeat(64);
+    activePilotInvitation = {
+      workplace_name: "Papa Haydn NW",
+      invited_role: "Server",
+      invited_email: "worker+pilot@example.test",
+    };
+    renderPilotInvitation();
+    setIndustryAuthMode("signup");
+
+    let signupPayload = null;
+    supabaseClient.auth.signUp = async (payload) => {
+      signupPayload = payload;
+      return {
+        data: { user: { id: "confirmation-pending-user" }, session: null },
+        error: null,
+      };
+    };
+
+    document.querySelector("#signup-name").value = "Pilot Worker";
+    document.querySelector("#signup-password").value = "private-test-password";
+    document.querySelector("#pilot-consent-checkbox").checked = true;
+    document.querySelector("#signup-form").dispatchEvent(
+      new Event("submit", { bubbles: true, cancelable: true }),
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    return {
+      status: document.querySelector("#signup-status").textContent,
+      password: document.querySelector("#signup-password").value,
+      emailRedirectTo: signupPayload?.options?.emailRedirectTo,
+      consentAcknowledged:
+        signupPayload?.options?.data?.pilot_consent_acknowledged,
+      consentVersion: signupPayload?.options?.data?.pilot_consent_version,
+    };
+  });
+
+  assert.match(result.status, /Check worker\+pilot@example\.test to continue/);
+  assert.match(result.status, /newest confirmation email/);
+  assert.match(result.status, /return to this private invitation and sign in/);
+  assert.match(result.status, /Check Spam/);
+  assert.match(result.status, /Do not create a second account/);
+  assert.equal(result.password, "");
+  assert.match(result.emailRedirectTo, /invite=a{64}/);
+  assert.equal(result.consentAcknowledged, true);
+  assert.equal(result.consentVersion, "pilot-privacy-v1");
+});
+
 test("manager removal controls safely render hostile participant values", async () => {
   const payload = `<img src=x onerror="window.__industryXss = true"><script>window.__industryXss = true<\/script>`;
   const result = await page.evaluate((hostileValue) => {

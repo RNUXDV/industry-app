@@ -290,8 +290,13 @@ test("authentication and invitation UI never renders raw backend messages", () =
     "We couldn't finish signup here. Check the private invitation, or sign in if you already have an account.",
     "If an account exists for that email, a reset link has been sent.",
     "We couldn't accept this invitation. Check the private link and signed-in email, then try again.",
+    "Open the newest confirmation email, then return to this private invitation and sign in.",
+    "Do not create a second account.",
   ].forEach((message) => assert.ok(scriptSource.includes(message)));
-  assert.doesNotMatch(scriptSource, /Account created\. Confirm your email/);
+  assert.match(
+    scriptSource,
+    /signupStatus\.textContent = getSignupConfirmationMessage\(/,
+  );
 });
 
 test("consent and departure controls clearly preserve voluntary participation", () => {

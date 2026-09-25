@@ -150,6 +150,12 @@ function getSafeAuthFailureMessage(action) {
   return messages[action] || "We couldn't complete that request. Please try again.";
 }
 
+function getSignupConfirmationMessage(invitation) {
+  const destination = invitation?.invited_email || "the invited email address";
+
+  return `Check ${destination} to continue. Open the newest confirmation email, then return to this private invitation and sign in. Check Spam if the message is not in the inbox. Do not create a second account.`;
+}
+
 function getMembershipBlockMessage(reason, action = "leave") {
   const prefix = action === "remove" ? "This participant" : "You";
   const timing = action === "remove"
@@ -10953,7 +10959,10 @@ signupForm?.addEventListener("submit", async (event) => {
   }
 
   if (!data.session) {
-    signupStatus.textContent = getSafeAuthFailureMessage("signup");
+    document.querySelector("#signup-password").value = "";
+    signupStatus.textContent = getSignupConfirmationMessage(
+      activePilotInvitation,
+    );
     return;
   }
 

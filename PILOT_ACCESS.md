@@ -43,10 +43,11 @@ complete:
     operation. Robert must not be an active Papa Haydn NW workplace member.
 13. Complete a manager-and-observer rehearsal before Tassh invites workers.
 
-Email confirmation is not currently supported by the signup interface. Keep
-hosted email confirmation disabled for this small invitation-token pilot unless
-a confirmation-pending workflow is implemented and tested first. Invitations
-must be delivered privately to the consenting volunteer named by the manager.
+Hosted email confirmation is supported by the signup interface. When Supabase
+creates an account without returning a session, Industry must tell the
+participant to open the newest confirmation email, check Spam if necessary,
+and return to the same private invitation to sign in. Invitations must be
+delivered privately to the consenting volunteer named by the manager.
 
 ## Before inviting a participant
 
@@ -65,8 +66,14 @@ The first manager for a new pilot workplace is invited by the pilot organizer th
 1. Open the private invitation link in a normal browser tab.
 2. Confirm the workplace, email, and role displayed on the invitation card.
 3. Select **Create account**, enter a name, and choose a private password.
-4. If email confirmation is required, open the confirmation email and return to the same invitation link.
-5. Confirm the greeting and controls match the intended person and role.
+4. If Industry says to check email, open the newest confirmation message and
+   follow its link. Check Spam if it is not in the inbox.
+5. If the confirmation link does not finish enrollment automatically, return
+   to the same private invitation, select **Sign in**, acknowledge the privacy
+   notice, and use the exact invited email and newly created password.
+6. Do not create a second account or request a replacement invitation merely
+   because confirmation was required.
+7. Confirm the greeting and controls match the intended person and role.
 
 An invitation can be accepted only once, only before it expires, and only by the exact email address named on it. Workplace membership and role are assigned by the database after those checks pass.
 
