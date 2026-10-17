@@ -11,8 +11,19 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css?v=20260918.4" />
+    <style>
+      #industry-session-loading { display: none; }
+      body.industry-session-loading > * { visibility: hidden !important; }
+      body.industry-session-loading #industry-session-loading,
+      body.industry-session-loading #industry-session-loading * { visibility: visible !important; }
+      body.industry-session-loading #industry-session-loading { display: grid; place-content: center; gap: 1rem; position: fixed; inset: 0; z-index: 100000; background: #20251f; color: #f4eee3; padding: 2rem; text-align: center; }
+    </style>
   </head>
-  <body class="pilot-schedule-only" data-theme="dark">
+  <body class="pilot-schedule-only industry-session-loading" data-theme="dark">
+    <div id="industry-session-loading" role="status" aria-live="polite">
+      <p id="industry-session-status">Restoring your Industry session…</p>
+      <button id="industry-session-retry" type="button" hidden>Try again</button>
+    </div>
 
   <!-- =========================================
      INDUSTRY TESTING ONBOARDING
@@ -5780,6 +5791,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="security.js?v=20260917.1"></script>
-    <script src="script.js?v=20260925.1"></script>
+    <script src="script.js?v=20261017.1"></script>
   </body>
 </html>

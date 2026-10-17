@@ -120,7 +120,7 @@ test("the hosted pilot is restricted to Schedule without financial entry paths",
     assert.match(source, /<html[^>]*class="people-route-pending"/);
     assert.match(source, /people-pages\.js\?v=20260918\.4/);
   });
-  assert.match(indexSource, /<body class="pilot-schedule-only"/);
+  assert.match(indexSource, /<body class="pilot-schedule-only(?:\s+[^"<>]*)?"/);
   assert.match(
     scriptSource,
     /\["jobs", "people"\]\.includes\(activeSection\?\.dataset\.section\)[\s\S]*setActiveSection\("schedule"\)/,

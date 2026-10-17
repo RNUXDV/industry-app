@@ -9736,8 +9736,7 @@ async function restoreIndustrySession() {
   } = await supabaseClient.auth.getSession();
 
   if (error) {
-    showSignedOutIndustry();
-    return;
+    throw error;
   }
 
   if (!session) {
@@ -9754,9 +9753,21 @@ async function restoreIndustrySession() {
 }
 
 async function initializeIndustryAuth() {
-  await loadPilotInvitation();
-  await restoreIndustrySession();
+  document.body.classList.add("industry-session-loading");
+  const status = document.querySelector("#industry-session-status");
+  const retry = document.querySelector("#industry-session-retry");
+  retry.hidden = true;
+  status.textContent = "Restoring your Industry session…";
+  try {
+    await loadPilotInvitation();
+    await restoreIndustrySession();
+    document.body.classList.remove("industry-session-loading");
+  } catch {
+    status.textContent = "We couldn't reconnect. Check your connection and try again. Your saved sign-in has not been cleared.";
+    retry.hidden = false;
+  }
 }
+document.querySelector("#industry-session-retry")?.addEventListener("click", initializeIndustryAuth);
 
 initializeIndustryAuth();
 
@@ -10095,6 +10106,8 @@ async function signOutOfIndustry() {
     return;
   }
 
+  window.clearInterval(industryScheduleRefreshTimer);
+  industryScheduleRefreshTimer = null;
   authenticatedUserId = null;
   authenticatedWorkplaceId = null;
   authenticatedWorkplaceRole = null;
@@ -10506,7 +10519,7 @@ async function loadAuthenticatedIndustryProfile() {
   } = await supabaseClient.auth.getUser();
 
   if (userError) {
-    return false;
+    throw userError;
   }
 
   if (!user) {
@@ -10522,7 +10535,7 @@ async function loadAuthenticatedIndustryProfile() {
     .single();
 
   if (profileError) {
-    return false;
+    throw profileError;
   }
 
   const { data: membership, error: membershipError } = await supabaseClient
@@ -10533,8 +10546,7 @@ async function loadAuthenticatedIndustryProfile() {
     .maybeSingle();
 
   if (membershipError) {
-    authenticatedWorkplaceId = null;
-    authenticatedWorkplaceRole = null;
+    throw membershipError;
   } else {
     authenticatedWorkplaceId = membership?.workplace_id || null;
     authenticatedWorkplaceRole = membership?.role || null;
@@ -10606,6 +10618,39 @@ async function loadAuthenticatedIndustryProfile() {
   await setupIndustryRealtime();
   return true;
 }
+
+// Mobile browsers can suspend sockets, and a previous assignee may lose RLS
+// visibility of a reassigned row. Re-fetch authorized views as a fallback.
+let industryScheduleRefreshTimer = null;
+let industryScheduleRefreshPromise = null;
+async function refreshIndustrySchedule() {
+  if (!authenticatedUserId || !authenticatedWorkplaceId || document.hidden || navigator.onLine === false) return;
+  if (industryScheduleRefreshPromise) return industryScheduleRefreshPromise;
+  industryScheduleRefreshPromise = (async () => {
+    await Promise.all([
+      loadAuthenticatedSchedule(), loadAuthenticatedCatchShifts(),
+      loadAuthenticatedShiftInterests(), loadAuthenticatedCoverageEvents(),
+      loadAndRenderDirectShiftOffers(), loadAndRenderManagerDirectApprovals(),
+      loadAuthenticatedManagerCrew(),
+      authenticatedWorkplaceRole?.toLowerCase() === "manager"
+        ? loadAuthenticatedTeamSchedule() : Promise.resolve(),
+    ]);
+    if (selectedReleaseShift?.id && !authenticatedScheduleShifts.some(shift => shift.id === selectedReleaseShift.id)) {
+      selectedReleaseShift = null;
+      setActiveScheduleView("my-shifts");
+    }
+    updateDashboardForRole();
+    renderActivityFeed();
+  })().catch(() => {
+    // Preserve the last loaded view and retry on the next foreground refresh.
+  }).finally(() => { industryScheduleRefreshPromise = null; });
+  return industryScheduleRefreshPromise;
+}
+window.addEventListener("online", refreshIndustrySchedule);
+window.addEventListener("focus", refreshIndustrySchedule);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refreshIndustrySchedule();
+});
 
 async function setupIndustryRealtime() {
   if (!authenticatedUserId) {
@@ -10740,10 +10785,26 @@ async function setupIndustryRealtime() {
       },
     )
 
-    .subscribe();
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED") refreshIndustrySchedule();
+    });
+
+  if (!industryScheduleRefreshTimer) {
+    industryScheduleRefreshTimer = window.setInterval(refreshIndustrySchedule, 15000);
+  }
 }
 
 async function enterAuthenticatedIndustry() {
+  try {
+    await enterAuthenticatedIndustryWithAccess();
+  } catch {
+    openIndustryAuth("login");
+    loginStatus.textContent = "We couldn't load your workplace. Check your connection and try signing in again. Your saved sign-in has not been cleared.";
+    throw new Error("Industry session could not be restored");
+  }
+}
+
+async function enterAuthenticatedIndustryWithAccess() {
   const invitationAccepted = await acceptPendingPilotInvitation();
 
   if (!invitationAccepted) {
@@ -10902,7 +10963,7 @@ updatePasswordForm?.addEventListener("submit", async (event) => {
     `${window.location.pathname}${window.location.search}`,
   );
 
-  enterAuthenticatedIndustry();
+  enterAuthenticatedIndustry().catch(() => {});
 });
 
 // =========================================================
@@ -10968,7 +11029,7 @@ signupForm?.addEventListener("submit", async (event) => {
 
   signupStatus.textContent = "Account created.";
 
-  enterAuthenticatedIndustry();
+  enterAuthenticatedIndustry().catch(() => {});
 });
 
 // =========================================================
@@ -11006,7 +11067,7 @@ loginForm?.addEventListener("submit", async (event) => {
 
   loginStatus.textContent = "Welcome back.";
 
-  enterAuthenticatedIndustry();
+  enterAuthenticatedIndustry().catch(() => {});
 });
 
 // =========================================
