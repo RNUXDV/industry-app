@@ -252,6 +252,35 @@ function setManagerShiftFormMode(mode = "create") {
   }
 }
 
+// Interpret schedule form values in the workplace zone, never the device zone.
+function workplaceShiftDate(date, time, timeZone) {
+  const wallTime = Date.parse(`${date}T${time}:00Z`);
+  if (!Number.isFinite(wallTime)) throw new Error("Invalid shift time");
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone, year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
+  });
+  const localStamp = (instant) => {
+    const parts = Object.fromEntries(formatter.formatToParts(new Date(instant))
+      .map(part => [part.type, part.value]));
+    return Date.parse(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}Z`);
+  };
+  // Sample both sides of a DST transition. For repeated times choose the earlier
+  // occurrence; reject nonexistent local times rather than silently moving them.
+  const candidates = [-36, 0, 36].map(hours => {
+    const sample = wallTime + hours * 3600000;
+    return wallTime - (localStamp(sample) - sample);
+  }).filter(instant => localStamp(instant) === wallTime);
+  if (!candidates.length) throw new Error("Time does not exist in workplace zone");
+  return new Date(Math.min(...candidates));
+}
+
+function nextShiftDate(date) {
+  const next = new Date(`${date}T00:00:00Z`);
+  next.setUTCDate(next.getUTCDate() + 1);
+  return next.toISOString().slice(0, 10);
+}
+
 function getManagerShiftInputValues(shift) {
   const timeZone =
     shift.workplaceTimeZone || Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -2299,39 +2328,37 @@ if (managerSaveShiftButton) {
         "Choose a crew member or Open Shift, and enter the role, date, and start time.";
       return;
     }
-    const startsAtDate = new Date(`${date}T${startTime}:00`);
-
-    if (Number.isNaN(startsAtDate.getTime())) {
+    const originalButtonText = managerSaveShiftButton.textContent;
+    managerSaveShiftButton.disabled = true;
+    let startsAtDate;
+    let endsAt = null;
+    let endLabel = "Close";
+    try {
+      const { data: workplace, error: workplaceError } = await supabaseClient
+        .from("workplaces")
+        .select("time_zone")
+        .eq("id", authenticatedWorkplaceId)
+        .single();
+      if (workplaceError || !workplace?.time_zone) {
+        throw new Error("Workplace time zone unavailable");
+      }
+      startsAtDate = workplaceShiftDate(date, startTime, workplace.time_zone);
+      if (endTime) {
+        // Determine overnight rollover by workplace calendar values.
+        const endDate = endTime <= startTime ? nextShiftDate(date) : date;
+        endsAt = workplaceShiftDate(endDate, endTime, workplace.time_zone).toISOString();
+        endLabel = null;
+      }
+    } catch (error) {
       managerCreateShiftStatus.textContent =
-        "Enter a valid shift date and start time.";
+        "Unable to save this time in the workplace time zone. Check the time and your connection, then try again.";
+      managerSaveShiftButton.disabled = false;
+      managerSaveShiftButton.textContent = originalButtonText;
       return;
     }
 
-    let endsAt = null;
-    let endLabel = "Close";
-
-    if (endTime) {
-      const endsAtDate = new Date(`${date}T${endTime}:00`);
-
-      if (Number.isNaN(endsAtDate.getTime())) {
-        managerCreateShiftStatus.textContent = "Enter a valid end time.";
-        return;
-      }
-
-      // Restaurant shifts commonly cross midnight.
-      if (endsAtDate <= startsAtDate) {
-        endsAtDate.setDate(endsAtDate.getDate() + 1);
-      }
-
-      endsAt = endsAtDate.toISOString();
-      endLabel = null;
-    }
-
-    const originalButtonText = managerSaveShiftButton.textContent;
-
-    managerSaveShiftButton.disabled = true;
-    managerSaveShiftButton.textContent = "Creating…";
-    managerCreateShiftStatus.textContent = "Creating shift…";
+    managerSaveShiftButton.textContent = editingManagerShiftId ? "Saving…" : "Creating…";
+    managerCreateShiftStatus.textContent = editingManagerShiftId ? "Saving changes…" : "Creating shift…";
 
     const isEditing = Boolean(editingManagerShiftId);
 
