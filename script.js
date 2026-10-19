@@ -1198,60 +1198,54 @@ async function loadAuthenticatedWorkplaceCrew() {
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-async function loadAuthenticatedManagerCrew() {
-  if (!managerShiftWorkerSelect) {
-    return;
-  }
-
-  managerShiftWorkerSelect.innerHTML = `
-    <option value="">Choose a crew member</option>
-    <option value="open">Open Shift</option>
-  `;
-
+async function loadAuthenticatedManagerCrew({ background = false } = {}) {
+  if (!managerShiftWorkerSelect) return;
   if (
     authenticatedWorkplaceRole?.toLowerCase() !== "manager" ||
     !authenticatedWorkplaceId
-  ) {
-    return;
-  }
+  ) return;
 
-  if (managerCreateShiftStatus) {
+  const workplaceId = authenticatedWorkplaceId;
+  if (!background && managerCreateShiftStatus) {
     managerCreateShiftStatus.textContent = "Loading workplace crew...";
   }
 
   try {
     const crew = await loadAuthenticatedWorkplaceCrew();
-
+    // Ignore a response belonging to a session/workplace that is no longer active.
+    if (authenticatedWorkplaceId !== workplaceId ||
+        authenticatedWorkplaceRole?.toLowerCase() !== "manager") return;
     authenticatedManagerCrew = crew;
 
+    // Read at completion so a choice made while loading is preserved too.
+    const selectedWorker = managerShiftWorkerSelect.value;
+    const fragment = document.createDocumentFragment();
+    for (const [value, label] of [["", "Choose a crew member"], ["open", "Open Shift"]]) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      fragment.appendChild(option);
+    }
     crew.forEach((member) => {
       const option = document.createElement("option");
-
       option.value = member.id;
-
-      option.textContent = member.role
-        ? `${member.name} · ${member.role}`
-        : member.name;
-
-      managerShiftWorkerSelect.appendChild(option);
+      option.textContent = member.role ? `${member.name} · ${member.role}` : member.name;
+      fragment.appendChild(option);
     });
+    managerShiftWorkerSelect.replaceChildren(fragment);
+    managerShiftWorkerSelect.value = selectedWorker === "open" ||
+      crew.some(member => member.id === selectedWorker) ? selectedWorker : "";
 
-    if (managerCreateShiftStatus) {
-      managerCreateShiftStatus.textContent = crew.length
-        ? ""
-        : "No workplace members found.";
+    if (!background && managerCreateShiftStatus) {
+      managerCreateShiftStatus.textContent = crew.length ? "" : "No workplace members found.";
     }
-
     return crew;
   } catch (error) {
-    authenticatedManagerCrew = [];
-
-    if (managerCreateShiftStatus) {
-      managerCreateShiftStatus.textContent =
-        "Unable to load workplace crew.";
+    // A temporary refresh failure must not erase the form or its last crew list.
+    if (!background && managerCreateShiftStatus) {
+      managerCreateShiftStatus.textContent = "Unable to load workplace crew.";
     }
-
-    return [];
+    return authenticatedManagerCrew;
   }
 }
 function renderAuthenticatedManagerCrew(crew = authenticatedManagerCrew) {
@@ -10658,7 +10652,7 @@ async function refreshIndustrySchedule() {
       loadAuthenticatedSchedule(), loadAuthenticatedCatchShifts(),
       loadAuthenticatedShiftInterests(), loadAuthenticatedCoverageEvents(),
       loadAndRenderDirectShiftOffers(), loadAndRenderManagerDirectApprovals(),
-      loadAuthenticatedManagerCrew(),
+      loadAuthenticatedManagerCrew({ background: true }),
       authenticatedWorkplaceRole?.toLowerCase() === "manager"
         ? loadAuthenticatedTeamSchedule() : Promise.resolve(),
     ]);
