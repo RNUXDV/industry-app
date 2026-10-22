@@ -663,6 +663,12 @@ let authenticatedWorkplaceRole = null;
 let authenticatedUserId = null;
 let authenticatedDisplayName = "";
 let activePilotObserverWorkplace = null;
+let pilotObserverWorkplaces = [];
+let pilotObserverGeneration = 0;
+let pilotObserverRequest = 0;
+let pilotObserverReady = false;
+let pilotObserverSwitching = false;
+let pilotObserverChecking = false;
 let pilotObserverRealtimeChannel = null;
 let pilotObserverAuthorizationTimer = null;
 let pilotObserverStaleTimer = null;
@@ -9326,6 +9332,7 @@ const leavePilotConfirmation = document.querySelector(
 const leavePilotButton = document.querySelector("#leave-pilot-button");
 const leavePilotStatus = document.querySelector("#leave-pilot-status");
 const pilotMonitorScreen = document.querySelector("#pilot-monitor-screen");
+const pilotMonitorWorkplaceSelect = document.querySelector("#pilot-monitor-workplace-select");
 const pilotMonitorWorkplace = document.querySelector("#pilot-monitor-workplace");
 const pilotMonitorEnvironment = document.querySelector("#pilot-monitor-environment");
 const pilotMonitorRetention = document.querySelector("#pilot-monitor-retention");
@@ -9652,6 +9659,18 @@ let passwordRecoveryActive =
   recoveryQueryParams.get("type") === "recovery";
 
 supabaseClient.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_OUT") {
+    invalidatePilotObserverView();
+    activePilotObserverWorkplace = null;
+    pilotObserverWorkplaces = [];
+    pilotObserverSwitching = false;
+    window.clearInterval(pilotObserverAuthorizationTimer);
+    pilotObserverAuthorizationTimer = null;
+    setPilotObserverControls();
+    if (pilotMonitorScreen) pilotMonitorScreen.hidden = true;
+    document.body.classList.remove("pilot-observer-active");
+    showSignedOutIndustry();
+  }
   if (event === "PASSWORD_RECOVERY") {
     passwordRecoveryActive = true;
 
@@ -9947,108 +9966,209 @@ function getPilotMonitorSinceFilter() {
   return new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
 }
 
-function schedulePilotMonitorStaleState() {
+function pilotObserverIsCurrent(generation, workplaceId) {
+  return generation === pilotObserverGeneration &&
+    activePilotObserverWorkplace?.workplace_id === workplaceId;
+}
+
+function renderPilotObserverWorkplaces() {
+  if (!pilotMonitorWorkplaceSelect) return;
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "Choose a workplace";
+  placeholder.disabled = true;
+  const options = pilotObserverWorkplaces.map((workplace) => {
+    const option = document.createElement("option");
+    option.value = workplace.workplace_id;
+    option.textContent = workplace.workplace_name;
+    return option;
+  });
+  pilotMonitorWorkplaceSelect.replaceChildren(placeholder, ...options);
+  pilotMonitorWorkplaceSelect.value = activePilotObserverWorkplace?.workplace_id || "";
+  pilotMonitorWorkplaceSelect.disabled = pilotObserverSwitching ||
+    (pilotObserverWorkplaces.length < 2 && !!activePilotObserverWorkplace);
+}
+
+function setPilotObserverControls() {
+  renderPilotObserverWorkplaces();
+  if (pilotMonitorRefresh) pilotMonitorRefresh.disabled = pilotObserverSwitching;
+  for (const control of [pilotMonitorEventFilter, pilotMonitorOutcomeFilter, pilotMonitorTimeFilter]) {
+    if (control) control.disabled = pilotObserverSwitching || !pilotObserverReady;
+  }
+}
+
+function invalidatePilotObserverView() {
+  pilotObserverGeneration++;
+  pilotObserverRequest++;
+  pilotObserverReady = false;
   window.clearTimeout(pilotObserverStaleTimer);
-  pilotObserverStaleTimer = window.setTimeout(() => {
-    if (activePilotObserverWorkplace) {
-      setPilotMonitorConnection("stale", "Connected · data may be stale");
-    }
-  }, 90000);
+  pilotObserverStaleTimer = null;
+  const channel = pilotObserverRealtimeChannel;
+  pilotObserverRealtimeChannel = null;
+  pilotMonitorSummary?.replaceChildren();
+  pilotMonitorEvents?.replaceChildren();
+  // Invalidate callbacks before asynchronous channel removal completes.
+  if (channel) supabaseClient.removeChannel(channel).catch(() => {});
+}
+
+function suspendPilotObserver(message) {
+  invalidatePilotObserverView();
+  pilotObserverSwitching = false;
+  setPilotObserverControls();
+  setPilotMonitorState(message, "error");
+  setPilotMonitorConnection("error", "Refresh to retry");
 }
 
 async function loadPilotMonitorData() {
-  if (!activePilotObserverWorkplace) {
-    return false;
-  }
-
+  if (!activePilotObserverWorkplace || !pilotObserverReady) return false;
+  const workplaceId = activePilotObserverWorkplace.workplace_id;
+  const generation = pilotObserverGeneration;
+  const request = ++pilotObserverRequest;
+  const current = () => pilotObserverIsCurrent(generation, workplaceId) &&
+    request === pilotObserverRequest && pilotObserverReady;
   setPilotMonitorState("Loading privacy-safe pilot data…");
-
-  const [summaryResult, eventResult] = await Promise.all([
-    supabaseClient.rpc("get_pilot_monitor_summary", {
-      target_workplace_id: activePilotObserverWorkplace.workplace_id,
-    }),
-    supabaseClient.rpc("list_pilot_monitor_events", {
-      target_workplace_id: activePilotObserverWorkplace.workplace_id,
-      event_type_filter: pilotMonitorEventFilter?.value || null,
-      outcome_filter: pilotMonitorOutcomeFilter?.value || null,
-      since_filter: getPilotMonitorSinceFilter(),
-      result_limit: 100,
-    }),
-  ]);
-
-  if (summaryResult.error || eventResult.error) {
-    setPilotMonitorState(
-      "Pilot data is unavailable. Access may have changed; refresh or sign in again.",
-      "error",
-    );
-    setPilotMonitorConnection("error", "Unable to refresh");
+  try {
+    const [summaryResult, eventResult] = await Promise.all([
+      supabaseClient.rpc("get_pilot_monitor_summary", { target_workplace_id: workplaceId }),
+      supabaseClient.rpc("list_pilot_monitor_events", {
+        target_workplace_id: workplaceId,
+        event_type_filter: pilotMonitorEventFilter?.value || null,
+        outcome_filter: pilotMonitorOutcomeFilter?.value || null,
+        since_filter: getPilotMonitorSinceFilter(),
+        result_limit: 100,
+      }),
+    ]);
+    if (!current()) return false;
+    if (summaryResult.error || eventResult.error) {
+      const denied = [summaryResult.error, eventResult.error].some(error => error?.code === "42501");
+      suspendPilotObserver(denied ? "Observer access may have changed. Checking authorization…" :
+        "Pilot data is unavailable. Refresh to retry; your sign-in has been preserved.");
+      if (denied) await verifyPilotObserverAuthorization();
+      return false;
+    }
+    renderPilotMonitorSummary(summaryResult.data || {});
+    renderPilotMonitorEvents(eventResult.data || []);
+    setPilotMonitorConnection("connected", "Live and read only");
+    window.clearTimeout(pilotObserverStaleTimer);
+    pilotObserverStaleTimer = window.setTimeout(() => {
+      if (current()) setPilotMonitorConnection("stale", "Connected · data may be stale");
+    }, 90000);
+    return true;
+  } catch {
+    if (current()) suspendPilotObserver("Pilot data is unavailable. Refresh to retry; your sign-in has been preserved.");
     return false;
   }
+}
 
-  renderPilotMonitorSummary(summaryResult.data || {});
-  renderPilotMonitorEvents(eventResult.data || []);
-  setPilotMonitorConnection("connected", "Live and read only");
-  schedulePilotMonitorStaleState();
-  return true;
+async function fetchPilotObserverWorkplaces() {
+  const { data, error } = await supabaseClient.rpc("list_my_observer_workplaces");
+  if (error) throw error;
+  return data || [];
 }
 
 async function loadPilotObserverAuthorization() {
-  const { data, error } = await supabaseClient.rpc(
-    "list_my_observer_workplaces",
-  );
-
-  if (error || !data?.length) {
-    activePilotObserverWorkplace = null;
-    return false;
-  }
-
-  activePilotObserverWorkplace = data[0];
-  return true;
+  const generation = pilotObserverGeneration;
+  const workplaces = await fetchPilotObserverWorkplaces();
+  if (generation !== pilotObserverGeneration) return false;
+  pilotObserverWorkplaces = workplaces;
+  activePilotObserverWorkplace = workplaces.find(workplace =>
+    workplace.workplace_id === activePilotObserverWorkplace?.workplace_id) || workplaces[0] || null;
+  return !!activePilotObserverWorkplace;
 }
 
 async function verifyPilotObserverAuthorization() {
-  if (!activePilotObserverWorkplace) {
-    return;
+  if (!pilotMonitorScreen || pilotMonitorScreen.hidden || pilotObserverSwitching || pilotObserverChecking) return;
+  pilotObserverChecking = true;
+  const generation = pilotObserverGeneration;
+  try {
+    const workplaces = await fetchPilotObserverWorkplaces();
+    if (generation !== pilotObserverGeneration) return;
+    pilotObserverWorkplaces = workplaces;
+    const selected = workplaces.find(workplace => workplace.workplace_id === activePilotObserverWorkplace?.workplace_id);
+    if (!selected) {
+      invalidatePilotObserverView();
+      activePilotObserverWorkplace = null;
+      pilotMonitorWorkplace.textContent = "Observer access changed";
+      pilotMonitorStatusTitle.textContent = "Choose an authorized workplace";
+      pilotMonitorRetention.textContent = "";
+      setPilotObserverControls();
+      setPilotMonitorState("Access to the previous workplace ended. Choose another authorized workplace.", "error");
+      setPilotMonitorConnection("disconnected", "Workplace access ended");
+      if (!workplaces.length) {
+        await signOutOfIndustry();
+        openIndustryAuth("login");
+        loginStatus.textContent = "Observer access is no longer active. Contact the pilot organizer if this is unexpected.";
+      }
+      return;
+    }
+    activePilotObserverWorkplace = selected;
+    renderPilotObserverMetadata();
+    setPilotObserverControls();
+    // Recovery requires an explicit refresh; failed polls never clear the sign-in.
+  } catch {
+    if (generation === pilotObserverGeneration) suspendPilotObserver("Unable to verify observer access. Refresh to retry; your sign-in has been preserved.");
+  } finally {
+    pilotObserverChecking = false;
   }
+}
 
-  const activeWorkplaceId = activePilotObserverWorkplace.workplace_id;
-  const authorized = await loadPilotObserverAuthorization();
-
-  if (!authorized || activePilotObserverWorkplace.workplace_id !== activeWorkplaceId) {
-    await signOutOfIndustry();
-    openIndustryAuth("login");
-    loginStatus.textContent =
-      "Observer access is no longer active. Contact the pilot organizer if this is unexpected.";
+async function switchPilotObserverWorkplace(workplaceId) {
+  if (!workplaceId) return false;
+  invalidatePilotObserverView();
+  const generation = pilotObserverGeneration;
+  pilotObserverSwitching = true;
+  setPilotObserverControls();
+  setPilotMonitorState("Checking workplace access…");
+  setPilotMonitorConnection("connecting", "Checking access…");
+  try {
+    const workplaces = await fetchPilotObserverWorkplaces();
+    if (generation !== pilotObserverGeneration) return false;
+    pilotObserverWorkplaces = workplaces;
+    const selected = workplaces.find(workplace => workplace.workplace_id === workplaceId);
+    if (!selected) {
+      activePilotObserverWorkplace = null;
+      pilotMonitorWorkplace.textContent = "Choose an authorized workplace";
+      pilotMonitorStatusTitle.textContent = "Access changed";
+      pilotMonitorRetention.textContent = "";
+      setPilotMonitorState("That workplace is no longer authorized. Choose another workplace.", "error");
+      setPilotMonitorConnection("disconnected", "Workplace access ended");
+      if (!workplaces.length) await signOutOfIndustry();
+      return false;
+    }
+    activePilotObserverWorkplace = selected;
+    renderPilotObserverMetadata();
+    pilotObserverReady = true;
+    await setupPilotObserverRealtime();
+    if (!pilotObserverIsCurrent(generation, workplaceId)) return false;
+    return await loadPilotMonitorData();
+  } catch {
+    if (generation === pilotObserverGeneration) suspendPilotObserver("Unable to verify observer access. Refresh to retry; your sign-in has been preserved.");
+    return false;
+  } finally {
+    if (generation === pilotObserverGeneration) {
+      pilotObserverSwitching = false;
+      setPilotObserverControls();
+    }
   }
 }
 
 async function setupPilotObserverRealtime() {
-  if (!activePilotObserverWorkplace) {
-    return;
-  }
-
-  if (pilotObserverRealtimeChannel) {
-    await supabaseClient.removeChannel(pilotObserverRealtimeChannel);
-  }
-
+  if (!activePilotObserverWorkplace || !pilotObserverReady) return;
+  const workplaceId = activePilotObserverWorkplace.workplace_id;
+  const generation = pilotObserverGeneration;
+  const current = () => pilotObserverIsCurrent(generation, workplaceId) && pilotObserverReady;
   setPilotMonitorConnection("connecting", "Connecting…");
   pilotObserverRealtimeChannel = supabaseClient
-    .channel(`pilot-monitor-${activePilotObserverWorkplace.workplace_id}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "pilot_audit_events",
-        filter: `workplace_id=eq.${activePilotObserverWorkplace.workplace_id}`,
-      },
-      async () => {
-        await loadPilotMonitorData();
-      },
-    )
+    .channel(`pilot-monitor-${workplaceId}-${generation}`)
+    .on("postgres_changes", {
+      event: "INSERT", schema: "public", table: "pilot_audit_events",
+      filter: `workplace_id=eq.${workplaceId}`,
+    }, () => { if (current()) loadPilotMonitorData(); })
     .subscribe((status) => {
+      if (!current()) return;
       if (status === "SUBSCRIBED") {
         setPilotMonitorConnection("connected", "Live and read only");
+        loadPilotMonitorData();
       } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
         setPilotMonitorConnection("error", "Live updates unavailable");
       } else if (status === "CLOSED") {
@@ -10057,16 +10177,7 @@ async function setupPilotObserverRealtime() {
     });
 }
 
-async function enterPilotObserverMode() {
-  if (!activePilotObserverWorkplace || !pilotMonitorScreen) {
-    return false;
-  }
-
-  document.body.classList.add("pilot-observer-active");
-  industryAuthScreen?.classList.remove("is-active");
-  industryAuthScreen?.setAttribute("aria-hidden", "true");
-  pilotMonitorScreen.hidden = false;
-
+function renderPilotObserverMetadata() {
   pilotMonitorWorkplace.textContent = activePilotObserverWorkplace.workplace_name;
   pilotMonitorEnvironment.textContent = IS_LOCAL_INDUSTRY
     ? "LOCAL TEST ENVIRONMENT · no production data"
@@ -10097,23 +10208,45 @@ async function enterPilotObserverMode() {
       "Authorized service cleanup may now preserve aggregates and remove event-level linkage.";
   }
 
-  await loadPilotMonitorData();
-  await setupPilotObserverRealtime();
+}
 
+async function enterPilotObserverMode() {
+  if (!activePilotObserverWorkplace || !pilotMonitorScreen) {
+    return false;
+  }
+
+  document.body.classList.add("pilot-observer-active");
+  industryAuthScreen?.classList.remove("is-active");
+  industryAuthScreen?.setAttribute("aria-hidden", "true");
+  pilotMonitorScreen.hidden = false;
+
+  // Poll for the lifetime of the open monitor, even while no workplace is selected.
+  // Install before awaiting entry so revocation cannot skip timer setup.
   window.clearInterval(pilotObserverAuthorizationTimer);
   pilotObserverAuthorizationTimer = window.setInterval(
     verifyPilotObserverAuthorization,
     15000,
   );
-  return true;
+  await switchPilotObserverWorkplace(activePilotObserverWorkplace.workplace_id);
+  return !pilotMonitorScreen.hidden;
 }
+
+pilotMonitorWorkplaceSelect?.addEventListener("change", () => {
+  switchPilotObserverWorkplace(pilotMonitorWorkplaceSelect.value);
+});
 
 pilotMonitorFilters?.addEventListener("change", () => {
   loadPilotMonitorData();
 });
 
 pilotMonitorRefresh?.addEventListener("click", () => {
-  loadPilotMonitorData();
+  if (pilotObserverSwitching) return;
+  if (activePilotObserverWorkplace) {
+    switchPilotObserverWorkplace(activePilotObserverWorkplace.workplace_id);
+  } else {
+    // Refresh authorization/options without implicitly choosing a workplace.
+    verifyPilotObserverAuthorization();
+  }
 });
 
 pilotMonitorSignout?.addEventListener("click", () => {
@@ -10121,9 +10254,20 @@ pilotMonitorSignout?.addEventListener("click", () => {
 });
 
 async function signOutOfIndustry() {
+  invalidatePilotObserverView();
+  activePilotObserverWorkplace = null;
+  pilotObserverWorkplaces = [];
+  pilotObserverSwitching = false;
+  window.clearInterval(pilotObserverAuthorizationTimer);
+  pilotObserverAuthorizationTimer = null;
+  setPilotObserverControls();
+  if (pilotMonitorScreen) pilotMonitorScreen.hidden = true;
   const { error } = await supabaseClient.auth.signOut();
 
   if (error) {
+    document.body.classList.remove("pilot-observer-active");
+    openIndustryAuth("login");
+    loginStatus.textContent = "Sign-out could not be confirmed. Check your connection and try again.";
     return;
   }
 

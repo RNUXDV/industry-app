@@ -10266,6 +10266,13 @@ body.onboarding-home-active #home-logo-button {
   font-weight: 700;
 }
 
+.pilot-monitor-workplace-picker {
+  display: block;
+  max-width: 360px;
+  font-weight: 700;
+}
+
+.pilot-monitor-workplace-picker select,
 .pilot-monitor-filters select {
   width: 100%;
   min-height: 48px;
