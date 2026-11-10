@@ -93,6 +93,11 @@ SELECT set_config('request.jwt.claim.sub',(SELECT recipient::text FROM ctx),true
 SELECT lives_ok($q$INSERT INTO public.shift_interests(id,shift_id,profile_id,status) SELECT interest_id,cover_shift,recipient,'interested' FROM pg_temp.ctx$q$,'same-workplace coworker expresses interest');
 SELECT set_config('request.jwt.claim.sub',(SELECT manager::text FROM ctx),true) IS NOT NULL AS claims_set \gset
 SELECT lives_ok($q$SELECT * FROM public.select_shift_interest((SELECT interest_id FROM pg_temp.ctx))$q$,'manager selects interested coworker');
+SELECT set_config('request.jwt.claim.sub',(SELECT recipient::text FROM ctx),true) IS NOT NULL AS claims_set \gset
+SELECT throws_ok($q$SELECT public.confirm_shift_coverage((SELECT cover_shift FROM pg_temp.ctx),(SELECT recipient FROM pg_temp.ctx))$q$,'P0001','Not authorized to approve this shift','selected worker cannot approve coverage');
+SELECT set_config('request.jwt.claim.sub',(SELECT foreign_user::text FROM ctx),true) IS NOT NULL AS claims_set \gset
+SELECT throws_ok($q$SELECT public.confirm_shift_coverage((SELECT cover_shift FROM pg_temp.ctx),(SELECT recipient FROM pg_temp.ctx))$q$,'P0001','Not authorized to approve this shift','manager from another workplace cannot approve coverage');
+SELECT set_config('request.jwt.claim.sub',(SELECT manager::text FROM ctx),true) IS NOT NULL AS claims_set \gset
 SELECT lives_ok($q$SELECT public.confirm_shift_coverage((SELECT cover_shift FROM pg_temp.ctx),(SELECT recipient FROM pg_temp.ctx))$q$,'manager confirms coverage transfer');
 RESET ROLE;
 SELECT is((SELECT assigned_profile_id FROM shifts WHERE id=(SELECT cover_shift FROM ctx)),(SELECT recipient FROM ctx),'coverage transfers ownership');

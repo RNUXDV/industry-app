@@ -5052,6 +5052,7 @@ function renderShiftBoard() {
           <p class="status-text">Worker selected.</p>
           <p class="shift-helper-text">Awaiting manager approval.</p>
 
+          ${isAuthenticatedCatchMode ? "" : `
           <button
             class="action-button manager-approve-button"
             type="button"
@@ -5059,6 +5060,7 @@ function renderShiftBoard() {
           >
             Approve coverage
           </button>
+          `}
 
           <button
             class="action-button secondary-action shift-message-button"
